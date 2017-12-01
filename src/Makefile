@@ -23,9 +23,9 @@ CC = g++
 BIN = ../bin
 EXE =
 #CFLAGS = -g
-CFLAGS = -g -O3 -pipe
-GCC_FLAGS = -g -O3 -pipe
-CPP_FLAGS = -g -O3 -pipe
+CFLAGS = -O3 -pipe
+GCC_FLAGS = -O3 -pipe
+CPP_FLAGS = -O3 -pipe
 DEFS =
 
 # Enables debug mode and send messages through stdout.
@@ -328,6 +328,9 @@ EXE	+= $(BIN)/searchSlope_byDistortion_j2k
 #$(BIN)/mcj2k:	$(shell which mcj2k)
 #			ln -s $< $@
 #EXE	+= $(BIN)/mcj2k
+
+$(BIN)/demux:	demux.c
+EXE	+= $(BIN)/demux
 
 all:	$(EXE)
 

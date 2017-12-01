@@ -6,8 +6,8 @@
 #!/bin/bash
 set -x
 
-if [ ! -e $HOME/bin ]; then
-    mkdir $HOME/bin
+if [ ! -e $PWD/bin ]; then
+    mkdir ./bin
 fi
 
 read dirs << EOF
@@ -15,11 +15,11 @@ $PATH
 EOF
 
 IFS=:
-# $HOME/bin insertion in the PATH variable, if it does not exist
+# $PWD/bin insertion in the PATH variable, if it does not exist
 
 contains_bin=0
 for dir in $dirs; do
-    if [ "$dir" = "$HOME/bin" ]; then
+    if [ "$dir" = "$PWD/bin" ]; then
         contains_bin=1
     fi
 done
@@ -27,9 +27,9 @@ done
 IFS=
 
 if [ $contains_bin = 0 ]; then
-    PATH=$HOME/bin:$PATH
+    PATH=$PWD/bin:$PATH
 fi
-# End of $HOME/bin insertion in the PATH variable
+# End of $PWD/bin insertion in the PATH variable
 
 make -C src
 export MCTF=$PWD
