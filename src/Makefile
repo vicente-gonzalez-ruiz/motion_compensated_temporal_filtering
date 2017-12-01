@@ -63,52 +63,52 @@ $(BIN)/%.py:	%.py
 #%.cpp:	%.cpp.m4
 #	(echo "changequote(\`[[[', \`]]]')"; cat $*.cpp.m4) | m4 $(DEFS) > $*.cpp
 
-$(HOME)/bin/trace:	trace.sh
+$(BIN)/trace:	trace.sh
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 #	m4 $(DEFS) < $< > $@; chmod +x $@
-EXE	+= $(HOME)/bin/trace
+EXE	+= $(BIN)/trace
 
-$(HOME)/bin/mctf:	mctf.sh
+$(BIN)/mctf:	mctf.sh
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 #	m4 $(DEFS) < $< > $@; chmod +x $@
-EXE	+= $(HOME)/bin/mctf
+EXE	+= $(BIN)/mctf
 
-$(HOME)/bin/mcj2k:	mcj2k.sh
+$(BIN)/mcj2k:	mcj2k.sh
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 #	m4 $(DEFS) < $< > $@; chmod +x $@
-EXE	+= $(HOME)/bin/mcj2k
+EXE	+= $(BIN)/mcj2k
 
-$(HOME)/bin/mcmj2k:	mcmj2k.sh
+$(BIN)/mcmj2k:	mcmj2k.sh
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 #	m4 $(DEFS) < $< > $@; chmod +x $@
-EXE	+= $(HOME)/bin/mcmj2k
+EXE	+= $(BIN)/mcmj2k
 
-$(HOME)/bin/mcmjpeg:	mcmjpeg.sh
+$(BIN)/mcmjpeg:	mcmjpeg.sh
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 #	m4 $(DEFS) < $< > $@; chmod +x $@
-EXE	+= $(HOME)/bin/mcmjpeg
+EXE	+= $(BIN)/mcmjpeg
 
-$(HOME)/bin/mcltw:	mcltw.sh
+$(BIN)/mcltw:	mcltw.sh
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 #	m4 $(DEFS) < $< > $@; chmod +x $@
-EXE	+= $(HOME)/bin/mcltw
+EXE	+= $(BIN)/mcltw
 
-$(HOME)/bin/config-hfb.txt:	config-hfb.txt
+$(BIN)/config-hfb.txt:	config-hfb.txt
 	cp $< $@
-EXE	+= $(HOME)/bin/config-hfb.txt
+EXE	+= $(BIN)/config-hfb.txt
 
-$(HOME)/bin/config-lfb.txt:	config-lfb.txt
+$(BIN)/config-lfb.txt:	config-lfb.txt
 	cp $< $@
-EXE	+= $(HOME)/bin/config-lfb.txt
+EXE	+= $(BIN)/config-lfb.txt
 
-$(HOME)/bin/mccp:	mccp.sh
+$(BIN)/mccp:	mccp.sh
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 #	m4 $(DEFS) < $< > $@; chmod +x $@
-EXE	+= $(HOME)/bin/mccp
+EXE	+= $(BIN)/mccp
 
-$(HOME)/bin/vshow:	vshow.sh
+$(BIN)/vshow:	vshow.sh
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
-EXE	+= $(HOME)/bin/vshow
+EXE	+= $(BIN)/vshow
 
 $(BIN)/split:	split.cpp display.cpp
 	$(CC) $(CFLAGS) -D ANALYZE $< -o $@ -lm
