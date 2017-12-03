@@ -679,7 +679,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if(reuse_motion) exit(1);
+  if(reuse_motion) exit(0);
 
   FILE *imotion_fd; {
     imotion_fd = fopen(imotion_fn, "r");

@@ -60,10 +60,6 @@ class info_j2k(info):
     #  @return Size frame.
     #def sizeFrame_MCTF(self, bytes_frame_TM):
 
-
-
-
-
 ## Main function.
 def main():
 

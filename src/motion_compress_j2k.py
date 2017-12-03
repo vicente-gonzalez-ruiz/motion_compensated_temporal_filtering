@@ -133,13 +133,13 @@ for comp_number in range (0, COMPONENTS) :
                        + " -o "          + campoMov_name + ".j2c"
                        + " -no_weights"
                        + " Creversible=" + "yes" # "no" "yes" # Da igual como esté al usar el kernel descrito
-                       + " Sprecision="  + str(BITS_PER_COMPONENT)
-                       + " Ssigned="     + "yes"
+                       + " Nprecision="  + str(BITS_PER_COMPONENT)
+                       + " Nsigned="     + "yes"
                        + " Sdims='{'"    + str(blocks_in_y) + "," + str(blocks_in_x) + "'}'"
                        + " Clevels="     + str(dwt_levels)
                        + " Cuse_sop="    + "yes"
-                       + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"
                        , shell=True)
+                       # + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"
             # An alternative to compress the motion vectors:
             # kdu_compress -i mini_motion_4.rawl -o mini_motion_4.j2c
             # -no_weights Sprecision=16 Ssigned=yes Sdims='{'4,4'}'

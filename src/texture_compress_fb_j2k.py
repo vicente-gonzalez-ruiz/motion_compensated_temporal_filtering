@@ -27,7 +27,6 @@ from   subprocess  import check_call
 from   subprocess  import CalledProcessError
 from   MCTF_parser import MCTF_parser
 
-
 ## Refers to low frequency subbands.
 LOW  = "low"
 ## Refers to high frequency subbands.
@@ -55,7 +54,6 @@ SRLs          = 5
 ## Number of layers. Logarithm controls the quality level and the
 #  bit-rate of the code-stream.
 nLayers       = 5
-
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
@@ -89,12 +87,9 @@ if args.subband:
 if args.SRLs:
     SRLs = int(args.SRLs)
 
-
-
 #-------------
 #- FUNCTIONS -
 #-------------
-
 
 ## Weighing the components before compression. It is not necessary
 ## step, and is not performed by default. The code is useful for
@@ -140,9 +135,6 @@ def pondComp (image_filename) :
 
     os.rename(image_filename + "_multCOM", image_filename)
 
-
-
-
 ## Demultiplexing and encode components. Using Kakadu software.
 ## @param component Component type, encoded in the current iteration. It can be: Y, U or V.
 ## @param jump_demux Number of bytes of distance between the same component within the codestream.\n It is useful to locate all occurrences of a particular component and can demux components.
@@ -172,8 +164,7 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
         #shutil.copy (image_filename, image_filename + '.SINmult')
         #pondComp (image_filename)
 
-
-        # kakadu.
+        # Kakadu.
         # When compressing images with kdu_compress you have to use the
         # Cuse_sop = yes parameter. This makes the marker SOP (Start of
         # packet) before each packet included codestream.
@@ -187,8 +178,8 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
                            + " -o "          + image_filename + ".j2c"
                            + " Creversible=" + "no" # "no" "yes"
                            + " -no_weights"
-                           + " Sprecision="  + str(bits_per_component)
-                           + " Ssigned="     + "no"
+                           + " Nprecision="  + str(bits_per_component)
+                           + " Nsigned="     + "no"
                            + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
                            + " Clevels="     + str(Clevels)
                            + " Clayers="     + str(nLayers)
@@ -202,8 +193,8 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
                            + " Creversible=" + "no" # "no" "yes"
                            + " -slope "      + str(quantization)
                            + " -no_weights"
-                           + " Sprecision="  + str(bits_per_component)
-                           + " Ssigned="     + "no"
+                           + " Nprecision="  + str(bits_per_component)
+                           + " Nsigned="     + "no"
                            + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
                            + " Clevels="     + str(Clevels)
                            + " Clayers="     + str(nLayers)
@@ -215,9 +206,6 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
 
         image_number += 1
 
-
-
-
 #--------
 #- MAIN -
 #--------
@@ -226,10 +214,8 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
 check_call("echo file: " + str(file) + " subband: " + str(subband), shell=True)
 #raw_input("")
 
-
 ## Number of bits per component.
 bits_per_component = BYTES_PER_COMPONENT * 8
-
 
 ## Number of levels to be applied in the DWT, in compressing files by
 ## Kakadu.
@@ -252,8 +238,6 @@ V_size     = Y_size / 4
 ## Size of the components 'YUV' (measured in pixels).
 YUV_size   = Y_size + U_size + V_size
 
-
-
 # Copy only the required images.
 #-------------------------------
 try :
@@ -266,16 +250,11 @@ try :
 except CalledProcessError :
     sys.exit(-1)
 
-
 # Encoding each component accordingly.
 #-------------------------------------
 encode ('Y', " " + "0"                + " " + str(Y_size), Y_size, bits_per_component, pixels_in_x,   pixels_in_y)
 encode ('U', " " + str(Y_size)        + " " + str(U_size), U_size, bits_per_component, pixels_in_x/2, pixels_in_y/2)
 encode ('V', " " + str(Y_size+U_size) + " " + str(V_size), V_size, bits_per_component, pixels_in_x/2, pixels_in_y/2)
-
-
-
-
 ## Number of bytes used for the header of a file.
 
 #------------------------------------------------
@@ -286,8 +265,6 @@ def header (file_name) :
     p = sub.Popen("mcj2k header_size " + str(file_name) + " 2> /dev/null | grep OUT", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     out, err = p.communicate()
     return long(out[4:])
-
-
 
 # Compute file sizes.
 #--------------------

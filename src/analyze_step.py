@@ -17,6 +17,7 @@
 
 import sys
 import os
+import traceback
 from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
@@ -141,7 +142,8 @@ try :
                + " --search_range="      + str(search_range)
                + " --subpixel_accuracy=" + str(subpixel_accuracy)
                , shell=True)
-except CalledProcessError :
+except Exception:
+    print("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
     sys.exit(-1)
 
 

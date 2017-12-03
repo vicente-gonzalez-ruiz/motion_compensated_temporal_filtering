@@ -5,18 +5,7 @@
 # the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
 # sobre Internet" (P10-TIC-6548).
 
-## @file analyze.py
-#  Performs the temporal analysis of a picture sequence.
-#
-#  Apply the temporal transform and generates a series of files that will later be encoded.
-#  @author Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package analyze
-#  Performs the temporal analysis of a picture sequence.
-#
-#  Apply the temporal transform and generates a series of files that will later be encoded.
-
+# Performs the temporal analysis of a picture sequence. Generates a series of files that will later be encoded.
 
 import os
 import sys
@@ -24,39 +13,10 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
+from defaults import Defaults
 
-## Maximum search range.
-SEARCH_RANGE_MAX  = 128
-## Sets a spatial resolution. Here Full-HD.
-resolution_FHD    = 1920*1080
-## X dimension of a picture.
-pixels_in_x       = 352
-## Y dimension of a picture.
-pixels_in_y       = 288
-## Requires that all generated images are of type 'B'.
-always_B          = 0
-## Number of pixels of overlap between blocks.
-block_overlaping  = 0
-## Size of a block.
-block_size        = 32
-## Minimum size of a block.
-block_size_min    = 32
-## Border size or margin of a block.
-border_size       = 0
-## Number of Groups Of Pictures of the scene.
-GOPs              = 1
-## Search range for motion vectors.
-search_range      = 4
-## Sub-pixel accuracy in motion estimate.
-subpixel_accuracy = 0
-## Number of Temporal resolution Levels.
-TRLs              = 4
-## Level update. For example, a value equal to 1/4 means that the high-frequency subband is 4 times less important than the low-frequency subband.
-update_factor     = 0 # 1.0/4
-
-## The parser module provides an interface to Python's internal parser and byte-code compiler.
 parser = MCTF_parser(description="Performs the temporal analysis of a picture sequence.")
-parser.pixels_in_x(pixels_in_x)
+parser.pixels_in_x(Defaults.pixels_in_x)
 parser.pixels_in_y(pixels_in_y)
 parser.always_B(always_B)
 parser.block_overlaping(block_overlaping)
