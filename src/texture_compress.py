@@ -19,25 +19,10 @@ from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
 
-# Codec to be used for compression of texture.
 MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
-
-# High frequency subbands.
-HIGH                 = "high"
-
-# Low frequency subbands.
-LOW                  = "low"
-
-# Useful range of quantification (typical).
-range_quantization   = 46000.0 - 42000.0
-
-quantization         = "45000"
-## Number of Temporal Resolution Levels.
-TRLs                 = 4
-## Number of Spatia Resolution Levels.
-SRLs                 = 5
-## Calculates the quantifications from the gains or not. Default: gains. Anything else (example "nogains"), do not use the gains.
-using_gains          = "gains"
+HIGH                 = "high"            # High frequency subbands.
+LOW                  = "low"             # Low frequency subbands.
+range_quantization   = 46000.0 - 42000.0 # Useful range of quantification
 
 parser = MCTF_parser(description="Compress the texture.")
 args = parser.parse_known_args()[0]
@@ -58,9 +43,9 @@ parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
 
-parser.quantization()
-if args.quantization:
-    quantization = args.quantization
+parser.quantization_texture()
+if args.quantization_texture:
+    quantization = args.quantization_texture
 
 parser.quantization_step()
 if args.quantization_step:
@@ -77,7 +62,6 @@ if args.SRLs:
 parser.using_gains()
 if args.using_gains:
     using_gains = str(args.using_gains)
-
 
 # print "texture_compress.py ; Q= " + str(quantization)
 # raw_input("\ntexture_compress.py Press ENTER to continue ...")
@@ -159,15 +143,14 @@ temporal_subband = 1
 while temporal_subband < TRLs:
     pictures = (pictures + 1) / 2
     try:
-#       check_call("mctf texture_compress_hfb_" + MCTF_TEXTURE_CODEC # Para codigo antiguo. Ej: LTW
-        check_call("mctf texture_compress_fb_"  + MCTF_TEXTURE_CODEC # Para codigo nuevo. Ej: BRC, raices, multiplicaciones, ... # línea a modificar 1 de 1
-                   + " --file="                 + HIGH + "_" + str(temporal_subband)
+        check_call("mctf texture_compress_fb_"  + MCTF_TEXTURE_CODEC
+                   + " --file="                 + HIGH + "_" + str(subband)
                    + " --nLayers="              + str(nLayers)
                    + " --pictures="             + str(pictures - 1)
                    + " --pixels_in_x="          + str(pixels_in_x)
                    + " --pixels_in_y="          + str(pixels_in_y)
-                   + " --quantization=\""       + ','.join(map(str, SLOPES[TRLs-temporal_subband])) + "\""
-                   + " --temporal_subband="     + str(temporal_subband)
+                   + " --quantization=\""       + ','.join(map(str, SLOPES[TRLs-subband])) + "\""
+                   + " --temporal_subband="     + str(subband)
                    + " --SRLs="                 + str(SRLs)
                    , shell=True)
     except CalledProcessError:
@@ -176,7 +159,6 @@ while temporal_subband < TRLs:
     temporal_subband += 1
 
 # Compression of LOW frequency temporal subbands.
-#---------------------------------------
 try:
     check_call("mctf texture_compress_fb_"  + MCTF_TEXTURE_CODEC
                + " --file="                 + LOW + "_" + str(TRLs - 1)
@@ -185,7 +167,7 @@ try:
                + " --pixels_in_x="          + str(pixels_in_x)
                + " --pixels_in_y="          + str(pixels_in_y)
                + " --quantization=\""       + ','.join(map(str, SLOPES[0])) + "\""
-               + " --temporal_subband="     + str(temporal_subband)
+               + " --temporal_subband="     + str(subband)
                + " --SRLs="                 + str(SRLs)
                , shell=True)
 except:

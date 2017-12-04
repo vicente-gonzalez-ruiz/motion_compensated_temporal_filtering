@@ -130,15 +130,8 @@ class MCTF_parser(argparse.ArgumentParser):
         self.add_argument("--quantization_texture",
                           help="controls the quality level and the bit-rate "
                           "of the code-stream of textures. "
-                          "(Default = {})".format(Defaults.quantization_texture))
-
-    # Controls the quality level and the bit-rate of the code-stream.
-    def quantization(self):
-        self.add_argument("--quantization",
-                          help="controls the quality level and the bit-rate "
-                          "of the code-stream. "
-                          "(Default = {})".format(Defaults.quantization))
-
+                          "(Default = {})".format(Defaults.quantization_texture)
+                          
     # Controls the slopes for quality layers.
     def using_gains(self):
         self.add_argument("--using_gains",

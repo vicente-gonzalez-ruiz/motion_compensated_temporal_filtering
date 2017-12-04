@@ -1,16 +1,6 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-## @file texture_compress_fb_j2k.py
-#  Compress textures, using the codec J2K.
-#  The two main steps performed are:
-#  - Demultiplexing components (Y, U y V) and 
-#  - Encode components.
-#
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package texture_compress_fb_j2k
 #  Compress textures, using the codec J2K.
 #  The two main steps performed are:
 #  - Demultiplexing components (Y, U y V) and 
@@ -27,63 +17,50 @@ from   subprocess  import check_call
 from   subprocess  import CalledProcessError
 from   MCTF_parser import MCTF_parser
 
-## Refers to low frequency temporal_subbands.
-LOW  = "low"
-## Refers to high frequency temporal_subbands.
-HIGH = "high"
-## Number of components.
-COMPONENTS    = 3
+LOW         = "low"
+HIGH        = "high"
+COMPONENTS  = 3
+
 ## Number of bytes per component.
 #  - Use 1 byte for unweighted components.
 #  - Use 2 bytes for weighted components or that weighted.
-BYTES_PER_COMPONENT = 1 # 1 # 2
+BYTES_PER_COMPONENT = 1 # 2
+
 ## File that contains the textures.
-file          = ""
-## Number of images to process.
-pictures      = 33
-## Width of the pictures.
-pixels_in_x   = 352
-## Height of the pictures.
-pixels_in_y   = 288
-## Controls the quality level and the bit-rate of the code-stream.
-quantization  = 45000
-## Current temporal iteration.
-temporal_subband       = 0
-## Number of Spatial Resolution Levels.
-SRLs          = 5
-## Number of layers. Logarithm controls the quality level and the
-#  bit-rate of the code-stream.
-nLayers       = 5
+file = ""
 
-## The parser module provides an interface to Python's internal parser
-## and byte-code compiler.
 parser = MCTF_parser(description="Compress the LFB texture data using JPEG 2000.")
-parser.add_argument("--file",    help="file that contains the textures data. Default = {})".format(file))
-parser.add_argument("--nLayers", help="Number of layers. Logarithm controls the quality level and the bit-rate of the code-stream. (Default = {})".format(nLayers))
-parser.pictures(pictures)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.quantization(quantization)
-parser.temporal_subband(temporal_subband)
-parser.SRLs(SRLs)
-
-## A script may only parse a few of the command-line arguments,
-## passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
+
+parser.add_argument("--file",    help="file that contains the textures data. Default = {})".format(file))
 if args.file:
     file = args.file
+
+parser.nLayers()
 if args.nLayers:
     nLayers = args.nLayers
+
+parser.pictures(pictures)
 if args.pictures:
     pictures = int(args.pictures)
+
+parser.pixels_in_x(pixels_in_x)
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
+
+parser.pixels_in_y(pixels_in_y)
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
-if args.quantization:
-    quantization = str(args.quantization) # 'int' to 'str'
+
+parser.quantization_texture()
+if args.quantization_texture:
+    quantization = str(args.quantization_texture)
+
+parser.temporal_subband()
 if args.temporal_subband:
-    temporal_subband = int(args.temporal_subband)
+    subband = int(args.temporal_subband)
+
+parser.SRLs()
 if args.SRLs:
     SRLs = int(args.SRLs)
 
