@@ -20,7 +20,7 @@ MCTF = Motion Compensated Temporal Filtering
   
 ## Basic MCJ2K encoding/decoding:
 
-```
+  ```
   mkdir tmp
   cd tmp
   wget http://www.hpca.ual.es/~vruiz/videos/container_352x288x30x420x300.avi
@@ -38,6 +38,7 @@ MCTF = Motion Compensated Temporal Filtering
   ```
   
 ## Basic MJ2K encoding/decoding (157 Kbps):
+
   ```
   mkdir mj2k
   cd mj2k
@@ -54,6 +55,7 @@ MCTF = Motion Compensated Temporal Filtering
   ```
   
 ## Basic MCMJ2K encoding/decoding (154 Kbps):
+
   ```
   mkdir mcj2k
   cd mcj2k
@@ -70,6 +72,7 @@ MCTF = Motion Compensated Temporal Filtering
   ```
   
 ## How I can control the number of encoded frames?:
+
    ```
    :
    rm -f *motion*
@@ -79,6 +82,7 @@ MCTF = Motion Compensated Temporal Filtering
    ```
    
 ## How I can define the number of quality layers?:
+
    ```
    :
    mcj2k compress --quantizations="44000,43500,43000 # Higher slopes,
@@ -90,6 +94,7 @@ MCTF = Motion Compensated Temporal Filtering
    ```
    
 ## How I can specify the number of temporal resolution levels?:
+
    ```
    :
    rm -f *motion*
@@ -99,6 +104,7 @@ MCTF = Motion Compensated Temporal Filtering
    ```
    
 ## Basic MCJPG encoding/decoding:
+
    ```
    mkdir tmp
    cd tmp
@@ -115,6 +121,7 @@ MCTF = Motion Compensated Temporal Filtering
    ```
 
 ## How I can define the quality of the unique layer:
+
    ```
    :
    mcjpg compress --slopes="25" # Higher slope, worst quality
