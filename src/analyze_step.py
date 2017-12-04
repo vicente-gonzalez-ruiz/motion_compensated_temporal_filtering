@@ -39,15 +39,12 @@ subpixel_accuracy   = 0
 ## Level update. For example, a value equal to 1/4 means that the high-frequency subband is 4 times less important than the low-frequency subband.
 update_factor       = 0 # 1.0/4
 
-
-## The parser module provides an interface to Python's internal parser and byte-code compiler.
 parser = arguments_parser(description="Performs a temporal analysis step.")
-parser.pictures(pictures)
-parser.search_range(search_range)
-parser.subpixel_accuracy(subpixel_accuracy)
-parser.update_factor(update_factor)
+parser.pictures()
+parser.search_range()
+parser.subpixel_accuracy()
+parser.update_factor()
 
-## A script may only parse a few of the command-line arguments, passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
 
 parser.pixels_in_x()

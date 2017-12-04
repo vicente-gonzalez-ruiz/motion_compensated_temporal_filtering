@@ -76,17 +76,25 @@ parser.using_gains()
 
 args = parser.parse_known_args()[0]
 
-if args.pixels_in_x:
-    pixels_in_x = int(args.pixels_in_x)
-
-if args.pixels_in_y:
-    pixels_in_y = int(args.pixels_in_y)
-
-if args.always_B:
-    always_B = int(args.always_B)
-
-if args.block_overlaping:
-    block_overlaping = int(args.block_overlaping)
+always_B = int(args.always_B)
+block_overlaping = int(args.block_overlaping)
+block_size = int(args.block_size)
+block_size_min = int(args.block_size_min)
+border_size = int(args.border_size)
+GOPs = int(args.GOPs)
+motion_layers = str(args.motion_layers)
+pixels_in_x = int(args.pixels_in_x)
+pixels_in_y = int(args.pixels_in_y)
+quantization_step = args.quantization_step
+quantization_motion = str(args.quantization_motion)
+quantization_texture = str(args.quantization_texture)
+search_range = int(args.search_range)
+subpixel_accuracy = int(args.subpixel_accuracy)
+TRLs = int(args.TRLs)
+SRLs = int(args.SRLs)
+texture_layers = int(args.texture_layers)
+update_factor = float(args.update_factor)
+using_gains = str(args.using_gains)
 
 # Default block_size as pixels_in_xy
 resolution_FHD = 1920 * 1080
@@ -94,51 +102,6 @@ if pixels_in_x * pixels_in_y < resolution_FHD:
     block_size = block_size_min = 32
 else:
     block_size = block_size_min = 64
-
-if args.block_size:
-    block_size = int(args.block_size)
-
-if args.block_size_min:
-    block_size_min = int(args.block_size_min)
-    
-if args.border_size:
-    border_size = int(args.border_size)
-
-if args.GOPs:
-    GOPs = int(args.GOPs)
-
-if args.motion_layers:
-    motion_layers = str(args.motion_layers)
-
-if args.quantization_step:
-    quantization_step = args.quantization_step
-
-if args.quantization_motion:
-    quantization_motion = str(args.quantization_motion)
-
-if args.quantization_texture:
-    quantization_texture = str(args.quantization_texture)
-
-if args.search_range:
-    search_range = int(args.search_range)
-
-if args.subpixel_accuracy:
-    subpixel_accuracy = int(args.subpixel_accuracy)
-
-if args.TRLs:
-    TRLs = int(args.TRLs)
-
-if args.SRLs:
-    SRLs = int(args.SRLs)
-
-if args.texture_layers:
-    texture_layers = int(args.texture_layers)
-
-if args.update_factor:
-    update_factor = float(args.update_factor)
-
-if args.using_gains:
-    using_gains = str(args.using_gains)
 
 if TRLs > 1:
     try:
