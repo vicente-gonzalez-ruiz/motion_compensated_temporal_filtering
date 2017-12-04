@@ -138,7 +138,10 @@ $(BIN)/display.py:	display.py
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 EXE += $(BIN)/display.py
 
-$(BIN)/arguments_parser.py:	arguments_parser.py
+$(BIN)/defaults.py:	defaults.py
+EXE += $(BIN)/defaults.py
+
+$(BIN)/arguments_parser.py:	arguments_parser.py $(BIN)/defaults.py
 EXE += $(BIN)/arguments_parser.py
 
 $(BIN)/analyze_step:	analyze_step.py

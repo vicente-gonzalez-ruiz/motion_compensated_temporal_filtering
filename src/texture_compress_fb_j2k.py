@@ -15,7 +15,7 @@ import struct
 import subprocess  as     sub
 from   subprocess  import check_call
 from   subprocess  import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 LOW         = "low"
 HIGH        = "high"
@@ -30,37 +30,38 @@ BYTES_PER_COMPONENT = 1 # 2
 file = ""
 
 parser = arguments_parser(description="Compress the LFB texture data using JPEG 2000.")
+parser.add_argument("--file",    help="file that contains the textures data. Default = {})".format(file))
+parser.texture_layers()
+parser.pictures()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.quantization_texture()
+parser.temporal_subband()
+parser.SRLs()
+
 args = parser.parse_known_args()[0]
 
-parser.add_argument("--file",    help="file that contains the textures data. Default = {})".format(file))
 if args.file:
     file = args.file
 
-parser.nLayers()
-if args.nLayers:
-    nLayers = args.nLayers
+if args.texture_layers:
+    layers = args.texture_layers
 
-parser.pictures(pictures)
 if args.pictures:
     pictures = int(args.pictures)
 
-parser.pixels_in_x(pixels_in_x)
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
 
-parser.pixels_in_y(pixels_in_y)
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
 
-parser.quantization_texture()
 if args.quantization_texture:
     quantization = str(args.quantization_texture)
 
-parser.temporal_subband()
 if args.temporal_subband:
     subband = int(args.temporal_subband)
 
-parser.SRLs()
 if args.SRLs:
     SRLs = int(args.SRLs)
 
@@ -159,7 +160,7 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
                            + " Nsigned="     + "no"
                            + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
                            + " Clevels="     + str(Clevels)
-                           + " Clayers="     + str(nLayers)
+                           + " Clayers="     + str(layers)
                            + " Cuse_sop="    + "yes"
                            , shell=True)
 	    else :
@@ -174,7 +175,7 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
                            + " Nsigned="     + "no"
                            + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
                            + " Clevels="     + str(Clevels)
-                           + " Clayers="     + str(nLayers)
+                           + " Clayers="     + str(layers)
                            + " Cuse_sop="    + "yes"
                            , shell=True)
 

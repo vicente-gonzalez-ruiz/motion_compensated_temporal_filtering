@@ -23,26 +23,30 @@ import sys
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 #MOTION_CODER_NAME = "gzip"
 #MOTION_CODER_NAME = "kdu_v_compress"
 MCTF_MOTION_CODEC  = os.environ["MCTF_MOTION_CODEC"]
 
 parser = arguments_parser(description="Compress the motion data.")
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.block_size()
+parser.block_size_min()
+parser.GOPs()
+parser.motion_layers()
+parser.motion_quantization()
+parser.TRLs()
 
 args = parser.parse_known_args()[0]
 
-parser.pixels_in_x()
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
 
-parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
 
-parser.block_size()
-parser.block_size_min()
 if pixels_in_x * pixels_in_y < resolution_FHD:
     block_size = block_size_min = 32
 else:
@@ -50,24 +54,22 @@ else:
 
 if args.block_size:
     block_size = int(args.block_size)
+
 if block_size < block_size_min:
     block_size_min = block_size
+
 if args.block_size_min:
     block_size_min = int(args.block_size_min)
 
-parser.GOPs()
 if args.GOPs:
     GOPs = int(args.GOPs)
 
-parser.motion_layers()
 if args.motion_layers:
     layers = str(args.motion_layers)
 
-parser.motion_quantization()
 if args.motion_quantization:
     quantization = str(args.motion_quantization)
 
-parser.TRLs()
 if args.TRLs:
     TRLs = int(args.TRLs)
 

@@ -30,7 +30,7 @@
 #  mcj2k compress --quantization=45000
 #
 #  - Example of use.\n 
-#  compress --update_factor=0 --nLayers=16
+#  compress --update_factor=0 --texture_layers=16
 #  --quantization_texture=42000 --GOPs=10 --TRLs=5 --SRLs=5
 #  --block_size=32 --block_size_min=32 --search_range=4
 #  --pixels_in_x=352 --pixels_in_y=288
@@ -51,89 +51,92 @@ import string
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 parser = arguments_parser(description="Encodes a sequence of pictures.")
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.always_B()
+parser.block_overlaping()
+parser.block_size()
+parser.block_size_min()
+parser.border_size()
+parser.GOPs()
+parser.motion_layers()
+parser.quantization_step()
+parser.quantization_motion()
+parser.quantization_texture()
+parser.search_range()
+parser.subpixel_accuracy()
+parser.TRLs()
+parser.SRLs()
+parser.texture_layers()
+parser.update_factor()
+parser.using_gains()
+
 args = parser.parse_known_args()[0]
 
-parser.pixels_in_x()
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
 
-parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
 
-parser.always_B()
 if args.always_B:
     always_B = int(args.always_B)
 
-parser.block_overlaping()
 if args.block_overlaping:
     block_overlaping = int(args.block_overlaping)
 
 # Default block_size as pixels_in_xy
 resolution_FHD = 1920 * 1080
-parser.block_size()
-parser.block_size_min()
 if pixels_in_x * pixels_in_y < resolution_FHD:
     block_size = block_size_min = 32
 else:
     block_size = block_size_min = 64
+
 if args.block_size:
     block_size = int(args.block_size)
+
 if args.block_size_min:
     block_size_min = int(args.block_size_min)
     
-parser.border_size()
 if args.border_size:
     border_size = int(args.border_size)
 
-parser.GOPs()
 if args.GOPs:
     GOPs = int(args.GOPs)
 
-parser.clayers_motion()
-if args.clayers_motion:
-    clayers_motion = str(args.clayers_motion)
+if args.motion_layers:
+    motion_layers = str(args.motion_layers)
 
-parser.quantization_step()
 if args.quantization_step:
     quantization_step = args.quantization_step
 
-parser.quantization_motion()
 if args.quantization_motion:
     quantization_motion = str(args.quantization_motion)
 
-parser.quantization_texture()
 if args.quantization_texture:
     quantization_texture = str(args.quantization_texture)
 
-parser.search_range()
 if args.search_range:
     search_range = int(args.search_range)
 
-parser.subpixel_accuracy()
 if args.subpixel_accuracy:
     subpixel_accuracy = int(args.subpixel_accuracy)
 
-parser.TRLs()
 if args.TRLs:
     TRLs = int(args.TRLs)
 
-parser.SRLs()
 if args.SRLs:
     SRLs = int(args.SRLs)
 
-parser.nLayers()
-if args.nLayers:
-    nLayers = int(args.nLayers)
+if args.texture_layers:
+    texture_layers = int(args.texture_layers)
 
-parser.update_factor()
 if args.update_factor:
     update_factor = float(args.update_factor)
 
-parser.using_gains()
 if args.using_gains:
     using_gains = str(args.using_gains)
 
@@ -166,7 +169,7 @@ if TRLs > 1:
                    + " --pixels_in_x="    + str(pixels_in_x)
                    + " --pixels_in_y="    + str(pixels_in_y)
                    + " --quantization=\"" + str(quantization_motion) + "\""
-                   + " --clayers=\""      + str(clayers_motion) + "\""
+                   + " --motion_layers=\""+ str(motion_layers) + "\""
                    + " --SRLs="           + str(SRLs)
                    + " --TRLs="           + str(TRLs)
                    , shell=True)
@@ -183,7 +186,7 @@ try:
                + " --quantization_step="   + str(quantization_step)
                + " --SRLs="                + str(SRLs)
                + " --TRLs="                + str(TRLs)
-               + " --nLayers="             + str(nLayers)
+               + " --texture_layers="      + str(texture_layers)
                + " --using_gains="         + str(using_gains)
                , shell=True)
 except CalledProcessError:

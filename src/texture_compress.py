@@ -17,7 +17,7 @@ import math
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
 HIGH                 = "high"            # High frequency subbands.
@@ -25,41 +25,42 @@ LOW                  = "low"             # Low frequency subbands.
 range_quantization   = 46000.0 - 42000.0 # Useful range of quantification
 
 parser = arguments_parser(description="Compress the texture.")
+parser.GOPs()
+parser.texture_layers()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.quantization_texture()
+parser.quantization_step()
+parser.TRLs()
+parser.SRLs()
+parser.using_gains()
+
 args = parser.parse_known_args()[0]
 
-parser.GOPs()
 if args.GOPs:
     GOPs = int(args.GOPs)
 
-parser.nLayers()
-if args.nLayers:
-    nLayers = int(args.nLayers)
+if args.texture_layers:
+    layers = int(args.texture_layers)
 
-parser.pixels_in_x()
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
 
-parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
 
-parser.quantization_texture()
 if args.quantization_texture:
     quantization = args.quantization_texture
 
-parser.quantization_step()
 if args.quantization_step:
     quantization_step = int(args.quantization_step)
 
-parser.TRLs()
 if args.TRLs:
     TRLs = int(args.TRLs)
 
-parser.SRLs()
 if args.SRLs:
     SRLs = int(args.SRLs)
 
-parser.using_gains()
 if args.using_gains:
     using_gains = str(args.using_gains)
 
@@ -99,8 +100,8 @@ quantization_step_subband = 256 / math.sqrt(2)
 ## quantization_step is specified by parameter, one proportional to
 ## the number of layers and the useful range of quantification is
 ## used.
-if quantization_step == 0 and nLayers > 1 :
-    quantization_step = int(round( range_quantization / (nLayers-1) ))
+if quantization_step == 0 and layers > 1 :
+    quantization_step = int(round( range_quantization / (layers-1) ))
 
 # Slopes for layers
 if using_gains == "automatic_kakadu" :
@@ -128,7 +129,7 @@ else :
     # different slope accord to first slope layer AND
     # range_quantization
     for sub in range (0, TRLs) :
-        for layer in range (0, nLayers-1) :
+        for layer in range (0, layers-1) :
             SLOPES[sub].append(int(round( SLOPES[sub][layer] + quantization_step )))
             
 ## Stored in a file the slopes used for compression.
@@ -145,7 +146,7 @@ while temporal_subband < TRLs:
     try:
         check_call("mctf texture_compress_fb_"  + MCTF_TEXTURE_CODEC
                    + " --file="                 + HIGH + "_" + str(subband)
-                   + " --nLayers="              + str(nLayers)
+                   + " --texture_layers="       + str(layers)
                    + " --pictures="             + str(pictures - 1)
                    + " --pixels_in_x="          + str(pixels_in_x)
                    + " --pixels_in_y="          + str(pixels_in_y)
@@ -162,7 +163,7 @@ while temporal_subband < TRLs:
 try:
     check_call("mctf texture_compress_fb_"  + MCTF_TEXTURE_CODEC
                + " --file="                 + LOW + "_" + str(TRLs - 1)
-               + " --nLayers="              + str(nLayers)
+               + " --texture_layers="       + str(layers)
                + " --pictures="             + str(pictures)
                + " --pixels_in_x="          + str(pixels_in_x)
                + " --pixels_in_y="          + str(pixels_in_y)

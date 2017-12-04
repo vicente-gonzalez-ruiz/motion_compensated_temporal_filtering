@@ -12,60 +12,63 @@ import sys
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 parser = arguments_parser(description="Temporal analysis of a picture sequence.")
+parser.always_B()
+parser.block_overlaping()
+parser.block_size()
+parser.block_size_min()
+parser.border_size()
+parser.GOPs(GOPs)
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.search_range()
+parser.subpixel_accuracy()
+parser.TRLs()
+parser.update_factor()
+
 args = parser.parse_known_args()[0]
 
-parser.always_B()
 if args.always_B:
     always_B = int(args.always_B)
 
-parser.block_overlaping()
 if args.block_overlaping:
     block_overlaping = int(args.block_overlaping)
 
 resolution_FHD = 1920 * 1080
-parser.block_size()
-parser.block_size_min(
 if pixels_in_x * pixels_in_y < resolution_FHD:
     block_size = block_size_min = 32
 else:
     block_size = block_size_min = 64
+
 if args.block_size:
     block_size = int(args.block_size)
+
 if args.block_size_min:
     block_size_min = int(args.block_size_min)
 
-parser.border_size(
 if args.border_size:
     border_size = int(args.border_size)
 
-parser.GOPs(GOPs)
 if args.GOPs:
     GOPs = int(args.GOPs)
 
-parser.pixels_in_x()
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
 
-parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
 
-parser.search_range()
 if args.search_range:
     search_range = int(args.search_range)
 
-parser.subpixel_accuracy()
 if args.subpixel_accuracy:
     subpixel_accuracy = int(args.subpixel_accuracy)
 
-parser.TRLs()
 if args.TRLs:
     TRLs = int(args.TRLs)
 
-parser.update_factor()
 if args.update_factor:
     update_factor = float(args.update_factor)
 

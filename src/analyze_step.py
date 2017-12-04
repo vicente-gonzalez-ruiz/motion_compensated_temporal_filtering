@@ -12,7 +12,7 @@ import os
 import traceback
 from subprocess import check_call
 from subprocess import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 ## Y dimension of a picture.
 pixels_in_y         = 288

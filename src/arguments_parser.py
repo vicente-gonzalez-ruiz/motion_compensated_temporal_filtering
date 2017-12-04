@@ -57,13 +57,13 @@ class arguments_parser(argparse.ArgumentParser):
                           "(Default = {})".format(Defaults.pictures))
 
     # Width of the pictures.
-    def pixels_in_x(self, pixels_in_x):
+    def pixels_in_x(self):
         self.add_argument("--pixels_in_x",
                           help="width of the pictures. "
                           "(Default = {})".format(Defaults.pixels_in_x))
 
     # Height of the pictures.
-    def pixels_in_y(self, pixels_in_y):
+    def pixels_in_y(self):
         self.add_argument("--pixels_in_y",
                           help="height of the pictures. "
                           "(Default = {})".format(Defaults.pixels_in_y))
@@ -124,7 +124,7 @@ class arguments_parser(argparse.ArgumentParser):
         self.add_argument("--quantization_texture",
                           help="controls the quality level and the bit-rate "
                           "of the code-stream of textures. "
-                          "(Default = {})".format(Defaults.quantization_texture)
+                          "(Default = {})".format(Defaults.quantization_texture))
                           
     # Controls the slopes for quality layers.
     def using_gains(self):
