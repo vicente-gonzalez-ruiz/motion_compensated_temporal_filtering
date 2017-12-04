@@ -1,7 +1,6 @@
-#!/usr/bin/python
+çççç#!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-## @file motion_compress.py
 #  Compresses data movement.
 #
 #  Motion fields are compressed without loss, generating a separate
@@ -18,29 +17,6 @@
 #  corresponding component forward should be worth "x".
 #
 #  Finally a reversible entropy coder that compresses the wastes used.
-#
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package motion_compress
-#  Compresses data movement.
-#
-#  Motion fields are compressed without loss, generating a separate
-#  file for each level of temporal resolution and a different stream
-#  for each GOP. Compression is done thinking about how the
-#  decompressor will perform decompression.
-#
-#  Removed: the temporal redundancy between bands and bidirectional
-#  redundancy.\n
-#  - The first states that, if the sub-band "i+1" one component of a
-#  vector vale "2x" in the sub-band "i" that component of the vector
-#  should be worth "x".  
-#  - The second is that, if a component back better "-x", the 
-#  corresponding component forward should be worth "x".
-#
-#  Finally a reversible entropy coder that compresses the wastes used.
-
-
 
 import os
 import sys
@@ -49,17 +25,10 @@ from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
 
-
 #MOTION_CODER_NAME = "gzip"
 #MOTION_CODER_NAME = "kdu_v_compress"
-## Refers to the codec to be used for compression of motion information.
 MCTF_MOTION_CODEC  = os.environ["MCTF_MOTION_CODEC"]
-## Refers to Full-HD resolution. Is used as a boundary between the use of a block size of 16 or 32 by default.
-resolution_FHD     = 1920 * 1080
-## Width of the pictures.
-pixels_in_x    = 352
-## Height of the pictures.
-pixels_in_y    = 288
+
 ## Size of the blocks in the motion estimation process.
 block_size     = 32
 ## Minimal block size allowed in the motion estimation process.
@@ -76,24 +45,21 @@ clayers        = "1"
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
 parser = MCTF_parser(description="Compress the motion data.")
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.block_size(block_size)
-parser.block_size_min(block_size_min)
-parser.GOPs(GOPs)
 parser.TRLs(TRLs)
 parser.quantization(quantization)
-parser.clayers(clayers)
 
-## A script may only parse a few of the command-line arguments,
-## passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
+
+parser.pixels_in_x()
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
+
+parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
 
-# Default block_size as pixels_in_xy
+parser.block_size()
+parser.block_size_min()
 if pixels_in_x * pixels_in_y < resolution_FHD:
     block_size = block_size_min = 32
 else:
@@ -104,8 +70,11 @@ if args.block_size:
 if args.block_size_min:
     block_size_min = int(args.block_size_min)
 
+parser.GOPs()
 if args.GOPs:
     GOPs = int(args.GOPs)
+
+parser.clayers(clayers)
 if args.clayers:
     clayers = str(args.clayers) # 'int' to 'str'
 if args.quantization:

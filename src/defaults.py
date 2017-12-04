@@ -18,7 +18,6 @@ class Defaults():
     block_size_min       = 32          ## Minimal block size allowed in the motion estimation process.
     border_size          = 0           ## Size of the border of the blocks in the motion estimation process.
     GOPs                 = 1           ## Number of Group Of Pictures to process (apart from GOP 0).
-    clayers_motion       = 0           ## Logarithm controls the quality level and the bit-rate of the code-stream of motions.
     quantization_step    = 0           ## Distance in the quantization step, between quality layers in the same subband. (Kakadu uses 256 by default).
     quantization_motion  = 45000       ## Controls the quality level and the bit-rate of the code-stream of motions.
     quantization_texture = 45000       ## Controls the quality level and the bit-rate of the code-stream of textures.
@@ -26,6 +25,7 @@ class Defaults():
     subpixel_accuracy    = 0           ## Subpixel motion estimation order.
     TRLs                 = 4           ## Number of Temporal Resolution Levels.
     SRLs                 = 5           ## Number of Spatial Resolution Levels.
-    nLayers              = 8           ## Number of layers. Logarithm controls the quality level and the bit-rate of the code-stream.
+    texture_layers       = 8           ## Number of layers. Logarithm controls the quality level and the bit-rate of the code-stream.
+    motion_layers        = 1           ## Logarithm controls the quality level and the bit-rate of the code-stream of motions.
     update_factor        = 0 # 1.0/4       ## Weight of the update step.
     using_gains          = "gains"     ## Calculates the quantifications from the gains or not. Default: gains. Anything else (example "nogains"), do not use the gains.

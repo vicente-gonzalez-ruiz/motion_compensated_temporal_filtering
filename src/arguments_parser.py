@@ -70,27 +70,21 @@ class MCTF_parser(argparse.ArgumentParser):
 
     # Logarithm controls the quality level and the bit-rate of the
     # code-stream of motions.
-    def clayers_motion(self):
-        self.add_argument("--clayers_motion",
-                          help="logarithm controls the quality level and "
+    def motion_layers(self):
+        self.add_argument("--motion_layers",
+                          help="Number of quality layers for motion. "
+                          "Logarithm controls the quality level and "
                           "the bit-rate of the code-stream of motions. "
                           "(Default = {})".format(Defaults.clayers_motion))
 
     # Logarithm controls the quality level and the bit-rate of the
     # code-stream.
-    def clayers(self):
-        self.add_argument("--clayers",
-                          help="logarithm controls the quality level and "
-                          "the bit-rate of the code-stream. "
-                          "(Default = {})".format(Defaults.clayers))
-
-    # Logarithm controls the quality level and the bit-rate of the
-    # code-stream.
-    def nLayers(self):
-        self.add_argument("--nLayers",
-                          help="Number of layers. Logarithm controls the "
+    def texture_layers(self):
+        self.add_argument("--texture_layers",
+                          help="Number of quality layers for texture. "
+                          "Logarithm controls the "
                           "quality level and the bit-rate of the code-stream. "
-                          "(Default = {})".format(Defaults.nLayers))
+                          "(Default = {})".format(Defaults.texxture_layers))
 
     # Bit-Rate control.
     def BRC(self):
