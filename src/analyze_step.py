@@ -5,14 +5,6 @@
 # the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
 # sobre Internet" (P10-TIC-6548).
 
-## @file analyze_step.py
-#  Performs a temporal analysis step.
-#  @authors Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package analyze_step
-#  Performs a temporal analysis step.
-#
 #  Iteration of the temporal transform.
 
 import sys
@@ -22,17 +14,6 @@ from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
 
-## Number of components of a motion field.
-COMPONENTS      = 4
-## Number of bytes for each component.
-BYTES_COMPONENT = 2
-## Number of bytes of a motion field.
-BYTES_VM        = COMPONENTS * BYTES_COMPONENT
-## Sets a spatial resolution. Here Full-HD.
-resolution_FHD  = 1920 * 1080
-
-## X dimension of a picture.
-pixels_in_x         = 352
 ## Y dimension of a picture.
 pixels_in_y         = 288
 ## Number of Groups Of Pictures of the scene.
@@ -61,15 +42,6 @@ update_factor       = 0 # 1.0/4
 
 ## The parser module provides an interface to Python's internal parser and byte-code compiler.
 parser = MCTF_parser(description="Performs a temporal analysis step.")
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.GOPs(GOPs)
-parser.TRLs(TRLs)
-parser.add_argument("--temporal_subband", help="iteration of the temporal transform.".format(temporal_subband))
-parser.always_B(always_B)
-parser.block_overlaping(block_overlaping)
-parser.block_size(block_size)
-parser.border_size(border_size)
 parser.pictures(pictures)
 parser.search_range(search_range)
 parser.subpixel_accuracy(subpixel_accuracy)
@@ -77,32 +49,49 @@ parser.update_factor(update_factor)
 
 ## A script may only parse a few of the command-line arguments, passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
+
+parser.pixels_in_x()
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
+
+parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
+
+parser.GOPs()
 if args.GOPs:
     GOPs = int(args.GOPs)
+
+parser.TRLs()
 if args.TRLs:
     TRLs = int(args.TRLs)
+
+parser.temporal_subband()
 if args.temporal_subband:
     temporal_subband = int(args.temporal_subband)
+
+parser.always_B()
 if args.always_B:
     always_B = int(args.always_B)
+
+parser.block_overlaping(block_overlaping)
 if args.block_overlaping:
     block_overlaping = int(args.block_overlaping)
 
-# Default block_size según pixels_in_xy
+resolution_FHD = 1920 * 1080
+parser.block_size()
+parser.border_size()
 if pixels_in_x * pixels_in_y < resolution_FHD:
     block_size = 32
 else:
     block_size = 64
-
 if args.block_size:
     block_size = int(args.block_size)
-    
+
+parser.border_size()
 if args.border_size:
     border_size = int(args.border_size)
+
 if args.pictures:
     pictures = int(args.pictures)
 if args.search_range:
@@ -111,7 +100,6 @@ if args.subpixel_accuracy:
     subpixel_accuracy = int(args.subpixel_accuracy)
 if args.update_factor:
     update_factor = float(args.update_factor)
-
 
 try :
     # Lazzy transform.
@@ -125,7 +113,6 @@ try :
                , shell=True)
 except CalledProcessError :
     sys.exit(-1)
-
 
 try :
     # Motion estimation.
@@ -146,12 +133,16 @@ except Exception:
     print("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
     sys.exit(-1)
 
-
-
-
 ## Additional code for research work. Expressed as a percentage of the amount of motion vectors that do not indicate a linear motion between frames.
 def amount_motion () :
 
+    ## Number of components of a motion field.
+    COMPONENTS      = 4
+    ## Number of bytes for each component.
+    BYTES_COMPONENT = 2
+    ## Number of bytes of a motion field.
+    BYTES_VM        = COMPONENTS * BYTES_COMPONENT
+    
     # Motion vectors file.
     f_motion = open ("motion_" + str(temporal_subband), 'r')
     # f_image  = open ("motion_" + str(temporal_subband) + "_importance_image", 'w')
@@ -190,8 +181,6 @@ def amount_motion () :
 
 # Call amount_motion
 # amount_motion()
-
-
 
 try :
     # Motion Compensation.

@@ -170,27 +170,25 @@ class MCTF_parser(argparse.ArgumentParser):
                           help="number of Spatial Resolution Levels. "
                           "(Default = {})".format(Defaults.SRLs))
 
-    # Number of subband.
-    def subband(self):
-        self.add_argument("--subband",
-                          help="number of subband. "
-                          "(Default = {})".format(Defaults.subband))
+    def temporal_subband(self):
+        self.add_argument("--temporal_subband",
+                          help="number of the temporal subband. "
+                          "(Default = {})".format(0))
 
-    # Weight of the update step.
     def update_factor(self):
         self.add_argument("--update_factor",
                           help="weight of the update step. "
                           "(Default = {})".format(Defaults.update_factor))
 
-    # Frames per second.
     def FPS(self):
         self.add_argument("--FPS",
                           help="frames per second. "
                           "(Default = {})".format(Defaults.FPS))
 
-    # Number of Group Of Pictures to process.
     def distortions(self):
         self.add_argument("--distortions",
                           help="Path file which in each line there a "
                           "distortion (PSNR) per frame. "
                           "(Default = {})".format(Defaults.distortions))
+
+    

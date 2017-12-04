@@ -19,7 +19,7 @@ class Defaults():
     border_size          = 0           ## Size of the border of the blocks in the motion estimation process.
     GOPs                 = 1           ## Number of Group Of Pictures to process (apart from GOP 0).
     clayers_motion       = 0           ## Logarithm controls the quality level and the bit-rate of the code-stream of motions.
-    quantization_step    = 0           ## Distance in the quantization step, between quality layers in the same subband. (Kakadu use by default 256).
+    quantization_step    = 0           ## Distance in the quantization step, between quality layers in the same subband. (Kakadu uses 256 by default).
     quantization_motion  = 45000       ## Controls the quality level and the bit-rate of the code-stream of motions.
     quantization_texture = 45000       ## Controls the quality level and the bit-rate of the code-stream of textures.
     search_range         = 4           ## Size of the search areas in the motion estimation process.

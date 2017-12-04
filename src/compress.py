@@ -73,6 +73,7 @@ if args.block_overlaping:
     block_overlaping = int(args.block_overlaping)
 
 # Default block_size as pixels_in_xy
+resolution_FHD = 1920 * 1080
 parser.block_size()
 parser.block_size_min()
 if pixels_in_x * pixels_in_y < resolution_FHD:

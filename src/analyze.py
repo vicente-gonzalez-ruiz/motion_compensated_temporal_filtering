@@ -13,54 +13,59 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
-from defaults import Defaults
 
-parser = MCTF_parser(description="Performs the temporal analysis of a picture sequence.")
-parser.pixels_in_x(Defaults.pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.always_B(always_B)
-parser.block_overlaping(block_overlaping)
-parser.block_size(block_size)
-parser.block_size_min(block_size_min)
-parser.border_size(border_size)
-parser.GOPs(GOPs)
-parser.search_range(search_range)
-parser.subpixel_accuracy(subpixel_accuracy)
-parser.TRLs(TRLs)
-parser.update_factor(update_factor)
-
-## A script may only parse a few of the command-line arguments, passing the remaining arguments on to another script or program.
+parser = MCTF_parser(description="Temporal analysis of a picture sequence.")
 args = parser.parse_known_args()[0]
+
+parser.always_B()
 if args.always_B:
     always_B = int(args.always_B)
+
+parser.block_overlaping()
 if args.block_overlaping:
     block_overlaping = int(args.block_overlaping)
 
-# Default block_size según pixels_in_xy
+resolution_FHD = 1920 * 1080
+parser.block_size()
+parser.block_size_min(
 if pixels_in_x * pixels_in_y < resolution_FHD:
     block_size = block_size_min = 32
 else:
     block_size = block_size_min = 64
-
 if args.block_size:
     block_size = int(args.block_size)
 if args.block_size_min:
     block_size_min = int(args.block_size_min)
 
+parser.border_size(
 if args.border_size:
     border_size = int(args.border_size)
+
+parser.GOPs(GOPs)
 if args.GOPs:
     GOPs = int(args.GOPs)
+
+parser.pixels_in_x()
 if args.pixels_in_x:
     pixels_in_x = int(args.pixels_in_x)
+
+parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = int(args.pixels_in_y)
+
+parser.search_range()
 if args.search_range:
     search_range = int(args.search_range)
+
+parser.subpixel_accuracy()
 if args.subpixel_accuracy:
     subpixel_accuracy = int(args.subpixel_accuracy)
+
+parser.TRLs()
 if args.TRLs:
     TRLs = int(args.TRLs)
+
+parser.update_factor()
 if args.update_factor:
     update_factor = float(args.update_factor)
 
