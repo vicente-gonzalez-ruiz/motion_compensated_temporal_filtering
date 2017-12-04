@@ -8,7 +8,7 @@
 import argparse
 import defaults as Defaults
 
-class MCTF_parser(argparse.ArgumentParser):
+class arguments_parser(argparse.ArgumentParser):
 
     # Forces to use only B frames.
     def always_B(self):

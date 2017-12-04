@@ -12,9 +12,9 @@ import sys
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
-parser = MCTF_parser(description="Temporal analysis of a picture sequence.")
+parser = arguments_parser(description="Temporal analysis of a picture sequence.")
 args = parser.parse_known_args()[0]
 
 parser.always_B()

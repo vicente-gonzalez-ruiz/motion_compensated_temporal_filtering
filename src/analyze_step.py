@@ -12,7 +12,7 @@ import os
 import traceback
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 ## Y dimension of a picture.
 pixels_in_y         = 288
@@ -41,7 +41,7 @@ update_factor       = 0 # 1.0/4
 
 
 ## The parser module provides an interface to Python's internal parser and byte-code compiler.
-parser = MCTF_parser(description="Performs a temporal analysis step.")
+parser = arguments_parser(description="Performs a temporal analysis step.")
 parser.pictures(pictures)
 parser.search_range(search_range)
 parser.subpixel_accuracy(subpixel_accuracy)

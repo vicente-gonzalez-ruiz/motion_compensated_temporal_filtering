@@ -27,7 +27,7 @@ import os
 import sys
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 
 ## Number of components.
@@ -49,7 +49,7 @@ file        = ""
 
 ## The parser module provides an interface to Python's internal parser
 #  and byte-code compiler.
-parser = MCTF_parser(description="Expands the motion data using JPEG 2000.")
+parser = arguments_parser(description="Expands the motion data using JPEG 2000.")
 #parser.add_argument("--discard_levels", help="number of discard level. (Default = {})".format(discard_levels))
 parser.add_argument("--blocks_in_x",     help="number of blocks in the X direction. (Default = {})".format(blocks_in_x))
 parser.add_argument("--blocks_in_y",     help="number of blocks in the Y direction. (Default = {})".format(blocks_in_y))

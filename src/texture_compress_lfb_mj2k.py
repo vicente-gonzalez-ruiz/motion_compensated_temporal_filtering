@@ -22,8 +22,7 @@ import os
 import display
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
-
+import arguments_parser
 
 ## Number of components.
 COMPONENTS = 3
@@ -44,13 +43,13 @@ SRLs = 5
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = MCTF_parser(description="Compress the LFB texture data using Motion JPEG 2000.")
+parser = arguments_parser(description="Compress the LFB texture data using Motion JPEG 2000.")
 parser.add_argument("--file", help="file that contains the LFB data. Default = {})".format(file))
-parser.pictures(pictures)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.quantizations(quantizations)
-parser.SRLs(SRLs)
+parser.pictures()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.quantizations()
+parser.SRLs()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.

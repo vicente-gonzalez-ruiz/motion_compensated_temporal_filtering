@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-## @file motion_compress_j2k.py
-#  Compressing the motion vectors, using the codec J2K.
+## Compressing the motion vectors, using the codec J2K.
 #  The compression consists of two major steps:\n
 #  - Demultiplexing components.
 #  - Encode components (lossless compression).\n
@@ -11,27 +10,13 @@
 #  to each component, each image and each temporal subband.\n It records in 
 #  a file that can be consulted later. In these calculations do not take 
 #  into account the size of the header of a codestream.
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package motion_compress_j2k
-#  Compressing the motion vectors, using the codec J2K.
-#  The compression consists of two major steps:\n
-#  - Demux components.
-#  - Encode components (lossless compression).\n
-#
-#  Additionally is calculated the size in bytes of motion fields belonging 
-#  to each component, each image and each temporal subband.\n It records in 
-#  a file that can be consulted later. In these calculations do not take 
-#  into account the size of the header of a codestream.
-
 
 import os
 import sys
 import subprocess  as     sub
 from   subprocess  import check_call
 from   subprocess  import CalledProcessError
-from   MCTF_parser import MCTF_parser
+import arguments_parser
 
 ## Number of components of a motion field.
 COMPONENTS          = 4
@@ -51,7 +36,7 @@ fields       = 0
 #  code-stream used for the motion vectors. Used only 1 because we
 #  have seen that compress motion information with loss, is not
 #  helpful.
-clayers      = 1
+layers       = 1
 ## Vector quantization. Normally does not apply, since the motion
 #  information is compressed without loss.
 quantization = 45000
@@ -62,56 +47,73 @@ SRLs         = 5
 
 ## The parser module provides an interface to Python's internal parser
 #  and byte-code compiler.
-parser = MCTF_parser(description="Compress the motion data using JPEG 2000.")
-parser.add_argument("--blocks_in_x",   help="number of blocks in the X direction. (Default = {})".format(blocks_in_x))
-parser.add_argument("--blocks_in_y",   help="number of blocks in the Y direction. (Default = {})".format(blocks_in_y))
-parser.add_argument("--fields",        help="number of fields in to compress. (Default = {})".format(fields))
-parser.add_argument("--quantization",  help="controls the quality level and the bit-rate of the code-stream. (Default = {})".format(quantization))
-parser.add_argument("--clayers",       help="logarithm controls the quality level and the bit-rate of the code-stream. (Default = {})".format(clayers))
-parser.add_argument("--file",          help="name of the file with the motion fields. (Default = {})".format(file))
+parser = arguments_parser(description="Compress the motion data using JPEG 2000.")
 
-## A script may only parse a few of the command-line arguments,
-#  passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
+
+parser.add_argument("--blocks_in_x",
+                    help="number of blocks in the X direction. "
+                    "(Default = {})".format(blocks_in_x))
 if args.blocks_in_x:
     blocks_in_x = int(args.blocks_in_x)
+
+parser.add_argument("--blocks_in_y",
+                    help="number of blocks in the Y direction. "
+                    "(Default = {})".format(blocks_in_y))
 if args.blocks_in_y:
     blocks_in_y = int(args.blocks_in_y)
+    
+parser.add_argument("--fields",
+                    help="number of fields in to compress. "
+                    "(Default = {})".format(fields))
 if args.fields:
     fields = int(args.fields)
-if args.clayers:
-    clayers = str(args.clayers)
-if args.quantization:
-    quantization = str(args.quantization)
+
+parser.motion_layers()
+if args.motion_layers:
+    layers = str(args.motion_layers)
+
+parser.motion_quantization()
+if args.motion_quantization:
+    quantization = str(args.motion_quantization)
+
+parser.add_argument("--file",
+                    help="name of the file with the motion fields. "
+                    "(Default = {})".format(file))
 if args.file:
     file = args.file
 
-
-
 ## Number of levels of the DWT to be applied in compression.
-dwt_levels = 0 # 1 # SRLs - 1
+spatial_dwt_levels = 0 # 1 # SRLs - 1
+
 ## Number of bytes required by the movement information (uncompressed)
 #  for each image.
 bytes_compF = blocks_in_x * blocks_in_y * BYTES_PER_COMPONENT
 
-
 for comp_number in range (0, COMPONENTS) :
 
     # DEMUX components.
-    #------------------
     try :
-        check_call("trace demux " + str(COMPONENTS * BYTES_PER_COMPONENT) + " " + str(comp_number * BYTES_PER_COMPONENT) + " " + str(BYTES_PER_COMPONENT)
+        check_call("trace demux "
+                   + str(COMPONENTS * BYTES_PER_COMPONENT)
+                   + " "
+                   + str(comp_number * BYTES_PER_COMPONENT)
+                   + " "
+                   + str(BYTES_PER_COMPONENT)
                    + " < " + file
                    + " | /usr/bin/split --numeric-suffixes --suffix-length=4 "
-                   + "--bytes=" + str(bytes_compF) + " - " + file + "_comp" + str(comp_number) + "_" # .rawl aquí!
+                   + "--bytes="
+                   + str(bytes_compF)
+                   + " - "
+                   + file
+                   + "_comp"
+                   + str(comp_number)
+                   + "_" # .rawl aquí!
                    , shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
-
     # ENCODE components.
-    #-------------------
-    ## Refers to a particular component from a field of movement.
     campoMov_number = 0
     while campoMov_number < fields :
 
@@ -127,7 +129,6 @@ for comp_number in range (0, COMPONENTS) :
 
         try:
             # Compress.
-            #----------
             check_call("trace kdu_compress"
                        + " -i "          + campoMov_name + ".rawl"
                        + " -o "          + campoMov_name + ".j2c"
@@ -136,7 +137,7 @@ for comp_number in range (0, COMPONENTS) :
                        + " Nprecision="  + str(BITS_PER_COMPONENT)
                        + " Nsigned="     + "yes"
                        + " Sdims='{'"    + str(blocks_in_y) + "," + str(blocks_in_x) + "'}'"
-                       + " Clevels="     + str(dwt_levels)
+                       + " Clevels="     + str(spatial_dwt_levels)
                        + " Cuse_sop="    + "yes"
                        , shell=True)
                        # + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"
@@ -151,8 +152,6 @@ for comp_number in range (0, COMPONENTS) :
 
         campoMov_number += 1
 
-
-
 ## Determines the size of the header of a codestream.
 #  @param file_name Name of the file with the motion fields.
 #  @return Bytes of the header of a codestream.
@@ -161,11 +160,10 @@ def header (file_name) :
     out, err = p.communicate()
     return long(out[4:])
 
-
-
 ## Records motion size information in a file that can be consulted
 #  later.
 file_sizes = open (file + ".mjc", 'w') # Compute file sizes
+
 ## Determines the size in bytes of motion fields belonging to each 
 #  component, each image and each temporal subband.
 total = 0

@@ -1,41 +1,29 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-## @file expand.py
-#  Decodes a sequence of pictures.
+## Decodes a sequence of pictures.
 #  Decoding consists of two major steps:\n
 #  - Decompression textures and movement data.
 #  - Synthesizes the video.
 #
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-#  @example expand.py
-#
-#  - Show default parameters.\n
+#  Examples:
+#  - Show default parameters.
 #  mcj2k expand --help
 #
 #  - Expands using the default parameters.\n
 #  mcj2k expand
 #
-#  - Example of use.\n
+#  - Example of use.
 #  expand --update_factor=0 --GOPs=1 --TRLs=5 --SRLs=5 --block_size=32
-#  --block_size_min=32 --search_range=4 --pixels_in_x=352
-#  --pixels_in_y=288 --subpixel_accuracy=0
-
-## @package expand
-#  Decodes a sequence of pictures.
-#  Decoding consists of two major steps:\n
-#  - Decompression textures and movement data.
-#  - Synthesizes the video.
-
-
+#    --block_size_min=32 --search_range=4 --pixels_in_x=352
+#    --pixels_in_y=288 --subpixel_accuracy=0
 
 import sys
 import display
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 ## Refers to Full-HD resolution. Is used as a boundary between the use
 ## of a block size of 16 or 32 by default.
@@ -71,33 +59,20 @@ block_overlaping  = 0
 ## Weight of the update step.
 update_factor     = 1.0/4
 
-## The parser module provides an interface to Python's internal parser
-## and byte-code compiler.
-parser = MCTF_parser(description="Decodes a sequence of pictures.")
-parser.TRLs(TRLs)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.block_size(block_size)
-parser.block_size_min(block_size_min)
-parser.GOPs(GOPs)
-parser.SRLs(SRLs)
-parser.rates(rates)
-parser.subpixel_accuracy(subpixel_accuracy)
-parser.search_range(search_range)
-parser.border_size(border_size)
-parser.block_overlaping(block_overlaping)
-parser.update_factor(update_factor)
-
-## A script may only parse a few of the command-line arguments,
-## passing the remaining arguments on to another script or program.
+parser = arguments_parser(description="Decodes a sequence of pictures.")
 args = parser.parse_known_args()[0]
+
+parser.TRLs()
 if args.TRLs:
     TRLs = int(args.TRLs)
+
+parser.pixels_in_x()
 if args.pixels_in_x:
     pixels_in_x = str(args.pixels_in_x)
+
+parser.pixels_in_y()
 if args.pixels_in_y:
     pixels_in_y = str(args.pixels_in_y)
-
 # Default block_size as pixels_in_xy
 if int(pixels_in_x.split(',')[0]) * int(pixels_in_y.split(',')[0]) < resolution_FHD:
     block_size     = ','.join(['32'] * (TRLs-1))
@@ -106,29 +81,45 @@ else:
     block_size     = ','.join(['64'] * (TRLs-1))
     block_size_min = 64
 
+parser.block_size(block_size)
 if args.block_size:
     block_size = str(args.block_size)
+
+parser.block_size_min()
 if args.block_size_min:
     block_size_min = int(args.block_size_min)
+
+parser.GOPs()
 if args.GOPs:
     GOPs = int(args.GOPs)
+
+parser.SRLs()
 if args.SRLs:
     SRLs = int(args.SRLs)
+
+parser.rates()
 if args.rates:
     rates = str(args.rates)
+
+parser.subpixel_accuracy()
 if args.subpixel_accuracy:
     subpixel_accuracy = str(args.subpixel_accuracy)
+
+parser.search_range()
 if args.search_range:
     search_range = int(args.search_range)
+
+parser.border_size()
 if args.border_size:
     border_size = int(args.border_size)
+
+parser.block_overlaping()
 if args.block_overlaping:
     block_overlaping = int(args.block_overlaping)
+
+parser.update_factor()
 if args.update_factor:
     update_factor = float(args.update_factor)
-
-
-
 
 ## Sets parameters resized from the number of TRL.
 #  @param block_size Size of the blocks in the motion estimation process.
@@ -208,18 +199,11 @@ def set_parameters (block_size, rates, pixels_in_x, pixels_in_y, subpixel_accura
 
 _block_size, _rates, _pixels_in_x, _pixels_in_y, _subpixel_accuracy, block_size, rates, pixels_in_x, pixels_in_y, subpixel_accuracy = set_parameters(block_size, rates, pixels_in_x, pixels_in_y, subpixel_accuracy, TRLs)
 
-
-
-
-
 # Time
 # /usr/bin/time -f "# Real-User-System\n%e\t%U\t%S" -a -o "info_time" date
 # /usr/bin/time -f "%e\t%U\t%S" -a -o "info_time_" date
 
-
-
-# Decompression textures.
-#------------------------
+## Decompress texture.
 try:
     check_call("/usr/bin/time -f \"%e\t%U\t%S\t(TRLs:" + str(TRLs) + ")\" -a -o \"../info_time_texture_expand\" mctf texture_expand"
                + " --GOPs="        + str(GOPs)
@@ -232,9 +216,7 @@ try:
 except CalledProcessError:
     sys.exit(-1)
 
-
-# Decompression movement data.
-#-----------------------------
+## Decompress movement.
 if TRLs > 1 :
     try:
         check_call("/usr/bin/time -f \"%e\t%U\t%S\t(TRLs:" + str(TRLs) + ")\" -a -o \"../info_time_motion_expand\" mctf motion_expand"
@@ -248,7 +230,6 @@ if TRLs > 1 :
         sys.exit(-1)
 
     # Synthesizes the video.
-    #-----------------------
     try:
         check_call("/usr/bin/time -f \"%e\t%U\t%S\t(TRLs:" + str(TRLs) + ")\" -a -o \"../info_time_synthesize\" mctf synthesize"
                    + " --GOPs="              + str(GOPs)

@@ -48,7 +48,7 @@ import sys
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 #MOTION_DECODER_NAME = "gzip"
 #MOTION_DECODER_NAME = "kdu_v_expand"
@@ -68,12 +68,12 @@ pixels_in_y = "288,288,288,288,288"
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = MCTF_parser(description="Expands the motion data.")
-parser.GOPs(GOPs)
-parser.TRLs(TRLs)
-parser.block_size(block_size)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
+parser = arguments_parser(description="Expands the motion data.")
+parser.GOPs()
+parser.TRLs()
+parser.block_size()
+parser.pixels_in_x()
+parser.pixels_in_y()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.

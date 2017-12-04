@@ -31,7 +31,7 @@ import struct
 import os
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 ## File that contains the textures.
 file        = ""
@@ -51,13 +51,13 @@ subband     = 0
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = MCTF_parser(description="Expands the the LFB y HFB texture data using JPEG 2000.")
+parser = arguments_parser(description="Expands the the LFB y HFB texture data using JPEG 2000.")
 parser.add_argument("--file", help="file that contains the LFB or HFB data. Default = {})".format(file))
 parser.add_argument("--rate", help="read only the initial portion of the code-stream, corresponding to an overall bit-rate of \"rate\" bits/sample. Default = {})".format(rate))
-parser.pictures(pictures)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.subband(subband)
+parser.pictures()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.subband()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.

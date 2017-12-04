@@ -17,14 +17,14 @@ import math
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
 HIGH                 = "high"            # High frequency subbands.
 LOW                  = "low"             # Low frequency subbands.
 range_quantization   = 46000.0 - 42000.0 # Useful range of quantification
 
-parser = MCTF_parser(description="Compress the texture.")
+parser = arguments_parser(description="Compress the texture.")
 args = parser.parse_known_args()[0]
 
 parser.GOPs()

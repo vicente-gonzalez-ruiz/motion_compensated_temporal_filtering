@@ -19,7 +19,7 @@ import os
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+from arguments_parser import arguments_parser
 
 ## Refers to the codec to be used for compression of texture
 ## information.
@@ -46,13 +46,13 @@ pixels_in_y = "288,288,288,288,288"
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = MCTF_parser(description="Expands the texture.")
-parser.GOPs(GOPs)
-parser.SRLs(SRLs)
-parser.TRLs(TRLs)
-parser.rates(rates)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
+parser = arguments_parser(description="Expands the texture.")
+parser.GOPs()
+parser.SRLs()
+parser.TRLs()
+parser.rates()
+parser.pixels_in_x()
+parser.pixels_in_y()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.

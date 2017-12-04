@@ -51,9 +51,9 @@ import string
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
-parser = MCTF_parser(description="Encodes a sequence of pictures.")
+parser = arguments_parser(description="Encodes a sequence of pictures.")
 args = parser.parse_known_args()[0]
 
 parser.pixels_in_x()

@@ -104,10 +104,10 @@ import string
 import math
 import re
 import subprocess as sub
-from GOP          import GOP
-from subprocess   import check_call
-from subprocess   import CalledProcessError
-from MCTF_parser  import MCTF_parser
+from GOP              import GOP
+from subprocess       import check_call
+from subprocess       import CalledProcessError
+from arguments_parser import arguments_parser
 
 
 ## Refers to high frequency subbands.
@@ -163,20 +163,20 @@ combination       = ""
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = MCTF_parser(description="Transcode.")
+parser = arguments_parser(description="Transcode.")
 parser.add_argument("--GOPs", help="number of GOPs to process. (Default = {})".format(GOPs))
 parser.add_argument("--TRLs", help="number of iterations of the temporal transform + 1. (Default = {})".format(TRLs))
-parser.SRLs(SRLs)
+parser.SRLs()
 parser.add_argument("--BRC",  help="bit-rate control (kbps). (Default = {})".format(BRC))
 parser.add_argument("--discard_TRLs", help="number of discarded temporal resolution levels. (Default = {})".format(discard_TRLs))
 parser.add_argument("--discard_SRLs", help="List of discarded spatial resolution levels for textures and motions. Example: for TRL=3 there are 5 discarded, these values correspond to L2, H2, H1, M2 and M1. (Default = {})".format(discard_SRLs))
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.FPS(FPS)
-parser.block_size(block_size)
-parser.search_range(search_range)
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.FPS()
+parser.block_size()
+parser.search_range()
 parser.add_argument("--nLayers", help="Number of quality layers. (Default = {})".format(nLayers))
-parser.update_factor(update_factor)
+parser.update_factor()
 parser.add_argument("--algorithm", help="Type sorting algorithm. (Default = {})".format(algorithm))
 parser.add_argument("--combination", help="Number of quality layers that are extracted for each subbbanda. (Default = {})".format(combination))
 

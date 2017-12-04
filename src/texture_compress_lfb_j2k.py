@@ -6,7 +6,7 @@ import sys
 import display
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 COMPONENTS = 3
 BYTES_PER_COMPONENT = 1
@@ -18,14 +18,14 @@ pixels_in_y = 288
 quantizations = "45000"
 SRLs = 5
 
-parser = MCTF_parser(description="Compress the LFB texture data using JPEG 2000.")
+parser = arguments_parser(description="Compress the LFB texture data using JPEG 2000.")
 
 parser.add_argument("--file", help="file that contains the LFB data. Default = {})".format(file))
-parser.pictures(pictures)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.quantizations(quantizations)
-parser.SRLs(SRLs)
+parser.pictures()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.quantizations()
+parser.SRLs()
 
 args = parser.parse_known_args()[0]
 if args.file:

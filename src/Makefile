@@ -1,9 +1,6 @@
 ## Makefile
 #  It helps build a software from its source files, a way to organize
 #  code, and its compilation and linking.
-#
-#  @authors Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
 
 # The MCTF project has been supported by the Junta de Andalucía through
 # the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
@@ -141,8 +138,8 @@ $(BIN)/display.py:	display.py
 	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 EXE += $(BIN)/display.py
 
-$(BIN)/MCTF_parser.py:	MCTF_parser.py
-EXE += $(BIN)/MCTF_parser.py
+$(BIN)/arguments_parser.py:	arguments_parser.py
+EXE += $(BIN)/arguments_parser.py
 
 $(BIN)/analyze_step:	analyze_step.py
 EXE	+= $(BIN)/analyze_step

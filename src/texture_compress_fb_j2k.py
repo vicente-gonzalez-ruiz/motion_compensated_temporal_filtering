@@ -15,7 +15,7 @@ import struct
 import subprocess  as     sub
 from   subprocess  import check_call
 from   subprocess  import CalledProcessError
-from   MCTF_parser import MCTF_parser
+import arguments_parser
 
 LOW         = "low"
 HIGH        = "high"
@@ -29,7 +29,7 @@ BYTES_PER_COMPONENT = 1 # 2
 ## File that contains the textures.
 file = ""
 
-parser = MCTF_parser(description="Compress the LFB texture data using JPEG 2000.")
+parser = arguments_parser(description="Compress the LFB texture data using JPEG 2000.")
 args = parser.parse_known_args()[0]
 
 parser.add_argument("--file",    help="file that contains the textures data. Default = {})".format(file))

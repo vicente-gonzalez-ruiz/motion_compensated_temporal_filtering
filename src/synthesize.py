@@ -14,7 +14,7 @@ import sys
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 ## Maximum search range.
 SEARCH_RANGE_MAX = 128
@@ -47,17 +47,17 @@ search_factor     = 2
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = MCTF_parser(description="Performs the temporal synthesis of a picture sequence.")
-parser.GOPs(GOPs)
-parser.TRLs(TRLs)
-parser.block_size(block_size)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.subpixel_accuracy(subpixel_accuracy)
-parser.border_size(border_size)
-parser.block_overlaping(block_overlaping)
-parser.search_range(search_range)
-parser.update_factor(update_factor)
+parser = arguments_parser(description="Performs the temporal synthesis of a picture sequence.")
+parser.GOPs()
+parser.TRLs()
+parser.block_size()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.subpixel_accuracy()
+parser.border_size()
+parser.block_overlaping()
+parser.search_range()
+parser.update_factor()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.

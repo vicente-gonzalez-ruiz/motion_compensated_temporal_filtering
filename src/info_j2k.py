@@ -14,7 +14,7 @@
 #  level and neglecting headers, from a J2K codestream.
 
 from info import info
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 
 ## Class info for J2K codec.
@@ -63,7 +63,7 @@ class info_j2k(info):
 ## Main function.
 def main():
 
-    parser = MCTF_parser(description="Info.")
+    parser = arguments_parser(description="Info.")
     parser.add_argument("--GOPs",          help="number of GOPs to process. (Default = {})".format(info.GOPs))
     parser.add_argument("--TRLs",          help="number of iterations of the temporal transform + 1. (Default = {})".format(info.TRLs))
     parser.add_argument("--FPS",           help="frames per second. (Default = {})".format(info.FPS))

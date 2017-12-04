@@ -16,7 +16,7 @@ import sys
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 ## Number of overlaped pixels between the blocks in the motion
 ## compensation process.
@@ -41,16 +41,16 @@ update_factor     = 1.0/4
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = MCTF_parser(description="Performs a step of the temporal synthesis.")
-parser.block_overlaping(block_overlaping)
-parser.block_size(block_size)
-parser.pictures(pictures)
-parser.pixels_in_x(pixels_in_x)
-parser.pixels_in_y(pixels_in_y)
-parser.search_range(search_range)
-parser.subpixel_accuracy(subpixel_accuracy)
+parser = arguments_parser(description="Performs a step of the temporal synthesis.")
+parser.block_overlaping()
+parser.block_size()
+parser.pictures()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.search_range()
+parser.subpixel_accuracy()
 parser.add_argument("--temporal_subband", help="iteration of the temporal transform. Default = {}".format(temporal_subband))
-parser.update_factor(update_factor)
+parser.update_factor()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.

@@ -21,7 +21,7 @@ import sys
 import os
 from subprocess import check_call
 from subprocess import CalledProcessError
-from MCTF_parser import MCTF_parser
+import arguments_parser
 
 ## File that contains the LFB data.
 file = ""
@@ -30,9 +30,9 @@ pictures = 33
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = MCTF_parser(description="Expands the the LFB texture data using LTW.")
+parser = arguments_parser(description="Expands the the LFB texture data using LTW.")
 parser.add_argument("--file", help="file that contains the LFB data. Default = {})".format(file))
-parser.pictures(pictures)
+parser.pictures()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.
