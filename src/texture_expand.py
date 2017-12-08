@@ -1,15 +1,6 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-## @file texture_expand.py
-#  Decompress the texture. There are a different number of (compressed)
-#  texture streams called "low_X", "high_X", "high_X-1", ..., where X
-#  is the bumber of temporal resolution levels - 1.
-#
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package texture_expand
 #  Decompress the texture. There are a different number of (compressed)
 #  texture streams called "low_X", "high_X", "high_X-1", ..., where X
 #  is the bumber of temporal resolution levels - 1.
@@ -34,11 +25,6 @@ GOPs        = 1
 TRLs        = 4
 ## Number of Spatia Resolution Levels.
 SRLs        = 5
-## Optional and developing parameter indicates whether to extract the
-#  codestream to a given bit-rate. The bit-rate control is performed
-#  in transcode.py, a detailed manner, and therefore its use is
-#  recommended for this purpose.
-rates       = "0.0,0.0,0.0,0.0,0.0"
 ## Width of the pictures.
 pixels_in_x = "352,352,352,352,352"
 ## Height of the pictures.
@@ -48,44 +34,26 @@ pixels_in_y = "288,288,288,288,288"
 ## and byte-code compiler.
 parser = arguments_parser(description="Expands the texture.")
 parser.GOPs()
-parser.SRLs()
-parser.TRLs()
-parser.rates()
 parser.pixels_in_x()
 parser.pixels_in_y()
+parser.SRLs()
+parser.TRLs()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
-if args.GOPs:
-    GOPs = int(args.GOPs)
-if args.SRLs:
-    SRLs = int(args.SRLs)
-if args.TRLs:
-    TRLs = int(args.TRLs)
-if args.rates:
-    rates = str(args.rates)
-if args.pixels_in_x:
-    pixels_in_x = str(args.pixels_in_x)
-if args.pixels_in_y:
-    pixels_in_y = str(args.pixels_in_y)
+GOPs = int(args.GOPs)
+pixels_in_x = str(args.pixels_in_x)
+pixels_in_y = str(args.pixels_in_y)
+SRLs = int(args.SRLs)
+TRLs = int(args.TRLs)
 
-
-## Initializes the class GOP (Group Of Pictures).
 gop=GOP()
-## Extract the value of the size of a GOP, that is, the number of
-## images.
 GOP_size = gop.get_size(TRLs)
-## Number of images to process.
 _pictures = pictures = GOPs * GOP_size + 1
 
-
-
-# Decompression HIGH frequency subbands.
-#---------------------------------------
 if TRLs > 1 :
-
-    ## Number of temporal subbands.
+    # Decompression HIGH frequency subbands.
     subband = TRLs - 1
     while subband > 0 :
 
@@ -101,7 +69,6 @@ if TRLs > 1 :
             check_call("mctf texture_expand_fb_" + MCTF_TEXTURE_CODEC
 #           check_call("mctf texture_expand_hfb_" + MCTF_TEXTURE_CODEC
                        + " --file="        + "\"" + HIGH + "_" + str(subband) + "\""
-                       + " --rate="        + str(rates.split(',')[TRLs-subband])
                        + " --pictures="    + str(pictures - 1)
                        + " --pixels_in_x=" + str(pixels_in_x.split(',')[TRLs-subband])
                        + " --pixels_in_y=" + str(pixels_in_y.split(',')[TRLs-subband])
@@ -120,7 +87,6 @@ if TRLs > 1 :
 try:
     check_call("mctf texture_expand_fb_" + MCTF_TEXTURE_CODEC
                + " --file="        + "\"" + LOW + "_" + str(TRLs - 1) + "\""
-               + " --rate="        + str(rates.split(',')[0])
                + " --pictures="    + str(GOPs+1)
                + " --pixels_in_x=" + str(pixels_in_x.split(',')[0])
                + " --pixels_in_y=" + str(pixels_in_y.split(',')[0])

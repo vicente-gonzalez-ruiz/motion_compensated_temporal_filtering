@@ -1,17 +1,16 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-## @file transcode.py
 #  Extracts a codestream from a bigger codestream, discarding a number
-#  of temporal, resolution or/and quality levels.\n The number of temporal
+#  of temporal-, resolution- or/and quality-levels.\n The number of temporal
 #  resolution levels that is going to be discardes must be >= 0 (0 = no
-#  discarding).\n Some thing similar happens with the number of discardes
-#  spatial resolutions.\n\n The last parameter is controlled by means of a
+#  discarding). Some thing similar happens with the number of discardes
+#  spatial resolutions. The last parameter is controlled by means of a
 #  slope, a value between 0 a 65535 where 0 means no discarding and
 #  65553 implies a null output video, but notice that if the input
 #  video was quantized using a slope X and we select a new slope where
 #  Y <= X, then, this extraction will not have any effect (the output
-#  will be identical to the input).\n These parameters can not be used
+#  will be identical to the input). These parameters can not be used
 #  simultaneously, but obviously, they can be concatenated. The output
 #  sequences will overwrite the input sequences.
 #
@@ -40,59 +39,25 @@
 #  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
 #  @date Last modification: 2015, January 7.
 #
-#  @example transcode.py
+#  Examples:
 #
-#  - Divides the frame-rate by two.\n
+#  - Divides the frame-rate by two:
+#
 #  mcj2k transcode --discard_TRLs=1
 #
-#  - Divides the spatial resolution of the video by 2^2 in each dimmension.\n
+#  - Divides the spatial resolution of the video by 2^2 in each dimmension:
+#
 #  mcj2k transcode --discard_SRLs=2
 #
-#  - Outputs only the first GOP (only one image).\n
+#  - Outputs only the first GOP (only one image):
+#
 #  mcj2k transcode --GOPs=1
 #
-#  - Example of use.\n 
+#  - Example of use:
+#
 #  mcj2k transcode --algorithm=FS-opt --update_factor=0 --GOPs=8 --TRLs=5 --SRLs=4
-#  --FPS=50 --BRC=500000 --discard_SRLs=0 --pixels_in_x=352
-#  --pixels_in_y=288 --block_size=32 --search_range=4 --nLayers=16
-
-## @package transcode
-#  Extracts a codestream from a bigger codestream, discarding a number
-#  of temporal, resolution or/and quality.\n The number of temporal
-#  resolution levels that is going to be discardes must be >= 0 (0 = no
-#  discarding).\n Some thing similar happens with the number of discardes
-#  spatial resolutions.\n\n The last parameter is controlled by means of a
-#  slope, a value between 0 a 65535 where 0 means no discarding and
-#  65553 implies a null output video, but notice that if the input
-#  video was quantized using a slope X and we select a new slope where
-#  Y <= X, then, this extraction will not have any effect (the output
-#  will be identical to the input).\n These parameters can not be used
-#  simultaneously, but obviously, they can be concatenated. The output
-#  sequences will overwrite the input sequences.
-#
-#  You can perform a direct transcoding. Indicating the number of
-#  layers of each subband to extract.
-#  
-#  You can also make use of one, sorting algorithms, implemented. The
-#  organization consists of calculating the optimal order of layers of
-#  each subband to be sent from one codestream optimally in term of
-#  rate and distortion.
-#  
-#  There is an algorithm of optimal result, called FS-opt, which has
-#  the highest of all algorithmic complexity. Also present, other
-#  algorithms, in which the result is suboptimal, but have lower
-#  algorithmic complexity.
-#  
-#  There are 2 types of sorting algorithms:
-#  - Manages the full video
-#  - Manages the video GOP to GOP
-#
-#  This depends, of sorting algorithm, which is being conducted. For
-#  example, in the Full-Search algorithm, the calculations are
-#  independent of each different GOP therefore should be treated to
-#  GOP GOP.
-
-
+#    --FPS=50 --BRC=500000 --discard_SRLs=0 --pixels_in_x=352
+#    --pixels_in_y=288 --block_size=32 --search_range=4 --nLayers=16
 
 import info_j2k
 import sys
@@ -163,11 +128,12 @@ combination       = ""
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
-parser = arguments_parser(description="Transcode.")
-parser.add_argument("--GOPs", help="number of GOPs to process. (Default = {})".format(GOPs))
-parser.add_argument("--TRLs", help="number of iterations of the temporal transform + 1. (Default = {})".format(TRLs))
+parser = arguments_parser(description="Transcodes a MCJ2K video.")
+parser.GOPs()
+parser.TRLs()
 parser.SRLs()
-parser.add_argument("--BRC",  help="bit-rate control (kbps). (Default = {})".format(BRC))
+parser.add_argument("--BRC",
+                    help="bit-rate control (kbps). (Default = {})".format(BRC))
 parser.add_argument("--discard_TRLs", help="number of discarded temporal resolution levels. (Default = {})".format(discard_TRLs))
 parser.add_argument("--discard_SRLs", help="List of discarded spatial resolution levels for textures and motions. Example: for TRL=3 there are 5 discarded, these values correspond to L2, H2, H1, M2 and M1. (Default = {})".format(discard_SRLs))
 parser.pixels_in_x()

@@ -1,23 +1,13 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-
-## @file info_j2k.py
-#  The size in bytes, and a codestream Kbps, even detailed subband
-#  level and neglecting headers, from a J2K codestream.
-#
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-#
-## @package info_j2k
 #  The size in bytes, and a codestream Kbps, even detailed subband
 #  level and neglecting headers, from a J2K codestream.
 
 from info import info
-import arguments_parser
+from arguments_parser import arguments_parser
 
-
-## Class info for J2K codec.
+# Class info for J2K codec.
 class info_j2k(info):
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-## @file motion_expand_j2k.py
 #  Decompressing data movement, using the codec J2K.
 #  The decompression consists of two major steps:\n
 #  - Decode components (lossless compression).
@@ -9,25 +8,12 @@
 #
 #  If there is no vector file, a file is created with linear
 #  movement. That is, a file of zeros.
-#
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package motion_expand_j2k
-#  Decompressing data movement, using the codec J2K.
-#  The decompression consists of two major steps:\n
-#  - Decode components (lossless compression).
-#  - Multiplexing components.
-#
-#  If there is no vector file, a file is created with linear
-#  movement. That is, a file of zeros.
-
 
 import os
 import sys
 from subprocess import check_call
 from subprocess import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 
 ## Number of components.
@@ -69,10 +55,6 @@ if args.fields:
     fields = int(args.fields)
 if args.file:
     file = args.file
-
-
-
-
 
 # Expand each field.
 #-------------------

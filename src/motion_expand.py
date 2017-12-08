@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-## @file motion_expand.py
 #  Decompresses data movement.
 #
 #  The decompressor will find on the first level, a field of
@@ -20,35 +19,13 @@
 #  decorrelation, bidirectional starts from correlated fields, and
 #  this will cause bidirectional decorrelation automatically.
 #
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package motion_expand
-#  Decompresses data movement.
-#
-#  The decompressor will find on the first level, a field of
-#  bidirectional movement has been solely uncorrelated bidirectionally
-#  (bidirectional decorrelation exploits the redundancy that exists in
-#  a bidirectional vector, where the vector in a direction generally
-#  like the other, although with opposite sign).
-#
-#  Once the field in the first level has been restored, it can serve
-#  as a reference for two fields next level of resolution (interlevel
-#  decorrelation). Specifically, divide by two, the motion vectors and
-#  we have a prediction.
-#
-#  In this second level of resolution (and the following) is not
-#  necessary decorrelate bidirectionally. Because the interlevel
-#  decorrelation, bidirectional starts from correlated fields, and
-#  this will cause bidirectional decorrelation automatically.
-
 
 import os
 import sys
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 #MOTION_DECODER_NAME = "gzip"
 #MOTION_DECODER_NAME = "kdu_v_expand"
@@ -140,9 +117,6 @@ while iteration <= (TRLs - 1) :
 
     fields /= 2
     iteration += 1
-
-
-
     
 # Decorrelation bidirectional level lower temporal resolution.
 #-------------------------------------------------------------
@@ -156,7 +130,6 @@ try:
                , shell=True)
 except CalledProcessError :
     sys.exit(-1)
-
 
 # Decorrelation between levels of resolution.
 #--------------------------------------------

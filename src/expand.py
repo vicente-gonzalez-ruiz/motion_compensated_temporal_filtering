@@ -23,11 +23,8 @@ import display
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
-## Refers to Full-HD resolution. Is used as a boundary between the use
-## of a block size of 16 or 32 by default.
-resolution_FHD    = 1920 * 1080
 ## Number of Temporal Resolution Levels.
 TRLs              = 4
 ## Width of the pictures.
@@ -42,11 +39,6 @@ min_block_size    = 32
 GOPs              = 1
 ## Number of Spatial Resolution Levels.
 SRLs              = 5
-## Optional and developing parameter indicates whether to extract the
-#  codestream to a given bit-rate. The bit-rate control is performed
-#  in transcode.py, a detailed manner, and therefore its use is
-#  recommended for this purpose.
-rates             = "0.0,0.0,0.0,0.0,0.0"
 ## Subpixel motion estimation order.
 subpixel_accuracy = "0,0,0,0,0"
 ## Size of the search areas in the motion estimation process.
@@ -60,154 +52,42 @@ block_overlaping  = 0
 update_factor     = 1.0/4
 
 parser = arguments_parser(description="Decodes a sequence of pictures.")
-args = parser.parse_known_args()[0]
 
-parser.TRLs()
-if args.TRLs:
-    TRLs = int(args.TRLs)
-
-parser.pixels_in_x()
-if args.pixels_in_x:
-    pixels_in_x = str(args.pixels_in_x)
-
-parser.pixels_in_y()
-if args.pixels_in_y:
-    pixels_in_y = str(args.pixels_in_y)
-# Default block_size as pixels_in_xy
-if int(pixels_in_x.split(',')[0]) * int(pixels_in_y.split(',')[0]) < resolution_FHD:
-    block_size     = ','.join(['32'] * (TRLs-1))
-    min_block_size = 32
-else:
-    block_size     = ','.join(['64'] * (TRLs-1))
-    min_block_size = 64
-
-parser.block_size(block_size)
-if args.block_size:
-    block_size = str(args.block_size)
-
-parser.min_block_size()
-if args.min_block_size:
-    min_block_size = int(args.min_block_size)
-
-parser.GOPs()
-if args.GOPs:
-    GOPs = int(args.GOPs)
-
-parser.SRLs()
-if args.SRLs:
-    SRLs = int(args.SRLs)
-
-parser.rates()
-if args.rates:
-    rates = str(args.rates)
-
-parser.subpixel_accuracy()
-if args.subpixel_accuracy:
-    subpixel_accuracy = str(args.subpixel_accuracy)
-
-parser.search_range()
-if args.search_range:
-    search_range = int(args.search_range)
-
-parser.border_size()
-if args.border_size:
-    border_size = int(args.border_size)
-
+parser.block_size()
 parser.block_overlaping()
-if args.block_overlaping:
-    block_overlaping = int(args.block_overlaping)
-
+parser.border_size()
+parser.GOPs()
+parser.TRLs()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.min_block_size()
+parser.SRLs()
+parser.subpixel_accuracy()
+parser.search_range()
 parser.update_factor()
-if args.update_factor:
-    update_factor = float(args.update_factor)
 
-## Sets parameters resized from the number of TRL.
-#  @param block_size Size of the blocks in the motion estimation process.
-#  @param rates Optional and developing parameter indicates whether to extract the codestream to a given bit-rate. The bit-rate control is performed in transcode.py, a detailed manner, and therefore its use is recommended for this purpose.
-#  @param pixels_in_x Width of the pictures.
-#  @param pixels_in_y Height of the pictures.
-#  @param subpixel_accuracy Subpixel motion estimation order.
-#  @param TRLs Number of Temporal Resolution Levels.
-#  @return _block_size (list)
-#  @return _rates (list)
-#  @return _pixels_in_x (list)
-#  @return _pixels_in_y (list)
-#  @return _subpixel_accuracy (list)
-#  @return block_size (string)
-#  @return rates (string)
-#  @return pixels_in_x (string)
-#  @return pixels_in_y (string)
-#  @return subpixel_accuracy (string)
-def set_parameters (block_size, rates, pixels_in_x, pixels_in_y, subpixel_accuracy, TRLs):
-
-    # string -> list
-    #---------------
-    _block_size        = block_size.split(',')
-    _rates             = rates.split(',')
-    _pixels_in_x       = pixels_in_x.split(',')
-    _pixels_in_y       = pixels_in_y.split(',')
-    _subpixel_accuracy = subpixel_accuracy.split(',')
-
-
-    # Resizes the parameters
-    #-----------------------
-
-    # block_size
-    for i in range ( len(_block_size), TRLs-1 ) :
-        if int(_block_size[len(_block_size)-1]) > min_block_size :
-            _block_size.append(int(_block_size[len(_block_size)-1]) /2)
-        else :
-            _block_size.append(int(_block_size[len(_block_size)-1])   )
-
-    # rates
-    for i in range ( len(_rates), TRLs ) :
-        _rates.append(_rates[len(_rates)-1])
-
-    # pixels_in_x
-    for i in range ( len(_pixels_in_x), TRLs ) :
-        _pixels_in_x.append(_pixels_in_x[len(_pixels_in_x)-1])
-
-    # pixels_in_y
-    for i in range ( len(_pixels_in_y), TRLs ) :
-        _pixels_in_y.append(_pixels_in_y[len(_pixels_in_y)-1])
-
-    # subpixel_accuracy
-    for i in range ( len(_subpixel_accuracy), TRLs ) :
-        _subpixel_accuracy.append(_subpixel_accuracy[len(_subpixel_accuracy)-1])
-
-    # list -> string
-    #---------------
-    block_size        = str(','.join(map(str, _block_size)))
-    rates             = str(','.join(map(str, _rates)))
-    pixels_in_x       = str(','.join(map(str, _pixels_in_x)))
-    pixels_in_y       = str(','.join(map(str, _pixels_in_y)))
-    subpixel_accuracy = str(','.join(map(str, _subpixel_accuracy)))
-
-
-    # Displays the parameters resized from the number of TLRs, 
-    # in order to verify that it has been carried out without errors.
-    #----------------------------------------------------------------
-    # check_call("echo \"\n--block_size=" + str(block_size)
-    #           + "\n--pixels_in_x=" + str(pixels_in_x)
-    #           + "\n--pixels_in_y=" + str(pixels_in_y)
-    #           + "\n--subpixel_accuracy=" + str(subpixel_accuracy) + "\""
-    #           , shell=True)
-    # raw_input("")
-
-    return _block_size, _rates, _pixels_in_x, _pixels_in_y, _subpixel_accuracy, block_size, rates, pixels_in_x, pixels_in_y, subpixel_accuracy
-
-
-_block_size, _rates, _pixels_in_x, _pixels_in_y, _subpixel_accuracy, block_size, rates, pixels_in_x, pixels_in_y, subpixel_accuracy = set_parameters(block_size, rates, pixels_in_x, pixels_in_y, subpixel_accuracy, TRLs)
+args = parser.parse_known_args()[0]
+block_size = str(args.block_size)
+block_overlaping = int(args.block_overlaping)
+border_size = int(args.border_size)
+GOPs = int(args.GOPs)
+min_block_size = int(args.min_block_size)
+pixels_in_x = str(args.pixels_in_x)
+pixels_in_y = str(args.pixels_in_y)
+SRLs = int(args.SRLs)
+TRLs = int(args.TRLs)
+subpixel_accuracy = str(args.subpixel_accuracy)
+search_range = int(args.search_range)
+update_factor = float(args.update_factor)
 
 # Time
 # /usr/bin/time -f "# Real-User-System\n%e\t%U\t%S" -a -o "info_time" date
 # /usr/bin/time -f "%e\t%U\t%S" -a -o "info_time_" date
 
-## Decompress texture.
+# Decompress texture.
 try:
-    check_call("/usr/bin/time -f \"%e\t%U\t%S\t(TRLs:" + str(TRLs) + ")\" -a -o \"../info_time_texture_expand\" mctf texture_expand"
+    check_call("mctf texture_expand"
                + " --GOPs="        + str(GOPs)
-               + " --rates="       + str(rates)
                + " --pixels_in_x=" + str(pixels_in_x)
                + " --pixels_in_y=" + str(pixels_in_y)
                + " --SRLs="        + str(SRLs)
@@ -216,10 +96,10 @@ try:
 except CalledProcessError:
     sys.exit(-1)
 
-## Decompress movement.
+## Decompress motion data.
 if TRLs > 1 :
     try:
-        check_call("/usr/bin/time -f \"%e\t%U\t%S\t(TRLs:" + str(TRLs) + ")\" -a -o \"../info_time_motion_expand\" mctf motion_expand"
+        check_call("mctf motion_expand"
                    + " --block_size="  + str(block_size)
                    + " --GOPs="        + str(GOPs)
                    + " --pixels_in_x=" + str(pixels_in_x)
@@ -231,7 +111,7 @@ if TRLs > 1 :
 
     # Synthesizes the video.
     try:
-        check_call("/usr/bin/time -f \"%e\t%U\t%S\t(TRLs:" + str(TRLs) + ")\" -a -o \"../info_time_synthesize\" mctf synthesize"
+        check_call("mctf synthesize"
                    + " --GOPs="              + str(GOPs)
                    + " --TRLs="              + str(TRLs)
                    + " --block_size="        + str(block_size)
