@@ -16,7 +16,7 @@ import sys
 import subprocess  as     sub
 from   subprocess  import check_call
 from   subprocess  import CalledProcessError
-import arguments_parser
+from arguments_parser import arguments_parser
 
 ## Number of components of a motion field.
 COMPONENTS          = 4
@@ -24,48 +24,24 @@ COMPONENTS          = 4
 BYTES_PER_COMPONENT = 2
 ## Number of bits for each component.
 BITS_PER_COMPONENT  = BYTES_PER_COMPONENT * 8
-## Name of the file with the motion fields.
-file         = ""
-## Width of the pictures.
-blocks_in_x  = 0
-## Height of the pictures.
-blocks_in_y  = 0
-## Number of fields in to compress.
-fields       = 0
-## Logarithm controls the quality level and the bit-rate of the
-#  code-stream used for the motion vectors. Used only 1 because we
-#  have seen that compress motion information with loss, is not
-#  helpful.
-layers       = 1
-## Vector quantization. Normally does not apply, since the motion
-#  information is compressed without loss.
-quantization = 45000
-## Number of Spatial Resolution Levels. Normally it does not apply,
-#  since the vectors are usually compress and decompress at the same
-#  spatial resolution.
-SRLs         = 5
 
-## The parser module provides an interface to Python's internal parser
-#  and byte-code compiler.
 parser = arguments_parser(description="Compress the motion data using JPEG 2000.")
-
-args = parser.parse_known_args()[0]
-
 parser.add_argument("--blocks_in_x",
                     help="number of blocks in the X direction.",
-                    default=blocks_in_x)
+                    default=0)
 parser.add_argument("--blocks_in_y",
-                    help="number of blocks in the Y direction."
-                    default=blocks_in_y)
+                    help="number of blocks in the Y direction.",
+                    default=0)
 parser.add_argument("--fields",
-                    help="number of fields in to compress."
-                    default=fields)
+                    help="number of fields in to compress.",
+                    default=0)
 parser.add_argument("--file",
-                    help="name of the file with the motion fields. "
-                    "(Default = {})".format(file))
+                    help="name of the file with the motion fields.",
+                    default="")
 parser.motion_layers()
 parser.motion_quantization()
 
+args = parser.parse_known_args()[0]
 blocks_in_x = int(args.blocks_in_x)
 blocks_in_y = int(args.blocks_in_y)
 fields = int(args.fields)

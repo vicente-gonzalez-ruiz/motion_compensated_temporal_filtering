@@ -26,16 +26,17 @@ COMPONENTS  = 3
 #  - Use 2 bytes for weighted components or that weighted.
 BYTES_PER_COMPONENT = 1 # 2
 
-## File that contains the textures.
-file = ""
-
 parser = arguments_parser(description="Compress the LFB texture data using JPEG 2000.")
-parser.add_argument("--file",    help="file that contains the textures data. Default = {})".format(file))
+parser.add_argument("--file",
+                    help="File that contains the texture data.",
+                    default="")
 parser.texture_layers()
-parser.pictures()
+parser.add_argument("--pictures",
+                    help="Number of pictures to compress.",
+                    default=33)
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.quantization_texture()
+parser.texture_quantization()
 parser.temporal_subband()
 parser.SRLs()
 
@@ -46,7 +47,7 @@ layers = args.texture_layers
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quantization = str(args.quantization_texture)
+quantization = str(args.texture_quantization)
 subband = int(args.temporal_subband)
 SRLs = int(args.SRLs)
 
@@ -64,7 +65,7 @@ SRLs = int(args.SRLs)
 #---------------------------------------------------------------------
 def pondComp (image_filename) :
 
-    ## Weighting coefficients for temporal_subband. For an example of 5TRLs ([H1, H2, H3, H4, L4]).
+    ## Weighting coefficients for subband. For an example of 5TRLs ([H1, H2, H3, H4, L4]).
     coef = [1, 1.4921569843, 2.7304234608, 5.3339326679, 5.8022196044]
     ## File containing the textures before weighting coefficients.
     f_in = open (image_filename, 'rb')
@@ -79,11 +80,11 @@ def pondComp (image_filename) :
             # Some examples of weighting coefficients:
             #-----------------------------------------
             #data = ord(byte)                                   # =
-            #data = ord(byte) * pow(2, temporal_subband-1)               # *2^temporal_subband
-            #data = ord(byte) * pow(5, temporal_subband-1)               # *5^temporal_subband
-            #data = ord(byte) * pow(math.sqrt(2), temporal_subband-1)    # *sqrt(2)^temporal_subband
-            #data = ord(byte) * coef[temporal_subband-1]                 # coef
-            #data = ord(byte) * pow(coef[temporal_subband-1], temporal_subband-1) # coef^temporal_subband
+            #data = ord(byte) * pow(2, subband-1)               # *2^subband
+            #data = ord(byte) * pow(5, subband-1)               # *5^subband
+            #data = ord(byte) * pow(math.sqrt(2), subband-1)    # *sqrt(2)^subband
+            #data = ord(byte) * coef[subband-1]                 # coef
+            #data = ord(byte) * pow(coef[subband-1], subband-1) # coef^subband
 
             ## A weighted coefficient.
             bin_data = struct.pack('H', int(round(data)))
@@ -174,7 +175,7 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
 #--------
 
 # Displays a log of execution:
-check_call("echo file: " + str(file) + " temporal_subband: " + str(temporal_subband), shell=True)
+check_call("echo file: " + str(file) + " subband: " + str(subband), shell=True)
 #raw_input("")
 
 ## Number of bits per component.
@@ -187,7 +188,7 @@ if Clevels < 0 :
     Clevels = 0
 
 '''
-# Clevels = SRLs-1 for L temporal_subband. Clevels = 0 for H temporal_subband.     
+# Clevels = SRLs-1 for L subband. Clevels = 0 for H subband.     
 if file[0] == 'h' :
     dwt_levels = 0
 '''

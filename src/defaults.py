@@ -47,11 +47,11 @@ class Defaults():
 
     # Controls the quality level and the bit-rate of the code-stream
     # of motions.
-    quantization_motion  = 45000
+    motion_quantization = 45000
     
     # Controls the quality level and the bit-rate of the code-stream
     # of textures.
-    quantization_texture = 45000
+    texture_quantization = 45000
 
     # Size of the search areas in the motion estimation process.
     search_range = 4

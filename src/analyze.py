@@ -13,6 +13,7 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+from defaults import Defaults
 
 parser = arguments_parser(description="Temporal analysis of a picture sequence.")
 parser.always_B()
@@ -29,7 +30,6 @@ parser.TRLs()
 parser.update_factor()
 
 args = parser.parse_known_args()[0]
-
 always_B = int(args.always_B)
 block_overlaping = int(args.block_overlaping)
 block_size = int(args.block_size)
@@ -42,12 +42,6 @@ search_range = int(args.search_range)
 subpixel_accuracy = int(args.subpixel_accuracy)
 TRLs = int(args.TRLs)
 update_factor = float(args.update_factor)
-
-resolution_FHD = 1920 * 1080
-if pixels_in_x * pixels_in_y < resolution_FHD:
-    block_size = min_block_size = 32
-else:
-    block_size = min_block_size = 64
 
 ## Initializes the class GOP (Group Of Pictures).
 gop=GOP()

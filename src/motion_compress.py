@@ -50,13 +50,6 @@ layers = str(args.motion_layers)
 quantization = str(args.motion_quantization)
 TRLs = int(args.TRLs)
 
-if pixels_in_x * pixels_in_y < resolution_FHD:
-    block_size = min_block_size = 32
-else:
-    block_size = min_block_size = 64
-if block_size < min_block_size:
-    min_block_size = block_size
-
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
 pictures = GOPs * GOP_size + 1

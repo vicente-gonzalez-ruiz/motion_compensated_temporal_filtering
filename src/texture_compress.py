@@ -29,7 +29,7 @@ parser.GOPs()
 parser.texture_layers()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.quantization_texture()
+parser.texture_quantization()
 parser.quantization_step()
 parser.TRLs()
 parser.SRLs()
@@ -41,7 +41,7 @@ GOPs = int(args.GOPs)
 layers = int(args.texture_layers)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quantization = args.quantization_texture
+quantization = args.texture_quantization
 quantization_step = int(args.quantization_step)
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
@@ -123,8 +123,8 @@ f_slopes.close ()
 # Compression of HIGH frequency temporal subbands.
 
 ## Current temporal iteration.
-temporal_subband = 1
-while temporal_subband < TRLs:
+subband = 1
+while subband < TRLs:
     pictures = (pictures + 1) / 2
     try:
         check_call("mctf texture_compress_fb_" + MCTF_TEXTURE_CODEC
@@ -134,13 +134,13 @@ while temporal_subband < TRLs:
                    + " --pixels_in_x="         + str(pixels_in_x)
                    + " --pixels_in_y="         + str(pixels_in_y)
                    + " --quantization=\""      + ','.join(map(str, SLOPES[TRLs-subband])) + "\""
-                   + " --temporal_subband="    + str(subband)
+                   + " --subband="             + str(subband)
                    + " --SRLs="                + str(SRLs)
                    , shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
-    temporal_subband += 1
+    subband += 1
 
 # Compression of LOW frequency temporal subbands.
 try:
@@ -151,7 +151,7 @@ try:
                + " --pixels_in_x="         + str(pixels_in_x)
                + " --pixels_in_y="         + str(pixels_in_y)
                + " --quantization=\""      + ','.join(map(str, SLOPES[0])) + "\""
-               + " --temporal_subband="    + str(subband)
+               + " --subband="             + str(subband)
                + " --SRLs="                + str(SRLs)
                , shell=True)
 except:

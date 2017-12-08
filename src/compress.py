@@ -31,7 +31,7 @@
 #
 #  - Example of use.\n 
 #  compress --update_factor=0 --texture_layers=16
-#  --quantization_texture=42000 --GOPs=10 --TRLs=5 --SRLs=5
+#  --texture_quantization=42000 --GOPs=10 --TRLs=5 --SRLs=5
 #  --block_size=32 --min_block_size=32 --search_range=4
 #  --pixels_in_x=352 --pixels_in_y=288
 
@@ -64,8 +64,8 @@ parser.border_size()
 parser.GOPs()
 parser.motion_layers()
 parser.quantization_step()
-parser.quantization_motion()
-parser.quantization_texture()
+parser.motion_quantization()
+parser.texture_quantization()
 parser.search_range()
 parser.subpixel_accuracy()
 parser.TRLs()
@@ -75,7 +75,6 @@ parser.update_factor()
 parser.using_gains()
 
 args = parser.parse_known_args()[0]
-
 always_B = int(args.always_B)
 block_overlaping = int(args.block_overlaping)
 block_size = int(args.block_size)
@@ -86,8 +85,8 @@ motion_layers = str(args.motion_layers)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 quantization_step = args.quantization_step
-quantization_motion = str(args.quantization_motion)
-quantization_texture = str(args.quantization_texture)
+motion_quantization = str(args.motion_quantization)
+texture_quantization = str(args.texture_quantization)
 search_range = int(args.search_range)
 subpixel_accuracy = int(args.subpixel_accuracy)
 TRLs = int(args.TRLs)
@@ -95,13 +94,6 @@ SRLs = int(args.SRLs)
 texture_layers = int(args.texture_layers)
 update_factor = float(args.update_factor)
 using_gains = str(args.using_gains)
-
-# Default block_size as pixels_in_xy
-resolution_FHD = 1920 * 1080
-if pixels_in_x * pixels_in_y < resolution_FHD:
-    block_size = min_block_size = 32
-else:
-    block_size = min_block_size = 64
 
 if TRLs > 1:
     try:
@@ -132,7 +124,7 @@ if TRLs > 1:
                    + " --motion_layers=\""+ str(motion_layers) + "\""
                    + " --pixels_in_x="    + str(pixels_in_x)
                    + " --pixels_in_y="    + str(pixels_in_y)
-                   + " --quantization=\"" + str(quantization_motion) + "\""
+                   + " --quantization=\"" + str(motion_quantization) + "\""
                    + " --SRLs="           + str(SRLs)
                    + " --TRLs="           + str(TRLs)
                    , shell=True)
@@ -145,7 +137,7 @@ try:
                + " --GOPs="                + str(GOPs)
                + " --pixels_in_x="         + str(pixels_in_x)
                + " --pixels_in_y="         + str(pixels_in_y)
-               + " --quantization=\""      + str(quantization_texture) + "\""
+               + " --quantization=\""      + str(texture_quantization) + "\""
                + " --quantization_step="   + str(quantization_step)
                + " --SRLs="                + str(SRLs)
                + " --TRLs="                + str(TRLs)

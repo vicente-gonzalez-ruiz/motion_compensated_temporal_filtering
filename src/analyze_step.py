@@ -32,7 +32,6 @@ parser.block_size()
 parser.border_size()
 
 args = parser.parse_known_args()[0]
-
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 GOPs = int(args.GOPs)
@@ -46,12 +45,6 @@ pictures = int(args.pictures)
 search_range = int(args.search_range)
 subpixel_accuracy = int(args.subpixel_accuracy)
 update_factor = float(args.update_factor)
-
-resolution_FHD = 1920 * 1080
-if pixels_in_x * pixels_in_y < resolution_FHD:
-    block_size = 32
-else:
-    block_size = 64
 
 try :
     # Lazzy transform.

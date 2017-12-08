@@ -53,22 +53,28 @@ class arguments_parser(argparse.ArgumentParser):
                           help="number of Group Of Pictures to process.",
                           default=Defaults.GOPs)
 
-    def min_block_size(self):
-        self.add_argument("--min_block_size",
-                          help="Minimal block size allowed during ME.",
-                          default=Defaults.min_block_size)
-
     def max_search_range(self):
         self.add_argument("--max_search_range",
                           help="Maximum search range allowed during ME.",
                           default=Defaults.max_search_range)
         
+    def min_block_size(self):
+        self.add_argument("--min_block_size",
+                          help="Minimal block size allowed during ME.",
+                          default=Defaults.min_block_size)
+
     def motion_layers(self):
         self.add_argument("--motion_layers",
                           help="Number of quality layers for motion. "
                           "Logarithm controls the quality level and "
                           "the bit-rate of the code-stream of motions.",
                           default=Defaults.motion_layers)
+
+    def motion_quantization(self):
+        self.add_argument("--motion_quantization",
+                          help="Controls the quality level and the bit-rate "
+                          "of the code-stream of motion data.",
+                          default=Defaults.motion_quantization)
 
     def pictures(self):
         self.add_argument("--pictures",
@@ -92,18 +98,6 @@ class arguments_parser(argparse.ArgumentParser):
                           "Kakadu uses by default 256.",
                           default=Defaults.quantization_step)
 
-    def quantization_motion(self):
-        self.add_argument("--quantization_motion",
-                          help="controls the quality level and the bit-rate "
-                          "of the code-stream of motions.",
-                          default=Defaults.quantization_motion)
-
-    def quantization_texture(self):
-        self.add_argument("--quantization_texture",
-                          help="controls the quality level and the bit-rate "
-                          "of the code-stream of textures.",
-                          default=Defaults.quantization_texture)
-                          
     def rates(self):
         self.add_argument("--rates",
                           help="Read only the initial portion of the "
@@ -118,6 +112,12 @@ class arguments_parser(argparse.ArgumentParser):
                           "quality level and the bit-rate of the code-stream.",
                           default=Defaults.texture_layers)
 
+    def texture_quantization(self):
+        self.add_argument("--texture_quantization",
+                          help="Controls the quality level and the bit-rate "
+                          "of the code-stream of texture data.",
+                          default=Defaults.texture_quantization)
+                          
     def search_range(self):
         self.add_argument("--search_range",
                           help="size of the search areas in the motion "
