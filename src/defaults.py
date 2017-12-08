@@ -28,9 +28,6 @@ class Defaults():
     # Minimal block size allowed in the motion estimation process.
     min_block_size = 32
 
-    # Of the ME process.
-    max_search_range = 128
-
     # Logarithm controls the quality level and the bit-rate of the
     # code-stream of motions.
     motion_layers = 1

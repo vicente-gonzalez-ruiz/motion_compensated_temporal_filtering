@@ -12,26 +12,10 @@ from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
 
-## Refers to the codec to be used for compression of texture
-## information.
 MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
-## Refers to low frequency subbands.
 LOW         = "low"
-## Refers to high frequency subbands.
 HIGH        = "high"
-## Number of Group Of Pictures to process.
-GOPs        = 1
-## Number of Temporal Resolution Levels.
-TRLs        = 4
-## Number of Spatia Resolution Levels.
-SRLs        = 5
-## Width of the pictures.
-pixels_in_x = "352,352,352,352,352"
-## Height of the pictures.
-pixels_in_y = "288,288,288,288,288"
 
-## The parser module provides an interface to Python's internal parser
-## and byte-code compiler.
 parser = arguments_parser(description="Expands the texture.")
 parser.GOPs()
 parser.pixels_in_x()
@@ -39,8 +23,6 @@ parser.pixels_in_y()
 parser.SRLs()
 parser.TRLs()
 
-## A script may only parse a few of the command-line arguments,
-## passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
 pixels_in_x = str(args.pixels_in_x)
@@ -70,8 +52,8 @@ if TRLs > 1 :
 #           check_call("mctf texture_expand_hfb_" + MCTF_TEXTURE_CODEC
                        + " --file="        + "\"" + HIGH + "_" + str(subband) + "\""
                        + " --pictures="    + str(pictures - 1)
-                       + " --pixels_in_x=" + str(pixels_in_x.split(',')[TRLs-subband])
-                       + " --pixels_in_y=" + str(pixels_in_y.split(',')[TRLs-subband])
+                       + " --pixels_in_x=" + str(pixels_in_x)
+                       + " --pixels_in_y=" + str(pixels_in_y)
                        + " --subband="     + str(subband)
                        + " --SRLs="        + str(SRLs)
                        , shell=True)
@@ -83,13 +65,12 @@ if TRLs > 1 :
 
 
 # Decompression LOW frequency subbands.
-#--------------------------------------
 try:
     check_call("mctf texture_expand_fb_" + MCTF_TEXTURE_CODEC
                + " --file="        + "\"" + LOW + "_" + str(TRLs - 1) + "\""
                + " --pictures="    + str(GOPs+1)
-               + " --pixels_in_x=" + str(pixels_in_x.split(',')[0])
-               + " --pixels_in_y=" + str(pixels_in_y.split(',')[0])
+               + " --pixels_in_x=" + str(pixels_in_x)
+               + " --pixels_in_y=" + str(pixels_in_y)
                + " --subband="     + str(TRLs)
                + " --SRLs="        + str(SRLs)
                , shell=True)

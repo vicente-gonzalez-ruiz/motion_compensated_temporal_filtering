@@ -19,28 +19,19 @@ from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
 
-## File that contains the textures.
-file        = ""
-## Number of images to process.
-pictures    = 33
-## Width of the pictures.
-pixels_in_x = 352
-## Height of the pictures.
-pixels_in_y = 288
-## Current temporal iteration.
-subband     = 0
-
-## The parser module provides an interface to Python's internal parser
-## and byte-code compiler.
 parser = arguments_parser(description="Expands the the LFB y HFB texture data using JPEG 2000.")
-parser.add_argument("--file", help="file that contains the LFB or HFB data. Default = {})".format(file))
-parser.pictures()
+parser.add_argument("--file",
+                    help="File that contains the LFB or HFB data.",
+                    default="")
+parser.add_argument("--pictures",
+                    help="Number of pictures to expand.",
+                    default=1)
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.subband()
+parser.add_argument("--subband",
+                    help="Subband to decompress.",
+                    default=0)
 
-## A script may only parse a few of the command-line arguments,
-## passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
 file = args.file
 pictures = int(args.pictures)

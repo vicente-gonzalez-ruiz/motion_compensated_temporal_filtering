@@ -13,7 +13,8 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
-from defaults import Defaults
+
+MAX_SEARCH_RANGE = 128
 
 parser = arguments_parser(description="Temporal analysis of a picture sequence.")
 parser.always_B()
@@ -87,9 +88,9 @@ while temporal_subband < TRLs:
     pictures = (pictures + 1) / 2
 
     search_range = search_range * search_factor
-    if ( search_range > Defaults.max_search_range ):
-        sys.stdout.write(sys.argv[0] + ": " + str(Defaults.max_search_range) + " reached!\n")
-        search_range = Defaults.max_search_range
+    if ( search_range > MAX_SEARCH_RANGE ):
+        sys.stdout.write(sys.argv[0] + ": " + str(MAX_SEARCH_RANGE) + " reached!\n")
+        search_range = MAX_SEARCH_RANGE
 
     block_size = block_size / 2
     if ( block_size < min_block_size ):
