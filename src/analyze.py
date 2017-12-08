@@ -18,7 +18,7 @@ parser = arguments_parser(description="Temporal analysis of a picture sequence."
 parser.always_B()
 parser.block_overlaping()
 parser.block_size()
-parser.block_size_min()
+parser.min_block_size()
 parser.border_size()
 parser.GOPs()
 parser.pixels_in_x()
@@ -33,7 +33,7 @@ args = parser.parse_known_args()[0]
 always_B = int(args.always_B)
 block_overlaping = int(args.block_overlaping)
 block_size = int(args.block_size)
-block_size_min = int(args.block_size_min)
+min_block_size = int(args.min_block_size)
 border_size = int(args.border_size)
 GOPs = int(args.GOPs)
 pixels_in_x = int(args.pixels_in_x)
@@ -45,9 +45,9 @@ update_factor = float(args.update_factor)
 
 resolution_FHD = 1920 * 1080
 if pixels_in_x * pixels_in_y < resolution_FHD:
-    block_size = block_size_min = 32
+    block_size = min_block_size = 32
 else:
-    block_size = block_size_min = 64
+    block_size = min_block_size = 64
 
 ## Initializes the class GOP (Group Of Pictures).
 gop=GOP()
@@ -66,8 +66,8 @@ search_factor = 2
 #  algorithm analysis to all high frequency subbands.
 temporal_subband = 1
 
-if block_size < block_size_min:
-    block_size_min = block_size
+if block_size < min_block_size:
+    min_block_size = block_size
 
 while temporal_subband < TRLs:
 
@@ -93,13 +93,13 @@ while temporal_subband < TRLs:
     pictures = (pictures + 1) / 2
 
     search_range = search_range * search_factor
-    if ( search_range > SEARCH_RANGE_MAX ):
-        sys.stdout.write(sys.argv[0] + ": " + str(SEARCH_RANGE_MAX) + " reached!\n")
-        search_range = SEARCH_RANGE_MAX
+    if ( search_range > Defaults.max_search_range ):
+        sys.stdout.write(sys.argv[0] + ": " + str(Defaults.max_search_range) + " reached!\n")
+        search_range = Defaults.max_search_range
 
     block_size = block_size / 2
-    if ( block_size < block_size_min ):
-        block_size = block_size_min
+    if ( block_size < min_block_size ):
+        block_size = min_block_size
 
     temporal_subband += 1
 

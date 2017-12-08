@@ -15,7 +15,7 @@
 #
 #  - Example of use.
 #  expand --update_factor=0 --GOPs=1 --TRLs=5 --SRLs=5 --block_size=32
-#    --block_size_min=32 --search_range=4 --pixels_in_x=352
+#    --min_block_size=32 --search_range=4 --pixels_in_x=352
 #    --pixels_in_y=288 --subpixel_accuracy=0
 
 import sys
@@ -37,7 +37,7 @@ pixels_in_y       = "288,288,288,288"
 ## Size of the blocks in the motion estimation process.
 block_size        = "32,32,32"
 ## Minimal block size allowed in the motion estimation process.
-block_size_min    = 32
+min_block_size    = 32
 ## Number of Group Of Pictures to process.
 GOPs              = 1
 ## Number of Spatial Resolution Levels.
@@ -76,18 +76,18 @@ if args.pixels_in_y:
 # Default block_size as pixels_in_xy
 if int(pixels_in_x.split(',')[0]) * int(pixels_in_y.split(',')[0]) < resolution_FHD:
     block_size     = ','.join(['32'] * (TRLs-1))
-    block_size_min = 32
+    min_block_size = 32
 else:
     block_size     = ','.join(['64'] * (TRLs-1))
-    block_size_min = 64
+    min_block_size = 64
 
 parser.block_size(block_size)
 if args.block_size:
     block_size = str(args.block_size)
 
-parser.block_size_min()
-if args.block_size_min:
-    block_size_min = int(args.block_size_min)
+parser.min_block_size()
+if args.min_block_size:
+    min_block_size = int(args.min_block_size)
 
 parser.GOPs()
 if args.GOPs:
@@ -154,7 +154,7 @@ def set_parameters (block_size, rates, pixels_in_x, pixels_in_y, subpixel_accura
 
     # block_size
     for i in range ( len(_block_size), TRLs-1 ) :
-        if int(_block_size[len(_block_size)-1]) > block_size_min :
+        if int(_block_size[len(_block_size)-1]) > min_block_size :
             _block_size.append(int(_block_size[len(_block_size)-1]) /2)
         else :
             _block_size.append(int(_block_size[len(_block_size)-1])   )

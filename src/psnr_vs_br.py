@@ -21,7 +21,7 @@ block_overlaping = 0
 ## Size of the blocks in the motion estimation process.
 block_size = 16
 ## Minimal block size allowed in the motion estimation process.
-block_size_min = 16
+min_block_size = 16
 ## Size of the border of the blocks in the motion estimation process.
 border_size = 0
 ## Original signal.
@@ -67,7 +67,7 @@ def usage():
     sys.stderr.write("\n")
     sys.stderr.write("   -[-]block_o[v]erlaping=number of overlaped pixels between the blocks in the motion estimation (%d)\n" % block_overlaping)
     sys.stderr.write("   -[-b]lock_size=size of the blocks in the motion estimation process (%d)\n" % block_size)
-    sys.stderr.write("   -[-]block_si[z]e_min=minimal block size allowed in the motion estimation (%d)\n" % block_size_min)
+    sys.stderr.write("   -[-]block_si[z]e_min=minimal block size allowed in the motion estimation (%d)\n" % min_block_size)
     sys.stderr.write("   -[-]bor[d]der_size=size of the border of the blocks in the motion estimation process (%d)\n" % border_size)
     sys.stderr.write("   -[-o]riginal=original video to compare (%s)\n" % original)
     sys.stderr.write("   -[-p]ictures=number of images to process (%d)\n" % pictures)
@@ -90,8 +90,8 @@ try:
     opts, extraparams = getopt.getopt(sys.argv[1:],"v:b:z:d:p:x:y:l:p:a:t:h",
                                       ["block_overlaping=",
                                        "block_size=",
-                                       "block_size_min=",
                                        "border_size=",
+                                       "min_block_size=",
                                        "original=",
                                        "pictures=",
                                        "pixels_in_x=",
@@ -117,10 +117,10 @@ for o, a in opts:
         ifdef({{DEBUG}},
         display.info(sys.argv[0] + ": block_size=" + str(block_size) + '\n')
         )
-    if o in ("-z", "--block_size_min"):
-        block_size_min = int(a)
+    if o in ("-z", "--min_block_size"):
+        min_block_size = int(a)
         ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": block_size_min=" + str(block_size_min) + '\n')
+        display.info(sys.argv[0] + ": min_block_size=" + str(min_block_size) + '\n')
         )
     if o in ("-d", "--border_size"):
         border_size = int(a)
@@ -185,8 +185,8 @@ while slopes < 65535:
     command = "mctf compress" + \
               " --block_overlaping=" + str(block_overlaping) + \
               " --block_size=" + str(block_size) + \
-              " --block_size_min=" + str(block_size_min) + \
               " --border_size=" + str(border_size) + \
+              " --min_block_size=" + str(min_block_size) + \
               " --pictures=" + str(pictures) + \
               " --pixels_in_x=" + str(pixels_in_x) + \
               " --pixels_in_y=" + str(pixels_in_y) + \
@@ -199,7 +199,7 @@ while slopes < 65535:
     command = "mctf expand" + \
               " --block_overlaping=" + str(block_overlaping) + \
               " --block_size=" + str(block_size) + \
-              " --block_size_min=" + str(block_size_min) + \
+              " --min_block_size=" + str(min_block_size) + \
               " --pictures=" + str(pictures) + \
               " --pixels_in_x=" + str(pixels_in_x) + \
               " --pixels_in_y=" + str(pixels_in_y) + \

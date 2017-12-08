@@ -33,7 +33,7 @@ parser = arguments_parser(description="Compress the motion data.")
 parser.pixels_in_x()
 parser.pixels_in_y()
 parser.block_size()
-parser.block_size_min()
+parser.min_block_size()
 parser.GOPs()
 parser.motion_layers()
 parser.motion_quantization()
@@ -41,46 +41,33 @@ parser.TRLs()
 
 args = parser.parse_known_args()[0]
 
-if args.pixels_in_x:
-    pixels_in_x = int(args.pixels_in_x)
-
-if args.pixels_in_y:
-    pixels_in_y = int(args.pixels_in_y)
+pixels_in_x = int(args.pixels_in_x)
+pixels_in_y = int(args.pixels_in_y)
+block_size = int(args.block_size)
+min_block_size = int(args.min_block_size)
+GOPs = int(args.GOPs)
+layers = str(args.motion_layers)
+quantization = str(args.motion_quantization)
+TRLs = int(args.TRLs)
 
 if pixels_in_x * pixels_in_y < resolution_FHD:
-    block_size = block_size_min = 32
+    block_size = min_block_size = 32
 else:
-    block_size = block_size_min = 64
-
-if args.block_size:
-    block_size = int(args.block_size)
-
-if block_size < block_size_min:
-    block_size_min = block_size
-
-if args.block_size_min:
-    block_size_min = int(args.block_size_min)
-
-if args.GOPs:
-    GOPs = int(args.GOPs)
-
-if args.motion_layers:
-    layers = str(args.motion_layers)
-
-if args.motion_quantization:
-    quantization = str(args.motion_quantization)
-
-if args.TRLs:
-    TRLs = int(args.TRLs)
+    block_size = min_block_size = 64
+if block_size < min_block_size:
+    min_block_size = block_size
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
 pictures = GOPs * GOP_size + 1
+
 ## Number of pictures of a temporal resolution.
 fields      = pictures / 2
 iterations  = TRLs - 1
+
 ## Number of blocks in the Y direction.
 blocks_in_y = pixels_in_y / block_size
+
 ## Number of blocks in the X direction.
 blocks_in_x = pixels_in_x / block_size
 
@@ -103,18 +90,17 @@ while iter < iterations:
 
     # Calculate the block size used in this temporal iteration.
     block_size = block_size / 2
-    if (block_size < block_size_min):
-        block_size = block_size_min
+    if (block_size < min_block_size):
+        block_size = min_block_size
 
         fields /= 2
         iter += 1
         blocks_in_y = pixels_in_y / block_size
         blocks_in_x = pixels_in_x / block_size
 
-
-# Bidirectionally unmapped level lower temporal resolution. The last
-# number of blocks in X and Y calculated in the previous loop is
-# used. The same applies to the variable "iter".
+## Bidirectionally unmapped level lower temporal resolution. The last
+#  number of blocks in X and Y calculated in the previous loop is
+#  used. The same applies to the variable "iter".
 try:
     check_call("mctf bidirectional_motion_decorrelate"
                + " --blocks_in_x=" + str(blocks_in_x)

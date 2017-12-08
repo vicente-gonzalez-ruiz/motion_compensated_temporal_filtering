@@ -52,36 +52,26 @@ parser = arguments_parser(description="Compress the motion data using JPEG 2000.
 args = parser.parse_known_args()[0]
 
 parser.add_argument("--blocks_in_x",
-                    help="number of blocks in the X direction. "
-                    "(Default = {})".format(blocks_in_x))
-if args.blocks_in_x:
-    blocks_in_x = int(args.blocks_in_x)
-
+                    help="number of blocks in the X direction.",
+                    default=blocks_in_x)
 parser.add_argument("--blocks_in_y",
-                    help="number of blocks in the Y direction. "
-                    "(Default = {})".format(blocks_in_y))
-if args.blocks_in_y:
-    blocks_in_y = int(args.blocks_in_y)
-    
+                    help="number of blocks in the Y direction."
+                    default=blocks_in_y)
 parser.add_argument("--fields",
-                    help="number of fields in to compress. "
-                    "(Default = {})".format(fields))
-if args.fields:
-    fields = int(args.fields)
-
-parser.motion_layers()
-if args.motion_layers:
-    layers = str(args.motion_layers)
-
-parser.motion_quantization()
-if args.motion_quantization:
-    quantization = str(args.motion_quantization)
-
+                    help="number of fields in to compress."
+                    default=fields)
 parser.add_argument("--file",
                     help="name of the file with the motion fields. "
                     "(Default = {})".format(file))
-if args.file:
-    file = args.file
+parser.motion_layers()
+parser.motion_quantization()
+
+blocks_in_x = int(args.blocks_in_x)
+blocks_in_y = int(args.blocks_in_y)
+fields = int(args.fields)
+layers = str(args.motion_layers)
+quantization = str(args.motion_quantization)
+file = args.file
 
 ## Number of levels of the DWT to be applied in compression.
 spatial_dwt_levels = 0 # 1 # SRLs - 1

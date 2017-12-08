@@ -41,29 +41,14 @@ parser.SRLs()
 
 args = parser.parse_known_args()[0]
 
-if args.file:
-    file = args.file
-
-if args.texture_layers:
-    layers = args.texture_layers
-
-if args.pictures:
-    pictures = int(args.pictures)
-
-if args.pixels_in_x:
-    pixels_in_x = int(args.pixels_in_x)
-
-if args.pixels_in_y:
-    pixels_in_y = int(args.pixels_in_y)
-
-if args.quantization_texture:
-    quantization = str(args.quantization_texture)
-
-if args.temporal_subband:
-    subband = int(args.temporal_subband)
-
-if args.SRLs:
-    SRLs = int(args.SRLs)
+file = args.file
+layers = args.texture_layers
+pictures = int(args.pictures)
+pixels_in_x = int(args.pixels_in_x)
+pixels_in_y = int(args.pixels_in_y)
+quantization = str(args.quantization_texture)
+subband = int(args.temporal_subband)
+SRLs = int(args.SRLs)
 
 #-------------
 #- FUNCTIONS -

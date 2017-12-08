@@ -145,7 +145,7 @@ FPS               = 30    # 30   # 50
 ## Size of the blocks in the motion estimation process.
 block_size        = 32    # 32   # 64
 ## Minimal block size allowed in the motion estimation process.
-block_size_min    = 32    # 32   # 64
+min_block_size    = 32    # 32   # 64
 ## Size of the search areas in the motion estimation process.
 search_range      = 4
 ## Number of quality layers to extract.
@@ -775,11 +775,11 @@ def lba (FIRST_picture_ofGOP, iGOP, pictures, kbps_antes, rmse1D_antes, radian_c
 
     check_call("mcj2k expand"  # mcj2k expand --GOPs=1 --TRLs=5 --SRLs=5 --block_size=16,16,16,16 --search_range=4 --pixels_in_x=352,352,352,352,352 --pixels_in_y=288,288,288,288,288 --subpixel_accuracy=0,0,0,0,0
                + " --GOPs="              + str(GOPs_to_expand)
+               + " --min_block_size="    + str(min_block_size)
                + " --TRLs="              + str(TRLs)
                + " --SRLs="              + str(SRLs)
                + " --update_factor="     + str(update_factor)
                + " --block_size="        + ','.join(map(str, _BLOCK_SIZES))
-               + " --block_size_min="    + str(block_size_min)
                + " --search_range="      + str(search_range)
     #          + " --rates="             + str(','.join(map(str, _RATES))) # In construction.
                + " --pixels_in_x="       + ','.join(map(str, _PIXELS_IN_X))
