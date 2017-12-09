@@ -67,7 +67,7 @@ for comp_number in range (0, COMPONENTS) :
                    + " "
                    + str(BYTES_PER_COMPONENT)
                    + " < " + file
-                   + " | /usr/bin/split --numeric-suffixes --suffix-length=4 "
+                   + " | split --numeric-suffixes --suffix-length=4 "
                    + "--bytes="
                    + str(bytes_compF)
                    + " - "

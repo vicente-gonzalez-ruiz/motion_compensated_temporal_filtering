@@ -2,12 +2,11 @@
 # the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
 # sobre Internet" (P10-TIC-6548).
 
-
 #!/bin/bash
 set -x
 
-if [ ! -e $PWD/bin ]; then
-    mkdir ./bin
+if [ ! -e $HOME/bin ]; then
+    mkdir $HOME/bin
 fi
 
 read dirs << EOF
@@ -15,11 +14,11 @@ $PATH
 EOF
 
 IFS=:
-# $PWD/bin insertion in the PATH variable, if it does not exist
+# $HOME/bin insertion in the PATH variable, if it does not exist
 
 contains_bin=0
 for dir in $dirs; do
-    if [ "$dir" = "$PWD/bin" ]; then
+    if [ "$dir" = "$HOME/bin" ]; then
         contains_bin=1
     fi
 done
@@ -27,11 +26,14 @@ done
 IFS=
 
 if [ $contains_bin = 0 ]; then
-    PATH=$PWD/bin:$PATH
+    PATH=$HOME/bin:$PATH
 fi
 # End of $PWD/bin insertion in the PATH variable
 
-make -C src
+if [ ! -e ./bin ]; then
+   mkdir ./bin
+fi
+
 export MCTF=$PWD
 
 cat <<EOF
@@ -41,8 +43,10 @@ This script defines the shell variable MCTF as:
 export MCTF=$MCTF
 
 If needed, include this variable in your $HOME/.bashrc file for
-futher references.
+futher references. In addition, add $HOME/bin to PATH variable.
 [1;0m
 EOF
+
+make -C src
 
 set +x

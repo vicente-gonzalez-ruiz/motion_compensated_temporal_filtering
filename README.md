@@ -21,17 +21,19 @@ MCTF = Motion Compensated Temporal Filtering
 ## Basic MCJ2K encoding/decoding:
 
   ```
+  export MCTF_TEXTURE_CODEC="j2k"
+  export MCTF_MOTION_CODEC="j2k"
   mkdir tmp
   cd tmp
   wget http://www.hpca.ual.es/~vruiz/videos/container_352x288x30x420x300.avi
   ffmpeg -i container_352x288x30x420x300.avi container_352x288x30x420x300.yuv
   ln -s container_352x288x30x420x300.yuv low_0
-  mcj2k compress --TRLs=6 --GOPs=9 --quantizations="45000"
-  mcj2k info --TRLs=6 --GOPs=9
+  mctf compress --TRLs=6 --GOPs=9 --quantizations="45000"
+  mctf info_j2k --TRLs=6 --GOPs=9
   mkdir tmp
   cp *.j2c *type* tmp
   cd tmp
-  mcj2k expand --TRLs=6 --GOPs=9
+  mctf expand --TRLs=6 --GOPs=9
   mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
   cd ../../..
   rm -rf tmp

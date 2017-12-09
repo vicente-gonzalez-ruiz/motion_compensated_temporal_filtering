@@ -108,7 +108,7 @@ def demux (pic, image_number, component, jump_demux, size_component) :
 
     try :
         check_call("trace demux " + str(YUV_size) + jump_demux
-                   + " < " + pic + ".tmp | /usr/bin/split --numeric-suffixes --suffix-length=4 --bytes="
+                   + " < " + pic + ".tmp | split --numeric-suffixes --suffix-length=4 --bytes="
                    + str(size_component) + " - " + pic + "_" + str(component) + "_"
                    , shell=True)
     except CalledProcessError :

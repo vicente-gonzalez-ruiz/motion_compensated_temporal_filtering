@@ -113,7 +113,7 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
     # Demux.
     try :
         check_call("trace demux " + str(YUV_size) + jump_demux
-                   + " < " + file + ".tmp | /usr/bin/split --numeric-suffixes --suffix-length=4 --bytes="
+                   + " < " + file + ".tmp | split --numeric-suffixes --suffix-length=4 --bytes="
                    + str(size_component) + " - " + file + "_" + str(component) + "_"
                    , shell=True)
     except CalledProcessError :

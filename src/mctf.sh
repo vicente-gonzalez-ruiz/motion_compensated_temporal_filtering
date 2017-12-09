@@ -1,13 +1,6 @@
 #! /bin/bash
 
-## \file mctf.sh
-#  \brief Information about the command line parameters.
-#  
-#  \author Vicente Gonzalez-Ruiz.
-#  \date Last modification: 2015, January 7.
-
-
-## \brief Add a final symbol.
+## Add a final symbol.
 function end {
     (echo -e "" >&2)
     # (echo -n "[1;0m" >&2)
