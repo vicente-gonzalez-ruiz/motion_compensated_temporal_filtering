@@ -143,6 +143,8 @@ The current version of MCTF has the following limitations:
      size. This means that, for example, if the image is 1280x720
      pixels, only up to 16x16 macro-blocks can be used.
 
+## Thanks
+
 The MCTF project has been supported by the Junta de Andalucía through
 the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
 sobre Internet" (P10-TIC-6548).

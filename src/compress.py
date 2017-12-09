@@ -1,46 +1,36 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-# The MCTF project has been supported by the Junta de Andalucía through
-# the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
-# sobre Internet" (P10-TIC-6548).
-
-## @file compress.py
 #  Compression of a sequence of images (motion vectors and textures).
 #  The compression consists of three major steps:\n
 #  - Temporal analysis of image sequence. Temporal decorrelation.
 #  - Compress the fields of motion. A layer quality is used without loss.
 #  - Compressed textures. Quality layers are used, with loss.
 #
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
+#  Examples:
 #
-#  @example compress.py
+#  - Show default parameters:
 #
-#  - Show default parameters.\n
 #  mcj2k compress --help
 #
-#  - Compress using the default parameters.\n
+#  - Compress using the default parameters:
+#
 #  mcj2k compress
 #
-#  - Using a GOP_size=8.\n
+#  - Using a GOP_size=8:
+#
 #  mcj2k compress --TRLs=3
 #
-#  - Controlling quantization.
+#  - Controlling quantization:
+#
 #  mcj2k compress --quantization=45000
 #
-#  - Example of use.\n 
+#  - Example of use:
+#
 #  compress --update_factor=0 --texture_layers=16
 #  --texture_quantization=42000 --GOPs=10 --TRLs=5 --SRLs=5
 #  --block_size=32 --min_block_size=32 --search_range=4
 #  --pixels_in_x=352 --pixels_in_y=288
-
-## @package compress
-#  Compression of a sequence of images (motion vectors and textures).
-#  The compression consists of three major steps:\n
-#  - Temporal analysis of image sequence. Temporal decorrelation.
-#  - Compress the fields of motion. A layer quality is used without loss.
-#  - Compressed textures. Quality layers are used, with loss.
 
 import sys
 import getopt
