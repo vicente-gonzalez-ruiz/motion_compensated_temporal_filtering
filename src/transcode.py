@@ -1,63 +1,55 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-#  Extracts a codestream from a bigger codestream, discarding a number
-#  of temporal-, resolution- or/and quality-levels.\n The number of temporal
-#  resolution levels that is going to be discardes must be >= 0 (0 = no
-#  discarding). Some thing similar happens with the number of discardes
-#  spatial resolutions. The last parameter is controlled by means of a
-#  slope, a value between 0 a 65535 where 0 means no discarding and
-#  65553 implies a null output video, but notice that if the input
-#  video was quantized using a slope X and we select a new slope where
-#  Y <= X, then, this extraction will not have any effect (the output
-#  will be identical to the input). These parameters can not be used
-#  simultaneously, but obviously, they can be concatenated. The output
-#  sequences will overwrite the input sequences.
+# Quality transcoding.
+
+# Extracts a codestream from a bigger one, discarding a number of
+# temporal/spatial resolutions or/and quality subband-layers.
+
+# Reducing the number of spatial resolutions is trivial, using the
+# facility provided by the image transcoder, because to performe a
+# transcoding, all the images can be trancoded discarding the highest
+# spatial resolution levels, and the motion information must be
+# interpreted in this case as if over-pixel ME/MC had been
+# performed. For example, if one spatial resolution level is
+# discarded, the degree of over-pixel ME/MC should be incremented by
+# one.
+
+# Reducing the number of quality subband-layers basically means that
+# the set:
 #
-#  You can perform a direct transcoding. Indicating the number of
-#  layers of each subband to extract.
-#  
-#  You can also make use of one, sorting algorithms, implemented. The
-#  organization consists of calculating the optimal order of layers of
-#  each subband to be sent from one codestream optimally in term of
-#  rate and distortion.
-#  
-#  There is an algorithm of optimal result, called FS-opt, which has
-#  the highest of all algorithmic complexity. Also present, other
-#  algorithms, in which the result is suboptimal, but have lower
-#  algorithmic complexity.
-#  
-#  There are 2 types of sorting algorithms:
-#  - Manages the full video
-#  - Manages the video GOP to GOP
+# {L^{T-1}_{Q-1}, M^{T-1}_{q-1}, H^{T-1}_{Q-1}, M^{T-2}_{q-1}, H^{T-2}_{Q-1}, ..., M^1_{q-1}, H^1_{Q-1},
+#  L^{T-1}_{Q-2}, M^{T-1}_{q-2}, H^{T-1}_{Q-2}, M^{T-2}_{q-2}, H^{T-2}_{Q-2}, ..., M^1_{q-2}, H^1_{Q-2},
+#  :
+#  L^{T-1}_0, -, H^{T-1}_0, H^{T-1}_0, H^{T-2}_0, ..., H^1_0}
 #
-#  This depends, of sorting algorithm, which is being conducted. For
-#  example, in the Full-Search algorithm, the calculations are
-#  independent of each different GOP therefore should be treated to
-#  GOP GOP.
+# is going to be truncated at a subband-layer, starting at
+# L^{T-1}_{Q-1}, where T=number of TRLs and Q=number of quality layers
+# for texture and q=number of quality layers for movement. A total
+# number of TQ+q subband-layers are available. In the last set
+# description, it has been supposed that q<Q.
+
+# Reducing the number of temporal resolution levels is also trivial
+# because only a number of temporal subbands must be discarded.
+
+# The number of GOPs can also be reduced.
+
+# Only one transcoding (spatial/temporal/quality) can be performed at
+# the same time.
+
+# Examples:
 #
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
+# * Defining a number of spatial resolution levels:
 #
-#  Examples:
+#   mctf transcode --SRLs=2
 #
-#  - Divides the frame-rate by two:
+# * Defining a number of quality subband-layers:
 #
-#  mcj2k transcode --discard_TRLs=1
+#   mctf transcode --QSLs=5
 #
-#  - Divides the spatial resolution of the video by 2^2 in each dimmension:
+# * Defining a number of GOPs:
 #
-#  mcj2k transcode --discard_SRLs=2
-#
-#  - Outputs only the first GOP (only one image):
-#
-#  mcj2k transcode --GOPs=1
-#
-#  - Example of use:
-#
-#  mcj2k transcode --algorithm=FS-opt --update_factor=0 --GOPs=8 --TRLs=5 --SRLs=4
-#    --FPS=50 --BRC=500000 --discard_SRLs=0 --pixels_in_x=352
-#    --pixels_in_y=288 --block_size=32 --search_range=4 --nLayers=16
+#   mctf transcode --GOPs=2
 
 import info_j2k
 import sys
@@ -74,125 +66,41 @@ from subprocess       import check_call
 from subprocess       import CalledProcessError
 from arguments_parser import arguments_parser
 
-
-## Refers to high frequency subbands.
-HIGH              = "high_"
-## Refers to low frequency subbands.
-LOW               = "low_"
-## Refers to fields of motion.
-MOTION            = "motion_residue_"
-## Number of components in the fields of motion.
-MOTION_COMPONENTS = 4
-## A very high value. It's useful to use in a given iteration of
-## comparisons.
-MAX_VALUE         = 255
-## Number of Group Of Pictures to process.
-GOPs              = 1
-## Number of Temporal Resolution Levels.
-TRLs              = 4
-## Number of Spatial Resolution Levels.
-SRLs              = 5
-## Maximum available bandwidth. The Full-Search algorithm calculates
-## the optimal order of layers, up to this value. Its default value is
-## very high, therefore, if a value is not specified, the order of all
-## layers of the codestream is calculated.
-BRC               = MAX_VALUE**3 # Un numero muy alto...
-## Number of levels of temporal resolution discarded.
-discard_TRLs      = 0
-## Number of levels of spatial resolution discarded for each subband.
-discard_SRLs      = "0,0,0,0,0,0,0,0,0"
-## Width of the pictures.
-pixels_in_x       = 352   # 352  # 1920
-## Height of the pictures.
-pixels_in_y       = 288   # 288  # 1088
-## Frames per second.
-FPS               = 30    # 30   # 50
-## Size of the blocks in the motion estimation process.
-block_size        = 32    # 32   # 64
-## Minimal block size allowed in the motion estimation process.
-min_block_size    = 32    # 32   # 64
-## Size of the search areas in the motion estimation process.
-search_range      = 4
-## Number of quality layers to extract.
-nLayers           = 1
-## Number of codestream quality layers.
-Ncapas_T          = 16
-## Weight of the update step.
-update_factor     = 1.0/4
-## Type sorting algorithm.
-algorithm         = ""
-## Number of quality layers that are extracted for each subbband.
-combination       = ""
-
-
-
-## The parser module provides an interface to Python's internal parser
-## and byte-code compiler.
-parser = arguments_parser(description="Transcodes a MCJ2K video.")
+parser = arguments_parser(description="Transcodes a sequence transfering a number of quality subband-layers.")
 parser.GOPs()
-parser.TRLs()
-parser.SRLs()
-parser.add_argument("--BRC",
-                    help="bit-rate control (kbps). (Default = {})".format(BRC))
-parser.add_argument("--discard_TRLs", help="number of discarded temporal resolution levels. (Default = {})".format(discard_TRLs))
-parser.add_argument("--discard_SRLs", help="List of discarded spatial resolution levels for textures and motions. Example: for TRL=3 there are 5 discarded, these values correspond to L2, H2, H1, M2 and M1. (Default = {})".format(discard_SRLs))
+parser.motion_layers()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.FPS()
-parser.block_size()
-parser.search_range()
-parser.add_argument("--nLayers", help="Number of quality layers. (Default = {})".format(nLayers))
-parser.update_factor()
-parser.add_argument("--algorithm", help="Type sorting algorithm. (Default = {})".format(algorithm))
-parser.add_argument("--combination", help="Number of quality layers that are extracted for each subbbanda. (Default = {})".format(combination))
+parser.add_argument("-QSLs",
+                    help="Number of Quality Subband-Layers.",
+                    default=1)
+parser.SRLs()
+parser.texture_layers()
+parser.TRLs()
 
-## A script may only parse a few of the command-line arguments,
-## passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
-if args.GOPs :
-    GOPs = int(args.GOPs)
-if args.TRLs :
-    TRLs = int(args.TRLs)
-if args.SRLs :
-    SRLs = int(args.SRLs)
-if args.BRC :
-    BRC = float(args.BRC)
-if args.discard_TRLs :
-    discard_TRLs = int(args.discard_TRLs)
-if args.discard_SRLs :
-    discard_SRLs = str(args.discard_SRLs)
-if args.pixels_in_x :
-    pixels_in_x = int(args.pixels_in_x)
-if args.pixels_in_y :
-    pixels_in_y = int(args.pixels_in_y)
-if args.FPS :
-    FPS = float(args.FPS)
-if args.block_size :
-    block_size = int(args.block_size)
-if args.search_range :
-    search_range = int(args.search_range)
-if args.nLayers :
-    Ncapas_T = int(args.nLayers)
-if args.update_factor :
-    update_factor = float(args.update_factor)
-if args.algorithm :
-    algorithm = str(args.algorithm)
-if args.combination :
-    combination = str(args.combination)
+GOPs = int(args.GOPs)
+motion_layers=int(args.motion_layers)
+pixels_in_x = int(args.pixels_in_x)
+pixels_in_y = int(args.pixels_in_y)
+QSLs = int(args.QSLs)
+SRLs = int(args.SRLs)
+texture_layers=int(args.texture_layers)
+TRLs = int(args.TRLs)
 
+# We need to compute the number of quality layers of each temporal
+# subband. For example, if QSLs=1, only the first quality layer of the
+# subband L^{T-1} will be output. if QSLs=2, only the first quality
+# layer of the subbands L^{T-1} and H^{T-1} will be output, if QSLs=3,
+# the first quality layer of M^{T-1} will be output too, and so on.
 
-if BRC > MAX_VALUE**3 :
-    BRC = (MAX_VALUE**3) - 1
+def get_next_subband_layer(current_subband_layer):
+    
 
-
-
-
-
-
-
-#####################################################################################################################################################################
-####################################################### FUNCTIONS
-#####################################################################################################################################################################
+number_of_output_QSLs = 0
+while (number_of_output_QSLs < QSLs):
+    
+    number_of_output_QSLs += 1
 
 ## Determines the size of the header of a codestream.
 #  @param file_name Name of the file with the motion fields.
@@ -201,9 +109,6 @@ def header (file_name) :
     p = sub.Popen("header_size " + str(file_name) + " 2> /dev/null | grep OUT", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     out, err = p.communicate()
     return long(out[4:])
-
-
-
 
 ## Transcode a codestream, reducing the bit-rate and quality, by
 ## extracting a given number of layers of a given subband.
@@ -272,7 +177,7 @@ def kdu_transcode (in_filename, out_filename, cLayers, reduces, rate): # kdu_tra
 #  - GOP to GOP.
 #  - The full sequence, ie all GOPs.
 #
-#  This depends, of sorting algorithm, which is being conducted. For
+#  This depends, on sorting algorithm, which is being conducted. For
 #  example, in the Full-Search algorithm, the calculations are
 #  independent of each different GOP therefore should be treated to
 #  GOP GOP.

@@ -31,13 +31,16 @@ parser.block_size()
 parser.block_overlaping()
 parser.border_size()
 parser.GOPs()
-parser.TRLs()
+parser.min_block_size()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.min_block_size()
-parser.SRLs()
-parser.subpixel_accuracy()
 parser.search_range()
+parser.SRLs()
+#parser.add_argument("--subband_layers",
+#                    help="Number of subband-layers to decode",
+#                    default=1)
+parser.subpixel_accuracy()
+parser.TRLs()
 parser.update_factor()
 
 args = parser.parse_known_args()[0]
@@ -50,6 +53,7 @@ pixels_in_x = str(args.pixels_in_x)
 pixels_in_y = str(args.pixels_in_y)
 SRLs = int(args.SRLs)
 TRLs = int(args.TRLs)
+#subband_layers = int(args.subband_layers)
 subpixel_accuracy = str(args.subpixel_accuracy)
 search_range = int(args.search_range)
 update_factor = float(args.update_factor)
@@ -57,6 +61,10 @@ update_factor = float(args.update_factor)
 # Time
 # /usr/bin/time -f "# Real-User-System\n%e\t%U\t%S" -a -o "info_time" date
 # /usr/bin/time -f "%e\t%U\t%S" -a -o "info_time_" date
+
+#for sl in range(subband_layers):
+#    try:
+#        check_call("mctf texture_subband_layer_expand"
 
 # Decompress texture.
 try:

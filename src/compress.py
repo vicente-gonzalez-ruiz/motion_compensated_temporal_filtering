@@ -1,36 +1,32 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-#  Compression of a sequence of images (motion vectors and textures).
-#  The compression consists of three major steps:\n
-#  - Temporal analysis of image sequence. Temporal decorrelation.
-#  - Compress the fields of motion. A layer quality is used without loss.
-#  - Compressed textures. Quality layers are used, with loss.
+# Compression of a sequence of images.
+
+# Examples:
 #
-#  Examples:
+#  * Show default parameters:
 #
-#  - Show default parameters:
+#    mcj2k compress --help
 #
-#  mcj2k compress --help
+#  * Compress using the default parameters:
 #
-#  - Compress using the default parameters:
+#    mcj2k compress
 #
-#  mcj2k compress
+#  * Using a GOP_size=8:
 #
-#  - Using a GOP_size=8:
+#    mcj2k compress --TRLs=3
 #
-#  mcj2k compress --TRLs=3
+#  * Controlling quantization:
 #
-#  - Controlling quantization:
+#    mcj2k compress --quantization=45000
 #
-#  mcj2k compress --quantization=45000
+#  * Example of use:
 #
-#  - Example of use:
-#
-#  compress --update_factor=0 --texture_layers=16
-#  --texture_quantization=42000 --GOPs=10 --TRLs=5 --SRLs=5
-#  --block_size=32 --min_block_size=32 --search_range=4
-#  --pixels_in_x=352 --pixels_in_y=288
+#    compress --update_factor=0 --texture_layers=16
+#      --texture_quantization=42000 --GOPs=10 --TRLs=5 --SRLs=5
+#      --block_size=32 --min_block_size=32 --search_range=4
+#      --pixels_in_x=352 --pixels_in_y=288
 
 import sys
 import getopt
@@ -44,22 +40,22 @@ from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
 
 parser = arguments_parser(description="Encodes a sequence of pictures.")
-parser.pixels_in_x()
-parser.pixels_in_y()
 parser.always_B()
 parser.block_overlaping()
 parser.block_size()
-parser.min_block_size()
 parser.border_size()
 parser.GOPs()
+parser.min_block_size()
 parser.motion_layers()
-parser.quantization_step()
 parser.motion_quantization()
-parser.texture_quantization()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.quantization_step()
 parser.search_range()
 parser.subpixel_accuracy()
-parser.TRLs()
+parser.texture_quantization()
 parser.SRLs()
+parser.TRLs()
 parser.texture_layers()
 parser.update_factor()
 parser.using_gains()
