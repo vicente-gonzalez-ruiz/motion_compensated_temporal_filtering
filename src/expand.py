@@ -2,7 +2,7 @@
 # -*- coding: iso-8859-15 -*-
 
 ## Decodes a sequence of pictures.
-#  Decoding consists of two major steps:\n
+#  Decoding consists of two major steps:
 #  - Decompression textures and movement data.
 #  - Synthesizes the video.
 #
@@ -24,32 +24,6 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
-
-## Number of Temporal Resolution Levels.
-TRLs              = 4
-## Width of the pictures.
-pixels_in_x       = "352,352,352,352"
-## Height of the pictures.
-pixels_in_y       = "288,288,288,288"
-## Size of the blocks in the motion estimation process.
-block_size        = "32,32,32"
-## Minimal block size allowed in the motion estimation process.
-min_block_size    = 32
-## Number of Group Of Pictures to process.
-GOPs              = 1
-## Number of Spatial Resolution Levels.
-SRLs              = 5
-## Subpixel motion estimation order.
-subpixel_accuracy = "0,0,0,0,0"
-## Size of the search areas in the motion estimation process.
-search_range      = 4
-## Size of the border of the blocks in the motion estimation process.
-border_size       = 0
-## Number of overlaped pixels between the blocks in the motion
-## compensation process.
-block_overlaping  = 0
-## Weight of the update step.
-update_factor     = 1.0/4
 
 parser = arguments_parser(description="Decodes a sequence of pictures.")
 

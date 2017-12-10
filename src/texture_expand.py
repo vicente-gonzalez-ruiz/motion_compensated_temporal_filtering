@@ -62,8 +62,6 @@ if TRLs > 1 :
 
         subband -= 1
 
-
-
 # Decompression LOW frequency subbands.
 try:
     check_call("mctf texture_expand_fb_" + MCTF_TEXTURE_CODEC
