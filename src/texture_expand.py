@@ -55,14 +55,13 @@ if TRLs > 1 :
                        + " --pixels_in_x=" + str(pixels_in_x)
                        + " --pixels_in_y=" + str(pixels_in_y)
                        + " --subband="     + str(subband)
-                       + " --SRLs="        + str(SRLs)
                        , shell=True)
         except CalledProcessError:
             sys.exit(-1)
 
         subband -= 1
 
-# Decompression LOW frequency subbands.
+# L.
 try:
     check_call("mctf texture_expand_fb_" + MCTF_TEXTURE_CODEC
                + " --file="        + "\"" + LOW + "_" + str(TRLs - 1) + "\""
@@ -70,7 +69,6 @@ try:
                + " --pixels_in_x=" + str(pixels_in_x)
                + " --pixels_in_y=" + str(pixels_in_y)
                + " --subband="     + str(TRLs)
-               + " --SRLs="        + str(SRLs)
                , shell=True)
 except CalledProcessError:
     sys.exit(-1)

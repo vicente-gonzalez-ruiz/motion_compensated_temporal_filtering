@@ -16,12 +16,12 @@
 # one.
 
 # Reducing the number of quality subband-layers basically means that
-# the set:
+# the list:
 #
-# {L^{T-1}_{Q-1}, M^{T-1}_{q-1}, H^{T-1}_{Q-1}, M^{T-2}_{q-1}, H^{T-2}_{Q-1}, ..., M^1_{q-1}, H^1_{Q-1},
+# [L^{T-1}_{Q-1}, M^{T-1}_{q-1}, H^{T-1}_{Q-1}, M^{T-2}_{q-1}, H^{T-2}_{Q-1}, ..., M^1_{q-1}, H^1_{Q-1},
 #  L^{T-1}_{Q-2}, M^{T-1}_{q-2}, H^{T-1}_{Q-2}, M^{T-2}_{q-2}, H^{T-2}_{Q-2}, ..., M^1_{q-2}, H^1_{Q-2},
 #  :
-#  L^{T-1}_0, -, H^{T-1}_0, H^{T-1}_0, H^{T-2}_0, ..., H^1_0}
+#  L^{T-1}_0, -, H^{T-1}_0, H^{T-1}_0, H^{T-2}_0, ..., H^1_0]
 #
 # is going to be truncated at a subband-layer, starting at
 # L^{T-1}_{Q-1}, where T=number of TRLs and Q=number of quality layers
@@ -90,12 +90,30 @@ TRLs = int(args.TRLs)
 
 # We need to compute the number of quality layers of each temporal
 # subband. For example, if QSLs=1, only the first quality layer of the
-# subband L^{T-1} will be output. if QSLs=2, only the first quality
-# layer of the subbands L^{T-1} and H^{T-1} will be output, if QSLs=3,
-# the first quality layer of M^{T-1} will be output too, and so on.
+# subband L^{T-1} will be output. If QSLs=2, only the first quality
+# layer of the subbands L^{T-1} and M^{T-1} will be output, if QSLs=3,
+# the first quality layer of H^{T-1} will be output too, and so on.
 
-def get_next_subband_layer(current_subband_layer):
-    
+def generate_list_of_subband_layers(T, Qt, Qm):
+    l = []
+    for q in range(Qt):
+        l.append(('L', T-1, Qt-q-1))
+        for t in range(T-1):
+            if q<Qm:
+                l.append(('M', T-t-1, Qm-q-1))
+            l.append(('H', T-t-1, Qt-q-1))
+    return l
+
+all_subband_layers = generate_list_of_subband_layers(TRLs,
+                                                     motion_layers,
+                                                     texture_layers)
+
+subband_layers_to_copy = all_subband_layers[:QSLs]
+
+# L subband
+number_of_quality_layers = len([x for x in subband_layers_to_copy
+                                if x[0]=='L')
+
 
 number_of_output_QSLs = 0
 while (number_of_output_QSLs < QSLs):
