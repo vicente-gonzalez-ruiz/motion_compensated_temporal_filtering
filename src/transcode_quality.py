@@ -85,15 +85,77 @@ subband_layers_to_copy = all_subband_layers[:QSLs]
 
 number_of_quality_layers_in_L = len([x for x in subband_layers_to_copy
                                     if x[0]=='L'])
+
+number_of_quality_layers_in_H = []
 for i in range(subbands):
-    number_of_quality_layers_in_L[i] = len([x for x in subband_layers_to_copy
-                                        if x[0]=='H'] and x[1]==i)
-
-
-number_of_output_QSLs = 0
-while (number_of_output_QSLs < QSLs):
+    number_of_quality_layers_in_H[i] = len([x for x in subband_layers_to_copy
+                                            if x[0]=='H' and x[1]==i])
     
-    number_of_output_QSLs += 1
+number_of_quality_layers_in_M = []
+for i in range(subbands):
+    number_of_quality_layers_in_M[i] = len([x for x in subband_layers_to_copy
+                                            if x[0]=='M' and x[1]==i])
+
+def kdu_transcode(filename, layers):
+    try:
+        check_call("trace kdu_transcode Clayers=" + str(layers)
+                   + " -i " + filename
+                   + " -o " + "transcode/" + filename,
+                   shell=True)
+    except CalledProcessError:
+        sys.exit(-1)
+
+# Transcoding of L subband
+image_number = 0
+while image_number < pictures:
+
+    str_image_number = '%04d' % image_number
+
+    filename = LOW + str(subband) + "_Y_" + str_image_number
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    filename = LOW + str(subband) + "_U_" + str_image_number
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    filename = LOW + str(subband) + "_V_" + str_image_number
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    image_number += 1
+        
+# Transcoding of H subbands
+subband = TRLs - 1
+while subband > 0:
+    
+    image_number = 0
+    # pictures = 
+    while image_number < pictures:
+
+        str_image_number = '%04d' % image_number
+
+        filename = HIGH + str(subband) + "_Y_" + str_image_number
+        kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
+
+        filename = HIGH + str(subband) + "_U_" + str_image_number
+        kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
+
+        filename = HIGH + str(subband) + "_V_" + str_image_number
+        kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
+
+        image_number += 1
+
+    subband -= 1
+
+# Transcoding of M "subbands"
+subband = TRLs - 1
+while subband > 0:
+
+    field_number = 0
+    # fields = 
+    while field_number < fields:
+
+        str_field_number = '%04d' % field_number
+        filename = MOTION + str(subband) + "_" + str(field_number) + ".j2c"
+        kdu_transcode(filename, number_of_quality_layers_in_M[subband]
 
 ## Determines the size of the header of a codestream.
 #  @param file_name Name of the file with the motion fields.
