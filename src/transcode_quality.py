@@ -4,16 +4,7 @@
 # Quality transcoding.
 
 # Extracts a codestream from a bigger one, discarding a number of
-# temporal/spatial resolutions or/and quality subband-layers.
-
-# Reducing the number of spatial resolutions is trivial, using the
-# facility provided by the image transcoder, because to performe a
-# transcoding, all the images can be trancoded discarding the highest
-# spatial resolution levels, and the motion information must be
-# interpreted in this case as if over-pixel ME/MC had been
-# performed. For example, if one spatial resolution level is
-# discarded, the degree of over-pixel ME/MC should be incremented by
-# one.
+# quality subband-layers.
 
 # Reducing the number of quality subband-layers basically means that
 # the list:
@@ -29,27 +20,9 @@
 # number of TQ+q subband-layers are available. In the last set
 # description, it has been supposed that q<Q.
 
-# Reducing the number of temporal resolution levels is also trivial
-# because only a number of temporal subbands must be discarded.
-
-# The number of GOPs can also be reduced.
-
-# Only one transcoding (spatial/temporal/quality) can be performed at
-# the same time.
-
 # Examples:
 #
-# * Defining a number of spatial resolution levels:
-#
-#   mctf transcode --SRLs=2
-#
-# * Defining a number of quality subband-layers:
-#
-#   mctf transcode --QSLs=5
-#
-# * Defining a number of GOPs:
-#
-#   mctf transcode --GOPs=2
+#   mctf transcode_quality --QSLs=5
 
 import info_j2k
 import sys
@@ -110,9 +83,11 @@ all_subband_layers = generate_list_of_subband_layers(TRLs,
 
 subband_layers_to_copy = all_subband_layers[:QSLs]
 
-# L subband
-number_of_quality_layers = len([x for x in subband_layers_to_copy
-                                if x[0]=='L')
+number_of_quality_layers_in_L = len([x for x in subband_layers_to_copy
+                                    if x[0]=='L'])
+for i in range(subbands):
+    number_of_quality_layers_in_L[i] = len([x for x in subband_layers_to_copy
+                                        if x[0]=='H'] and x[1]==i)
 
 
 number_of_output_QSLs = 0
