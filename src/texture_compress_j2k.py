@@ -2,9 +2,6 @@
 # -*- coding: iso-8859-15 -*-
 
 #  Compress textures, using the codec J2K.
-#  The two main steps performed are:
-#  - Demultiplexing components (Y, U y V) and 
-#  - Encode components.
 
 import shutil
 import os
@@ -50,54 +47,6 @@ pixels_in_y = int(args.pixels_in_y)
 quantization = str(args.texture_quantization)
 subband = int(args.temporal_subband)
 SRLs = int(args.SRLs)
-
-#-------------
-#- FUNCTIONS -
-#-------------
-
-## Weighing the components before compression. It is not necessary
-## step, and is not performed by default. The code is useful for
-## research tasks. Weighing in some parts of the codestream if it is
-## useful, but it becomes a level of quality layers and sub-bands (see
-## texture_compress.py)
-## @param image_filename Filename textures of the current iteration.
-
-#---------------------------------------------------------------------
-def pondComp (image_filename) :
-
-    ## Weighting coefficients for subband. For an example of 5TRLs ([H1, H2, H3, H4, L4]).
-    coef = [1, 1.4921569843, 2.7304234608, 5.3339326679, 5.8022196044]
-    ## File containing the textures before weighting coefficients.
-    f_in = open (image_filename, 'rb')
-    ## File containing the textures after weighting coefficients.
-    f_out = open (image_filename + "_multCOM", 'wb')
-
-    try :
-        ## An unweighted coefficient.
-        byte = f_in.read(1)
-        while byte != "" :
-
-            # Some examples of weighting coefficients:
-            #-----------------------------------------
-            #data = ord(byte)                                   # =
-            #data = ord(byte) * pow(2, subband-1)               # *2^subband
-            #data = ord(byte) * pow(5, subband-1)               # *5^subband
-            #data = ord(byte) * pow(math.sqrt(2), subband-1)    # *sqrt(2)^subband
-            #data = ord(byte) * coef[subband-1]                 # coef
-            #data = ord(byte) * pow(coef[subband-1], subband-1) # coef^subband
-
-            ## A weighted coefficient.
-            bin_data = struct.pack('H', int(round(data)))
-            f_out.write(bin_data[0]) #0
-            f_out.write(bin_data[1]) #1 # Ej: 3 = bin_data[1] bin_data[0] = 00000000 00000011
-
-            byte = f_in.read(1)
-
-    finally :
-        f_in.close()
-        f_out.close()
-
-    os.rename(image_filename + "_multCOM", image_filename)
 
 ## Demultiplexing and encode components. Using Kakadu software.
 ## @param component Component type, encoded in the current iteration. It can be: Y, U or V.

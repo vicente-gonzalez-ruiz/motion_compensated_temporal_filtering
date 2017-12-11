@@ -127,15 +127,15 @@ subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) / 2
     try:
-        check_call("mctf texture_compress_fb_" + MCTF_TEXTURE_CODEC
-                   + " --file="                + HIGH + "_" + str(subband)
-                   + " --texture_layers="      + str(layers)
-                   + " --pictures="            + str(pictures - 1)
-                   + " --pixels_in_x="         + str(pixels_in_x)
-                   + " --pixels_in_y="         + str(pixels_in_y)
-                   + " --quantization=\""      + ','.join(map(str, SLOPES[TRLs-subband])) + "\""
-                   + " --subband="             + str(subband)
-                   + " --SRLs="                + str(SRLs)
+        check_call("mctf texture_compress_" + MCTF_TEXTURE_CODEC
+                   + " --file="             + HIGH + "_" + str(subband)
+                   + " --texture_layers="   + str(layers)
+                   + " --pictures="         + str(pictures - 1)
+                   + " --pixels_in_x="      + str(pixels_in_x)
+                   + " --pixels_in_y="      + str(pixels_in_y)
+                   + " --quantization=\""   + ','.join(map(str, SLOPES[TRLs-subband])) + "\""
+                   + " --subband="          + str(subband)
+                   + " --SRLs="             + str(SRLs)
                    , shell=True)
     except CalledProcessError:
         sys.exit(-1)
@@ -144,15 +144,15 @@ while subband < TRLs:
 
 # Compression of LOW frequency temporal subbands.
 try:
-    check_call("mctf texture_compress_fb_" + MCTF_TEXTURE_CODEC
-               + " --file="                + LOW + "_" + str(TRLs - 1)
-               + " --texture_layers="      + str(layers)
-               + " --pictures="            + str(pictures)
-               + " --pixels_in_x="         + str(pixels_in_x)
-               + " --pixels_in_y="         + str(pixels_in_y)
-               + " --quantization=\""      + ','.join(map(str, SLOPES[0])) + "\""
-               + " --subband="             + str(subband)
-               + " --SRLs="                + str(SRLs)
+    check_call("mctf texture_compress_" + MCTF_TEXTURE_CODEC
+               + " --file="             + LOW + "_" + str(TRLs - 1)
+               + " --texture_layers="   + str(layers)
+               + " --pictures="         + str(pictures)
+               + " --pixels_in_x="      + str(pixels_in_x)
+               + " --pixels_in_y="      + str(pixels_in_y)
+               + " --quantization=\""   + ','.join(map(str, SLOPES[0])) + "\""
+               + " --subband="          + str(subband)
+               + " --SRLs="             + str(SRLs)
                , shell=True)
 except:
     sys.exit(-1)

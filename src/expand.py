@@ -26,7 +26,6 @@ from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
 
 parser = arguments_parser(description="Decodes a sequence of pictures.")
-
 parser.block_size()
 parser.block_overlaping()
 parser.border_size()
