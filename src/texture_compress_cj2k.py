@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
-#  Compress textures, using the codec J2K.
+#  Compress a sequence of texture images, using the codec J2K (color
+#  images).
 
 import shutil
 import os
@@ -23,7 +24,7 @@ COMPONENTS  = 3
 #  - Use 2 bytes for weighted components or that weighted.
 BYTES_PER_COMPONENT = 1 # 2
 
-parser = arguments_parser(description="Compress the LFB texture data using JPEG 2000.")
+parser = arguments_parser(description="Compress a YUV image using JPEG 2000.")
 parser.add_argument("--file",
                     help="File that contains the texture data.",
                     default="")
@@ -38,7 +39,6 @@ parser.temporal_subband()
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
-
 file = args.file
 layers = args.texture_layers
 pictures = int(args.pictures)
@@ -61,71 +61,46 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
 
     # Demux.
     try :
-        check_call("trace demux " + str(YUV_size) + jump_demux
+        check_call("trace demux "
+                   + str(YUV_size)
+                   + jump_demux
                    + " < " + file + ".tmp | split --numeric-suffixes --suffix-length=4 --bytes="
                    + str(size_component) + " - " + file + "_" + str(component) + "_"
                    , shell=True)
     except CalledProcessError :
         sys.exit(-1)
-
-    # Encode.
+        
     image_number = 0
     while image_number < pictures :
 
-        image_filename = file + "_" + str(component) + "_" + '%04d' % image_number
+        image_filename = file + "_" + '%04d' % image_number
 
-        #shutil.copy (image_filename, image_filename + '.SINmult')
-        #pondComp (image_filename)
-
-        # Kakadu.
-        # When compressing images with kdu_compress you have to use the
-        # Cuse_sop = yes parameter. This makes the marker SOP (Start of
-        # packet) before each packet included codestream.
         os.rename(image_filename, image_filename + ".rawl")
 
         try :
-            if quantization == "automatic_kakadu" :
-                # ----- Slopes automaticos del kakadu ----- 
-                check_call("trace kdu_compress"
-                           + " -i "          + image_filename + ".rawl"
-                           + " -o "          + image_filename + ".j2c"
-                           + " Creversible=" + "no" # "no" "yes"
-                           + " -no_weights"
-                           + " Nprecision="  + str(bits_per_component)
-                           + " Nsigned="     + "no"
-                           + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
-                           + " Clevels="     + str(Clevels)
-                           + " Clayers="     + str(layers)
-                           + " Cuse_sop="    + "yes"
-                           , shell=True)
-	    else :
-                # ----- Slopes segun parametros usuario ----- 
-                check_call("trace kdu_compress"
-                           + " -i "          + image_filename + ".rawl"
-                           + " -o "          + image_filename + ".j2c"
-                           + " Creversible=" + "no" # "no" "yes"
-                           + " -slope "      + str(quantization)
-                           + " -no_weights"
-                           + " Nprecision="  + str(bits_per_component)
-                           + " Nsigned="     + "no"
-                           + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
-                           + " Clevels="     + str(Clevels)
-                           + " Clayers="     + str(layers)
-                           + " Cuse_sop="    + "yes"
-                           , shell=True)
+            check_call("trace kdu_compress"
+                       + " -i "          + image_filename + "_Y.rawl,"
+                       + image_filename + "_U.rawl,"
+                       + image_filename + "_V.raw,"
+                       + " -o "          + image_filename + ".j2c"
+                       + " Creversible=" + "no" # "no" "yes"
+                       + " -slope "      + str(quantization)
+                       + " -no_weights"
+                       + " Nprecision="  + str(bits_per_component)
+                       + " Nsigned="     + "no"
+                       + " Sdims="
+                       + "'{'" + str(sDimY) + "," + str(sDimX) + "'},'" +
+                       + "'{'" + str(sDimY/2) + "," + str(sDimX/2) + "'},'" +
+                       + "'{'" + str(sDimY/2) + "," + str(sDimX/2) + "'}'" +
+                       + " Clevels="     + str(Clevels)
+                       + " Clayers="     + str(layers)
+                       + " Cuse_sop="    + "yes"
+                       , shell=True)
 
         except CalledProcessError :
             sys.exit(-1)
 
         image_number += 1
-
-#--------
-#- MAIN -
-#--------
-
-# Displays a log of execution:
-check_call("echo file: " + str(file) + " subband: " + str(subband), shell=True)
-#raw_input("")
 
 ## Number of bits per component.
 bits_per_component = BYTES_PER_COMPONENT * 8
@@ -135,12 +110,6 @@ bits_per_component = BYTES_PER_COMPONENT * 8
 Clevels = SRLs - 1
 if Clevels < 0 :
     Clevels = 0
-
-'''
-# Clevels = SRLs-1 for L subband. Clevels = 0 for H subband.     
-if file[0] == 'h' :
-    dwt_levels = 0
-'''
 
 ## Size of the component 'Y' (measured in pixels).
 Y_size     = pixels_in_y * pixels_in_x

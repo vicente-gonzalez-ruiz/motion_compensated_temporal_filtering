@@ -1,15 +1,3 @@
-/**
- * \file decorrelate.cpp
- * \author Vicente Gonzalez-Ruiz.
- * \date Last modification: 2015, January 7.
- * \brief Phase prediction of the temporal transform.
- *
- * The MCTF project has been supported by the Junta de Andalucía through
- * the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
- * sobre Internet" (P10-TIC-6548).
- */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

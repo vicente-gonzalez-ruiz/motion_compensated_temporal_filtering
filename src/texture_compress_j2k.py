@@ -57,75 +57,66 @@ SRLs = int(args.SRLs)
 ## @param sDimY Number of samples of a particular component, to the height of the image.
 
 #---------------------------------------------------------------------
-def encode (component, jump_demux, size_component, bits_per_component, sDimX, sDimY) :
+def encode (component,
+            jump_demux,
+            component_size,
+            bits_per_component,
+            sDimX, sDimY) :
 
-    # Demux.
+    # Esto es más optimo si se hace a nivel de Python y simplemente
+    # vamos recorriendo el archivo y comprimiendolo.
+    
+    # Split each next image into its components
     try :
-        check_call("trace demux " + str(YUV_size) + jump_demux
-                   + " < " + file + ".tmp | split --numeric-suffixes --suffix-length=4 --bytes="
-                   + str(size_component) + " - " + file + "_" + str(component) + "_"
+        check_call("trace demux "
+                   + str(YUV_size)
+                   + jump_demux
+                   + " < "
+                   + file
+                   + ".tmp "
+                   + "| split --numeric-suffixes --suffix-length=4 "
+                   + "--bytes="
+                   + str(component_size)
+                   + " - "
+                   + file
+                   + "_"
+                   + str(component)
+                   + "_"
                    , shell=True)
     except CalledProcessError :
         sys.exit(-1)
 
-    # Encode.
+    # Encode each component.
     image_number = 0
     while image_number < pictures :
 
-        image_filename = file + "_" + str(component) + "_" + '%04d' % image_number
+        image_filename = file
+        + "_"
+        + str(component)
+        + "_"
+        + '%04d' % image_number
 
-        #shutil.copy (image_filename, image_filename + '.SINmult')
-        #pondComp (image_filename)
-
-        # Kakadu.
-        # When compressing images with kdu_compress you have to use the
-        # Cuse_sop = yes parameter. This makes the marker SOP (Start of
-        # packet) before each packet included codestream.
         os.rename(image_filename, image_filename + ".rawl")
 
         try :
-            if quantization == "automatic_kakadu" :
-                # ----- Slopes automaticos del kakadu ----- 
-                check_call("trace kdu_compress"
-                           + " -i "          + image_filename + ".rawl"
-                           + " -o "          + image_filename + ".j2c"
-                           + " Creversible=" + "no" # "no" "yes"
-                           + " -no_weights"
-                           + " Nprecision="  + str(bits_per_component)
-                           + " Nsigned="     + "no"
-                           + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
-                           + " Clevels="     + str(Clevels)
-                           + " Clayers="     + str(layers)
-                           + " Cuse_sop="    + "yes"
-                           , shell=True)
-	    else :
-                # ----- Slopes segun parametros usuario ----- 
-                check_call("trace kdu_compress"
-                           + " -i "          + image_filename + ".rawl"
-                           + " -o "          + image_filename + ".j2c"
-                           + " Creversible=" + "no" # "no" "yes"
-                           + " -slope "      + str(quantization)
-                           + " -no_weights"
-                           + " Nprecision="  + str(bits_per_component)
-                           + " Nsigned="     + "no"
-                           + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
-                           + " Clevels="     + str(Clevels)
-                           + " Clayers="     + str(layers)
-                           + " Cuse_sop="    + "yes"
-                           , shell=True)
+            check_call("trace kdu_compress"
+                       + " -i "          + image_filename + ".rawl"
+                       + " -o "          + image_filename + ".j2c"
+                       + " Creversible=" + "no" # "no" "yes"
+                       + " -slope "      + str(quantization)
+                       + " -no_weights"
+                       + " Nprecision="  + str(bits_per_component)
+                       + " Nsigned="     + "no"
+                       + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
+                       + " Clevels="     + str(Clevels)
+                       + " Clayers="     + str(layers)
+                       + " Cuse_sop="    + "no"
+                       , shell=True)
 
         except CalledProcessError :
             sys.exit(-1)
 
         image_number += 1
-
-#--------
-#- MAIN -
-#--------
-
-# Displays a log of execution:
-check_call("echo file: " + str(file) + " subband: " + str(subband), shell=True)
-#raw_input("")
 
 ## Number of bits per component.
 bits_per_component = BYTES_PER_COMPONENT * 8
@@ -135,12 +126,6 @@ bits_per_component = BYTES_PER_COMPONENT * 8
 Clevels = SRLs - 1
 if Clevels < 0 :
     Clevels = 0
-
-'''
-# Clevels = SRLs-1 for L subband. Clevels = 0 for H subband.     
-if file[0] == 'h' :
-    dwt_levels = 0
-'''
 
 ## Size of the component 'Y' (measured in pixels).
 Y_size     = pixels_in_y * pixels_in_x
@@ -164,45 +149,7 @@ except CalledProcessError :
     sys.exit(-1)
 
 # Encoding each component accordingly.
-#-------------------------------------
 encode ('Y', " " + "0"                + " " + str(Y_size), Y_size, bits_per_component, pixels_in_x,   pixels_in_y)
 encode ('U', " " + str(Y_size)        + " " + str(U_size), U_size, bits_per_component, pixels_in_x/2, pixels_in_y/2)
 encode ('V', " " + str(Y_size+U_size) + " " + str(V_size), V_size, bits_per_component, pixels_in_x/2, pixels_in_y/2)
-## Number of bytes used for the header of a file.
 
-#------------------------------------------------
-## Determines the size of the header of a codestream.
-#  @param file_name Name of the file with the motion fields.
-#  @return Bytes of the header of a codestream.
-def header (file_name) :
-    p = sub.Popen("mcj2k header_size " + str(file_name) + " 2> /dev/null | grep OUT", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
-    out, err = p.communicate()
-    return long(out[4:])
-
-# Compute file sizes.
-#--------------------
-
-## File that lists the sizes of the compressed files. It is useful for
-## calculating Kbps (see info.py).
-file_sizes   = open (file + ".j2c", 'w')
-## Number of image of the current iteration.
-image_number = 0
-## Total size of compressed files.
-total        = 0
-
-while image_number < pictures:
-
-    ## Name of image of the current iteration.
-    str_image_number = '%04d' % image_number
-
-    ## Size of the component 'Y' (measured in bytes, without headers).
-    Ysize  = os.path.getsize(file + "_Y_" + str_image_number + ".j2c") - header(file + "_Y_" + str_image_number + ".j2c")
-    ## Size of the component 'U' (measured in bytes, without headers).
-    Usize  = os.path.getsize(file + "_U_" + str_image_number + ".j2c") - header(file + "_U_" + str_image_number + ".j2c")
-    ## Size of the component 'V' (measured in bytes, without headers).
-    Vsize  = os.path.getsize(file + "_V_" + str_image_number + ".j2c") - header(file + "_V_" + str_image_number + ".j2c")
-
-    total  = total + Ysize + Usize + Vsize
-    file_sizes.write(str(total) + "\n")
-
-    image_number += 1

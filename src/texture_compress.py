@@ -121,8 +121,6 @@ f_slopes.write ('\n'.join(map(str, SLOPES)))
 f_slopes.close ()
 
 # Compression of HIGH frequency temporal subbands.
-
-## Current temporal iteration.
 subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) / 2
@@ -142,7 +140,7 @@ while subband < TRLs:
 
     subband += 1
 
-# Compression of LOW frequency temporal subbands.
+# Compression of LOW frequency temporal subband.
 try:
     check_call("mctf texture_compress_" + MCTF_TEXTURE_CODEC
                + " --file="             + LOW + "_" + str(TRLs - 1)
