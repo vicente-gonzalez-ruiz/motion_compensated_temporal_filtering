@@ -39,8 +39,14 @@ CPP_FLAGS += $(DEFS)
 $(BIN)/% :: %.c
 	gcc $(GCC_FLAGS) $< -o $@ -lm
 
+$(MCTF_BIN)/% :: %.c
+	gcc $(GCC_FLAGS) $< -o $@ -lm
+
 $(BIN)/% :: %.cpp
-	g++ $(GCC_FLAGS) $< -o $@ -lm
+	g++ $(GPP_FLAGS) $< -o $@ -lm
+
+$(MCTF_BIN)/% :: %.cpp
+	g++ $(GPP_FLAGS) $< -o $@ -lm
 
 PYs := $(willcard *.py)
 
@@ -51,8 +57,22 @@ TMPs += $(PYs:%.py=$(BIN)/%)
 $(BIN)/%:	%.py
 	cp $*.py $@; chmod +x $@
 
+$(MCTF_BIN)/%:	%.py
+	cp $*.py $@; chmod +x $@
+
 $(BIN)/%.py:	%.py
 	cp $*.py $@; chmod +x $@
+
+$(MCTF_BIN)/%.py:	%.py
+	cp $*.py $@; chmod +x $@
+
+$(BIN)/%:	%.sh
+#	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
+#	m4 $(DEFS) < $< > $@; chmod +x $@
+	cp $*.sh $@; chmod +x $@
+
+$(MCTF_BIN)/%:	%.sh
+	cp $*.sh $@; chmod +x $@
 
 #CPPM4s := $(wildcard *.cpp.m4)
 
@@ -61,34 +81,22 @@ $(BIN)/%.py:	%.py
 #%.cpp:	%.cpp.m4
 #	(echo "changequote(\`[[[', \`]]]')"; cat $*.cpp.m4) | m4 $(DEFS) > $*.cpp
 
-$(MCTF_BIN)/trace:	trace.sh
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
-#	m4 $(DEFS) < $< > $@; chmod +x $@
-EXE	+= $(MCTF_BIN)/trace
+$(BIN)/trace:	trace.sh
+EXE	+= $(BIN)/trace
 
 $(BIN)/mctf:	mctf.sh
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
-#	m4 $(DEFS) < $< > $@; chmod +x $@
 EXE	+= $(BIN)/mctf
 
 $(MCTF_BIN)/mcj2k:	mcj2k.sh
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
-#	m4 $(DEFS) < $< > $@; chmod +x $@
 EXE	+= $(MCTF_BIN)/mcj2k
 
 $(MCTF_BIN)/mcmj2k:	mcmj2k.sh
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
-#	m4 $(DEFS) < $< > $@; chmod +x $@
 EXE	+= $(MCTF_BIN)/mcmj2k
 
 $(MCTF_BIN)/mcmjpeg:	mcmjpeg.sh
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
-#	m4 $(DEFS) < $< > $@; chmod +x $@
 EXE	+= $(MCTF_BIN)/mcmjpeg
 
 $(MCTF_BIN)/mcltw:	mcltw.sh
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
-#	m4 $(DEFS) < $< > $@; chmod +x $@
 EXE	+= $(MCTF_BIN)/mcltw
 
 $(MCTF_BIN)/config-hfb.txt:	config-hfb.txt
@@ -100,12 +108,9 @@ $(MCTF_BIN)/config-lfb.txt:	config-lfb.txt
 EXE	+= $(MCTF_BIN)/config-lfb.txt
 
 $(MCTF_BIN)/mccp:	mccp.sh
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
-#	m4 $(DEFS) < $< > $@; chmod +x $@
 EXE	+= $(MCTF_BIN)/mccp
 
 $(BIN)/vshow:	vshow.sh
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 EXE	+= $(BIN)/vshow
 
 $(MCTF_BIN)/split:	split.cpp display.cpp
@@ -136,7 +141,6 @@ $(MCTF_BIN)/un_update:	update.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.
 EXE += $(MCTF_BIN)/un_update
 
 $(MCTF_BIN)/display.py:	display.py
-	(echo "changequote({{,}})dnl"; cat $<) | m4 $(DEFS) > $@; chmod +x $@
 EXE += $(MCTF_BIN)/display.py
 
 $(MCTF_BIN)/defaults.py:	defaults.py

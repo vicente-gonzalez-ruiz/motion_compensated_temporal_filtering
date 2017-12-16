@@ -128,7 +128,7 @@ while image_number < pictures:
         sys.exit(-1)
 
     try:
-        check_call("trace kdu_compress"
+        check_call("mctf kdu_compress"
                    + " -i " + image_filename + ".pgm"
                    + " -o " + image_filename + ".j2c"
                    + " -slope " + quantizations
@@ -168,7 +168,7 @@ while image_number < pictures:
         sys.exit(-1)
 
     try:
-        check_call("trace kdu_compress"
+        check_call("mctf kdu_compress"
                    + " -i " + image_filename + ".pgm"
                    + " -o " + image_filename + ".j2c"
                    + " -slope " + quantizations

@@ -1,16 +1,11 @@
-# MCTF-video-coding
-
-MCTF = Motion Compensated Temporal Filtering
+# Motion Compensated Temporal Filtering (MCTF) video coding
 
 * Directory contents:
 
-  1. The "bin" directory which contains the MCTS's executables.
-
-  2. The "compile" script that compiles the MCTF's executables.
-
-  3. The "README.txt" file (this, file).
-
-  4. The "src" directory, which stores the source files of MCTF.
+  1. `bin`: MCTF's executables.
+  2. `compile`: script for creating MCTF's executables.
+  3. `README.txt`: this, file.
+  4. `src`: source files of MCTF.
 
 ## Compilation and environment variable declaration:
 

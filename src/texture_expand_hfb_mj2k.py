@@ -64,7 +64,7 @@ except:
 
 # Decode.
 try:
-    check_call("trace kdu_v_expand" +
+    check_call("trance kdu_v_expand" +
                " -i " + file + ".mjc" +
                " -o " + file + ".vix",
                shell=True)

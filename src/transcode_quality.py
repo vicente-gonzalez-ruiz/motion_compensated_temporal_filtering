@@ -180,7 +180,7 @@ def kdu_transcode (in_filename, out_filename, cLayers, reduces, rate): # kdu_tra
         #-------------------
         if rate <= 0.0 :
 
-            p = sub.Popen("mctf kdu_transcode"
+            p = sub.Popen("trace kdu_transcode"
                           + " -i "      + in_filename
                           + " -o "      + "extract/" + out_filename
                           + " Clayers=" + str(cLayers)
@@ -193,7 +193,7 @@ def kdu_transcode (in_filename, out_filename, cLayers, reduces, rate): # kdu_tra
             # Transcode by Clayers.
             #----------------------
 
-            p = sub.Popen("mctf kdu_transcode"
+            p = sub.Popen("trace kdu_transcode"
                           + " -i "      + in_filename
                           + " -o "      + "extract/" + out_filename
                           + " Clayers=" + str(cLayers)
