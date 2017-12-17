@@ -117,26 +117,3 @@ for comp_number in range (0, COMPONENTS) :
             sys.exit(-1)
 
         campoMov_number += 1
-
-## Determines the size of the header of a codestream.
-#  @param file_name Name of the file with the motion fields.
-#  @return Bytes of the header of a codestream.
-def header (file_name) :
-    p = sub.Popen("mcj2k header_size " + str(file_name) + " 2> /dev/null | grep OUT", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
-    out, err = p.communicate()
-    return long(out[4:])
-
-## Records motion size information in a file that can be consulted
-#  later.
-file_sizes = open (file + ".mjc", 'w') # Compute file sizes
-
-## Determines the size in bytes of motion fields belonging to each 
-#  component, each image and each temporal subband.
-total = 0
-for campoMov_number in range (0, fields) :
-    for comp_number in range (0, COMPONENTS) :
-        ## Name of the file containing the data of movement of a
-        #  component of a desired image and a specific subband.
-        name  = file + "_comp" + str(comp_number) + "_" + str('%04d' % campoMov_number)
-        total = total + os.path.getsize(name + ".j2c") - header(name + ".j2c")
-    file_sizes.write(str(total) + "\n")

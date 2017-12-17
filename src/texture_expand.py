@@ -48,8 +48,7 @@ if TRLs > 1 :
             j += 1
 
         try:
-            check_call("mctf texture_expand_fb_" + MCTF_TEXTURE_CODEC
-#           check_call("mctf texture_expand_hfb_" + MCTF_TEXTURE_CODEC
+            check_call("mctf texture_expand_" + MCTF_TEXTURE_CODEC
                        + " --file="        + "\"" + HIGH + "_" + str(subband) + "\""
                        + " --pictures="    + str(pictures - 1)
                        + " --pixels_in_x=" + str(pixels_in_x)
@@ -63,7 +62,7 @@ if TRLs > 1 :
 
 # L.
 try:
-    check_call("mctf texture_expand_fb_" + MCTF_TEXTURE_CODEC
+    check_call("mctf texture_expand_" + MCTF_TEXTURE_CODEC
                + " --file="        + "\"" + LOW + "_" + str(TRLs - 1) + "\""
                + " --pictures="    + str(GOPs+1)
                + " --pixels_in_x=" + str(pixels_in_x)

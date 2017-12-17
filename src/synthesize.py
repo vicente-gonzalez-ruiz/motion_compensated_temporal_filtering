@@ -47,6 +47,10 @@ GOP_size = gop.get_size(TRLs)
 pictures = GOPs * GOP_size + 1
 _search_range = search_range
 _pictures = pictures
+
+# Controls the increment of the search area between temporal levels
+search_factor = 2
+
 if TRLs > 1 :
 
     temporal_subband = 1
