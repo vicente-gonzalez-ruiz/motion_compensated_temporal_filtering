@@ -33,7 +33,7 @@ import sys
 #import string
 #import math
 #import re
-import subprocess as sub
+#import subprocess as sub
 from GOP              import GOP
 from subprocess       import check_call
 from subprocess       import CalledProcessError
@@ -43,8 +43,8 @@ parser = arguments_parser(description="Transcodes a sequence transfering a numbe
 parser.GOPs()
 parser.motion_layers()
 parser.pixels_in_x()
-parser.add_argument("-QSLs",
 parser.pixels_in_y()
+parser.add_argument("-QSLs",
                     help="Number of Quality Subband-Layers.",
                     default=1)
 parser.SRLs()
@@ -60,6 +60,10 @@ QSLs = int(args.QSLs)
 SRLs = int(args.SRLs)
 texture_layers = int(args.texture_layers)
 TRLs = int(args.TRLs)
+
+LOW = "low"
+HIGH = "high"
+MOTION = "motion_residue"
 
 # We need to compute the number of quality layers of each temporal
 # subband. For example, if QSLs=1, only the first quality layer of the
@@ -109,6 +113,8 @@ def kdu_transcode(filename, layers):
     except CalledProcessError:
         sys.exit(-1)
 
+gop=GOP()
+GOP_size = gop.get_size(TRLs)
 pictures = GOPs * GOP_size + 1
         
 # Transcoding of L subband
@@ -117,13 +123,13 @@ while image_number < pictures:
 
     str_image_number = '%04d' % image_number
 
-    filename = LOW + str(subband) + "_Y_" + str_image_number
+    filename = LOW + str(TRLs-1) + "_Y_" + str_image_number
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    filename = LOW + str(subband) + "_U_" + str_image_number
+    filename = LOW + str(TRLs-1) + "_U_" + str_image_number
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    filename = LOW + str(subband) + "_V_" + str_image_number
+    filename = LOW + str(TRLs-1) + "_V_" + str_image_number
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
     image_number += 1
