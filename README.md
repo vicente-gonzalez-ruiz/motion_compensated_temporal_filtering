@@ -13,7 +13,7 @@
   source ./compile
   ```
   
-## Basic MCJ2K encoding/decoding:
+## MCJ2K encoding/decoding:
 
   ```
   export MCTF_TEXTURE_CODEC="j2k"
@@ -30,10 +30,29 @@
   cd tmp
   mctf expand --TRLs=2 --GOPs=2
   mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
-  cd ../../..
-  rm -rf tmp
   ```
-  
+
+## Quality trancoding:
+
+  ```
+  export MCTF_TEXTURE_CODEC="j2k"
+  export MCTF_MOTION_CODEC="j2k"
+  mkdir tmp
+  cd tmp
+  wget http://www.hpca.ual.es/~vruiz/videos/container_352x288x30x420x300.avi
+  ffmpeg -i container_352x288x30x420x300.avi container_352x288x30x420x300.yuv
+  ln -s container_352x288x30x420x300.yuv low_0
+  mctf compress --TRLs=2 --GOPs=2 --motion_layers=1 --texture_layers=8
+  mctf info_j2k --TRLs=2 --GOPs=2
+  mkdir transcode_quality
+  mctf transcode_quality --QSLs=5
+  cd transcode_quality
+  mctf info_j2k --TRLs=2 --GOPs=2
+  mctf expand --TRLs=2 --GOPs=2
+  mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
+
+  ```
+   
 ## Basic MJ2K encoding/decoding (157 Kbps):
 
   ```
