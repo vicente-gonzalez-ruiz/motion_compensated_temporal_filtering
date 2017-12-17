@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
 #  Decompress the texture. There are a different number of (compressed)
@@ -44,7 +44,7 @@ if TRLs > 1 :
         ## Current temporal iteration.
         j = 0
         while j < subband :
-            pictures = ( pictures + 1 ) / 2
+            pictures = ( pictures + 1 ) // 2
             j += 1
 
         try:

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
 # The MCTF project has been supported by the Junta de Andalucía through

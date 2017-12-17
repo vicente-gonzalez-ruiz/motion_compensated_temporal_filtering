@@ -85,14 +85,14 @@ while temporal_subband < TRLs:
     except CalledProcessError:
         sys.exit(-1)
 
-    pictures = (pictures + 1) / 2
+    pictures = (pictures + 1) // 2
 
     search_range = search_range * search_factor
     if ( search_range > MAX_SEARCH_RANGE ):
         sys.stdout.write(sys.argv[0] + ": " + str(MAX_SEARCH_RANGE) + " reached!\n")
         search_range = MAX_SEARCH_RANGE
 
-    block_size = block_size / 2
+    block_size = block_size // 2
     if ( block_size < min_block_size ):
         block_size = min_block_size
 

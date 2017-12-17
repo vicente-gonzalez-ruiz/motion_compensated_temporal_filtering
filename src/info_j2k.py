@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
 #  The size in bytes, and a codestream Kbps, even detailed subband

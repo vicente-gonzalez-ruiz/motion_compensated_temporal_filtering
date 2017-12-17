@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
 #  Compresses data movement.
@@ -55,14 +55,14 @@ GOP_size = gop.get_size(TRLs)
 pictures = GOPs * GOP_size + 1
 
 ## Number of pictures of a temporal resolution.
-fields      = pictures / 2
+fields      = pictures // 2
 iterations  = TRLs - 1
 
 ## Number of blocks in the Y direction.
-blocks_in_y = pixels_in_y / block_size
+blocks_in_y = pixels_in_y // block_size
 
 ## Number of blocks in the X direction.
-blocks_in_x = pixels_in_x / block_size
+blocks_in_x = pixels_in_x // block_size
 
 iter   = 1
 
@@ -82,14 +82,14 @@ while iter < iterations:
         sys.exit(-1)
 
     # Calculate the block size used in this temporal iteration.
-    block_size = block_size / 2
+    block_size = block_size // 2
     if (block_size < min_block_size):
         block_size = min_block_size
 
-        fields /= 2
+        fields //= 2
         iter += 1
-        blocks_in_y = pixels_in_y / block_size
-        blocks_in_x = pixels_in_x / block_size
+        blocks_in_y = pixels_in_y // block_size
+        blocks_in_x = pixels_in_x // block_size
 
 ## Bidirectionally unmapped level lower temporal resolution. The last
 #  number of blocks in X and Y calculated in the previous loop is
@@ -107,7 +107,7 @@ except CalledProcessError:
 
 # Compress.
 iter = 1
-fields = pictures / 2
+fields = pictures // 2
 while iter <= iterations:
 
     try:

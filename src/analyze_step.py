@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
 # The MCTF project has been supported by the Junta de Andalucía through
@@ -101,7 +101,7 @@ def amount_motion () :
     nImages_gop_sub = pow (2, TRLs - subband - 1)
 
     # Blocks in the image.
-    nBloques_image  = (pixels_in_x * pixels_in_y) / (block_size * block_size)
+    nBloques_image  = (pixels_in_x * pixels_in_y) // (block_size * block_size)
     # Blocks in the subband.
     nBloques_sub    = nBloques_image * nImages_gop_sub
 
@@ -117,7 +117,7 @@ def amount_motion () :
         for iBlock in range (0, nBloques_sub) : # Iterates over each block in a subband.
             if f_motion.read(BYTES_VM) in VM_cero :
                 nCeros += 1.0
-        motion_importance = 1 - (nCeros / nBloques_sub)
+        motion_importance = 1 - (nCeros // nBloques_sub)
         f_sub.write (str(motion_importance) + "\n")
 
     f_sub.close ()

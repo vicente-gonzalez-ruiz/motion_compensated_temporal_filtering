@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
 #  Decompresses data movement.
@@ -50,11 +50,11 @@ gop=GOP()
 GOP_size = gop.get_size(TRLs)
 pictures = GOPs * GOP_size + 1
 
-blocks_in_x = pixels_in_x / block_size
-blocks_in_y = pixels_in_y / block_size
+blocks_in_x = pixels_in_x // block_size
+blocks_in_y = pixels_in_y // block_size
 
 iteration = 1
-fields = pictures / 2
+fields = pictures // 2
 while iteration <= (TRLs - 1) :
 
     try:
@@ -68,7 +68,7 @@ while iteration <= (TRLs - 1) :
     except CalledProcessError :
         sys.exit(-1)
 
-    fields /= 2
+    fields //= 2
     iteration += 1
     
 # Decorrelation bidirectional level lower temporal resolution.
@@ -88,7 +88,7 @@ iteration = TRLs - 1 # total iterations
 while iteration > 1 :
     
     iteration -= 1
-    fields = pictures / (2**iteration)
+    fields = pictures // (2**iteration)
 
     try:
         check_call("mctf interlevel_motion_correlate"

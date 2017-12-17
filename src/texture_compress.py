@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
 #  Compress textures (temporal subbands) generated from the analysis
@@ -123,7 +123,7 @@ f_slopes.close ()
 # Compression of HIGH frequency temporal subbands.
 subband = 1
 while subband < TRLs:
-    pictures = (pictures + 1) / 2
+    pictures = (pictures + 1) // 2
     try:
         check_call("mctf texture_compress_" + MCTF_TEXTURE_CODEC
                    + " --file="             + HIGH + "_" + str(subband)
