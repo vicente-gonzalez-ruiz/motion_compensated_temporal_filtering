@@ -23,12 +23,12 @@
   wget http://www.hpca.ual.es/~vruiz/videos/container_352x288x30x420x300.avi
   ffmpeg -i container_352x288x30x420x300.avi container_352x288x30x420x300.yuv
   ln -s container_352x288x30x420x300.yuv low_0
-  mctf compress --TRLs=6 --GOPs=9 --quantizations="45000"
-  mctf info_j2k --TRLs=6 --GOPs=9
+  mctf compress --TRLs=2 --GOPs=2 --quantizations="45000"
+  mctf info_j2k --TRLs=2 --GOPs=2
   mkdir tmp
   cp *.j2c *type* tmp
   cd tmp
-  mctf expand --TRLs=6 --GOPs=9
+  mctf expand --TRLs=2 --GOPs=2
   mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
   cd ../../..
   rm -rf tmp

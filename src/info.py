@@ -1,24 +1,12 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
 
+# MCTF structure:
 # 0 1 2 3 4 5 6 7 8
 # 0               8 L_3
 #         4         H_3
 #     2       6     H_2
 #   1   3   5   7   H_1
-
-
-## @file info.py
-#  The size in bytes, and a codestream Kbps, even detailed subband
-#  level and neglecting headers, from any codestream.
-#
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-#
-## @package info
-#  The size in bytes, and a codestream Kbps, even detailed subband
-#  level and neglecting headers, from any codestream.
-
 
 import os
 import sys
@@ -29,56 +17,42 @@ import subprocess as     sub
 from   subprocess import check_call
 from   GOP        import GOP
 
-## class info
 class info(GOP):
 
-    ## Total number of GOPs (Group of Pictures) in the sequence.
-    GOPs = 1
-    ## Total number of Temporal Resolution Level.
-    TRLs = 4
-    ##  Frames per Second.
+    # Number of GOPs (Group of Pictures) in the sequence.
+    GOPs = 2
+    
+    # Number of Temporal Resolution Level.
+    TRLs = 2
+
+    #  Frames per Second.
     FPS  = 30
 
-    ## Constructor. Displays information about the sequence in terms of rate.
-    #  @param self Refers to object.
-    #  @param GOPs Total number of GOPs (Group of Pictures) in the sequence.
-    #  @param TRLs Total number of Temporal Resolution Level.
-    #  @param FPS Frames per Second.
     def __init__(self, GOPs, TRLs, FPS) :
 
-        ## Total number of GOPs (Group of Pictures) in the sequence.
         self.GOPs = GOPs
-        ## Total number of Temporal Resolution Level.
         self.TRLs = TRLs
-        ##  Frames per Second.
         self.FPS  = FPS
-
-        ## Number of images from the GOP.
         GOP_size            = GOP.get_size(self, self.TRLs) # number_of_GOPs = int(math.ceil((self.pictures * 1.0)/ GOP_size))
-        ## Total number of images in the sequence.
         pictures            = GOP_size * self.GOPs + 1
-        ## Weighting value, to be applied between the GOP0, and the rest.
+        # Weighting value, to be applied between the GOP0, and the rest.
         average_ponderation = (pictures - 1.0) / pictures
-        ## The duration of GOP0.
         GOP0_time           = 1.0              / self.FPS
-        ## The duration of a GOP.
         GOP_time            = float(GOP_size)  / self.FPS
 
-        sys.stdout.write("\n\n"              + sys.argv[0]    + "\n")
+        #sys.stdout.write("\n\n"              + sys.argv[0]    + "\n")
         sys.stdout.write("TRLs           = " + str(self.TRLs) + "\n")
         sys.stdout.write("Pictures       = " + str(pictures)  + "\n")
         sys.stdout.write("FPS            = " + str(self.FPS)  + "\n")
         sys.stdout.write("GOP size       = " + str(GOP_size)  + "\n")
         sys.stdout.write("Number of GOPs = " + str(self.GOPs) + "\n")
-        sys.stdout.write("GOP_0 time     = " + str(GOP0_time) + "\n")
+        sys.stdout.write("Frame time     = " + str(GOP0_time) + "\n")
         sys.stdout.write("GOP   time     = " + str(GOP_time)  + "\n")
-        sys.stdout.write("All the values are given in thousands of bits per second (Kbps).\n\n")
+        sys.stdout.write("All the values are given in thousands (1000) of bits per second (Kbps).\n\n")
 
         # Table header.
-        #--------------
 
         # First line. (TRL4 TRL3 TRL2 TRL1 TRL0).
-        #----------------------------------------
         sys.stdout.write("\n     ");
         sys.stdout.write("    TRL" + str(self.TRLs-1))
 
@@ -90,7 +64,6 @@ class info(GOP):
         sys.stdout.write("\n")
 
         # Second line. (GOP low_4 motion_4+high_4 motion_3+hight_3 motion_2+high2 motion_1+high_1 Total).
-        #------------------------------------------------------------------------------------------------
         sys.stdout.write("GOP#")
         sys.stdout.write("    low_" +  str(self.TRLs-1))
 
@@ -100,8 +73,7 @@ class info(GOP):
             sys.stdout.write("motion_" + str(i) + " high_" + str(i))
         sys.stdout.write("    Total\n")
 
-        # Third line.
-        #--------------------------------------
+        # Third line. (--------------------------------------)
         sys.stdout.write("---- ")
         sys.stdout.write("-------- ")
         for i in range(self.TRLs-1, 0, -1):
@@ -110,9 +82,6 @@ class info(GOP):
             sys.stdout.write("-------------- ")
         sys.stdout.write("--------\n")
 
-        # VARIABLES.
-        #-----------
-
         # Displays the bit-rate of each subband of each
         # GOP. Therefore, an array of integers, to store for each
         # subband, the bit-rate required of the previous GOP. The
@@ -120,49 +89,39 @@ class info(GOP):
         # by subtracting the value for the previous GOP, less the
         # present value. Recall that the files with the code-streams,
         # are traversed sequentially, and there is a file for each
-        # subband).
+        # subband). Means for each subband are also reported?
         M_prev_GOP   = [0] * self.TRLs
         H_prev_GOP   = [0] * self.TRLs
         M_prev_image = [0] * self.TRLs
         H_prev_image = [0] * self.TRLs
 
-        # Means for each subband.
-        #--------------------------
-
-        ## List type frame.
+        # List type frame.
         self.types_frame     = [None] + [[] for x in xrange (self.TRLs-1)]   # [None, F, F, ..., F]
 
         # Calculation of bytes (textures and motion) per frame.
-        #------------------------------------------------------
         self.bytes_frames_M  = [None] + [[] for x in xrange (self.TRLs-1)]   # [None, M, M, ..., M]
         self.bytes_frames_T  = [[] for x in xrange (self.TRLs)]              # [L,    H, H, ..., H]
         self.bytes_frames_TM = [[] for x in xrange (self.TRLs)]              # [L,    H, H, ..., H]
 
         # Calculation of bit-rates.
-        #--------------------------
 
-        ## List kbps of high frequency subbands.
+        # List kbps of high frequency subbands.
         self.kbps_H          = [[] for x in xrange (self.GOPs+1)]
-        ## List kbps of motion vectors.
+        # List kbps of motion vectors.
         self.kbps_M          = [[] for x in xrange (self.GOPs)]
-        ## List kbps of high frequency subbands and motion vectors.
+        # List kbps of high frequency subbands and motion vectors.
         self.kbps_HM_total   = []
         #self.info_RMSE      = []
 
-        # Means for each subband.
-        #--------------------------
-
-        ## Average kbps of motion.
+        # Average kbps of motion.
         self.average_M     = [0] * (self.TRLs + 1)
-        ## Average kbps of high frecuency subbands.
+        # Average kbps of high frecuency subbands.
         self.average_H     = [0] * (self.TRLs + 1)
-        ## Average kbps of low frecuency subbands.
+        # Average kbps of low frecuency subbands.
         self.average_L     = 0
-        ## Average kbps of codestream.
+        # Average kbps of codestream.
         self.average_total = 0
 
-        # FILES. Open files with temporal subbands and motion fields.
-        #------------------------------------------------------------
         L_file  = self.open_codestream("low_" + str(self.TRLs - 1) + ".j2c") # L
         H_file  = [None]                                                     # H
         M_file  = [None]                                                     # M
@@ -174,7 +133,6 @@ class info(GOP):
             F_file.append(self.open_codestream("frame_types_"    + str(subband)         ))
 
         # GOP 0. The GOP0 is formed by the first image in low_<TRLs-1>.
-        #--------------------------------------------------------------
         L_prev_GOP = self.find_next_EOC_texture(L_file)
         self.bytes_frames_T[0].append(L_prev_GOP) # Bytes per frame
 
