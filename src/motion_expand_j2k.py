@@ -23,39 +23,27 @@ COMPONENTS      = 4
 BYTES_COMPONENT = 2
 ## Number of bits of each component.
 BITS_COMPONENT  = BYTES_COMPONENT * 8
-## Number of blocks in the X direction.
-blocks_in_x = 0
-## Number of blocks in the Y direction.
-blocks_in_y = 0
-## Number of pictures of a temporal resolution.
-fields      = 0
-## Name of the file with the motion fields.
-file        = ""
-# Number of discard level.
-# discard_levels = 0
 
-## The parser module provides an interface to Python's internal parser
-#  and byte-code compiler.
+
 parser = arguments_parser(description="Expands the motion data using JPEG 2000.")
-#parser.add_argument("--discard_levels", help="number of discard level. (Default = {})".format(discard_levels))
-parser.add_argument("--blocks_in_x",     help="number of blocks in the X direction. (Default = {})".format(blocks_in_x))
-parser.add_argument("--blocks_in_y",     help="number of blocks in the Y direction. (Default = {})".format(blocks_in_y))
-parser.add_argument("--fields",          help="number of fields in to compress. (Default = {})".format(fields))
-parser.add_argument("--file",            help="name of the file with the motion fields. (Default = {})".format(file))
+parser.add_argument("--blocks_in_x",
+                        help="number of blocks in the X direction.",
+                        default=11)
+parser.add_argument("--blocks_in_y",
+                        help="number of blocks in the Y direction.",
+                        default=9)
+parser.add_argument("--fields",
+                        help="number of fields in to expand.",
+                        default=2)
+parser.add_argument("--file",
+                        help="name of the file with the motion fields.",
+                        default="")
 
-## A script may only parse a few of the command-line arguments,
-#  passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
-#if args.discard_levels:
-#    discard_levels = int(args.discard_levels)
-if args.blocks_in_x:
-    blocks_in_x = int(args.blocks_in_x)
-if args.blocks_in_y:
-    blocks_in_y = int(args.blocks_in_y)
-if args.fields:
-    fields = int(args.fields)
-if args.file:
-    file = args.file
+blocks_in_x = int(args.blocks_in_x)
+blocks_in_y = int(args.blocks_in_y)
+fields = int(args.fields)
+file = args.file
 
 # Expand each field.
 #-------------------
@@ -100,13 +88,13 @@ for campoMov_number in range (0, fields) :
 
     try:
         ## Component 1.
-        f0 = open(file + str('%04d' % campoMov_number) + "_comp0" + ".rawl", "rb")
+        f0 = open(file + "_" + str('%04d' % campoMov_number) + "_comp0" + ".rawl", "rb")
         ## Component 2.
-        f1 = open(file + str('%04d' % campoMov_number) + "_comp1" + ".rawl", "rb")
+        f1 = open(file + "_" + str('%04d' % campoMov_number) + "_comp1" + ".rawl", "rb")
         ## Component 3.
-        f2 = open(file + str('%04d' % campoMov_number) + "_comp2" + ".rawl", "rb")
+        f2 = open(file + "_" + str('%04d' % campoMov_number) + "_comp2" + ".rawl", "rb")
         ## Component 4.
-        f3 = open(file + str('%04d' % campoMov_number) + "_comp3"  + ".rawl", "rb")
+        f3 = open(file + "_" + str('%04d' % campoMov_number) + "_comp3"  + ".rawl", "rb")
         # Component 1, Component 2, Component 3 y Component 4.
         f  = open(file + "_" + str('%04d' % campoMov_number) + ".join", "wb")
 
