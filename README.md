@@ -50,7 +50,6 @@
   mctf info_j2k --TRLs=2 --GOPs=2
   mctf expand --TRLs=2 --GOPs=2
   mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
-
   ```
    
 ## Basic MJ2K encoding/decoding (157 Kbps):

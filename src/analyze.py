@@ -51,7 +51,7 @@ gop=GOP()
 GOP_size = gop.get_size(TRLs)
 
 ## Calculate the total number of video images.
-pictures = GOPs * GOP_size + 1
+pictures = GOPs * GOP_size - 1
 
 ## Initializes the value of search factor.
 search_factor = 2
