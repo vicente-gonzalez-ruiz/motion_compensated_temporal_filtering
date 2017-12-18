@@ -42,7 +42,7 @@ subband = int(args.subband)
 def decode (component, image_number) :
 
     try:
-        image_filename = file + "_" + str(component) + "_" + str('%04d' % image_number)
+        image_filename = file + "_" + str('%04d' % image_number) + "_" + str(component)
 
         f = open(image_filename + ".j2c", "rb")
         f.close()
@@ -61,8 +61,8 @@ def decode (component, image_number) :
         # created with a neutral texture.
 
         f = open(image_filename + ".rawl", "wb")
-        for a in xrange(pixels_in_x * pixels_in_y) :
-            f.write('%c' % 128)  # BYTES_PER_COMPONENT = 1   # 1 byte for components used unweighted.
+        for a in range(pixels_in_x * pixels_in_y) :
+            f.write(struct.pack('B', 128))  # BYTES_PER_COMPONENT = 1   # 1 byte for components used unweighted.
             #f.write('%c' % 128) # BYTES_PER_COMPONENT = 2   # 2 bytes for weighted or components that are used weighted.
         f.close()
 

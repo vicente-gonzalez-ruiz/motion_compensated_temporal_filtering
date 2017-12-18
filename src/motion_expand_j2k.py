@@ -11,6 +11,7 @@
 
 import os
 import sys
+import struct
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
@@ -65,7 +66,7 @@ for comp_number in range (0, COMPONENTS) :
     for campoMov_number in range (0, fields) :
 
         ## Refers to a particular component from a field of movement.
-        campoMov_name = file + "_comp" + str(comp_number) + "_" + str('%04d' % campoMov_number)
+        campoMov_name = file + "_" + str('%04d' % campoMov_number) + "_comp" + str(comp_number)
 
         try:
             ## File compressed motion vectors. If there is no vector
@@ -89,8 +90,8 @@ for comp_number in range (0, COMPONENTS) :
             # raw_input("")
             
             f = open(campoMov_name + ".rawl", "wb")
-            for a in xrange(BYTES_COMPONENT * blocks_in_y * blocks_in_x) :
-                f.write('%c' % 0)
+            for a in range(BYTES_COMPONENT * blocks_in_y * blocks_in_x) :
+                f.write(struct.pack('h', 0))
             f.close()
 
 # Multiplexing.
@@ -99,15 +100,15 @@ for campoMov_number in range (0, fields) :
 
     try:
         ## Component 1.
-        f0 = open(file + "_comp0_" + str('%04d' % campoMov_number) + ".rawl", "rb")
+        f0 = open(file + str('%04d' % campoMov_number) + "_comp0" + ".rawl", "rb")
         ## Component 2.
-        f1 = open(file + "_comp1_" + str('%04d' % campoMov_number) + ".rawl", "rb")
+        f1 = open(file + str('%04d' % campoMov_number) + "_comp1" + ".rawl", "rb")
         ## Component 3.
-        f2 = open(file + "_comp2_" + str('%04d' % campoMov_number) + ".rawl", "rb")
+        f2 = open(file + str('%04d' % campoMov_number) + "_comp2" + ".rawl", "rb")
         ## Component 4.
-        f3 = open(file + "_comp3_" + str('%04d' % campoMov_number) + ".rawl", "rb")
+        f3 = open(file + str('%04d' % campoMov_number) + "_comp3"  + ".rawl", "rb")
         # Component 1, Component 2, Component 3 y Component 4.
-        f  = open(file + "_"       + str('%04d' % campoMov_number) + ".join", "wb")
+        f  = open(file + "_" + str('%04d' % campoMov_number) + ".join", "wb")
 
         while 1 : # 792 -> 198 -> 49.5
             ## Multiplexing all components.
