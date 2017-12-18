@@ -191,3 +191,13 @@ while image_number < pictures - 1:
 
     image_number += 1
 
+subband = 1
+while subband < TRLs:
+
+    try:
+        check_call("cp frame_types_" + str(subband) + " transcode_quality/",
+                   shell=True)
+    except CalledProcessError:
+        sys.exit(-1)
+
+    subband += 1
