@@ -28,25 +28,25 @@ BITS_PER_COMPONENT  = BYTES_PER_COMPONENT * 8
 parser = arguments_parser(description="Compress the motion data using JPEG 2000.")
 parser.add_argument("--blocks_in_x",
                     help="number of blocks in the X direction.",
-                    default=0)
+                    default=11)
 parser.add_argument("--blocks_in_y",
                     help="number of blocks in the Y direction.",
-                    default=0)
+                    default=9)
 parser.add_argument("--fields",
                     help="number of fields in to compress.",
-                    default=0)
+                    default=2)
 parser.add_argument("--file",
                     help="name of the file with the motion fields.",
                     default="")
 parser.motion_layers()
-parser.motion_quantization()
+#parser.motion_quantization()
 
 args = parser.parse_known_args()[0]
 blocks_in_x = int(args.blocks_in_x)
 blocks_in_y = int(args.blocks_in_y)
 fields = int(args.fields)
 layers = str(args.motion_layers)
-quantization = str(args.motion_quantization)
+#quantization = str(args.motion_quantization)
 file = args.file
 
 ## Number of levels of the DWT to be applied in compression.
@@ -104,7 +104,7 @@ for comp_number in range (0, COMPONENTS) :
                        + " Nsigned="     + "yes"
                        + " Sdims='{'"    + str(blocks_in_y) + "," + str(blocks_in_x) + "'}'"
                        + " Clevels="     + str(spatial_dwt_levels)
-                       + " Cuse_sop="    + "yes"
+                       + " Cuse_sop="    + "no"
                        , shell=True)
                        # + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"
             # An alternative to compress the motion vectors:

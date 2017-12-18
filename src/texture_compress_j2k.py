@@ -30,7 +30,7 @@ parser.add_argument("--file",
 parser.texture_layers()
 parser.add_argument("--pictures",
                     help="Number of pictures to compress.",
-                    default=33)
+                    default=3)
 parser.pixels_in_x()
 parser.pixels_in_y()
 parser.texture_quantization()
@@ -59,21 +59,9 @@ def encode (component,           # Y, U or V.
     
     # Split each next image into its components
     try :
-        check_call("trace demux "
-                   + str(YUV_size)
-                   + jump_demux
-                   + " < "
-                   + file
-                   + ".tmp "
-                   + "| split --numeric-suffixes --suffix-length=4 "
-                   + "--bytes="
-                   + str(component_size)
-                   + " - "
-                   + file
-                   + "_"
-                   + str(component)
-                   + "_"
-                   , shell=True)
+        command_str = "demux " + str(YUV_size) + jump_demux + " < " + file + ".tmp " + "| split --numeric-suffixes --suffix-length=4 " + "--bytes=" + str(component_size) + " - " + file + "_" + str(component) + "_"
+        print(command_str)
+        check_call("trace " + command_str, shell=True)
     except CalledProcessError :
         sys.exit(-1)
 
@@ -81,9 +69,9 @@ def encode (component,           # Y, U or V.
     image_number = 0
     while image_number < pictures :
 
-        image_filename = file + "_" + str(component) + "_" + '%04d' % image_number
+        image_filename = file + "_" + '%04d' % image_number + "_" + str(component)
 
-        os.rename(image_filename, image_filename + ".rawl")
+        os.rename(file + "_" + str(component) + "_" + '%04d' % image_number, image_filename + ".rawl")
 
         try :
             check_call("trace kdu_compress"

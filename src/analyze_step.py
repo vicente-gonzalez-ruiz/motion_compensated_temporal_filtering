@@ -78,54 +78,6 @@ except Exception:
     print("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
     sys.exit(-1)
 
-## Additional code for research work. Expressed as a percentage of the amount of motion vectors that do not indicate a linear motion between frames.
-def amount_motion () :
-
-    ## Number of components of a motion field.
-    COMPONENTS      = 4
-    ## Number of bytes for each component.
-    BYTES_COMPONENT = 2
-    ## Number of bytes of a motion field.
-    BYTES_VM        = COMPONENTS * BYTES_COMPONENT
-    
-    # Motion vectors file.
-    f_motion = open ("motion_" + str(subband), 'r')
-    # f_image  = open ("motion_" + str(subband) + "_importance_image", 'w')
-    f_sub    = open ("motion_" + str(subband) + "_importance_sub"  , 'w')
-
-    # A null motion vector.
-    VM_cero         = '\x00\x00\x00\x00\x00\x00\x00\x00'
-    # Images in the subband.
-    nImages_sub     = pow (2, TRLs - subband - 1) * GOPs
-    # Images in the subband for each GOP.
-    nImages_gop_sub = pow (2, TRLs - subband - 1)
-
-    # Blocks in the image.
-    nBloques_image  = (pixels_in_x * pixels_in_y) // (block_size * block_size)
-    # Blocks in the subband.
-    nBloques_sub    = nBloques_image * nImages_gop_sub
-
-    # Number of bytes in an image, which relate to motion vectors.
-    bytes_image     = nBloques_image * BYTES_VM
-    # Number of bytes in an subband, which relate to motion vectors.
-    bytes_gop       = bytes_image * nImages_gop_sub
-
-    # Percentage of zeros for each subband.
-    for iGOP in range (0, GOPs) : # for each GOP
-        # Initializes percentage of zeros for each subband.
-        nCeros = 0.0
-        for iBlock in range (0, nBloques_sub) : # Iterates over each block in a subband.
-            if f_motion.read(BYTES_VM) in VM_cero :
-                nCeros += 1.0
-        motion_importance = 1 - (nCeros // nBloques_sub)
-        f_sub.write (str(motion_importance) + "\n")
-
-    f_sub.close ()
-    f_motion.close ()
-
-# Call amount_motion
-# amount_motion()
-
 try :
     # Motion Compensation.
     check_call("mctf decorrelate"

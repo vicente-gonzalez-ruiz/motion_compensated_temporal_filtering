@@ -122,29 +122,15 @@ gop=GOP()
 GOP_size = gop.get_size(TRLs)
 print("GOP_size = {}".format(GOP_size))
 
-pictures = GOPs * GOP_size + 1
+pictures = (GOPs - 1) * GOP_size + 1
 print("pictures = {}".format(pictures))
 
-# Transcoding of L subband
-image_number = 0
-while image_number < pictures:
-
-    str_image_number = '%04d' % image_number
-
-    filename = LOW + "_" + str(TRLs-1) + "_Y_" + str_image_number
-    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
-
-    filename = LOW + "_" + str(TRLs-1) + "_U_" + str_image_number
-    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
-
-    filename = LOW + "_" + str(TRLs-1) + "_V_" + str_image_number
-    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
-
-    image_number += 1
-        
 # Transcoding of H subbands
-subband = TRLs - 1
-while subband > 0:
+subband = 1
+while subband < TRLs:
+
+    pictures = (pictures + 1) // 2
+    print("Transcoding subband H[{}] of {} pictures".format(subband, pictures))
     
     image_number = 0
     # pictures = 
@@ -164,6 +150,23 @@ while subband > 0:
         image_number += 1
 
     subband -= 1
+
+# Transcoding of L subband
+image_number = 0
+while image_number < pictures:
+
+    str_image_number = '%04d' % image_number
+
+    filename = LOW + "_" + str(TRLs-1) + "_Y_" + str_image_number
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    filename = LOW + "_" + str(TRLs-1) + "_U_" + str_image_number
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    filename = LOW + "_" + str(TRLs-1) + "_V_" + str_image_number
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    image_number += 1
 
 # Transcoding of M "subbands"
 subband = TRLs - 1
