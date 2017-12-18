@@ -45,7 +45,7 @@
   mctf compress --TRLs=2 --GOPs=2 --motion_layers=1 --texture_layers=8
   mctf info_j2k --TRLs=2 --GOPs=2
   mkdir transcode_quality
-  mctf transcode_quality --TRLs=2 --GOPs=2 --QSLs=5
+  mctf transcode_quality --TRLs=2 --GOPs=2 --QSLs=5  --motion_layers=1 --texture_layers=8
   cd transcode_quality
   mctf info_j2k --TRLs=2 --GOPs=2
   mctf expand --TRLs=2 --GOPs=2

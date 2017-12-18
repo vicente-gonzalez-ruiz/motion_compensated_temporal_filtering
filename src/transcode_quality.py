@@ -98,16 +98,16 @@ number_of_quality_layers_in_L = len([x for x in subband_layers_to_copy
 print("Number of subband layers in L = {}".format(number_of_quality_layers_in_L))
 
 number_of_quality_layers_in_H = [None]*TRLs
-for i in range(TRLs):
+for i in range(1, TRLs):
     number_of_quality_layers_in_H[i] = len([x for x in subband_layers_to_copy
                                             if x[0]=='H' and x[1]==i])
-    print("Number of quality layers in H[{}] = {}".format(i, number_of_quality_layers_in_H[i]))
+    print("Number of quality layers in H_{} = {}".format(i, number_of_quality_layers_in_H[i]))
     
 number_of_quality_layers_in_M = [None]*TRLs
-for i in range(TRLs):
+for i in range(1, TRLs):
     number_of_quality_layers_in_M[i] = len([x for x in subband_layers_to_copy
                                             if x[0]=='M' and x[1]==i])
-    print("Number of quality layers in M[{}] = {}".format(i, number_of_quality_layers_in_M[i]))
+    print("Number of quality layers in M_{} = {}".format(i, number_of_quality_layers_in_M[i]))
 
 def kdu_transcode(filename, layers):
     try:
@@ -122,14 +122,14 @@ gop=GOP()
 GOP_size = gop.get_size(TRLs)
 print("GOP_size = {}".format(GOP_size))
 
-pictures = (GOPs - 1) * GOP_size + 1
+pictures = GOPs * GOP_size - 1
 print("pictures = {}".format(pictures))
 
 # Transcoding of H subbands
 subband = 1
 while subband < TRLs:
 
-    pictures = (pictures + 1) // 2
+    pictures = (pictures + 1) // 2 - 1
     print("Transcoding subband H[{}] of {} pictures".format(subband, pictures))
     
     image_number = 0
@@ -138,44 +138,56 @@ while subband < TRLs:
 
         str_image_number = '%04d' % image_number
 
-        filename = HIGH + "_" + str(subband) + "_Y_" + str_image_number
+        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_Y" 
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
-        filename = HIGH + "_" + str(subband) + "_U_" + str_image_number
+        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_U" 
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
-        filename = HIGH + "_" + str(subband) + "_V_" + str_image_number
+        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_V" 
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
         image_number += 1
 
-    subband -= 1
+    subband += 1
+
+# Transcoding of M "subbands"
+subband = 1
+pictures = GOPs * GOP_size - 1
+fields = pictures // 2
+while subband < TRLs:
+
+    field = 0
+    
+    while field < fields:
+
+        str_field = '%04d' % field
+
+        for component in range(4):
+            
+            filename = MOTION + "_" + str(subband) + "_" + str_field + "_comp" + str(component) + ".j2c"
+            kdu_transcode(filename, number_of_quality_layers_in_M[subband])
+
+        field += 1
+
+    fields /= 2
+
+    subband += 1
 
 # Transcoding of L subband
 image_number = 0
-while image_number < pictures:
+while image_number < pictures - 1:
 
     str_image_number = '%04d' % image_number
 
-    filename = LOW + "_" + str(TRLs-1) + "_Y_" + str_image_number
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_Y"
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    filename = LOW + "_" + str(TRLs-1) + "_U_" + str_image_number
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_U"
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    filename = LOW + "_" + str(TRLs-1) + "_V_" + str_image_number
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_V"
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
     image_number += 1
 
-# Transcoding of M "subbands"
-subband = TRLs - 1
-while subband > 0:
-
-    field_number = 0
-    fields = 4 
-    while field_number < fields:
-
-        str_field_number = '%04d' % field_number
-        filename = MOTION + "_" + str(subband) + "_" + str(field_number) + ".j2c"
-        kdu_transcode(filename, number_of_quality_layers_in_M[subband])
