@@ -44,10 +44,9 @@ parser.GOPs()
 parser.motion_layers()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.add_argument("-QSLs",
+parser.add_argument("--QSLs",
                     help="Number of Quality Subband-Layers.",
                     default=1)
-parser.SRLs()
 parser.texture_layers()
 parser.TRLs()
 
@@ -57,7 +56,6 @@ motion_layers = int(args.motion_layers)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 QSLs = int(args.QSLs)
-SRLs = int(args.SRLs)
 texture_layers = int(args.texture_layers)
 TRLs = int(args.TRLs)
 
@@ -81,9 +79,16 @@ def generate_list_of_subband_layers(T, Qt, Qm):
             l.append(('H', T-t-1, Qt-q-1))
     return l
 
-all_subband_layers = generate_list_of_subband_layers(TRLs,
-                                                     motion_layers,
-                                                     texture_layers)
+print("Texture layers = {}".format(texture_layers))
+print("Motion layers = {}".format(motion_layers))
+
+all_subband_layers = generate_list_of_subband_layers(T=TRLs,
+                                                     Qt=texture_layers,
+                                                     Qm=motion_layers
+                                                     )
+
+print("Subband layers = {}".format(all_subband_layers))
+print("QSLs = {}".format(QSLs))
 
 subband_layers_to_copy = all_subband_layers[:QSLs]
 print("Subband layers to copy = {}".format(subband_layers_to_copy))
@@ -96,13 +101,13 @@ number_of_quality_layers_in_H = [None]*TRLs
 for i in range(TRLs):
     number_of_quality_layers_in_H[i] = len([x for x in subband_layers_to_copy
                                             if x[0]=='H' and x[1]==i])
-    print("Number of quality layers in H[{}]={}".format(i, number_of_quality_layers_in_H[i]))
+    print("Number of quality layers in H[{}] = {}".format(i, number_of_quality_layers_in_H[i]))
     
 number_of_quality_layers_in_M = [None]*TRLs
 for i in range(TRLs):
     number_of_quality_layers_in_M[i] = len([x for x in subband_layers_to_copy
                                             if x[0]=='M' and x[1]==i])
-    print("Number of quality layers in M[{}]={}".format(i, number_of_quality_layers_in_M[i]))
+    print("Number of quality layers in M[{}] = {}".format(i, number_of_quality_layers_in_M[i]))
 
 def kdu_transcode(filename, layers):
     try:
@@ -115,21 +120,24 @@ def kdu_transcode(filename, layers):
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
+print("GOP_size = {}".format(GOP_size))
+
 pictures = GOPs * GOP_size + 1
-        
+print("pictures = {}".format(pictures))
+
 # Transcoding of L subband
 image_number = 0
 while image_number < pictures:
 
     str_image_number = '%04d' % image_number
 
-    filename = LOW + str(TRLs-1) + "_Y_" + str_image_number
+    filename = LOW + "_" + str(TRLs-1) + "_Y_" + str_image_number
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    filename = LOW + str(TRLs-1) + "_U_" + str_image_number
+    filename = LOW + "_" + str(TRLs-1) + "_U_" + str_image_number
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    filename = LOW + str(TRLs-1) + "_V_" + str_image_number
+    filename = LOW + "_" + str(TRLs-1) + "_V_" + str_image_number
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
     image_number += 1
@@ -144,13 +152,13 @@ while subband > 0:
 
         str_image_number = '%04d' % image_number
 
-        filename = HIGH + str(subband) + "_Y_" + str_image_number
+        filename = HIGH + "_" + str(subband) + "_Y_" + str_image_number
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
-        filename = HIGH + str(subband) + "_U_" + str_image_number
+        filename = HIGH + "_" + str(subband) + "_U_" + str_image_number
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
-        filename = HIGH + str(subband) + "_V_" + str_image_number
+        filename = HIGH + "_" + str(subband) + "_V_" + str_image_number
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
         image_number += 1
@@ -166,5 +174,5 @@ while subband > 0:
     while field_number < fields:
 
         str_field_number = '%04d' % field_number
-        filename = MOTION + str(subband) + "_" + str(field_number) + ".j2c"
+        filename = MOTION + "_" + str(subband) + "_" + str(field_number) + ".j2c"
         kdu_transcode(filename, number_of_quality_layers_in_M[subband])
