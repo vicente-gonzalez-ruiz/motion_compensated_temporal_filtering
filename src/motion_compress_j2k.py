@@ -85,10 +85,10 @@ for comp_number in range (0, COMPONENTS) :
 
         ## Name of the file containing the data of movement of a
         #  component of a desired image and a specific subband.
-        campoMov_name = file + "_comp" + str(comp_number) + "_" + str('%04d' % campoMov_number)
+        campoMov_name = file + "_" + str('%04d' % campoMov_number) +  "_comp" + str(comp_number)
 
         try:
-            check_call("mv " + campoMov_name + " " + campoMov_name + ".rawl"
+            check_call("mv " + file + "_comp" + str(comp_number) + "_" + str('%04d' % campoMov_number) + " " + campoMov_name + ".rawl"
                        , shell=True)
         except CalledProcessError:
             sys.exit(-1)
