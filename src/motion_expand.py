@@ -48,7 +48,7 @@ pixels_in_y = int(args.pixels_in_y)
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
-pictures = GOPs * GOP_size - 1
+pictures = (GOPs - 1) * GOP_size + 1
 
 blocks_in_x = pixels_in_x // block_size
 blocks_in_y = pixels_in_y // block_size

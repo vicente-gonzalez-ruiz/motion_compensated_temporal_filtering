@@ -122,7 +122,7 @@ gop=GOP()
 GOP_size = gop.get_size(TRLs)
 print("GOP_size = {}".format(GOP_size))
 
-pictures = GOPs * GOP_size - 1
+pictures = (GOPs - 1) * GOP_size + 1
 print("pictures = {}".format(pictures))
 
 # Transcoding of H subbands

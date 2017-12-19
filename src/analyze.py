@@ -51,7 +51,9 @@ gop=GOP()
 GOP_size = gop.get_size(TRLs)
 
 ## Calculate the total number of video images.
-pictures = GOPs * GOP_size - 1
+pictures = (GOPs - 1) * GOP_size + 1
+
+#import ipdb; ipdb.set_trace()
 
 ## Initializes the value of search factor.
 search_factor = 2
@@ -68,8 +70,6 @@ while temporal_subband < TRLs:
 
     try:
         check_call("mctf analyze_step"
-                   + " --GOPs="              + str(GOPs)
-                   + " --TRLs="              + str(TRLs)
                    + " --always_B="          + str(always_B)
                    + " --block_overlaping="  + str(block_overlaping)
                    + " --block_size="        + str(block_size)

@@ -253,6 +253,7 @@ int main(int argc, char *argv[]) {
   }
   
 #if defined DEBUG
+  info("%s: pictures=%d\n", argv[0], pictures);
 #ifdef ANALYZE
   info("%s: writing picture 0 from \"%s\" to \"%s\".\n",
        argv[0], low_fn,  even_fn);

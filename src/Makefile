@@ -92,6 +92,12 @@ EXE	+= $(BIN)/trace
 $(BIN)/mctf:	mctf.sh
 EXE	+= $(BIN)/mctf
 
+$(MCTF_BIN)/clean:	clean.sh
+EXE	+= $(MCTF_BIN)/clean
+
+$(MCTF_BIN)/copy:	copy.sh
+EXE	+= $(MCTF_BIN)/copy
+
 $(MCTF_BIN)/mcj2k:	mcj2k.sh
 EXE	+= $(MCTF_BIN)/mcj2k
 
@@ -119,11 +125,11 @@ $(BIN)/vshow:	vshow.sh
 EXE	+= $(BIN)/vshow
 
 $(MCTF_BIN)/split:	split.cpp display.cpp
-	$(CC) $(CFLAGS) -D ANALYZE $< -o $@ -lm
+	$(CC) $(GCC_FLAGS) -D ANALYZE $< -o $@ -lm
 EXE += $(MCTF_BIN)/split
 
 $(MCTF_BIN)/merge:	split.cpp display.cpp
-	$(CC) $(CFLAGS) $< -o $@ -lm
+	$(CC) $(GCC_FLAGS) $< -o $@ -lm
 EXE += $(MCTF_BIN)/merge
 
 $(MCTF_BIN)/motion_estimate:	motion_estimate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp

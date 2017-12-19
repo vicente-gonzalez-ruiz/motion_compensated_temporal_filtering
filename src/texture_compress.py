@@ -54,7 +54,7 @@ gop      = GOP()
 GOP_size = gop.get_size(TRLs)
 
 ## Number of images to process.
-pictures = GOPs * GOP_size - 1
+pictures = (GOPs - 1) * GOP_size + 1
 
 if   TRLs == 1 :
     pass

@@ -38,7 +38,7 @@ update_factor = float(args.update_factor)
 
 gop = GOP()
 GOP_size = gop.get_size(TRLs)
-pictures = GOPs * GOP_size - 1
+pictures = (GOPs - 1) * GOP_size + 1
 _search_range = search_range
 _pictures = pictures
 

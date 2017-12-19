@@ -32,7 +32,7 @@ TRLs = int(args.TRLs)
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
-_pictures = pictures = GOPs * GOP_size - 1
+_pictures = pictures = (GOPs - 1) * GOP_size + 1
 
 if TRLs > 1 :
     # Decompression HIGH frequency subbands.
