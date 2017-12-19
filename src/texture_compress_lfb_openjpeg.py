@@ -47,7 +47,7 @@ YUV_size = Y_size + U_size + V_size
 
 # Copy only the required images
 try:
-    check_call("trace dd" +
+    check_call("dd" +
                " if=" + file + 
                " of=" + file + ".tmp"
                " bs=" + str(YUV_size) +
@@ -58,7 +58,7 @@ except CalledProcessError:
 
 # Encode Y
 try:
-    check_call("trace demux " + str(YUV_size) + " 0 " + str(Y_size)
+    check_call("demux " + str(YUV_size) + " 0 " + str(Y_size)
                + " < " + file
                + ".tmp | /usr/bin/split --numeric-suffixes --suffix-length=4 --bytes="
                + str(Y_size) + " - " + file + "_Y_",
@@ -94,7 +94,7 @@ while image_number < pictures:
 
 # Encode U
 try:
-    check_call("trace demux "
+    check_call("demux "
                + str(YUV_size) + " " + str(Y_size) + " " + str(U_size)
                + " < " + file
                + ".tmp | /usr/bin/split --numeric-suffixes --suffix-length=4 --bytes="
@@ -131,7 +131,7 @@ while image_number < pictures:
 
 # Encode V
 try:
-    check_call("trace demux " + str(YUV_size) + " " + str(U_size+Y_size)
+    check_call("demux " + str(YUV_size) + " " + str(U_size+Y_size)
                + " " + str(V_size)
                + " < " + file
                + ".tmp | /usr/bin/split --numeric-suffixes --suffix-length=4 --bytes="

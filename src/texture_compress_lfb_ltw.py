@@ -77,7 +77,7 @@ YUV_size = Y_size + U_size + V_size
 
 ## Copy only the required images.
 try:
-    check_call("trace dd" +
+    check_call("dd" +
                " if=" + file + 
                " of=" + file + ".tmp"
                " bs=" + str(YUV_size) +
@@ -92,7 +92,7 @@ except CalledProcessError:
 # Demultiplexing and encoding the 'Y' component.
 #-----------------------------------------------
 try:
-    check_call("trace demux " + str(YUV_size) + " 0 " + str(Y_size)
+    check_call("demux " + str(YUV_size) + " 0 " + str(Y_size)
                + " < " + file
                + ".tmp | /usr/bin/split --numeric-suffixes --suffix-length=4 --bytes="
                + str(Y_size) + " - " + file + "_Y_",
@@ -110,7 +110,7 @@ while image_number < pictures:
     image_filename = file + "_Y_" + str_image_number
 
     try:
-        check_call("trace mv " + image_filename + " " + image_filename + ".raw",
+        check_call("mv " + image_filename + " " + image_filename + ".raw",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
@@ -138,7 +138,7 @@ while image_number < pictures:
 # Demultiplexing and encoding the 'U' component.
 #-----------------------------------------------
 try:
-    check_call("trace demux "
+    check_call("demux "
                + str(YUV_size) + " " + str(Y_size) + " " + str(U_size)
                + " < " + file
                + ".tmp | /usr/bin/split --numeric-suffixes --suffix-length=4 --bytes="
@@ -154,7 +154,7 @@ while image_number < pictures:
     image_filename = file + "_U_" + str_image_number
 
     try:
-        check_call("trace mv " + image_filename + " " + image_filename + ".raw",
+        check_call("mv " + image_filename + " " + image_filename + ".raw",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
@@ -182,7 +182,7 @@ while image_number < pictures:
 # Demultiplexing and encoding the 'V' component.
 #-----------------------------------------------
 try:
-    check_call("trace demux " + str(YUV_size) + " " + str(U_size+Y_size)
+    check_call("demux " + str(YUV_size) + " " + str(U_size+Y_size)
                + " " + str(V_size) 
                + " < " + file 
                + ".tmp | /usr/bin/split --numeric-suffixes --suffix-length=4 --bytes=" 
@@ -198,7 +198,7 @@ while image_number < pictures:
     image_filename = file + "_V_" + str_image_number
 
     try:
-        check_call("trace mv " + image_filename + " " + image_filename + ".raw",
+        check_call("mv " + image_filename + " " + image_filename + ".raw",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)

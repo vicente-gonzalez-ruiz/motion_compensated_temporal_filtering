@@ -44,7 +44,7 @@ class Defaults():
 
     # Controls the quality level and the bit-rate of the code-stream
     # of motions.
-    motion_quantization = 45000
+    motion_quantization = 0
     
     # Controls the quality level and the bit-rate of the code-stream
     # of textures.

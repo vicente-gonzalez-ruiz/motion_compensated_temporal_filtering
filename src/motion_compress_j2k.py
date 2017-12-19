@@ -60,7 +60,7 @@ for comp_number in range (0, COMPONENTS) :
 
     # DEMUX components.
     try :
-        check_call("trace demux "
+        check_call("demux "
                    + str(COMPONENTS * BYTES_PER_COMPONENT)
                    + " "
                    + str(comp_number * BYTES_PER_COMPONENT)

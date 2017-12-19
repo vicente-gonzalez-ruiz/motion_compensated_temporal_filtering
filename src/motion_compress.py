@@ -123,6 +123,6 @@ while iter <= iterations:
     except CalledProcessError:
         sys.exit(-1)
 
-    fields /= 2
+    fields //= 2
 
     iter += 1

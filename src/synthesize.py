@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-## @file synthesize.py
-#  Undo the temporal transformation (Temporal inverse transform).
-#  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package synthesize
 #  Undo the temporal transformation (Temporal inverse transform).
 
 import os
@@ -60,7 +54,7 @@ if TRLs > 1 :
         if search_range > MAX_SEARCH_RANGE:
             search_range = MAX_SEARCH_RANGE
 
-        pictures = (pictures + 1) / 2
+        pictures = (pictures + 1) // 2
         temporal_subband += 1
 
 
@@ -92,5 +86,5 @@ if TRLs > 1 :
             if search_range > MAX_SEARCH_RANGE:
                 search_range = MAX_SEARCH_RANGE
 
-            pictures = ( pictures + 1 ) / 2
+            pictures = ( pictures + 1 ) // 2
             j += 1

@@ -61,7 +61,7 @@ def encode (component,           # Y, U or V.
     try :
         command_str = "demux " + str(YUV_size) + jump_demux + " < " + file + ".tmp " + "| split --numeric-suffixes --suffix-length=4 " + "--bytes=" + str(component_size) + " - " + file + "_" + str(component) + "_"
         print(command_str)
-        check_call("trace " + command_str, shell=True)
+        check_call(command_str, shell=True)
     except CalledProcessError :
         sys.exit(-1)
 
@@ -113,7 +113,7 @@ YUV_size   = Y_size + U_size + V_size
 
 # Copy only the required images.
 try :
-    check_call("trace dd"
+    check_call("dd"
                + " if="    + file
                + " of="    + file + ".tmp"
                + " bs="    + str(YUV_size)
