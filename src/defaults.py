@@ -24,28 +24,19 @@ class Defaults():
     # Minimal block size allowed in the motion estimation process.
     min_block_size = 32
 
-    # Logarithm controls the quality level and the bit-rate of the
-    # code-stream of motions.
-    motion_layers = 1
-
     # Width of the pictures.
     pixels_in_x = 352
 
     # Height of the pictures.
     pixels_in_y = 288
 
-    # Distance in the quantization step, between quality layers in the
-    # same subband.
-    quantization_step = 256 # Kakadu's default value
-
     # Controls the quality level and the bit-rate of the code-stream
     # of motions.
+    motion_layers = 1
     motion_quantization = 0 # 0 -> No quantization
+    motion_quantization_step = 0
+    motion_slopes = "0"
     
-    # Controls the quality level and the bit-rate of the code-stream
-    # of textures.
-    texture_quantization = 45000
-
     # Size of the search areas in the motion estimation process.
     search_range = 4
 
@@ -55,9 +46,12 @@ class Defaults():
     # Subpixel motion estimation order.
     subpixel_accuracy = 0
 
-    # Number of layers for texture data.
+    # Texture quantization.
     texture_layers = 8
-
+    texture_quantization = 43000
+    texture_quantization_step = 256
+    texture_slopes = "43000, 43256, 43512, 43768, 44024, 44280, 44536, 44792"
+    
     # Number of Temporal Resolution Levels.
     TRLs = 4
 

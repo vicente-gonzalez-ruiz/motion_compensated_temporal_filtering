@@ -69,6 +69,12 @@ class arguments_parser(argparse.ArgumentParser):
                           "of the code-stream of motion data.",
                           default=Defaults.motion_quantization)
 
+    def motion_quantization_step(self):
+        self.add_argument("--motion_quantization_step",
+                          help="Quantization step for compressing "
+                          "motion data.",
+                          default=Defaults.motion_quantization_step)
+
     # No aquí?
     #def pictures(self):
     #    self.add_argument("--pictures",
@@ -85,20 +91,13 @@ class arguments_parser(argparse.ArgumentParser):
                           help="Height of the pictures.",
                           default=Defaults.pixels_in_y)
 
-    def quantization_step(self):
-        self.add_argument("--quantization_step",
-                          help="Distance in the quantization step, "
-                          "between quality layers in the same subband. "
-                          "Kakadu uses by default 256.",
-                          default=Defaults.quantization_step)
-
     # Unused?
     #def rates(self):
     #    self.add_argument("--rates",
     #                      help="Read only the initial portion of the "
     #                      "code-stream, corresponding to an overall bit-rate "
     #                      "of \"rate\" bits/sample.",
-                          default=Defaults.rates)
+    #                      default=Defaults.rates)
 
     def search_range(self):
         self.add_argument("--search_range",
@@ -128,16 +127,15 @@ class arguments_parser(argparse.ArgumentParser):
                           "of the code-stream of texture data.",
                           default=Defaults.texture_quantization)
                           
+    def texture_quantization_step(self):
+        self.add_argument("--texture_quantization_step",
+                          help="Quantization step for compressing "
+                          "texture data.",
+                          default=Defaults.texture_quantization_step)
     def TRLs(self):
         self.add_argument("--TRLs",
                           help="Temporal Resolution Levels.",
                           default=Defaults.TRLs)
-
-    # Not here?
-    #def temporal_subband(self):
-    #    self.add_argument("--temporal_subband",
-    #                      help="number of the temporal subband.",
-    #                      default=0)
 
     def update_factor(self):
         self.add_argument("--update_factor",

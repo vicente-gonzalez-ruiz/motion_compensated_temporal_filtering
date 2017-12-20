@@ -24,6 +24,10 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("motion_compress")
 
 #MOTION_CODER_NAME = "gzip"
 #MOTION_CODER_NAME = "kdu_v_compress"
@@ -37,17 +41,18 @@ parser.min_block_size()
 parser.GOPs()
 parser.motion_layers()
 parser.motion_quantization()
+parser.motion_quantization_step()
 parser.TRLs()
 
 args = parser.parse_known_args()[0]
-
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 block_size = int(args.block_size)
 min_block_size = int(args.min_block_size)
 GOPs = int(args.GOPs)
-layers = str(args.motion_layers)
-quantization = str(args.motion_quantization)
+layers = int(args.motion_layers); log.debug("layers={}".format(layers))
+quantization = int(args.motion_quantization); log.debug("quantization={}".format(quantization))
+quantization_step = int(args.motion_quantization_step); log.debug("quantization_step={}".format(quantization_step))
 TRLs = int(args.TRLs)
 
 gop=GOP()
@@ -106,19 +111,30 @@ except CalledProcessError:
     sys.exit(-1)
 
 # Compress.
+
+slopes = []
+for i in range(layers):
+    slopes.append(quantization + i * quantization_step)
+
+if len(slopes) == 1:
+    str_slopes = str(slopes[0])
+else:
+    str_slopes = ', '.join(str(i) for i in slopes)
+    
+#import ipdb; ipdb.set_trace()
+
 iter = 1
 fields = pictures // 2
 while iter <= iterations:
 
     try:
-        check_call("mctf motion_compress_" + MCTF_MOTION_CODEC
-                   + " --blocks_in_x="     + str(blocks_in_x)
-                   + " --blocks_in_y="     + str(blocks_in_y)
-                   + " --iteration="       + str(iter)
-                   + " --fields="          + str(fields)
-                   + " --quantization=\""  + str(quantization) + "\""
-                   + " --layers=\""        + str(layers)       + "\""
-                   + " --file="            + "motion_residue_" + str(iter)
+        check_call("mctf motion_compress__" + MCTF_MOTION_CODEC
+                   + " --blocks_in_x="      + str(blocks_in_x)
+                   + " --blocks_in_y="      + str(blocks_in_y)
+                   + " --iteration="        + str(iter)
+                   + " --fields="           + str(fields)
+                   + " --file="             + "motion_residue_" + str(iter)
+                   + " --slopes=\""         + str_slopes + "\""
                    , shell=True)
     except CalledProcessError:
         sys.exit(-1)

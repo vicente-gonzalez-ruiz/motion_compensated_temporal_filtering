@@ -13,10 +13,11 @@ import subprocess  as     sub
 from  subprocess  import check_call
 from  subprocess  import CalledProcessError
 from arguments_parser import arguments_parser
+from defaults import Defaults
+import logging
 
-LOW         = "low"
-HIGH        = "high"
-COMPONENTS  = 3
+logging.basicConfig()
+log = logging.getLogger("texture_compress__constant")
 
 ## Number of bytes per component.
 #  - Use 1 byte for unweighted components.
@@ -35,20 +36,15 @@ parser.pixels_in_x()
 parser.pixels_in_y()
 parser.add_argument("--slopes",
                     help="Slopes used for compression",
-                    default="42000, 42256, 42512")
-parser.temporal_subband()
+                    default=Defaults.texture_slopes)
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
 file = args.file
-layers = args.texture_layers
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-TQ = str(args.texture_quantization)
-TQS = str(args.texture_quantization_step)
-slopes = args.Slopes; log.debug("slopes={}".format(slopes))
-subband = int(args.temporal_subband)
+slopes = args.slopes; log.debug("slopes={}".format(slopes))
 SRLs = int(args.SRLs)
 
 def encode (component,           # Y, U or V.

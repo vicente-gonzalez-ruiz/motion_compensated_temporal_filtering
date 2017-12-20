@@ -181,8 +181,8 @@ EXE += $(MCTF_BIN)/bidirectional_motion_decorrelate
 $(MCTF_BIN)/motion_compress_cp:	motion_compress_cp.py
 EXE	+= $(MCTF_BIN)/motion_compress_cp
 
-$(MCTF_BIN)/motion_compress_j2k:	motion_compress_j2k.py
-EXE	+= $(MCTF_BIN)/motion_compress_j2k
+$(MCTF_BIN)/motion_compress__j2k:	motion_compress__j2k.py
+EXE	+= $(MCTF_BIN)/motion_compress__j2k
 
 $(MCTF_BIN)/motion_compress_gzip:	motion_compress_gzip.py
 EXE	+= $(MCTF_BIN)/motion_compress_gzip
@@ -246,8 +246,8 @@ EXE	+= $(MCTF_BIN)/synthesize
 $(MCTF_BIN)/motion_expand_cp:	motion_expand_cp.py
 EXE	+= $(MCTF_BIN)/motion_expand_cp
 
-$(MCTF_BIN)/motion_expand_j2k:	motion_expand_j2k.py
-EXE	+= $(MCTF_BIN)/motion_expand_j2k
+$(MCTF_BIN)/motion_expand__j2k:	motion_expand__j2k.py
+EXE	+= $(MCTF_BIN)/motion_expand__j2k
 
 $(MCTF_BIN)/motion_expand_gzip:	motion_expand_gzip.py
 EXE	+= $(MCTF_BIN)/motion_expand_gzip

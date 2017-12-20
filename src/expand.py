@@ -24,6 +24,10 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("texture_compress")
 
 parser = arguments_parser(description="Decodes a sequence of pictures.")
 parser.block_size()

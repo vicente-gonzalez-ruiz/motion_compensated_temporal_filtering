@@ -41,6 +41,10 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("compress")
 
 parser = arguments_parser(description="Encodes a sequence of pictures.")
 parser.always_B()
@@ -51,17 +55,17 @@ parser.GOPs()
 parser.min_block_size()
 parser.motion_layers()
 parser.motion_quantization()
+parser.motion_quantization_step()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.quantization_step()
 parser.search_range()
 parser.subpixel_accuracy()
+parser.texture_layers()
 parser.texture_quantization()
+parser.texture_quantization_step()
 parser.SRLs()
 parser.TRLs()
-parser.texture_layers()
 parser.update_factor()
-parser.using_gains()
 
 args = parser.parse_known_args()[0]
 always_B = int(args.always_B)
@@ -70,19 +74,19 @@ block_size = int(args.block_size)
 min_block_size = int(args.min_block_size)
 border_size = int(args.border_size)
 GOPs = int(args.GOPs)
-motion_layers = str(args.motion_layers)
+motion_layers = str(args.motion_layers); log.debug("motion_layers={}".format(motion_layers))
+motion_quantization = str(args.motion_quantization); log.debug("motion_quantization={}".format(motion_quantization))
+motion_quantization_step = str(args.motion_quantization_step); log.debug("motion_quantization_step={}".format(motion_quantization_step))
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quantization_step = args.quantization_step
-motion_quantization = str(args.motion_quantization)
-texture_quantization = str(args.texture_quantization)
+texture_layers = int(args.texture_layers)
+texture_quantization = int(args.texture_quantization)
+texture_quantization_step = int(args.texture_quantization_step)
 search_range = int(args.search_range)
 subpixel_accuracy = int(args.subpixel_accuracy)
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
-texture_layers = int(args.texture_layers)
 update_factor = float(args.update_factor)
-using_gains = str(args.using_gains)
 
 MCTF_QUANTIZER       = os.environ["MCTF_QUANTIZER"]
 
@@ -109,30 +113,31 @@ if TRLs > 1:
     try:
         # Compress the fields of motion. A layer quality is used without loss.
         check_call("mctf motion_compress"
-                   + " --block_size="            + str(block_size)
-                   + " --GOPs="                  + str(GOPs)
-                   + " --min_block_size="        + str(min_block_size)
-                   + " --motion_layers=\""       + str(motion_layers) + "\""
-                   + " --pixels_in_x="           + str(pixels_in_x)
-                   + " --pixels_in_y="           + str(pixels_in_y)
-                   + " --motion_quantization=\"" + str(motion_quantization) + "\""
-                   + " --SRLs="                  + str(SRLs)
-                   + " --TRLs="                  + str(TRLs)
+                   + " --block_size="               + str(block_size)
+                   + " --GOPs="                     + str(GOPs)
+                   + " --min_block_size="           + str(min_block_size)
+                   + " --pixels_in_x="              + str(pixels_in_x)
+                   + " --pixels_in_y="              + str(pixels_in_y)
+                   + " --motion_layers="            + str(motion_layers)
+                   + " --motion_quantization="      + str(motion_quantization)
+                   + " --motion_quantization_step=" + str(motion_quantization_step)
+                   + " --SRLs="                     + str(SRLs)
+                   + " --TRLs="                     + str(TRLs)
                    , shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
 try:
     # Compressed textures. Quality layers are used, with loss.
-    check_call("mctf texture_compress__"      + MCTF_QUANTIZER
-               + " --GOPs="                   + str(GOPs)
-               + " --pixels_in_x="            + str(pixels_in_x)
-               + " --pixels_in_y="            + str(pixels_in_y)
-               + " --texture_quantization=\"" + str(texture_quantization) + "\""
-               + " --quantization_step="      + str(quantization_step)
-               + " --SRLs="                   + str(SRLs)
-               + " --TRLs="                   + str(TRLs)
-               + " --texture_layers="         + str(texture_layers)
+    check_call("mctf texture_compress__"         + MCTF_QUANTIZER
+               + " --GOPs="                      + str(GOPs)
+               + " --pixels_in_x="               + str(pixels_in_x)
+               + " --pixels_in_y="               + str(pixels_in_y)
+               + " --texture_layers="            + str(texture_layers)
+               + " --texture_quantization="      + str(texture_quantization) 
+               + " --texture_quantization_step=" + str(texture_quantization_step)
+               + " --SRLs="                      + str(SRLs)
+               + " --TRLs="                      + str(TRLs)
                , shell=True)
 except CalledProcessError:
     sys.exit(-1)

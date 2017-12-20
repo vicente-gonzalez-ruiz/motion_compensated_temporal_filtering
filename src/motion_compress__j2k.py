@@ -17,6 +17,11 @@ import subprocess  as     sub
 from   subprocess  import check_call
 from   subprocess  import CalledProcessError
 from arguments_parser import arguments_parser
+from defaults import Defaults
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("motion_compress__j2k")
 
 ## Number of components of a motion field.
 COMPONENTS          = 4
@@ -38,16 +43,16 @@ parser.add_argument("--fields",
 parser.add_argument("--file",
                     help="name of the file with the motion fields.",
                     default="")
-parser.motion_layers()
-#parser.motion_quantization()
+parser.add_argument("--slopes",
+                    help="Slopes used for compression",
+                    default=Defaults.motion_slopes)
 
 args = parser.parse_known_args()[0]
 blocks_in_x = int(args.blocks_in_x)
 blocks_in_y = int(args.blocks_in_y)
 fields = int(args.fields)
-layers = str(args.motion_layers)
-#quantization = str(args.motion_quantization)
 file = args.file
+slopes = args.slopes; log.debug("slopes={}".format(slopes))
 
 ## Number of levels of the DWT to be applied in compression.
 spatial_dwt_levels = 0 # 1 # SRLs - 1
@@ -99,12 +104,12 @@ for comp_number in range (0, COMPONENTS) :
                        + " -i "          + campoMov_name + ".rawl"
                        + " -o "          + campoMov_name + ".j2c"
                        + " -no_weights"
+                       + " -slope "      + slopes
                        + " Creversible=" + "yes" # "no" "yes" # Da igual como esté al usar el kernel descrito
                        + " Nprecision="  + str(BITS_PER_COMPONENT)
                        + " Nsigned="     + "yes"
                        + " Sdims='{'"    + str(blocks_in_y) + "," + str(blocks_in_x) + "'}'"
                        + " Clevels="     + str(spatial_dwt_levels)
-                       + " Clayers="     + str(motion_layers)
                        + " Cuse_sop="    + "no"
                        , shell=True)
                        # + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"

@@ -23,7 +23,9 @@ parser.subpixel_accuracy()
 parser.update_factor()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.temporal_subband()
+parser.add_argument("--temporal_subband",
+                    help="number of the temporal subband.",
+                    default=0)
 parser.always_B()
 parser.block_overlaping()
 parser.block_size()
