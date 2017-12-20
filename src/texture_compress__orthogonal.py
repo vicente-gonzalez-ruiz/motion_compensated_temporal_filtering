@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-#  Compress textures (temporal subbands) generated from the analysis
-#  phase. The number of bits allocated to each subband depends on
-#  the "slopes" parameter, which controls the quality of each quality
-#  layer (such as a quantization factor) in each image of each
-#  subband. Therefore, the number of quality layers equals the
-#  number of slopes. The optimal bit-rate control should be performed
-#  in decompression time using the "extract" program (See
-#  transcode.py).
+# Texture compression. Variable quantization of temporal subbands for
+# approximating MCTF to an orthogonal transform.
 
 import os
 import sys
@@ -18,36 +12,35 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("texture_compress__orthogonal")
 
 MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
 HIGH                 = "high"            # High frequency subbands.
 LOW                  = "low"             # Low frequency subbands.
-range_quantization   = 46000.0 - 42000.0 # Useful range of quantification
 
 parser = arguments_parser(description="Compress the texture.")
 parser.GOPs()
 parser.texture_layers()
 parser.pixels_in_x()
 parser.pixels_in_y()
+parser.texture_layers()
 parser.texture_quantization()
-parser.quantization_step()
+parser.texture_quantization_step()
 parser.TRLs()
 parser.SRLs()
-parser.using_gains()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
-layers = int(args.texture_layers)
+layers = int(args.texture_layers); log.debug("layers={}".format(layers))
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quantization = args.texture_quantization
-quantization_step = int(args.quantization_step)
+quantization = int(args.texture_quantization); log.debug("quantization={}".format(quantization))
+quantization_step = int(args.texture_quantization_step); log.debug("quantization_step={}".format(quantization_step))
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
-using_gains = str(args.using_gains)
-
-# print "texture_compress.py ; Q= " + str(quantization)
-# raw_input("\ntexture_compress.py Press ENTER to continue ...")
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
@@ -75,6 +68,21 @@ else :
     sys.stderr.write("Gains are not available for " + str(TRLs) + " TRLs. Enter them in texture_compress.py")
     exit (0)
 
+quantization_range   = 46000.0 - 42000.0 # Useful range of quantification
+
+# A decrement of the slope in 256 implies that the bit-rate is going
+# to be incremented in sqrt(2) (a 41% longer). Supossing that energy
+# of the quantization error decreases following the curve 1/sqrt(x)
+# with the bit-rate x,
+
+So, a decrement of the
+# slope in 256/sqrt(2) will increment the code-stream in 1.
+
+slopes = [[]]
+for j in range(TRLs):
+    for i in range(layers):
+        slopes.append([int(round(quantization[j] * + i * quantization_step
+
 ## Distance in the quantization step, between different temporal subbands.
 quantization_step_subband = 256 / math.sqrt(2)
 
@@ -83,7 +91,7 @@ quantization_step_subband = 256 / math.sqrt(2)
 ## the number of layers and the useful range of quantification is
 ## used.
 if quantization_step == 0 and layers > 1 :
-    quantization_step = int(round( range_quantization / (layers-1) ))
+    quantization_step = int(round( quantization_range / (layers-1) ))
 
 # Slopes for layers
 if using_gains == "automatic_kakadu" :
@@ -109,7 +117,7 @@ else :
 
     # OTHERS QUALITY LAYERs in the same temporal subband, determines a
     # different slope accord to first slope layer AND
-    # range_quantization
+    # quantization_range
     for sub in range (0, TRLs) :
         for layer in range (0, layers-1) :
             SLOPES[sub].append(int(round( SLOPES[sub][layer] + quantization_step )))

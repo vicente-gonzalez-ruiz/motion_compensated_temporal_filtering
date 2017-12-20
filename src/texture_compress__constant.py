@@ -40,9 +40,6 @@ quantization_step = int(args.texture_quantization_step); log.debug("quantization
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
 
-# print "texture_compress.py ; Q= " + str(quantization)
-# raw_input("\ntexture_compress.py Press ENTER to continue ...")
-
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
 
