@@ -32,12 +32,6 @@ class arguments_parser(argparse.ArgumentParser):
                           default=Defaults.border_size)
 
     # Unused?
-    def BRC(self):
-        self.add_argument("--BRC",
-                          help="Bit-Rate control.",
-                          default=Defaults.BRC)
-
-    # Unused?
     def distortions(self):
         self.add_argument("--distortions",
                           help="Path file which in each line there a "
@@ -76,10 +70,10 @@ class arguments_parser(argparse.ArgumentParser):
                           default=Defaults.motion_quantization)
 
     # No aquí?
-    def pictures(self):
-        self.add_argument("--pictures",
-                          help="number of images to process.",
-                          default=Defaults.pictures)
+    #def pictures(self):
+    #    self.add_argument("--pictures",
+    #                      help="number of images to process.",
+    #                      default=Defaults.pictures)
 
     def pixels_in_x(self):
         self.add_argument("--pixels_in_x",
@@ -99,11 +93,11 @@ class arguments_parser(argparse.ArgumentParser):
                           default=Defaults.quantization_step)
 
     # Unused?
-    def rates(self):
-        self.add_argument("--rates",
-                          help="Read only the initial portion of the "
-                          "code-stream, corresponding to an overall bit-rate "
-                          "of \"rate\" bits/sample.",
+    #def rates(self):
+    #    self.add_argument("--rates",
+    #                      help="Read only the initial portion of the "
+    #                      "code-stream, corresponding to an overall bit-rate "
+    #                      "of \"rate\" bits/sample.",
                           default=Defaults.rates)
 
     def search_range(self):
@@ -140,17 +134,17 @@ class arguments_parser(argparse.ArgumentParser):
                           default=Defaults.TRLs)
 
     # Not here?
-    def temporal_subband(self):
-        self.add_argument("--temporal_subband",
-                          help="number of the temporal subband.",
-                          default=0)
+    #def temporal_subband(self):
+    #    self.add_argument("--temporal_subband",
+    #                      help="number of the temporal subband.",
+    #                      default=0)
 
     def update_factor(self):
         self.add_argument("--update_factor",
                           help="Weight of the update step of MCTF.",
                           default=Defaults.update_factor)
 
-    def using_gains(self):
-        self.add_argument("--using_gains",
-                          help="Weights the temporal subband slopes.",
-                          default=Defaults.using_gains) # Yes or Not
+    #def using_gains(self):
+    #    self.add_argument("--using_gains",
+    #                      help="Weights the temporal subband slopes.",
+    #                      default=Defaults.using_gains) # Yes or Not

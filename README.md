@@ -26,7 +26,7 @@
   mctf compress --TRLs=2 --GOPs=2 --quantizations="45000"
   mctf info_j2k --TRLs=2 --GOPs=2
   mkdir tmp
-  cp *.j2c *type* tmp
+  mctf copy tmp
   cd tmp
   mctf expand --TRLs=2 --GOPs=2
   mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
@@ -156,7 +156,7 @@ The current version of MCTF has the following limitations:
      size. This means that, for example, if the image is 1280x720
      pixels, only up to 16x16 macro-blocks can be used.
 
-## Thanks
+## Acknowledgments:
 
 The MCTF project has been supported by the Junta de Andalucía through
 the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming

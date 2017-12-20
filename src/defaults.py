@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-# The MCTF project has been supported by the Junta de Andalucía through
-# the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
-# sobre Internet" (P10-TIC-6548).
-
-# Default parameters for all Python scripts.
+# Default values for common Python script parameters.
 
 class Defaults():
 
@@ -22,8 +18,8 @@ class Defaults():
     # Size of the border of the blocks in the motion estimation process.
     border_size = 0
 
-    # Number of Group Of Pictures to process (apart from GOP 0).
-    GOPs = 1
+    # Number of Group Of Pictures to process.
+    GOPs = 2 # GOP_0 always have only one picture.
 
     # Minimal block size allowed in the motion estimation process.
     min_block_size = 32
@@ -39,12 +35,12 @@ class Defaults():
     pixels_in_y = 288
 
     # Distance in the quantization step, between quality layers in the
-    # same subband. (Kakadu uses 256 by default).
-    quantization_step = 0
+    # same subband.
+    quantization_step = 256 # Kakadu's default value
 
     # Controls the quality level and the bit-rate of the code-stream
     # of motions.
-    motion_quantization = 0
+    motion_quantization = 0 # 0 -> No quantization
     
     # Controls the quality level and the bit-rate of the code-stream
     # of textures.
@@ -53,26 +49,17 @@ class Defaults():
     # Size of the search areas in the motion estimation process.
     search_range = 4
 
-    # Refers to Full-HD resolution. Is used as a boundary between the
-    # use of a block size of 16 or 32 by default.
-    #resolution_FHD       = 1920 * 1080
-
     # Number of Spatial Resolution Levels.
     SRLs = 5
 
     # Subpixel motion estimation order.
     subpixel_accuracy = 0
 
-    # Number of layers. Logarithm controls the quality level and the
-    # bit-rate of the code-stream.
+    # Number of layers for texture data.
     texture_layers = 8
 
     # Number of Temporal Resolution Levels.
     TRLs = 4
 
     # Weight of the update step.
-    update_factor = 0 # 1.0/4
-
-    # Calculates the quantifications from the gains or not. Default:
-    # gains. Anything else (example "nogains"), do not use the gains.
-    using_gains = "gains"
+    update_factor = 0 # 1.0/4 # 0 -> No updating.
