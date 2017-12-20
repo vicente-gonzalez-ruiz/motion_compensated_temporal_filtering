@@ -84,6 +84,8 @@ texture_layers = int(args.texture_layers)
 update_factor = float(args.update_factor)
 using_gains = str(args.using_gains)
 
+MCTF_QUANTIZER       = os.environ["MCTF_QUANTIZER"]
+
 if TRLs > 1:
     try:
         # Temporal analysis of image sequence. Temporal decorrelation.
@@ -122,7 +124,7 @@ if TRLs > 1:
 
 try:
     # Compressed textures. Quality layers are used, with loss.
-    check_call("mctf texture_compress"
+    check_call("mctf texture_compress__"      + MCTF_QUANTIZER
                + " --GOPs="                   + str(GOPs)
                + " --pixels_in_x="            + str(pixels_in_x)
                + " --pixels_in_y="            + str(pixels_in_y)

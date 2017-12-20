@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-#  Compress textures, using the codec J2K.
+#  Compress textures, using the J2K codec.
 
 import shutil
 import os
@@ -10,8 +10,8 @@ import display
 import math
 import struct
 import subprocess  as     sub
-from   subprocess  import check_call
-from   subprocess  import CalledProcessError
+from  subprocess  import check_call
+from  subprocess  import CalledProcessError
 from arguments_parser import arguments_parser
 
 LOW         = "low"
@@ -23,17 +23,19 @@ COMPONENTS  = 3
 #  - Use 2 bytes for weighted components or that weighted.
 BYTES_PER_COMPONENT = 1 # 2
 
-parser = arguments_parser(description="Compress the LFB texture data using JPEG 2000.")
+parser = arguments_parser(description="Compress texture data using "
+                          "JPEG 2000.")
 parser.add_argument("--file",
                     help="File that contains the texture data.",
                     default="")
-parser.texture_layers()
 parser.add_argument("--pictures",
                     help="Number of pictures to compress.",
                     default=3)
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.texture_quantization()
+parser.add_argument("--slopes",
+                    help="Slopes used for compression",
+                    default="42000, 42256, 42512")
 parser.temporal_subband()
 parser.SRLs()
 
@@ -43,7 +45,9 @@ layers = args.texture_layers
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quantization = str(args.texture_quantization)
+TQ = str(args.texture_quantization)
+TQS = str(args.texture_quantization_step)
+slopes = args.Slopes; log.debug("slopes={}".format(slopes))
 subband = int(args.temporal_subband)
 SRLs = int(args.SRLs)
 
@@ -77,13 +81,12 @@ def encode (component,           # Y, U or V.
                        + " -i "          + image_filename + ".rawl"
                        + " -o "          + image_filename + ".j2c"
                        + " Creversible=" + "no" # "no" "yes"
-                       + " -slope "      + str(quantization)
+                       + " -slope "      + str(Slopes)
                        + " -no_weights"
                        + " Nprecision="  + str(bits_per_component)
                        + " Nsigned="     + "no"
                        + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
                        + " Clevels="     + str(Clevels)
-                       + " Clayers="     + str(layers)
                        + " Cuse_sop="    + "no"
                        , shell=True)
 

@@ -18,6 +18,7 @@
   ```
   export MCTF_TEXTURE_CODEC="j2k"
   export MCTF_MOTION_CODEC="j2k"
+  export MCTF_QUANTIZER="orthogonal"
   mkdir tmp
   cd tmp
   wget http://www.hpca.ual.es/~vruiz/videos/container_352x288x30x420x300.avi

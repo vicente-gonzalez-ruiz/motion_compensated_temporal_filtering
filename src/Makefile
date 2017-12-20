@@ -201,8 +201,8 @@ EXE	+= $(MCTF_BIN)/motion_compress
 #$(MCTF_BIN)/texture_compress_lfb_j2k:	texture_compress_lfb_j2k.py
 #EXE	+= $(MCTF_BIN)/texture_compress_lfb_j2k
 
-$(MCTF_BIN)/texture_compress_j2k:		texture_compress_j2k.py
-EXE	+= $(MCTF_BIN)/texture_compress_j2k
+$(MCTF_BIN)/texture_compress__j2k:		texture_compress__j2k.py
+EXE	+= $(MCTF_BIN)/texture_compress__j2k
 
 #$(BIN)/texture_compress_lfb_mj2k:	texture_compress_lfb_mj2k.py
 #EXE	+= $(BIN)/texture_compress_lfb_mj2k
@@ -231,8 +231,8 @@ EXE	+= $(MCTF_BIN)/texture_compress_j2k
 #$(MCTF_BIN)/texture_compress_hfb_cp:	texture_compress_hfb_cp.py
 #EXE	+= $(MCTF_BIN)/texture_compress_hfb_cp
 
-$(MCTF_BIN)/texture_compress:	texture_compress.py
-EXE	+= $(MCTF_BIN)/texture_compress
+$(MCTF_BIN)/texture_compress__constant:	texture_compress__constant.py
+EXE	+= $(MCTF_BIN)/texture_compress__constant
 
 $(MCTF_BIN)/compress:	compress.py
 EXE	+= $(MCTF_BIN)/compress
@@ -258,8 +258,8 @@ EXE	+= $(MCTF_BIN)/motion_expand
 #$(MCTF_BIN)/texture_expand_lfb_j2k:	texture_expand_lfb_j2k.py
 #EXE	+= $(MCTF_BIN)/texture_expand_lfb_j2k
 
-$(MCTF_BIN)/texture_expand_j2k:	texture_expand_j2k.py
-EXE	+= $(MCTF_BIN)/texture_expand_j2k
+$(MCTF_BIN)/texture_expand__j2k:	texture_expand__j2k.py
+EXE	+= $(MCTF_BIN)/texture_expand__j2k
 
 #$(MCTF_BIN)/texture_expand_lfb_mj2k:	texture_expand_lfb_mj2k.py
 #EXE	+= $(MCTF_BIN)/texture_expand_lfb_mj2k
