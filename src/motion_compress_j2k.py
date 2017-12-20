@@ -104,6 +104,7 @@ for comp_number in range (0, COMPONENTS) :
                        + " Nsigned="     + "yes"
                        + " Sdims='{'"    + str(blocks_in_y) + "," + str(blocks_in_x) + "'}'"
                        + " Clevels="     + str(spatial_dwt_levels)
+                       + " Clayers="     + str(motion_layers)
                        + " Cuse_sop="    + "no"
                        , shell=True)
                        # + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"

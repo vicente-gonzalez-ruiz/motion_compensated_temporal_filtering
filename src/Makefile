@@ -32,7 +32,7 @@ CPP_FLAGS = -O3 -pipe
 DEFS =
 
 # Enables debug mode and send messages through stdout.
-DEFS += -D DEBUG
+#DEFS += -D DEBUG
 
 # Write the executed commands to a trace file
 #DEFS += -D TRACE

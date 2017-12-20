@@ -36,7 +36,6 @@ parser.SRLs()
 parser.using_gains()
 
 args = parser.parse_known_args()[0]
-
 GOPs = int(args.GOPs)
 layers = int(args.texture_layers)
 pixels_in_x = int(args.pixels_in_x)

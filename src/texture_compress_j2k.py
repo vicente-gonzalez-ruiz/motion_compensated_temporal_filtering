@@ -38,7 +38,6 @@ parser.temporal_subband()
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
-
 file = args.file
 layers = args.texture_layers
 pictures = int(args.pictures)
