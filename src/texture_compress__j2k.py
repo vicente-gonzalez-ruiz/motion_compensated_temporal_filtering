@@ -17,7 +17,7 @@ from defaults import Defaults
 import logging
 
 logging.basicConfig()
-log = logging.getLogger("texture_compress__constant")
+log = logging.getLogger("texture_compress__j2k")
 
 ## Number of bytes per component.
 #  - Use 1 byte for unweighted components.
@@ -77,7 +77,7 @@ def encode (component,           # Y, U or V.
                        + " -i "          + image_filename + ".rawl"
                        + " -o "          + image_filename + ".j2c"
                        + " Creversible=" + "no" # "no" "yes"
-                       + " -slope "      + str(Slopes)
+                       + " -slope \""    + slopes + "\""
                        + " -no_weights"
                        + " Nprecision="  + str(bits_per_component)
                        + " Nsigned="     + "no"

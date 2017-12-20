@@ -17,8 +17,8 @@ logging.basicConfig()
 log = logging.getLogger("texture_compress__constant")
 
 MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
-HIGH                 = "high"            # High frequency subbands.
-LOW                  = "low"             # Low frequency subbands.
+HIGH                 = "high"
+LOW                  = "low"
 
 parser = arguments_parser(description="Compress the texture.")
 parser.GOPs()
@@ -56,7 +56,7 @@ for i in range(layers):
 if len(slopes) == 1:
     str_slopes = str(slopes[0])
 else:
-    str_slopes = ', '.join(str(i) for i in slopes)
+    str_slopes = ','.join(str(i) for i in slopes)
     
 # Compression of HIGH frequency temporal subbands.
 subband = 1
@@ -69,7 +69,6 @@ while subband < TRLs:
                    + " --pixels_in_x="       + str(pixels_in_x)
                    + " --pixels_in_y="       + str(pixels_in_y)
                    + " --slopes=\""          + str_slopes + "\""
-                   + " --file="              + "high_" + str(subband)
                    + " --SRLs="              + str(SRLs)
                    , shell=True)
     except CalledProcessError:
@@ -85,7 +84,6 @@ try:
                + " --pixels_in_x="       + str(pixels_in_x)
                + " --pixels_in_y="       + str(pixels_in_y)
                + " --slopes=\""          + str_slopes + "\""
-               + " --file="              + "low_" + str(subband)
                + " --SRLs="              + str(SRLs)
                , shell=True)
 except:
