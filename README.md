@@ -15,23 +15,23 @@
   
 ## MCJ2K encoding/decoding:
 
-  ```
-  export MCTF_TEXTURE_CODEC="j2k"
-  export MCTF_MOTION_CODEC="j2k"
-  export MCTF_QUANTIZER="orthogonal"
-  mkdir tmp
-  cd tmp
-  wget http://www.hpca.ual.es/~vruiz/videos/container_352x288x30x420x300.avi
-  ffmpeg -i container_352x288x30x420x300.avi container_352x288x30x420x300.yuv
-  ln -s container_352x288x30x420x300.yuv low_0
-  mctf compress --TRLs=2 --GOPs=2 --quantizations="45000"
-  mctf info_j2k --TRLs=2 --GOPs=2
-  mkdir tmp
-  mctf copy tmp
-  cd tmp
-  mctf expand --TRLs=2 --GOPs=2
-  mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
-  ```
+```
+export MCTF_TEXTURE_CODEC="j2k"
+export MCTF_MOTION_CODEC="j2k"
+export MCTF_QUANTIZER="orthogonal"
+mkdir tmp
+cd tmp
+wget http://www.hpca.ual.es/~vruiz/videos/container_352x288x30x420x300.avi
+ffmpeg -i container_352x288x30x420x300.avi container_352x288x30x420x300.yuv
+ln -s container_352x288x30x420x300.yuv low_0
+mctf compress --TRLs=2 --GOPs=2 --quantizations="45000"
+mctf info_j2k --TRLs=2 --GOPs=2
+mkdir tmp
+mctf copy tmp
+cd tmp
+mctf expand --TRLs=2 --GOPs=2
+mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
+```
 
 ## Quality trancoding:
 
