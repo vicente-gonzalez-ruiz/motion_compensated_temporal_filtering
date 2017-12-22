@@ -53,7 +53,7 @@ if   TRLs == 1 :
 elif TRLs == 2 :
     GAINS = [1.2460784922] # [L1/H1]
 elif TRLs == 3 :
-    GAINS = [1.8652117304, 1.2500103877] # [L2/H2, L2/H1]
+    GAINS = [1.2500103877, 1.8652117304] # [L2/H2, L2/H1]
 elif TRLs == 4 :
     GAINS = [1.1598810146, 2.1224082769, 3.1669663339]
 elif TRLs == 5 :
@@ -68,12 +68,84 @@ else :
     sys.stderr.write("Gains are not available for " + str(TRLs) + " TRLs. Enter them in texture_compress.py")
     exit (0)
 
+# To determine the slopes whith must be applied to each temporal
+# subband, it must be known that typically, the quality of a
+# image/temporal-subband is reduced with an increment in the slope,
+# linearly:
+#
+#  PSNR[dB]
+#     ^
+#     |
+#     |  \
+#     |   \
+#     |    \
+#     |     \
+#     +-----------> Slope
+#
+# So, supposing that all temporal subbands have been compressed using
+# the same slopes, and that this holds for each quality layer,
+# incrementing the slope in a constant amount (using for example the
+# slope S for the first quality layer of each temporal subband, slope
+# S+X for the second quality layer of each temporal subband, slope
+# S+2X ...), we can apply the subband gains considering that a given
+# number of subband-layers of a low-frequency temporal subband should
+# be "transmitted" before the first subband-layer of a
+# higher-frecuency temporal subband.
+#
+# To determine such number, we can use the fact that a linear
+# decrement in the slope produces a linear increment in the
+# quality. Thus,for example, if we have Q subband-layers and a total
+# increment (decoding all the subband-layers) in quality of x dB, each
+# subband-layer constributes with an increment of x/Q dB, and this is
+# true for all the temporal subbands because the total range of
+# quality of all subbands is the same.
+#
+# For example, if TRLs=2, temporal subband L1 should contribute to the
+# reconstruction of the GOP (to the output code-stream) approximately
+# 1.25 times more than temporal subband H1. If Q=8, each subband-layer
+# of L1 and H1 contributes with x/8 = 0.125*x dB. Therefore, it is
+# easy to see that the optimal order for the subband-layers of these
+# temporal subbands should be:
+#
+# L1.l7 (= Subband-layer 7 of temporal subband L1) which increases x/8
+# dB the quality of each GOP.
+#
+# L1.l6 which produces a total increase of x/8 + x/8 = x/4 = 0.25*x dB
+# in the quality of each GOP.
+#
+# At this point, we can "transmit" the next subband-layer of L1 or the
+# first subband-layer of H1 (after having "transmitted" the
+# corresponding subband-layer of M1). Experimentally we have
+# determined that is better (in general) to "transmit" the next
+# subband-layer of L1: L1.l5.
+#
+# M1.
+#
+# H1.l7, L1.l4, H1.l6, L1.l3, H1.l5, ...
+#
+# In terms of slopes, if MAX_SLOPE determines the minimum usable
+# quality for a subband-layer, we should use the slope "quantization"
+# for temporal subband L1 and the slope:
+#
+# quantization + (MAX_SLOPE - quantization) / GAIN[1][0]
+#
+# should be used for H1.
+#
+# In general, for subband-layer "l" of temporal subband "s", we have:
+#
+# quantization + (MAX_SLOPE - quantization) / GAIN[s][l]
+#
+
 quantization_range   = 46000.0 - 42000.0 # Useful range of quantification
 
-# A decrement of the slope in 256 implies that the bit-rate is going
-# to be incremented in sqrt(2) (a 41% longer). Supossing that energy
-# of the quantization error decreases following the curve 1/sqrt(x)
-# with the bit-rate x,
+# A decrement of the slope in 256 implies that the code-stream is
+# going to be incremented in sqrt(2) bits (a 41% longer). Supossing
+# that the energy of the quantization error decreases with the curve
+# 1/sqrt(x) being x the data-rate, for example, if quantization=42000
+# and TRLs=3, the slope for L2 is 42000, for H2 is:
+#
+# 42000 +quantization_range*256/sqrt(2)*GAINS[3][0]
+#
 
 So, a decrement of the
 # slope in 256/sqrt(2) will increment the code-stream in 1.
@@ -116,7 +188,7 @@ else :
         exit (0)
 
     # OTHERS QUALITY LAYERs in the same temporal subband, determines a
-    # different slope accord to first slope layer AND
+    # different slope according to first slope layer AND
     # quantization_range
     for sub in range (0, TRLs) :
         for layer in range (0, layers-1) :
