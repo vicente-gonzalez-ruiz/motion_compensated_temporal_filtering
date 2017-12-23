@@ -16,7 +16,7 @@ from arguments_parser import arguments_parser
 from defaults import Defaults
 import logging
 
-logging.basicConfig()
+logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger("subband_texture_compress__j2k")
 
 ## Number of bytes per component.
@@ -67,7 +67,7 @@ def encode (component,           # Y, U or V.
                       + "| split --numeric-suffixes --suffix-length=4 " \
                       + "--bytes=" + str(component_size) \
                       + " - " + file + "_" + str(component) + "_"
-        print(command_str)
+        log.debug("command_str={}".format(command_str))
         check_call(command_str, shell=True)
     except CalledProcessError :
         sys.exit(-1)
@@ -83,18 +83,19 @@ def encode (component,           # Y, U or V.
                   image_filename + ".rawl")
 
         try :
-            check_call("trace kdu_compress"
-                       + " -i "          + image_filename + ".rawl"
-                       + " -o "          + image_filename + ".j2c"
-                       + " Creversible=" + "no" # "no" "yes"
-                       + " -slope \""    + slope + "\""
-                       + " -no_weights"
-                       + " Nprecision="  + str(bits_per_component)
-                       + " Nsigned="     + "no"
-                       + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'"
-                       + " Clevels="     + str(Clevels)
+            command_str = "trace kdu_compress" \
+                       + " -i "          + image_filename + ".rawl" \
+                       + " -o "          + image_filename + ".j2c" \
+                       + " Creversible=" + "no" \
+                       + " -slope "       + str(slope) \
+                       + " -no_weights" \
+                       + " Nprecision="  + str(bits_per_component) \
+                       + " Nsigned="     + "no" \
+                       + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'" \
+                       + " Clevels="     + str(Clevels) \
                        + " Cuse_sop="    + "no"
-                       , shell=True)
+            log.debug("command_str={}".format(command_str))
+            check_call(command_str, shell=True)
 
         except CalledProcessError :
             sys.exit(-1)
@@ -118,6 +119,8 @@ U_size     = Y_size // 4
 V_size     = Y_size // 4
 ## Size of the components 'YUV' (measured in pixels).
 YUV_size   = Y_size + U_size + V_size
+
+import ipdb; ipdb.set_trace()
 
 # Copy only the required images.
 try :

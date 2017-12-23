@@ -33,7 +33,7 @@
 /** \brief If defined, shows information about predictions. */
 #define GET_PREDICTION
 /* \brief If defined, shows information about the execution. */
-##define DEBUG
+//#define DEBUG
 
 /** \brief When it is used to analyze, uses information about the movement to generate a prediction of the odd images (predicted frames) from the pairs (reference images).\n
  * Then the predictions are subtracted at odd images to generate high temporal frequency band (images of error).\n
