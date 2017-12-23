@@ -128,7 +128,7 @@ fields = pictures // 2
 while iter <= iterations:
 
     try:
-        check_call("mctf motion_compress__" + MCTF_MOTION_CODEC
+        check_call("mctf subband_motion_compress__" + MCTF_MOTION_CODEC
                    + " --blocks_in_x="      + str(blocks_in_x)
                    + " --blocks_in_y="      + str(blocks_in_y)
                    + " --iteration="        + str(iter)

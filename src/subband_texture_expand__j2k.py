@@ -32,16 +32,12 @@ parser.add_argument("--pictures",
                     default=1)
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.add_argument("--subband",
-                    help="Subband to decompress.",
-                    default=0)
 
 args = parser.parse_known_args()[0]
 file = args.file
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-subband = int(args.subband)
 
 def decode (component, image_number) :
 

@@ -26,6 +26,10 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("motion_expand")
 
 #MOTION_DECODER_NAME = "gzip"
 #MOTION_DECODER_NAME = "kdu_v_expand"
@@ -58,7 +62,7 @@ fields = pictures // 2
 while iteration <= (TRLs - 1) :
 
     try:
-        check_call("mctf motion_expand_" + MCTF_MOTION_CODEC
+        check_call("mctf subband_motion_expand__" + MCTF_MOTION_CODEC
                    + " --file=" + "\""   + "motion_residue_" + str(iteration) + "\""
                    + " --blocks_in_y="   + str(blocks_in_y)
                    + " --blocks_in_x="   + str(blocks_in_x)

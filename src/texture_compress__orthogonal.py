@@ -23,7 +23,6 @@ LOW                  = "low"             # Low frequency subbands.
 
 parser = arguments_parser(description="Compress the texture.")
 parser.GOPs()
-parser.texture_layers()
 parser.pixels_in_x()
 parser.pixels_in_y()
 parser.texture_layers()
@@ -139,26 +138,29 @@ else :
 MAX_SLOPE = 50000
 log.debug("Subband / Slope::")
 slopes = [] # Among temporal subbands (subband / slope):
-for s in range(TRLs):
+for s in range(TRLs-1):
     slope = int(round(quantization + (MAX_SLOPE - quantization) / GAINS[s]))
     log.debug("{} / {}".format(s, slope))
     slopes.append(slope)
 
+
+#import ipdb; ipdb.set_trace()
 # Compression of HIGH frequency temporal subbands.
 subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) // 2
+    log.debug("subband={}".format(subband))
+    command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
+            + " --file="              + HIGH + "_" + str(subband) \
+            + " --texture_layers="    + str(layers) \
+            + " --pictures="          + str(pictures - 1) \
+            + " --pixels_in_x="       + str(pixels_in_x) \
+            + " --pixels_in_y="       + str(pixels_in_y) \
+            + " --quantization="      + str(slopes[subband-1]) \
+            + " --SRLs="              + str(SRLs)
+    log.debug("command={}".format(command))
     try:
-        check_call("mctf texture_compress_" + MCTF_TEXTURE_CODEC
-                   + " --file="             + HIGH + "_" + str(subband)
-                   + " --texture_layers="   + str(layers)
-                   + " --pictures="         + str(pictures - 1)
-                   + " --pixels_in_x="      + str(pixels_in_x)
-                   + " --pixels_in_y="      + str(pixels_in_y)
-                   + " --quantization=\""   + str(slope[subband])
-                   + " --subband="          + str(subband)
-                   + " --SRLs="             + str(SRLs)
-                   , shell=True)
+        check_call(command, shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
@@ -166,15 +168,15 @@ while subband < TRLs:
 
 # Compression of LOW frequency temporal subband.
 try:
-    check_call("mctf texture_compress_" + MCTF_TEXTURE_CODEC
-               + " --file="             + LOW + "_" + str(TRLs - 1)
-               + " --texture_layers="   + str(layers)
-               + " --pictures="         + str(pictures)
-               + " --pixels_in_x="      + str(pixels_in_x)
-               + " --pixels_in_y="      + str(pixels_in_y)
-               + " --quantization=\""   + quantization
-               + " --subband="          + str(subband)
-               + " --SRLs="             + str(SRLs)
+    check_call("mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC
+               + " --file="              + LOW + "_" + str(TRLs - 1)
+               + " --texture_layers="    + str(layers)
+               + " --pictures="          + str(pictures)
+               + " --pixels_in_x="       + str(pixels_in_x)
+               + " --pixels_in_y="       + str(pixels_in_y)
+               + " --quantization="      + quantization
+               + " --subband="           + str(subband)
+               + " --SRLs="              + str(SRLs)
                , shell=True)
 except:
     sys.exit(-1)

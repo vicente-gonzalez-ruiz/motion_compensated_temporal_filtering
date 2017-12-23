@@ -28,7 +28,6 @@ BYTES_COMPONENT = 2
 ## Number of bits of each component.
 BITS_COMPONENT  = BYTES_COMPONENT * 8
 
-
 parser = arguments_parser(description="Expands the motion data using JPEG 2000.")
 parser.add_argument("--blocks_in_x",
                         help="number of blocks in the X direction.",

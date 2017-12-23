@@ -24,31 +24,33 @@ log = logging.getLogger("subband_texture_compress__j2k")
 #  - Use 2 bytes for weighted components or that weighted.
 BYTES_PER_COMPONENT = 1 # 2
 
-parser = arguments_parser(description="Compress texture data using "
-                          "JPEG 2000.")
+parser = arguments_parser(description="Compress texture data using JPEG 2000.")
 parser.add_argument("--file",
                     help="File that contains the texture data.",
                     default="")
+parser.texture_layers()
 parser.add_argument("--pictures",
                     help="Number of pictures to compress.",
                     default=3)
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.add_argument("--slopes",
-                    help="Slopes used for compression",
-                    default=Defaults.texture_slopes)
+parser.add_argument("--quantization",
+                    help="Slope used for compression",
+                    default=Defaults.texture_quantization)
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
 file = args.file
+layers = int(args.texture_layers)
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-slopes = args.slopes; log.debug("slopes={}".format(slopes))
+slope = args.quantization; log.debug("slope={}".format(slope))
 SRLs = int(args.SRLs)
 
 def encode (component,           # Y, U or V.
-            jump_demux,          # Number of bytes of distance between the same component within the codestream
+            jump_demux,          # Number of bytes of distance between
+                                 # the same component within the codestream
             component_size,      # Number of bytes of a given component
             bits_per_component,  # Number of bits per component
             sDimX, sDimY) :      # Dimensions of a component
@@ -58,7 +60,13 @@ def encode (component,           # Y, U or V.
     
     # Split each next image into its components
     try :
-        command_str = "demux " + str(YUV_size) + jump_demux + " < " + file + ".tmp " + "| split --numeric-suffixes --suffix-length=4 " + "--bytes=" + str(component_size) + " - " + file + "_" + str(component) + "_"
+        command_str = "demux " \
+                      + str(YUV_size) \
+                      + jump_demux \
+                      + " < " + file + ".tmp " \
+                      + "| split --numeric-suffixes --suffix-length=4 " \
+                      + "--bytes=" + str(component_size) \
+                      + " - " + file + "_" + str(component) + "_"
         print(command_str)
         check_call(command_str, shell=True)
     except CalledProcessError :
@@ -70,14 +78,16 @@ def encode (component,           # Y, U or V.
 
         image_filename = file + "_" + '%04d' % image_number + "_" + str(component)
 
-        os.rename(file + "_" + str(component) + "_" + '%04d' % image_number, image_filename + ".rawl")
+        os.rename(file + "_" + str(component) \
+                  + "_" + '%04d' % image_number, \
+                  image_filename + ".rawl")
 
         try :
             check_call("trace kdu_compress"
                        + " -i "          + image_filename + ".rawl"
                        + " -o "          + image_filename + ".j2c"
                        + " Creversible=" + "no" # "no" "yes"
-                       + " -slope \""    + slopes + "\""
+                       + " -slope \""    + slope + "\""
                        + " -no_weights"
                        + " Nprecision="  + str(bits_per_component)
                        + " Nsigned="     + "no"
