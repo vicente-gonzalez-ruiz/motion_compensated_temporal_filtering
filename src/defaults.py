@@ -47,7 +47,7 @@ class Defaults():
     subpixel_accuracy = 0
 
     # Texture quantization.
-    texture_layers = 8
+    texture_layers = 1
     texture_quantization = 43000
     texture_quantization_step = 256
     texture_slopes = "43000, 43256, 43512, 43768, 44024, 44280, 44536, 44792"
