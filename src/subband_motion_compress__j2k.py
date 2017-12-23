@@ -21,7 +21,7 @@ from defaults import Defaults
 import logging
 
 logging.basicConfig()
-log = logging.getLogger("motion_compress__j2k")
+log = logging.getLogger("subband_motion_compress__j2k")
 
 ## Number of components of a motion field.
 COMPONENTS          = 4

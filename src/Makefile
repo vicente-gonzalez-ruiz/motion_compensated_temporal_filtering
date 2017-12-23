@@ -136,7 +136,7 @@ $(MCTF_BIN)/motion_estimate:	motion_estimate.cpp Haar.cpp 5_3.cpp dwt2d.cpp text
 EXE += $(MCTF_BIN)/motion_estimate
 
 $(MCTF_BIN)/decorrelate:	decorrelate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp entropy.o
-	$(CC) $(CFLAGS) -D ANALYZE -D DEBUG $< entropy.o -o $@ -lm
+	$(CC) $(CFLAGS) -D ANALYZE $< entropy.o -o $@ -lm
 EXE += $(MCTF_BIN)/decorrelate
 
 $(MCTF_BIN)/correlate:	decorrelate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
@@ -178,14 +178,14 @@ $(MCTF_BIN)/bidirectional_motion_decorrelate: bidirectional_motion_decorrelate.c
 	$(CC) $(CFLAGS) -D ANALYZE $^ -o $@ -lm
 EXE += $(MCTF_BIN)/bidirectional_motion_decorrelate
 
-$(MCTF_BIN)/motion_compress_cp:	motion_compress_cp.py
-EXE	+= $(MCTF_BIN)/motion_compress_cp
+#$(MCTF_BIN)/motion_compress_cp:	motion_compress_cp.py
+#EXE	+= $(MCTF_BIN)/motion_compress_cp
 
-$(MCTF_BIN)/motion_compress__j2k:	motion_compress__j2k.py
-EXE	+= $(MCTF_BIN)/motion_compress__j2k
+$(MCTF_BIN)/subband_motion_compress__j2k:	subband_motion_compress__j2k.py
+EXE	+= $(MCTF_BIN)/subband_motion_compress__j2k
 
-$(MCTF_BIN)/motion_compress_gzip:	motion_compress_gzip.py
-EXE	+= $(MCTF_BIN)/motion_compress_gzip
+#$(MCTF_BIN)/motion_compress_gzip:	motion_compress_gzip.py
+#EXE	+= $(MCTF_BIN)/motion_compress_gzip
 
 $(MCTF_BIN)/interlevel_motion_correlate:	interlevel_motion_decorrelate.cpp motion.cpp
 	$(CC) $(CFLAGS) $(DEFS) $< -o $@ -lm
@@ -201,8 +201,8 @@ EXE	+= $(MCTF_BIN)/motion_compress
 #$(MCTF_BIN)/texture_compress_lfb_j2k:	texture_compress_lfb_j2k.py
 #EXE	+= $(MCTF_BIN)/texture_compress_lfb_j2k
 
-$(MCTF_BIN)/texture_compress__j2k:		texture_compress__j2k.py
-EXE	+= $(MCTF_BIN)/texture_compress__j2k
+$(MCTF_BIN)/subband_texture_compress__j2k:		subband_texture_compress__j2k.py
+EXE	+= $(MCTF_BIN)/subband_texture_compress__j2k
 
 #$(BIN)/texture_compress_lfb_mj2k:	texture_compress_lfb_mj2k.py
 #EXE	+= $(BIN)/texture_compress_lfb_mj2k
@@ -234,6 +234,9 @@ EXE	+= $(MCTF_BIN)/texture_compress__j2k
 $(MCTF_BIN)/texture_compress__constant:	texture_compress__constant.py
 EXE	+= $(MCTF_BIN)/texture_compress__constant
 
+$(MCTF_BIN)/texture_compress__orthogonal:	texture_compress__orthogonal.py
+EXE	+= $(MCTF_BIN)/texture_compress__orthogonal
+
 $(MCTF_BIN)/compress:	compress.py
 EXE	+= $(MCTF_BIN)/compress
 
@@ -243,14 +246,14 @@ EXE	+= $(MCTF_BIN)/synthesize_step
 $(MCTF_BIN)/synthesize:	synthesize.py
 EXE	+= $(MCTF_BIN)/synthesize
 
-$(MCTF_BIN)/motion_expand_cp:	motion_expand_cp.py
-EXE	+= $(MCTF_BIN)/motion_expand_cp
+#$(MCTF_BIN)/motion_expand_cp:	motion_expand_cp.py
+#EXE	+= $(MCTF_BIN)/motion_expand_cp
 
-$(MCTF_BIN)/motion_expand__j2k:	motion_expand__j2k.py
-EXE	+= $(MCTF_BIN)/motion_expand__j2k
+$(MCTF_BIN)/subband_motion_expand__j2k:	subband_motion_expand__j2k.py
+EXE	+= $(MCTF_BIN)/subband_motion_expand__j2k
 
-$(MCTF_BIN)/motion_expand_gzip:	motion_expand_gzip.py
-EXE	+= $(MCTF_BIN)/motion_expand_gzip
+#$(MCTF_BIN)/motion_expand_gzip:	motion_expand_gzip.py
+#EXE	+= $(MCTF_BIN)/motion_expand_gzip
 
 $(MCTF_BIN)/motion_expand:	motion_expand.py
 EXE	+= $(MCTF_BIN)/motion_expand
@@ -258,8 +261,8 @@ EXE	+= $(MCTF_BIN)/motion_expand
 #$(MCTF_BIN)/texture_expand_lfb_j2k:	texture_expand_lfb_j2k.py
 #EXE	+= $(MCTF_BIN)/texture_expand_lfb_j2k
 
-$(MCTF_BIN)/texture_expand__j2k:	texture_expand__j2k.py
-EXE	+= $(MCTF_BIN)/texture_expand__j2k
+$(MCTF_BIN)/subband_texture_expand__j2k:	subband_texture_expand__j2k.py
+EXE	+= $(MCTF_BIN)/subband_texture_expand__j2k
 
 #$(MCTF_BIN)/texture_expand_lfb_mj2k:	texture_expand_lfb_mj2k.py
 #EXE	+= $(MCTF_BIN)/texture_expand_lfb_mj2k

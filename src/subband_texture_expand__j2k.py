@@ -18,6 +18,10 @@ import os
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("subband_texture_expand__j2k")
 
 parser = arguments_parser(description="Expands the the LFB y HFB texture data using JPEG 2000.")
 parser.add_argument("--file",

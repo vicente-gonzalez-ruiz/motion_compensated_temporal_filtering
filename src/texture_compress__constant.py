@@ -60,7 +60,7 @@ subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) // 2
     try:
-        check_call("mctf texture_compress__" + MCTF_TEXTURE_CODEC
+        check_call("mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC
                    + " --file="              + HIGH + "_" + str(subband)
                    + " --pictures="          + str(pictures - 1)
                    + " --pixels_in_x="       + str(pixels_in_x)
@@ -75,7 +75,7 @@ while subband < TRLs:
 
 # Compression of LOW frequency temporal subband.
 try:
-    check_call("mctf texture_compress__" + MCTF_TEXTURE_CODEC
+    check_call("mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC
                + " --file="              + LOW + "_" + str(TRLs - 1)
                + " --pictures="          + str(pictures)
                + " --pixels_in_x="       + str(pixels_in_x)

@@ -11,6 +11,10 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("texture_expand")
 
 MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
 LOW         = "low"
@@ -48,7 +52,7 @@ if TRLs > 1 :
             j += 1
 
         try:
-            check_call("mctf texture_expand_" + MCTF_TEXTURE_CODEC
+            check_call("mctf subband_texture_expand_" + MCTF_TEXTURE_CODEC
                        + " --file="        + "\"" + HIGH + "_" + str(subband) + "\""
                        + " --pictures="    + str(pictures - 1)
                        + " --pixels_in_x=" + str(pixels_in_x)
@@ -62,7 +66,7 @@ if TRLs > 1 :
 
 # L.
 try:
-    check_call("mctf texture_expand_" + MCTF_TEXTURE_CODEC
+    check_call("mctf subband_texture_expand_" + MCTF_TEXTURE_CODEC
                + " --file="        + "\"" + LOW + "_" + str(TRLs - 1) + "\""
                + " --pictures="    + str(GOPs+1)
                + " --pixels_in_x=" + str(pixels_in_x)

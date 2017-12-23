@@ -17,7 +17,7 @@ from defaults import Defaults
 import logging
 
 logging.basicConfig()
-log = logging.getLogger("texture_compress__j2k")
+log = logging.getLogger("subband_texture_compress__j2k")
 
 ## Number of bytes per component.
 #  - Use 1 byte for unweighted components.

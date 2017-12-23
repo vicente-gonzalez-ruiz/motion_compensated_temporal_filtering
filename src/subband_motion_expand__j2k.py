@@ -15,6 +15,10 @@ import struct
 from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("subband_motion_expand__j2k")
 
 
 ## Number of components.

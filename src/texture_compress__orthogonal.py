@@ -144,47 +144,6 @@ for s in range(TRLs):
     log.debug("{} / {}".format(s, slope))
     slopes.append(slope)
 
-## Slope distance for each quality layer in the same temporal subband. If a
-## quantization_step is specified by parameter, one proportional to
-## the number of layers and the useful range of quantification is
-## used.
-if quantization_step == 0 and layers > 1 :
-    quantization_step = int(round( quantization_range / (layers-1) ))
-
-# Slopes for layers
-if using_gains == "automatic_kakadu" :
-    SLOPES = [["automatic_kakadu"]] * TRLs
-else :
-    if using_gains == "gains" :
-        ## LAST QUALITY LAYER of each temporal subband according to the GAINS of
-        ## the number of TLRs the codestream. The order of subbands in the
-        ## list is [L4, H4, H3, H2, H1]. After determines a slope for each
-        ## quality layer in the same temporal subband.
-        SLOPES = [[int(quantization)]]   # Temporal subband L
-        for sub in range (0, TRLs-1) :   # Temporal subbands Hs with GAINS
-            SLOPES.append( [ int(round( SLOPES[0][0] + (quantization_step_subband * GAINS[sub]) )) ] )
-    elif using_gains == "nogains" :
-        ## LAST QUALITY LAYER of each temporal subband same to quantization
-        ## parameter.
-        SLOPES = [[int(quantization)]]   # Temporal subband L
-        for sub in range (0, TRLs-1) :   # Temporal subbands Hs with GAINS
-            SLOPES.append( [ int(quantization) ] )
-    else :
-        sys.stderr.write("Available options: kakadu, gains, nogains. Not available: " + str(using_gains) + ". Check texture_compress.py")
-        exit (0)
-
-    # OTHERS QUALITY LAYERs in the same temporal subband, determines a
-    # different slope according to first slope layer AND
-    # quantization_range
-    for sub in range (0, TRLs) :
-        for layer in range (0, layers-1) :
-            SLOPES[sub].append(int(round( SLOPES[sub][layer] + quantization_step )))
-            
-## Stored in a file the slopes used for compression.
-f_slopes = open ("slopes", 'w')
-f_slopes.write ('\n'.join(map(str, SLOPES)))
-f_slopes.close ()
-
 # Compression of HIGH frequency temporal subbands.
 subband = 1
 while subband < TRLs:
@@ -196,7 +155,7 @@ while subband < TRLs:
                    + " --pictures="         + str(pictures - 1)
                    + " --pixels_in_x="      + str(pixels_in_x)
                    + " --pixels_in_y="      + str(pixels_in_y)
-                   + " --quantization=\""   + ','.join(map(str, SLOPES[TRLs-subband])) + "\""
+                   + " --quantization=\""   + str(slope[subband])
                    + " --subband="          + str(subband)
                    + " --SRLs="             + str(SRLs)
                    , shell=True)
@@ -213,7 +172,7 @@ try:
                + " --pictures="         + str(pictures)
                + " --pixels_in_x="      + str(pixels_in_x)
                + " --pixels_in_y="      + str(pixels_in_y)
-               + " --quantization=\""   + ','.join(map(str, SLOPES[0])) + "\""
+               + " --quantization=\""   + quantization
                + " --subband="          + str(subband)
                + " --SRLs="             + str(SRLs)
                , shell=True)
