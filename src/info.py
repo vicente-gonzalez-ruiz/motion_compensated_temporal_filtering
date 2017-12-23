@@ -99,6 +99,7 @@ for c in colors:
         file.seek(0, 2)
         length += file.tell()
 
+kbps_total = 0
 kbps = float(length) * 8.0 / GOP0_time / 1000.0
 sys.stdout.write("0000 %8d " % kbps)
 kbps_total += kbps
