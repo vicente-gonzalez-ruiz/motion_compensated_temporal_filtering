@@ -152,11 +152,10 @@ while subband < TRLs:
     log.debug("subband={}".format(subband))
     command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
             + " --file="              + HIGH + "_" + str(subband) \
-            + " --texture_layers="    + str(layers) \
             + " --pictures="          + str(pictures - 1) \
             + " --pixels_in_x="       + str(pixels_in_x) \
             + " --pixels_in_y="       + str(pixels_in_y) \
-            + " --quantization="      + str(slopes[subband-1]) \
+            + " --slopes=\""          + str(slopes[subband-1]) + "\"" \
             + " --SRLs="              + str(SRLs)
     log.debug("command={}".format(command))
     try:
@@ -166,17 +165,18 @@ while subband < TRLs:
 
     subband += 1
 
+#import ipdb; ipdb.set_trace()
+    
 # Compression of LOW frequency temporal subband.
 try:
-    check_call("mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC
-               + " --file="              + LOW + "_" + str(TRLs - 1)
-               + " --texture_layers="    + str(layers)
-               + " --pictures="          + str(pictures)
-               + " --pixels_in_x="       + str(pixels_in_x)
-               + " --pixels_in_y="       + str(pixels_in_y)
-               + " --quantization="      + quantization
-               + " --subband="           + str(subband)
-               + " --SRLs="              + str(SRLs)
-               , shell=True)
+    command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
+            + " --file="              + LOW + "_" + str(TRLs - 1) \
+            + " --pictures="          + str(pictures) \
+            + " --pixels_in_x="       + str(pixels_in_x) \
+            + " --pixels_in_y="       + str(pixels_in_y) \
+            + " --slopes=\""          + str(quantization) + "\""\
+            + " --SRLs="              + str(SRLs)
+    log.debug(command)
+    check_call(command, shell=True)
 except:
     sys.exit(-1)

@@ -28,24 +28,22 @@ parser = arguments_parser(description="Compress texture data using JPEG 2000.")
 parser.add_argument("--file",
                     help="File that contains the texture data.",
                     default="")
-parser.texture_layers()
 parser.add_argument("--pictures",
                     help="Number of pictures to compress.",
                     default=3)
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.add_argument("--quantization",
-                    help="Slope used for compression",
+parser.add_argument("--slopes",
+                    help="Slopes used for compression",
                     default=Defaults.texture_quantization)
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
 file = args.file
-layers = int(args.texture_layers)
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-slope = args.quantization; log.debug("slope={}".format(slope))
+slope = args.slopes; log.debug("slope={}".format(slope))
 SRLs = int(args.SRLs)
 
 def encode (component,           # Y, U or V.
@@ -120,7 +118,7 @@ V_size     = Y_size // 4
 ## Size of the components 'YUV' (measured in pixels).
 YUV_size   = Y_size + U_size + V_size
 
-import ipdb; ipdb.set_trace()
+#import ipdb; ipdb.set_trace()
 
 # Copy only the required images.
 try :
