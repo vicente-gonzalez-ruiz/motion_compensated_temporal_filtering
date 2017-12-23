@@ -297,8 +297,8 @@ EXE	+= $(MCTF_BIN)/texture_expand
 $(MCTF_BIN)/expand:	expand.py
 EXE	+= $(MCTF_BIN)/expand
 
-$(MCTF_BIN)/info.py:
-EXE	+= $(MCTF_BIN)/info.py
+$(MCTF_BIN)/info:	info.py
+EXE	+= $(MCTF_BIN)/info
 
 $(MCTF_BIN)/info_j2k:	$(MCTF_BIN)/info.py info_j2k.py
 EXE	+= $(MCTF_BIN)/info_j2k

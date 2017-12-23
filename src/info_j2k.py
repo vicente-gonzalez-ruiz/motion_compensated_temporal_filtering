@@ -1,25 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-#  The size in bytes, and a codestream Kbps, even detailed subband
-#  level and neglecting headers, from a J2K codestream.
+# Handle J2C files with format <low/high>_<subband>_<image>_<Y/U/V>.j2c
 
+import os
 from info import info
 from arguments_parser import arguments_parser
 
 # Class info for J2K codec.
 class info_j2k(info):
 
-
-    ## Find the length of JPEG 2000 image.
-    #  @param self Refers to object.
-    #  @param file JPEG 2000 image.
-    #  @return Length of JPEG 2000 image
+    # Find the length of JPEG 2000 image.
     def find_next_EOC_texture(self, file):
         if file == None:
-            return 0
+           return 0
         else:
-            return int(file.readline())
+            file.seek(0, 2)
+            return file.tell() #int(file.readline())
 
 
     ## Find the length of motion.
@@ -30,7 +27,8 @@ class info_j2k(info):
         if file == None:
             return 0
         else:
-            return int(file.readline())
+            file.seek(0, 2)
+            return file.tell() #int(file.readline())
 
 
     ## Open a sizes files.

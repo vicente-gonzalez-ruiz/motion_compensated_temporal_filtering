@@ -1,15 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-
-## @file info_ltw.py
-#  The size in bytes, and a codestream Kbps, even detailed subband
-#  level and neglecting headers, from a LTW codestream.
-#
-#  @authors Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-#
-## @package info_ltw
 #  The size in bytes, and a codestream Kbps, even detailed subband
 #  level and neglecting headers, from a LTW codestream.
 
