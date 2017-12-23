@@ -136,27 +136,13 @@ else :
 # quantization + (MAX_SLOPE - quantization) / GAIN[s][l]
 #
 
-quantization_range   = 46000.0 - 42000.0 # Useful range of quantification
-
-# A decrement of the slope in 256 implies that the code-stream is
-# going to be incremented in sqrt(2) bits (a 41% longer). Supossing
-# that the energy of the quantization error decreases with the curve
-# 1/sqrt(x) being x the data-rate, for example, if quantization=42000
-# and TRLs=3, the slope for L2 is 42000, for H2 is:
-#
-# 42000 +quantization_range*256/sqrt(2)*GAINS[3][0]
-#
-
-So, a decrement of the
-# slope in 256/sqrt(2) will increment the code-stream in 1.
-
-slopes = [[]]
-for j in range(TRLs):
-    for i in range(layers):
-        slopes.append([int(round(quantization[j] * + i * quantization_step
-
-## Distance in the quantization step, between different temporal subbands.
-quantization_step_subband = 256 / math.sqrt(2)
+MAX_SLOPE = 50000
+log.debug("Subband / Slope::")
+slopes = [] # Among temporal subbands (subband / slope):
+for s in range(TRLs):
+    slope = int(round(quantization + (MAX_SLOPE - quantization) / GAINS[s]))
+    log.debug("{} / {}".format(s, slope))
+    slopes.append(slope)
 
 ## Slope distance for each quality layer in the same temporal subband. If a
 ## quantization_step is specified by parameter, one proportional to
