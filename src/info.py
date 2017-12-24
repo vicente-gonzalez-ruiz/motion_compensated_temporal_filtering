@@ -45,7 +45,7 @@ average_ponderation = (pictures - 1.0) / pictures
 GOP0_time           = 1.0              / FPS
 GOP_time            = float(GOP_size)  / FPS
 
-#sys.stdout.write("\n\n"              + sys.argv[0]    + "\n")
+sys.stdout.write("\n"              + sys.argv[0]    + ":\n\n")
 sys.stdout.write("TRLs           = " + str(TRLs) + "\n")
 sys.stdout.write("Pictures       = " + str(pictures)  + "\n")
 sys.stdout.write("FPS            = " + str(FPS)  + "\n")
@@ -53,7 +53,12 @@ sys.stdout.write("GOP size       = " + str(GOP_size)  + "\n")
 sys.stdout.write("Number of GOPs = " + str(GOPs) + "\n")
 sys.stdout.write("Frame time     = " + str(GOP0_time) + "\n")
 sys.stdout.write("GOP   time     = " + str(GOP_time)  + "\n")
-sys.stdout.write("All the values are given in thousands (1000) of bits per second (Kbps).\n\n")
+sys.stdout.write("\nAll the values are given in thousands (1000) of bits per second (Kbps).\n")
+
+# Frame types
+F_file  = [None]
+for subband in range(1, TRLs):
+    F_file.append(io.open("frame_types_" + str(subband)))
 
 # Table header.
 
@@ -104,15 +109,77 @@ kbps = float(length) * 8.0 / GOP0_time / 1000.0
 sys.stdout.write("0000 %8d " % kbps)
 kbps_total += kbps
 
-'''
-
-for subband in range(self.TRLs-1, 0, -1):
-    for j in range(0, 2**(self.TRLs-1-subband)) :
+for subband in range(TRLs-1, 0, -1):
+    for j in range(0, 2**(TRLs-1-subband)) :
         sys.stdout.write("-")
     sys.stdout.write("%7d " % 0)
     sys.stdout.write("%6d " % 0)
 
-sys.stdout.write("%8d\n" % L_kbps_GOP0)
+sys.stdout.write("%8d\n" % kbps_total)
+
+# Rest of GOPs
+for GOP_number in range(GOPs-1):
+    
+    kbps_total = 0
+
+    sys.stdout.write("%3s " % '%04d' % (GOP_number+1))
+
+    # L
+    length = 0
+    for c in colors:
+        filename = "low_" + str(TRLs - 1) + "_" + "%04d" % GOP_number + "_" + c + ".j2c"
+        with io.open(filename, "rb") as file:
+            file.seek(0, 2)
+            length += file.tell()
+
+    kbps = float(length) * 8.0 / GOP_time / 1000.0
+    sys.stdout.write("%8d " % int(kbps))
+    kbps_total += kbps
+
+    # Rest of subbands
+    pics_in_subband = 1
+    for subband in range(TRLs-1, 0, -1):
+
+        #import ipdb; ipdb.set_trace()
+
+        # Frame types
+        for i in range(pics_in_subband):
+            frame_type = F_file[subband].read(1)
+            #types_frame[TRLs - subband].append(frame_type)
+            #sys.stdout.write(frame_type.decode('utf-8'))
+            sys.stdout.write(frame_type)
+            
+        # Motion
+        length = 0
+        for i in range(pics_in_subband):
+            for c in range(4):
+                filename = "motion_residue_" + str(subband) + "_" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "_" + str(c) + ".j2c"
+                with io.open(filename, "rb") as file:
+                    file.seek(0, 2)
+                    length += file.tell()
+
+        kbps = float(length) * 8.0 / GOP_time / 1000.0
+        sys.stdout.write("%7d " % int(kbps))
+        kbps_total += kbps
+
+        # Texture
+        for i in range(pics_in_subband):
+            for c in colors:
+                filename = "high_" + str(subband) + "_" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "_" + c + ".j2c"
+                with io.open(filename, "rb") as file:
+                    file.seek(0, 2)
+                    length += file.tell()
+                    
+        kbps = float(length) * 8.0 / GOP_time / 1000.0
+        sys.stdout.write("%6d " % int(kbps))
+        kbps_total += kbps
+
+        pics_in_subband *= 2
+
+    sys.stdout.write("%8d\n" % kbps_total)
+
+'''
+
 
 
 # GOP n. GOPs are formed by a number of subbands.

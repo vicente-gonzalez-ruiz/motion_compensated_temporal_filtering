@@ -57,7 +57,7 @@ for comp_number in range (0, COMPONENTS) :
     for campoMov_number in range (0, fields) :
 
         ## Refers to a particular component from a field of movement.
-        campoMov_name = file + "_" + str('%04d' % campoMov_number) + "_comp" + str(comp_number)
+        campoMov_name = file + "_" + str('%04d' % campoMov_number) + "_" + str(comp_number)
 
         try:
             ## File compressed motion vectors. If there is no vector
@@ -91,13 +91,13 @@ for campoMov_number in range (0, fields) :
 
     try:
         ## Component 1.
-        f0 = open(file + "_" + str('%04d' % campoMov_number) + "_comp0" + ".rawl", "rb")
+        f0 = open(file + "_" + str('%04d' % campoMov_number) + "_0" + ".rawl", "rb")
         ## Component 2.
-        f1 = open(file + "_" + str('%04d' % campoMov_number) + "_comp1" + ".rawl", "rb")
+        f1 = open(file + "_" + str('%04d' % campoMov_number) + "_1" + ".rawl", "rb")
         ## Component 3.
-        f2 = open(file + "_" + str('%04d' % campoMov_number) + "_comp2" + ".rawl", "rb")
+        f2 = open(file + "_" + str('%04d' % campoMov_number) + "_2" + ".rawl", "rb")
         ## Component 4.
-        f3 = open(file + "_" + str('%04d' % campoMov_number) + "_comp3"  + ".rawl", "rb")
+        f3 = open(file + "_" + str('%04d' % campoMov_number) + "_3"  + ".rawl", "rb")
         # Component 1, Component 2, Component 3 y Component 4.
         f  = open(file + "_" + str('%04d' % campoMov_number) + ".join", "wb")
 
