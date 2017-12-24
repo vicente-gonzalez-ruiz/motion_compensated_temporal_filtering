@@ -3,8 +3,7 @@
 
 # Quality transcoding.
 
-# Extracts a codestream from a bigger one, discarding a number of
-# quality subband-layers.
+# Extracts a codestream from a bigger one.
 
 # Reducing the number of quality subband-layers basically means that
 # the list:

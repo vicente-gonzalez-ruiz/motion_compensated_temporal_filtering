@@ -25,19 +25,17 @@ parser = arguments_parser(description="Compress the texture.")
 parser.GOPs()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.texture_layers()
-parser.texture_quantization()
-parser.texture_quantization_step()
+parser.quantization_max()
+parser.quantization_min()
 parser.TRLs()
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
-layers = int(args.texture_layers); log.debug("layers={}".format(layers))
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quantization = int(args.texture_quantization); log.debug("quantization={}".format(quantization))
-quantization_step = int(args.texture_quantization_step); log.debug("quantization_step={}".format(quantization_step))
+quantization_max = int(args.quantization_max)
+quantization_min = int(args.quantization_min)
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
 
@@ -135,11 +133,10 @@ else :
 # quantization + (MAX_SLOPE - quantization) / GAIN[s][l]
 #
 
-MAX_SLOPE = 50000
 log.debug("Subband / Slope::")
 slopes = [] # Among temporal subbands (subband / slope):
 for s in range(TRLs-1):
-    slope = int(round(quantization + (MAX_SLOPE - quantization) / GAINS[s]))
+    slope = int(round(quantization_min + (quantization_max - quantization_min) / GAINS[s]))
     log.debug("{} / {}".format(s, slope))
     slopes.append(slope)
 
@@ -174,7 +171,7 @@ try:
             + " --pictures="          + str(pictures) \
             + " --pixels_in_x="       + str(pixels_in_x) \
             + " --pixels_in_y="       + str(pixels_in_y) \
-            + " --slopes=\""          + str(quantization) + "\""\
+            + " --slopes=\""          + str(quantization_min) + "\""\
             + " --SRLs="              + str(SRLs)
     log.debug(command)
     check_call(command, shell=True)

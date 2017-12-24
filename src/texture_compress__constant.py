@@ -24,19 +24,17 @@ parser = arguments_parser(description="Compress the texture.")
 parser.GOPs()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.texture_layers()
-parser.texture_quantization()
-parser.texture_quantization_step()
+parser.quantization_max()
+parser.quantization_min()
 parser.TRLs()
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs); log.debug("GOPs={}".format(GOPs))
-layers = int(args.texture_layers); log.debug("layers={}".format(layers))
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quantization = int(args.texture_quantization); log.debug("quantization={}".format(quantization))
-quantization_step = int(args.texture_quantization_step); log.debug("quantization_step={}".format(quantization_step))
+quantization_max = int(args.quantization_max)
+quantization_min = int(args.quantization_min)
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
 
@@ -46,14 +44,14 @@ GOP_size = gop.get_size(TRLs)
 ## Number of images to process.
 pictures = (GOPs - 1) * GOP_size + 1
 
-slopes = []
-for i in range(layers):
-    slopes.append(quantization + i * quantization_step)
+#slopes = []
+#for i in range(layers):
+#    slopes.append(quantization + i * quantization_step)
 
-if len(slopes) == 1:
-    str_slopes = str(slopes[0])
-else:
-    str_slopes = ','.join(str(i) for i in slopes)
+#if len(slopes) == 1:
+#    str_slopes = str(slopes[0])
+#else:
+#    str_slopes = ','.join(str(i) for i in slopes)
     
 # Compression of HIGH frequency temporal subbands.
 subband = 1
@@ -65,7 +63,7 @@ while subband < TRLs:
                    + " --pictures="          + str(pictures - 1)
                    + " --pixels_in_x="       + str(pixels_in_x)
                    + " --pixels_in_y="       + str(pixels_in_y)
-                   + " --slopes=\""          + str_slopes + "\""
+                   + " --slopes="            + str(quantization_max)
                    + " --SRLs="              + str(SRLs)
                    , shell=True)
     except CalledProcessError:
@@ -80,7 +78,7 @@ try:
                + " --pictures="          + str(pictures)
                + " --pixels_in_x="       + str(pixels_in_x)
                + " --pixels_in_y="       + str(pixels_in_y)
-               + " --slopes=\""          + str_slopes + "\""
+               + " --slopes="            + str(quantization_max)
                + " --SRLs="              + str(SRLs)
                , shell=True)
 except:

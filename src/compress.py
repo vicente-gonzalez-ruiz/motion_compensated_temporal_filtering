@@ -29,7 +29,7 @@
 #
 #  * Controlling quantization:
 #
-#    mcj2k compress --texture_quantization=45000
+#    mcj2k compress --quantization=45000
 
 import sys
 import getopt
@@ -63,6 +63,8 @@ parser.subpixel_accuracy()
 parser.texture_layers()
 parser.texture_quantization()
 parser.texture_quantization_step()
+parser.quantization_max()
+parser.quantization_min()
 parser.SRLs()
 parser.TRLs()
 parser.update_factor()
@@ -82,6 +84,8 @@ pixels_in_y = int(args.pixels_in_y)
 texture_layers = int(args.texture_layers)
 texture_quantization = int(args.texture_quantization)
 texture_quantization_step = int(args.texture_quantization_step)
+quantization_max = int(args.quantization_max)
+quantization_min = int(args.quantization_min)
 search_range = int(args.search_range)
 subpixel_accuracy = int(args.subpixel_accuracy)
 TRLs = int(args.TRLs)
@@ -133,9 +137,8 @@ try:
                + " --GOPs="                      + str(GOPs)
                + " --pixels_in_x="               + str(pixels_in_x)
                + " --pixels_in_y="               + str(pixels_in_y)
-               + " --texture_layers="            + str(texture_layers)
-               + " --texture_quantization="      + str(texture_quantization) 
-               + " --texture_quantization_step=" + str(texture_quantization_step)
+               + " --quantization_max="          + str(quantization_max)
+               + " --quantization_min="          + str(quantization_min)
                + " --SRLs="                      + str(SRLs)
                + " --TRLs="                      + str(TRLs)
                , shell=True)

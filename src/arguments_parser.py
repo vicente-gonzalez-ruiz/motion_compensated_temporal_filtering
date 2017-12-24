@@ -146,3 +146,13 @@ class arguments_parser(argparse.ArgumentParser):
     #    self.add_argument("--using_gains",
     #                      help="Weights the temporal subband slopes.",
     #                      default=Defaults.using_gains) # Yes or Not
+
+    def quantization_max(self):
+        self.add_argument("--quantization_max",
+                          help="Maximum quantization.",
+                          default=Defaults.quantization_max)
+
+    def quantization_min(self):
+        self.add_argument("--quantization_min",
+                          help="Minimum quantization.",
+                          default=Defaults.quantization_min)
