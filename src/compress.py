@@ -32,11 +32,7 @@
 #    mcj2k compress --quantization=45000
 
 import sys
-import getopt
 import os
-import array
-import display
-import string
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
@@ -60,9 +56,6 @@ parser.pixels_in_x()
 parser.pixels_in_y()
 parser.search_range()
 parser.subpixel_accuracy()
-parser.texture_layers()
-parser.texture_quantization()
-parser.texture_quantization_step()
 parser.quantization_max()
 parser.quantization_min()
 parser.SRLs()
@@ -81,9 +74,6 @@ motion_quantization = str(args.motion_quantization); log.debug("motion_quantizat
 motion_quantization_step = str(args.motion_quantization_step); log.debug("motion_quantization_step={}".format(motion_quantization_step))
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-texture_layers = int(args.texture_layers)
-texture_quantization = int(args.texture_quantization)
-texture_quantization_step = int(args.texture_quantization_step)
 quantization_max = int(args.quantization_max)
 quantization_min = int(args.quantization_min)
 search_range = int(args.search_range)

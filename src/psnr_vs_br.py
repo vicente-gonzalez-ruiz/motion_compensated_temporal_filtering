@@ -1,181 +1,62 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-## @file psnr_vs_br.py
-#  Traces a RD (Rate-Distortion) curve.
-#  @authors Vicente Gonzalez-Ruiz.
-#  @date Last modification: 2015, January 7.
-
-## @package psnr_vs_br
 #  Traces a RD (Rate-Distortion) curve.
 
 import sys
-import getopt
 import os
-import array
-import display
-import string
+from GOP import GOP
+from subprocess import check_call
+from subprocess import CalledProcessError
+from arguments_parser import arguments_parser
+import logging
 
-## Number of overlaped pixels between the blocks in the motion compensation process.
-block_overlaping = 0
-## Size of the blocks in the motion estimation process.
-block_size = 16
-## Minimal block size allowed in the motion estimation process.
-min_block_size = 16
-## Size of the border of the blocks in the motion estimation process.
-border_size = 0
-## Original signal.
-original = "../videos/mobile_352x288x30x420x300.yuv"
-## Number of images to process.
-pictures = 33
-## Width of the pictures.
-pixels_in_x = 352
-## Height of the pictures.
-pixels_in_y = 288
-## Size of the search areas in the motion estimation process.
-search_range = 4
-## Controls the quality level and the bit-rate of the code-stream of textures.
-slopes = "52000"
-## Subpixel motion estimation order.
-subpixel_accuracy = 0
-## Temporal Resolution Levels.
-temporal_levels = 6
+logging.basicConfig()
+log = logging.getLogger("compress")
 
-## Documentation of usage.
-#  - -[-]block_o[v]erlaping = number of overlaped pixels between the blocks in the motion estimation.\n
-#  - -[-]block_si[z]e_min = minimal block size allowed in the motion estimation.\n
-#  - -[-]block_si[z]e_min = minimal block size allowed in the motion estimation.\n
-#  - -[-]bor[d]der_size = size of the border of the blocks in the motion estimation process.\n
-#  - -[-o]riginal = original video to compare.\n
-#  - -[-p]ictures = number of images to process.\n
-#  - -[-]pixels_in_[x] = size of the X dimension of the pictures.\n
-#  - -[-]pixels_in_[y] = size of the Y dimension of the pictures.\n
-#  - -[-s]earch_range = size of the searching area of the motion estimation.\n
-#  - -[-]s[l]opes = distortion-length slope for each quality layer.\n
-#  - -[-]subpixel_[a]ccuracy = sub-pixel accuracy of the motion estimation.\n
-#  - -[-t]emporal_levels = number of iterations of the temporal transform + 1.
-def usage():
-    sys.stderr.write("+--------------------------+\n")
-    sys.stderr.write("| MCTF psnr_vs_br compress |\n")
-    sys.stderr.write("+--------------------------+\n")
-    sys.stderr.write("\n")
-    sys.stderr.write("  Description:\n")
-    sys.stderr.write("\n")
-    sys.stderr.write("   Traces a RD (Rate-Distortion) curve.\n")
-    sys.stderr.write("\n")
-    sys.stderr.write("  Parameters:\n")
-    sys.stderr.write("\n")
-    sys.stderr.write("   -[-]block_o[v]erlaping=number of overlaped pixels between the blocks in the motion estimation (%d)\n" % block_overlaping)
-    sys.stderr.write("   -[-b]lock_size=size of the blocks in the motion estimation process (%d)\n" % block_size)
-    sys.stderr.write("   -[-]block_si[z]e_min=minimal block size allowed in the motion estimation (%d)\n" % min_block_size)
-    sys.stderr.write("   -[-]bor[d]der_size=size of the border of the blocks in the motion estimation process (%d)\n" % border_size)
-    sys.stderr.write("   -[-o]riginal=original video to compare (%s)\n" % original)
-    sys.stderr.write("   -[-p]ictures=number of images to process (%d)\n" % pictures)
-    sys.stderr.write("   -[-]pixels_in_[x]=size of the X dimension of the pictures (%d)\n" %  pixels_in_x)
-    sys.stderr.write("   -[-]pixels_in_[y]=size of the Y dimension of the pictures (%d)\n" %  pixels_in_y)
-    sys.stderr.write("   -[-s]earch_range=size of the searching area of the motion estimation (%d)\n" % search_range)
-    sys.stderr.write("   -[-]s[l]opes=distortion-length slope for each quality layer (\"%s\")\n" % slopes)
-    sys.stderr.write("   -[-]subpixel_[a]ccuracy=sub-pixel accuracy of the motion estimation (%d)\n" % subpixel_accuracy)
-    sys.stderr.write("   -[-t]emporal_levels=number of iterations of the temporal transform + 1 (%d)\n" % temporal_levels)
-    sys.stderr.write("\n")
+parser = arguments_parser(description="Encodes a sequence of pictures.")
+parser.always_B()
+parser.block_overlaping()
+parser.block_size()
+parser.border_size()
+parser.GOPs()
+parser.min_block_size()
+parser.motion_layers()
+parser.motion_quantization()
+parser.motion_quantization_step()
+parser.pixels_in_x()
+parser.pixels_in_y()
+parser.search_range()
+parser.subpixel_accuracy()
+parser.quantization_max()
+parser.quantization_min()
+parser.SRLs()
+parser.TRLs()
+parser.update_factor()
 
-## Define the variable for options.
-opts = ""
+args = parser.parse_known_args()[0]
+always_B = int(args.always_B)
+block_overlaping = int(args.block_overlaping)
+block_size = int(args.block_size)
+min_block_size = int(args.min_block_size)
+border_size = int(args.border_size)
+GOPs = int(args.GOPs)
+motion_layers = str(args.motion_layers); log.debug("motion_layers={}".format(motion_layers))
+motion_quantization = str(args.motion_quantization); log.debug("motion_quantization={}".format(motion_quantization))
+motion_quantization_step = str(args.motion_quantization_step); log.debug("motion_quantization_step={}".format(motion_quantization_step))
+pixels_in_x = int(args.pixels_in_x)
+pixels_in_y = int(args.pixels_in_y)
+quantization_max = int(args.quantization_max)
+quantization_min = int(args.quantization_min)
+search_range = int(args.search_range)
+subpixel_accuracy = int(args.subpixel_accuracy)
+TRLs = int(args.TRLs)
+SRLs = int(args.SRLs)
+update_factor = float(args.update_factor)
 
-ifdef({{DEBUG}},
-display.info(str(sys.argv[0:]) + '\n')
-)
-
-try:
-    opts, extraparams = getopt.getopt(sys.argv[1:],"v:b:z:d:p:x:y:l:p:a:t:h",
-                                      ["block_overlaping=",
-                                       "block_size=",
-                                       "border_size=",
-                                       "min_block_size=",
-                                       "original=",
-                                       "pictures=",
-                                       "pixels_in_x=",
-                                       "pixels_in_y=",
-                                       "search_range=",
-                                       "slopes=",
-                                       "subpixel_accuracy=",
-                                       "temporal_levels=",
-                                       "help"
-                                       ])
-except getopt.GetoptError, exc:
-    sys.stderr.write(sys.argv[0] + ": " + exc.msg + "\n")
-    sys.exit(2)
-
-for o, a in opts:
-    if o in ("-v", "--block_overlaping"):
-        block_overlaping = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": block_overlaping=" + str(block_overlaping) + '\n')
-        )
-    if o in ("-b", "--block_size"):
-        block_size = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": block_size=" + str(block_size) + '\n')
-        )
-    if o in ("-z", "--min_block_size"):
-        min_block_size = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": min_block_size=" + str(min_block_size) + '\n')
-        )
-    if o in ("-d", "--border_size"):
-        border_size = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": border_size=" + str(border_size) + '\n')
-        )
-    if o in ("-o", "--original"):
-        original = a
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": original=" + original + '\n')
-        )
-    if o in ("-p", "--pictures"):
-        pictures = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": pictures=" + str(pictures) + '\n')
-        )
-    if o in ("-x", "--pixels_in_x"):
-        pixels_in_x = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": pixels_in_x=" + str(pixels_in_x) + '\n')
-        )
-    if o in ("-y", "--pixels_in_y"):
-        pixels_in_y = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": pixels_in_y=" + str(pixels_in_y) + '\n')
-        )
-    if o in ("-s", "--search_range"):
-        search_range = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": search_range=" + str(search_range) + '\n')
-        )
-    if o in ("-l", "--slopes"):
-        slopes = a
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": slopes=" + slopes + '\n')
-        )
-#        slopes += ",65535"
-    if o in ("-a", "--subpixel_accuracy"):
-        subpixel_accuracy = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": subpixel_accuracy=" + str(subpixel_accuracy) + '\n')
-        )
-    if o in ("-t", "--temporal_levels"):
-        temporal_levels = int(a)
-        ifdef({{DEBUG}},
-        display.info(sys.argv[0] + ": temporal_levels=" + str(temporal_levels) + '\n')
-        )
-    if o in ("-h", "--help"):
-	usage()
-	sys.exit()
-
-## Output file descriptor.
 output = open("psnr_vs_br.txt", "w")
 
-slopes = 52000
+slope = 
 while slopes < 65535:
 
     ## Creates a copy of the original video.
