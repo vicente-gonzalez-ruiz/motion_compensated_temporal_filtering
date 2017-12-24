@@ -45,14 +45,15 @@ average_ponderation = (pictures - 1.0) / pictures
 GOP0_time           = 1.0              / FPS
 GOP_time            = float(GOP_size)  / FPS
 
-sys.stdout.write("\n"              + sys.argv[0]    + ":\n\n")
-sys.stdout.write("TRLs           = " + str(TRLs) + "\n")
-sys.stdout.write("Pictures       = " + str(pictures)  + "\n")
-sys.stdout.write("FPS            = " + str(FPS)  + "\n")
-sys.stdout.write("GOP size       = " + str(GOP_size)  + "\n")
-sys.stdout.write("Number of GOPs = " + str(GOPs) + "\n")
-sys.stdout.write("Frame time     = " + str(GOP0_time) + "\n")
-sys.stdout.write("GOP   time     = " + str(GOP_time)  + "\n")
+sys.stdout.write("\n"                + sys.argv[0] + ":\n\n")
+sys.stdout.write("TRLs           = " + str(TRLs)+ " temporal resolution levels\n")
+sys.stdout.write("Pictures       = " + str(pictures)  + " pictures\n")
+sys.stdout.write("FPS            = " + str(FPS) + " frames/second\n")
+sys.stdout.write("GOP size       = " + str(GOP_size) + " pictures\n")
+sys.stdout.write("Number of GOPs = " + str(GOPs) + " groups of pictures\n")
+sys.stdout.write("Frame time     = " + str(GOP0_time) + " seconds\n")
+sys.stdout.write("GOP time       = " + str(GOP_time) + " seconds\n")
+sys.stdout.write("Total time     = " + str(pictures/FPS) + " seconds\n")
 sys.stdout.write("\nAll the values are given in thousands (1000) of bits per second (Kbps).\n")
 
 # Frame types
@@ -73,7 +74,7 @@ for i in range(TRLs-1, 0, -1):
     sys.stdout.write("TRL" + str(i-1))
 sys.stdout.write("\n")
 
-# Second line. (GOP low_4 motion_4+high_4 motion_3+hight_3 motion_2+high2 motion_1+high_1 Total).
+# Second line. (GOP low_4 motion_4+high_4 motion_3+hight_3 motion_2+high2 motion_1+high_1 Total Average).
 sys.stdout.write("GOP#")
 sys.stdout.write("    low_" +  str(TRLs-1))
 
@@ -81,7 +82,7 @@ for i in range(TRLs-1, 0, -1):
     for j in range(0, 2**(TRLs-1-i)):
         sys.stdout.write(" ")
     sys.stdout.write("motion_" + str(i) + " high_" + str(i))
-sys.stdout.write("    Total\n")
+sys.stdout.write("    Total Average\n")
 
 # Third line. (--------------------------------------)
 sys.stdout.write("---- ")
@@ -90,7 +91,7 @@ for i in range(TRLs-1, 0, -1):
     for j in range(0, 2**(TRLs-1-i)):
         sys.stdout.write("-")
     sys.stdout.write("-------------- ")
-sys.stdout.write("--------\n")
+sys.stdout.write("-------- -------\n")
 
 # Computations
 
@@ -105,9 +106,12 @@ for c in colors:
         length += file.tell()
 
 kbps_total = 0
+kbps_total_pro = 0
+
 kbps = float(length) * 8.0 / GOP0_time / 1000.0
 sys.stdout.write("0000 %8d " % kbps)
 kbps_total += kbps
+kbps_L0 = kbps_total
 
 for subband in range(TRLs-1, 0, -1):
     for j in range(0, 2**(TRLs-1-subband)) :
@@ -115,7 +119,8 @@ for subband in range(TRLs-1, 0, -1):
     sys.stdout.write("%7d " % 0)
     sys.stdout.write("%6d " % 0)
 
-sys.stdout.write("%8d\n" % kbps_total)
+sys.stdout.write("%8d" % kbps_total)
+sys.stdout.write("%8d\n" % kbps_L0)
 
 # Rest of GOPs
 for GOP_number in range(GOPs-1):
@@ -133,7 +138,7 @@ for GOP_number in range(GOPs-1):
             length += file.tell()
 
     kbps = float(length) * 8.0 / GOP_time / 1000.0
-    sys.stdout.write("%8d " % int(kbps))
+    sys.stdout.write("%8d " % int(round(kbps)))
     kbps_total += kbps
 
     # Rest of subbands
@@ -159,7 +164,7 @@ for GOP_number in range(GOPs-1):
                     length += file.tell()
 
         kbps = float(length) * 8.0 / GOP_time / 1000.0
-        sys.stdout.write("%7d " % int(kbps))
+        sys.stdout.write("%7d " % int(round(kbps)))
         kbps_total += kbps
 
         # Texture
@@ -171,13 +176,20 @@ for GOP_number in range(GOPs-1):
                     length += file.tell()
                     
         kbps = float(length) * 8.0 / GOP_time / 1000.0
-        sys.stdout.write("%6d " % int(kbps))
+        sys.stdout.write("%6d " % int(round(kbps)))
         kbps_total += kbps
 
         pics_in_subband *= 2
 
-    sys.stdout.write("%8d\n" % kbps_total)
+    kbps_total_pro += kbps_total
+    kbps_average = kbps_total_pro/(GOP_number+1)+(kbps_L0/(GOP_size*(GOP_number+1)))
+    
 
+    sys.stdout.write("%8d" % kbps_total)
+    sys.stdout.write("%8d" % kbps_average)
+    sys.stdout.write("\n")
+
+sys.stdout.write("\nAverage bit-rate (kbps) = {}\n".format(kbps_average))
 '''
 
 
