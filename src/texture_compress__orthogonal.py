@@ -112,9 +112,7 @@ parser.pixels_in_x()
 parser.pixels_in_y()
 #parser.quantization()
 #parser.quantization_step()
-parser.add_argument("--quality",
-                    help="Quality.",
-                    default=0.25)
+parser.quality()
 parser.TRLs()
 parser.SRLs()
 
@@ -133,15 +131,17 @@ MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
 HIGH                 = "high"            # High frequency subbands.
 LOW                  = "low"             # Low frequency subbands.
 
+'''
 def kdu_transcode(filename, slope):
     try:
         check_call("trace kdu_transcode"
-                   + "slope=" + str(slops)
+                   + "slope=\"" + str(slope) + "\""
                    + " -i " + filename
                    + " -o " + "transcode_quality/" + filename,
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
+'''
 
 # Slope computation
 if   TRLs == 1 :
@@ -171,8 +171,8 @@ slope = [None]*TRLs
 log.debug("Subband / Slope::")
 for s in range(TRLs):
     slope[TRLs-s-1] = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s]))
-    if slopes[TRLs-s-1] < 0:
-        slopes[TRLs-s-1] = 0
+    if slope[TRLs-s-1] < 0:
+        slope[TRLs-s-1] = 0
     log.debug("{} / {}".format(s, slope[TRLs-s-1]))
 
 gop      = GOP()

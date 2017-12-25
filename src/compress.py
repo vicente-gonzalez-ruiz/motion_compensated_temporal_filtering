@@ -7,11 +7,11 @@
 #
 #  * Show default parameters:
 #
-#    mcj2k compress --help
+#    mctf compress --help
 #
 #  * Compress using the default parameters:
 #
-#    mcj2k compress
+#    mctf compress
 #
 #  * Using a GOP_size=4:
 #
@@ -25,11 +25,11 @@
 #       6       32
 #       7       64
 #
-#    mcj2k compress --TRLs=3
+#    mctf compress --TRLs=3
 #
 #  * Controlling quantization:
 #
-#    mcj2k compress --quantization=45000
+#    mctf compress --quality=50
 
 import sys
 import os
@@ -42,7 +42,7 @@ import logging
 logging.basicConfig()
 log = logging.getLogger("compress")
 
-parser = arguments_parser(description="Encodes a sequence of pictures.")
+parser = arguments_parser(description="Encodes a sequence of pictures into a MCJ2K stream")
 parser.always_B()
 parser.block_overlaping()
 parser.block_size()
@@ -57,8 +57,9 @@ parser.pixels_in_y()
 parser.search_range()
 parser.subpixel_accuracy()
 parser.layers()
-parser.quantization()
-parser.quantization_step()
+parser.quality()
+#parser.quantization()
+#parser.quantization_step()
 #parser.quantization_max()
 #parser.quantization_min()
 parser.SRLs()
@@ -78,8 +79,9 @@ motion_quantization_step = str(args.motion_quantization_step); log.debug("motion
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 layers = str(args.layers)
-quantization = str(args.quantization)
-quantization_step = str(args.quantization_step)
+quality = float(args.quality)
+#quantization = str(args.quantization)
+#quantization_step = str(args.quantization_step)
 #quantization_max = int(args.quantization_max)
 #quantization_min = int(args.quantization_min)
 search_range = int(args.search_range)
@@ -134,10 +136,11 @@ try:
                + " --pixels_in_x="               + str(pixels_in_x)
                + " --pixels_in_y="               + str(pixels_in_y)
                + " --layers="                    + str(layers)
-               + " --quantization="              + str(quantization)
-               + " --quantization_step="         + str(quantization_step)
+#               + " --quantization="              + str(quantization)
+#               + " --quantization_step="         + str(quantization_step)
 #               + " --quantization_max="          + str(quantization_max)
 #               + " --quantization_min="          + str(quantization_min)
+               + " --quality="                   + str(quality)
                + " --SRLs="                      + str(SRLs)
                + " --TRLs="                      + str(TRLs)
                , shell=True)

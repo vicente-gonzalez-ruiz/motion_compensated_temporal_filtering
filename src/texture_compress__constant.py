@@ -21,13 +21,11 @@ parser.GOPs()
 parser.pixels_in_x()
 parser.pixels_in_y()
 parser.layers()
-parser.quantization()
-parser.quantization_step()
+#parser.quantization()
+#parser.quantization_step()
 #parser.quantization_max()
 #parser.quantization_min()
-parser.add_argument("--quality",
-                    help="Quality.",
-                    default=0.25)
+parser.quality()
 parser.TRLs()
 parser.SRLs()
 
@@ -55,6 +53,8 @@ MIN_SLOPE = 40000
 RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 
 slope = int(round(MAX_SLOPE - RANGE_SLOPES*quality))
+if slope < 0:
+    slope = 0
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
@@ -76,20 +76,19 @@ else:
 subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) // 2
+    command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
+      + " --file="              + HIGH + "_" + str(subband) \
+      + " --layers="            + str(layers) \
+      + " --pictures="          + str(pictures - 1) \
+      + " --pixels_in_x="       + str(pixels_in_x) \
+      + " --pixels_in_y="       + str(pixels_in_y) \
+      + " --slope=\""           + str(slope) + "\"" \
+      + " --SRLs="              + str(SRLs)
+    log.debug("command={}".format(command))
     try:
-        command = = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
-            + " --file="              + HIGH + "_" + str(subband) \
-            + " --layers="            + str(layers) \
-            + " --pictures="          + str(pictures - 1) \
-            + " --pixels_in_x="       + str(pixels_in_x) \
-            + " --pixels_in_y="       + str(pixels_in_y) \
-            + " --slope=\""           + str(slope) + "\"" \
-            + " --SRLs="              + str(SRLs)
-        log.debug("command={}".format(command))
-        try:
-            check_call(command, shell=True)
-        except CalledProcessError:
-            sys.exit(-1)
+        check_call(command, shell=True)
+    except CalledProcessError:
+        sys.exit(-1)
 
     subband += 1
 

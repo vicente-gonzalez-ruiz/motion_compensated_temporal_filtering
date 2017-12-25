@@ -121,6 +121,11 @@ class arguments_parser(argparse.ArgumentParser):
                           "texture subbands. ",
                           default=Defaults.layers)
 
+    def quality(self):
+        self.add_argument("--quality",
+                          help="Quality of texture subbands. ",
+                          default=Defaults.quality)
+
     def quantization(self):
         self.add_argument("--quantization",
                           help="Controls the quality level and the bit-rate "

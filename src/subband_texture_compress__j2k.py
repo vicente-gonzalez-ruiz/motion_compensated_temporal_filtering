@@ -28,7 +28,7 @@ parser = arguments_parser(description="Compress texture data using JPEG 2000.")
 parser.add_argument("--file",
                     help="File that contains the texture data.",
                     default="")
-parers.layers()
+parser.layers()
 parser.add_argument("--pictures",
                     help="Number of pictures to compress.",
                     default=3)
@@ -36,7 +36,7 @@ parser.pixels_in_x()
 parser.pixels_in_y()
 parser.add_argument("--slope",
                     help="Slope used for compression",
-                    default=Defaults.texture_quantization)
+                    default=45000)
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
@@ -45,7 +45,7 @@ layers = int(args.layers)
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-slope = args.slope; log.debug("slope={}".format(slope))
+slope = int(args.slope); log.debug("slope={}".format(slope))
 SRLs = int(args.SRLs)
 
 def encode (component,           # Y, U or V.
