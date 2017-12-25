@@ -1,60 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-# Quality transcoding.
+# Quality transcoding. Extracts a codestream from a bigger one.
 
-# Extracts a codestream from a bigger one.
 
-# Reducing the number of quality subband-layers basically means that
-# the list:
-#
-# [L^{T-1}_{Q-1}, M^{T-1}_{q-1}, H^{T-1}_{Q-1}, M^{T-2}_{q-1}, H^{T-2}_{Q-1}, ..., M^1_{q-1}, H^1_{Q-1},
-#  L^{T-1}_{Q-2}, M^{T-1}_{q-2}, H^{T-1}_{Q-2}, M^{T-2}_{q-2}, H^{T-2}_{Q-2}, ..., M^1_{q-2}, H^1_{Q-2},
-#  :
-#  L^{T-1}_0, -, H^{T-1}_0, H^{T-1}_0, H^{T-2}_0, ..., H^1_0]
-#
-# is going to be truncated at a subband-layer, starting at
-# L^{T-1}_{Q-1}, where T=number of TRLs, Q=number of quality layers
-# for texture, and q=number of quality layers for movement. A total
-# number of TQ+q subband-layers are available. In the last set
-# description, it has been supposed that q<Q.
-
-# Examples:
-#
-#   mctf transcode_quality --QSLs=5
-
-#import info_j2k
 import sys
-#import getopt
-#import os
-#import array
-#import display
-#import string
-#import math
-#import re
-#import subprocess as sub
 from GOP              import GOP
 from subprocess       import check_call
 from subprocess       import CalledProcessError
 from arguments_parser import arguments_parser
+import logging
 
-parser = arguments_parser(description="Transcodes a sequence transfering a number of quality subband-layers.")
+logging.basicConfig()
+log = logging.getLogger("transcode_quality")
+
+parser = arguments_parser(description="Transcodes in quality a MCJ2K sequence.")
 parser.GOPs()
-parser.motion_layers()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.add_argument("--QSLs",
-                    help="Number of Quality Subband-Layers.",
-                    default=1)
+parser.add_argument("--quality",
+                    help="Quality.",
+                    default=0.25)
 parser.texture_layers()
 parser.TRLs()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
-motion_layers = int(args.motion_layers)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-QSLs = int(args.QSLs)
+quality = float(args.qstep)
 texture_layers = int(args.texture_layers)
 TRLs = int(args.TRLs)
 
@@ -62,55 +36,10 @@ LOW = "low"
 HIGH = "high"
 MOTION = "motion_residue"
 
-# We need to compute the number of quality layers of each temporal
-# subband. For example, if QSLs=1, only the first quality layer of the
-# subband L^{T-1} will be output. If QSLs=2, only the first quality
-# layer of the subbands L^{T-1} and M^{T-1} will be output, if QSLs=3,
-# the first quality layer of H^{T-1} will be output too, and so on.
-
-def generate_list_of_subband_layers(T, Qt, Qm):
-    l = []
-    for q in range(Qt):
-        l.append(('L', T-1, Qt-q-1))
-        for t in range(T-1):
-            if q < Qm:
-                l.append(('M', T-t-1, Qm-q-1))
-            l.append(('H', T-t-1, Qt-q-1))
-    return l
-
-print("Texture layers = {}".format(texture_layers))
-print("Motion layers = {}".format(motion_layers))
-
-all_subband_layers = generate_list_of_subband_layers(T=TRLs,
-                                                     Qt=texture_layers,
-                                                     Qm=motion_layers
-                                                     )
-
-print("Subband layers = {}".format(all_subband_layers))
-print("QSLs = {}".format(QSLs))
-
-subband_layers_to_copy = all_subband_layers[:QSLs]
-print("Subband layers to copy = {}".format(subband_layers_to_copy))
-
-number_of_quality_layers_in_L = len([x for x in subband_layers_to_copy
-                                    if x[0]=='L'])
-print("Number of subband layers in L = {}".format(number_of_quality_layers_in_L))
-
-number_of_quality_layers_in_H = [None]*TRLs
-for i in range(1, TRLs):
-    number_of_quality_layers_in_H[i] = len([x for x in subband_layers_to_copy
-                                            if x[0]=='H' and x[1]==i])
-    print("Number of quality layers in H_{} = {}".format(i, number_of_quality_layers_in_H[i]))
-    
-number_of_quality_layers_in_M = [None]*TRLs
-for i in range(1, TRLs):
-    number_of_quality_layers_in_M[i] = len([x for x in subband_layers_to_copy
-                                            if x[0]=='M' and x[1]==i])
-    print("Number of quality layers in M_{} = {}".format(i, number_of_quality_layers_in_M[i]))
-
-def kdu_transcode(filename, layers):
+def kdu_transcode(filename, slope):
     try:
-        check_call("trace kdu_transcode Clayers=" + str(layers)
+        check_call("trace kdu_transcode"
+                   + "slope=" + str(slops)
                    + " -i " + filename
                    + " -o " + "transcode_quality/" + filename,
                    shell=True)
@@ -119,38 +48,70 @@ def kdu_transcode(filename, layers):
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
-print("GOP_size = {}".format(GOP_size))
+log.debug("GOP_size = {}".format(GOP_size))
 
 pictures = (GOPs - 1) * GOP_size + 1
-print("pictures = {}".format(pictures))
+log.debug("pictures = {}".format(pictures))
+
+if   TRLs == 1 :
+    pass
+elif TRLs == 2 :
+    GAINS = [1.0, 1.2460784922] # [L1/H1]
+elif TRLs == 3 :
+    GAINS = [1.0, 1.2500103877, 1.8652117304] # [L2/H2, L2/H1]
+elif TRLs == 4 :
+    GAINS = [1.0, 1.1598810146, 2.1224082769, 3.1669663339]
+elif TRLs == 5 :
+    GAINS = [1.0, 1.0877939347, 2.1250255455, 3.8884779989, 5.8022196044]
+elif TRLs == 6 :
+    GAINS = [1.0, 1.0456562538, 2.0788785438, 4.0611276369, 7.4312544148, 11.0885981772]
+elif TRLs == 7 :
+    GAINS = [1.0, 1.0232370223, 2.0434169985, 4.0625355976, 7.9362383342, 14.5221257323, 21.6692913386]
+elif TRLs == 8 :
+    GAINS = [1.0, 1.0117165706, 2.0226778348, 4.0393126714, 8.0305936232, 15.6879129862, 28.7065276104, 42.8346456693]
+else :
+    sys.stderr.write("Gains are not available for " + str(TRLs) + " TRLs. Enter them in texture_compress.py")
+    exit (0)
+
+MAX_SLOPE = 50000
+MIN_SLOPE = 40000
+RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
+    
+slope = [None]*TRLs # Among temporal subbands (subband / slope):
+log.debug("Subband / Slope::")
+for s in range(TRLs):
+    slope[s] = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s]))
+    if slopes[s] < 0:
+        slopes[s] = 0
+    log.debug("{} / {}".format(s, slope[s]))
 
 # Transcoding of H subbands
 subband = 1
 while subband < TRLs:
 
     pictures = (pictures + 1) // 2 - 1
-    print("Transcoding subband H[{}] of {} pictures".format(subband, pictures))
+    log.debug("Transcoding subband H[{}] of {} pictures".format(subband, pictures))
     
     image_number = 0
-    # pictures = 
     while image_number < pictures:
 
         str_image_number = '%04d' % image_number
 
         filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_Y" 
-        kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
+        kdu_transcode(filename + ".j2c", slope[subband])
 
         filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_U" 
-        kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
+        kdu_transcode(filename + ".j2c", slope[subband])
 
         filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_V" 
-        kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
+        kdu_transcode(filename + ".j2c", slope[subband])
 
         image_number += 1
 
     subband += 1
 
 # Transcoding of M "subbands"
+'''
 subband = 1
 pictures = GOPs * GOP_size - 1
 fields = pictures // 2
@@ -172,6 +133,7 @@ while subband < TRLs:
     fields /= 2
 
     subband += 1
+'''
 
 # Transcoding of L subband
 image_number = 0
@@ -190,6 +152,7 @@ while image_number < pictures - 1:
 
     image_number += 1
 
+'''
 subband = 1
 while subband < TRLs:
 
@@ -200,3 +163,4 @@ while subband < TRLs:
         sys.exit(-1)
 
     subband += 1
+'''

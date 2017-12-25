@@ -1,8 +1,91 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-#  Compress textures (temporal subbands) generated from the analysis
-#  phase. The number of bits allocated to each subband depends on
+#  Compress textures (temporal subbands) generated in the analysis
+#  phase. The number of bits allocated depends on the "quality"
+#  parameter, begin 0.0 the minumun quality.
+
+# To determine the slopes whith must be applied to each temporal
+# subband (the slope for each subband-layer), it must be known that
+# typically, the quality of a image/temporal-subband is reduced with
+# an increment in the slope, linearly:
+#
+#  PSNR[dB]
+#     ^
+#   50| \
+#     | :\
+#     | : \
+#     | :  \
+#   20| :   \
+#     | :    :
+#     +-+----+-> Slope
+#       40K 50K
+#
+# So, supposing that all temporal subbands have been compressed using
+# the same slopes, and that this holds for each quality layer,
+# decreasinging the slope in a constant amount (using for example the
+# slope 50000 for the first quality layer of each temporal subband, slope
+# 50000-X for the second quality layer of each temporal subband, slope
+# 50000-2X ...), we can apply the subband gains considering that a given
+# number of subband-layers of a low-frequency temporal subband should
+# be "transmitted" before the first subband-layer of a
+# higher-frecuency temporal subband.
+#
+# To determine such number, we can use the fact that a linear
+# decrement in the slope produces a linear increment in the
+# quality. Thus,for example, if we have Q subband-layers and a total
+# increment (decoding all the subband-layers) in quality of x dB
+# (inside the subband), each subband-layer constributes with an
+# increment of x/Q dB, and this is true for all the subband-layers of
+# each temporal subband because the total range of quality of all
+# subbands is the same.
+#
+# For example, if TRLs=2, temporal subband L1 should contribute to the
+# reconstruction of the GOP (to the output code-stream) approximately
+# 1.25 times more than temporal subband H1. If Q=8, each subband-layer
+# of L1 and H1 contributes with x/8 = 0.125*x dB. Therefore, it is
+# easy to see that the optimal order for the subband-layers of these
+# temporal subbands should be:
+#
+# L1.l7 (= Subband-layer 7 of temporal subband L1) which increases x/8
+# dB the quality of each GOP.
+#
+# L1.l6 which produces a total increase of x/8 + x/8 = x/4 = 0.25*x dB
+# in the quality of each GOP.
+#
+# At this point, we can "transmit" the next subband-layer of L1 or the
+# first subband-layer of H1 (after having "transmitted" the
+# corresponding subband-layer of M1). Experimentally we have
+# determined that is better (in general) to "transmit" the next
+# subband-layer of L1: L1.l5.
+#
+# M1.
+#
+# H1.l7, L1.l4, H1.l6, L1.l3, H1.l5, ...
+#
+# In terms of slopes, if MAX_SLOPE (50K) generates the minimum
+# quality, we should use a slope "quantization_step" for subband H1
+# and the slope:
+#
+# MAX_SLOPE - quality*Q/GAIN[1][0]
+#
+# for L1, where Q is the number of quality layers and GAIN[1][0] is
+# the energy gain of subband L1 compared to H1.
+#
+# In general, for temporal subband "t", we have:
+#
+# MAX_SLOPE - GAIN[TRLs][t]*quantization_step*Q
+#
+# The quality of the recontruction is controlled by the
+# quantization_step parameter. If quantization_step=1 we get the
+# minimum quality. The higher the quantization step, the higher the
+# quality (in the range of slopes [40K, 50K] approximately.
+#
+# Examples:
+#
+#   mctf transcode_quality --qstep=50
+
+#to each subband depends on
 #  the "slopes" parameter, which controls the quality of each quality
 #  layer (such as a quantization factor) in each image of each
 #  subband. Therefore, the number of quality layers equals the
@@ -12,7 +95,6 @@
 
 import os
 import sys
-import display
 import math
 from GOP import GOP
 from subprocess import check_call
@@ -30,34 +112,48 @@ range_quantization   = 46000.0 - 42000.0 # Useful range of quantification
 
 parser = arguments_parser(description="Compress the texture.")
 parser.GOPs()
-parser.texture_layers()
+parser.layers()
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.texture_quantization()
-parser.quantization_step()
+#parser.quantization()
+#parser.quantization_step()
+parser.add_argument("--quality",
+                    help="Quality.",
+                    default=0.25)
 parser.TRLs()
 parser.SRLs()
-parser.using_gains()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
-layers = int(args.texture_layers)
+layers = int(args.layers)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quantization = args.texture_quantization
-quantization_step = int(args.quantization_step)
+#quantization = int(args.quantization)
+#quantization_step = int(args.quantization_step)
+quality = float(args.qstep)
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
-using_gains = str(args.using_gains)
 
-# print "texture_compress.py ; Q= " + str(quantization)
-# raw_input("\ntexture_compress.py Press ENTER to continue ...")
+LOW = "low"
+HIGH = "high"
+MOTION = "motion_residue"
+
+def kdu_transcode(filename, slope):
+    try:
+        check_call("trace kdu_transcode"
+                   + "slope=" + str(slops)
+                   + " -i " + filename
+                   + " -o " + "transcode_quality/" + filename,
+                   shell=True)
+    except CalledProcessError:
+        sys.exit(-1)
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
+log.debug("GOP_size = {}".format(GOP_size))
 
-## Number of images to process.
 pictures = (GOPs - 1) * GOP_size + 1
+log.debug("pictures = {}".format(pictures))
 
 if   TRLs == 1 :
     pass

@@ -115,23 +115,23 @@ class arguments_parser(argparse.ArgumentParser):
                           help="Subpixel motion estimation precission",
                           default=Defaults.subpixel_accuracy)
 
-    def texture_layers(self):
-        self.add_argument("--texture_layers",
+    def layers(self):
+        self.add_argument("--layers",
                           help="Number of quality layers for "
                           "texture subbands. ",
-                          default=Defaults.texture_layers)
+                          default=Defaults.layers)
 
-    def texture_quantization(self):
-        self.add_argument("--texture_quantization",
+    def quantization(self):
+        self.add_argument("--quantization",
                           help="Controls the quality level and the bit-rate "
                           "of the code-stream of texture data.",
-                          default=Defaults.texture_quantization)
+                          default=Defaults.quantization)
                           
-    def texture_quantization_step(self):
-        self.add_argument("--texture_quantization_step",
+    def quantization_step(self):
+        self.add_argument("--quantization_step",
                           help="Quantization step for compressing "
                           "texture data.",
-                          default=Defaults.texture_quantization_step)
+                          default=Defaults.quantization_step)
     def TRLs(self):
         self.add_argument("--TRLs",
                           help="Temporal Resolution Levels.",
@@ -147,12 +147,12 @@ class arguments_parser(argparse.ArgumentParser):
     #                      help="Weights the temporal subband slopes.",
     #                      default=Defaults.using_gains) # Yes or Not
 
-    def quantization_max(self):
-        self.add_argument("--quantization_max",
-                          help="Maximum quantization.",
-                          default=Defaults.quantization_max)
+    #def quantization_max(self):
+    #    self.add_argument("--quantization_max",
+    #                      help="Maximum quantization.",
+    #                      default=Defaults.quantization_max)
 
-    def quantization_min(self):
-        self.add_argument("--quantization_min",
-                          help="Minimum quantization.",
-                          default=Defaults.quantization_min)
+    #def quantization_min(self):
+    #    self.add_argument("--quantization_min",
+    #                      help="Minimum quantization.",
+    #                      default=Defaults.quantization_min)

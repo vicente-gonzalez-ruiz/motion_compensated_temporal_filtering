@@ -47,12 +47,12 @@ class Defaults():
     subpixel_accuracy = 0
 
     # Texture quantization.
-    texture_layers = 1
-    texture_quantization = 43000
-    texture_quantization_step = 256
-    texture_slopes = "43000, 43256, 43512, 43768, 44024, 44280, 44536, 44792"
-    quantization_max = 50000
-    quantization_min = 42000
+    layers = 1
+    quantization = 42000
+    quantization_step = 256
+    #texture_slopes = "43000, 43256, 43512, 43768, 44024, 44280, 44536, 44792"
+    #quantization_max = 50000
+    #quantization_min = 42000
     
     # Number of Temporal Resolution Levels.
     TRLs = 4
