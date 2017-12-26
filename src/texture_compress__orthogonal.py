@@ -165,11 +165,16 @@ else :
     exit (0)
 
 MAX_SLOPE = 50000
+log.debug("Subband / Slope::")
+
+#slope = [[None]*TRLs for x in range(layers)]
+slope = [[None]*layers for x in range(TRLs)]
+
+#import ipdb; ipdb.set_trace()
+
+'''
 MIN_SLOPE = 40000
 RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
-slope = [None]*TRLs
-log.debug("Subband / Slope::")
-'''
 for s in range(TRLs):
     _slope_ = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s]))
     if _slope_ < 0:
@@ -178,13 +183,15 @@ for s in range(TRLs):
         slope[TRLs-s-1] = _slope_
     log.debug("{} / {}".format(s, slope[TRLs-s-1]))
 '''
-for s in range(TRLs):
-    _slope_ = int(round(MAX_SLOPE - quality*GAINS[s]))
-    if _slope_ < 0:
-        slope[s] = 0
-    else:
-        slope[s] = _slope_
-    log.debug("{} / {}".format(s, slope[s]))
+
+for q in range(layers):
+    for s in range(TRLs):
+        _slope_ = int(round(MAX_SLOPE - quality*GAINS[s] - 256*GAINS[s]*q))
+        if _slope_ < 0:
+            slope[s][q] = 0
+        else:
+            slope[s][q] = _slope_
+            log.debug("{} {} / {}".format(s, q, slope[s][q]))
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
@@ -201,15 +208,15 @@ log.debug("pictures = {}".format(pictures))
 subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) // 2
-    log.debug("subband={}".format(subband))
+    slopes = ','.join(str(i) for i in slope[subband-1])
     command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
             + " --file="              + HIGH + "_" + str(subband) \
-            + " --layers="            + str(layers) \
             + " --pictures="          + str(pictures - 1) \
             + " --pixels_in_x="       + str(pixels_in_x) \
             + " --pixels_in_y="       + str(pixels_in_y) \
-            + " --slope=\""           + str(slope[subband-1]) + "\"" \
+            + " --slope=\""           + slopes + "\"" \
             + " --SRLs="              + str(SRLs)
+    #            + " --layers="            + str(layers) \
     log.debug("command={}".format(command))
     try:
         check_call(command, shell=True)
@@ -217,18 +224,17 @@ while subband < TRLs:
         sys.exit(-1)
 
     subband += 1
-
-#import ipdb; ipdb.set_trace()
     
 # Compression of LOW frequency temporal subband.
+slopes = ','.join(str(i) for i in slope[TRLs-1])
 command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
   + " --file="              + LOW + "_" + str(TRLs - 1) \
-  + " --layers="            + str(layers) \
   + " --pictures="          + str(pictures) \
   + " --pixels_in_x="       + str(pixels_in_x) \
   + " --pixels_in_y="       + str(pixels_in_y) \
-  + " --slope=\""           + str(slope[TRLs-1]) + "\""\
+  + " --slope=\""           + slopes + "\""\
   + " --SRLs="              + str(SRLs)
+#  + " --layers="            + str(layers) \
 log.debug(command)
 try:
     check_call(command, shell=True)

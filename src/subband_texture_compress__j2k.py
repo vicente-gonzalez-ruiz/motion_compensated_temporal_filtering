@@ -28,24 +28,24 @@ parser = arguments_parser(description="Compress texture data using JPEG 2000.")
 parser.add_argument("--file",
                     help="File that contains the texture data.",
                     default="")
-parser.layers()
+#parser.layers()
 parser.add_argument("--pictures",
                     help="Number of pictures to compress.",
                     default=3)
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.add_argument("--slope",
-                    help="Slope used for compression",
-                    default=45000)
+parser.add_argument("--slopes",
+                    help="Slopes used for compression",
+                    default="45000")
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
 file = args.file
-layers = int(args.layers)
+#layers = int(args.layers)
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-slope = int(args.slope); log.debug("slope={}".format(slope))
+slopes = args.slopes
 SRLs = int(args.SRLs)
 
 def encode (component,           # Y, U or V.
@@ -87,14 +87,14 @@ def encode (component,           # Y, U or V.
               + " -i "          + image_filename + ".rawl" \
               + " -o "          + image_filename + ".j2c" \
               + " Creversible=" + "no" \
-              + " -slope "      + str(slope) \
-              + " Clayers="     + str(layers) \
+              + " -slope \""    + slopes  + "\""\
               + " -no_weights" \
               + " Nprecision="  + str(bits_per_component) \
               + " Nsigned="     + "no" \
               + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'" \
               + " Clevels="     + str(Clevels) \
               + " Cuse_sop="    + "no"
+#              + " Clayers="     + str(layers) \
             log.debug("{}".format(command))
             check_call(command, shell=True)
 
