@@ -52,9 +52,14 @@ MAX_SLOPE = 50000
 MIN_SLOPE = 40000
 RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 
-slope = int(round(MAX_SLOPE - RANGE_SLOPES*quality))
-if slope < 0:
-    slope = 0
+slope = [None]*layers
+
+for q in range(layers):
+    _slope_ = int(round(MAX_SLOPE - quality - 256*q))
+    if _slope_ < 0:
+        slope[q] = 0
+    else:
+        slope[q] = _slope_
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
@@ -76,14 +81,15 @@ else:
 subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) // 2
+    slopes = ','.join(str(i) for i in slope)
     command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
       + " --file="              + HIGH + "_" + str(subband) \
-      + " --layers="            + str(layers) \
       + " --pictures="          + str(pictures - 1) \
       + " --pixels_in_x="       + str(pixels_in_x) \
       + " --pixels_in_y="       + str(pixels_in_y) \
-      + " --slope=\""           + str(slope) + "\"" \
+      + " --slope=\""           + slopes + "\"" \
       + " --SRLs="              + str(SRLs)
+#      + " --layers="            + str(layers) \
     log.debug("command={}".format(command))
     try:
         check_call(command, shell=True)
@@ -93,14 +99,15 @@ while subband < TRLs:
     subband += 1
 
 # Compression of LOW frequency temporal subband.
+slopes = ','.join(str(i) for i in slope)
 command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
   + " --file="              + LOW + "_" + str(TRLs - 1) \
-  + " --layers="            + str(layers) \
   + " --pictures="          + str(pictures) \
   + " --pixels_in_x="       + str(pixels_in_x) \
   + " --pixels_in_y="       + str(pixels_in_y) \
-  + " --slope=\""           + str(slope) + "\""\
+  + " --slope=\""           + slopes + "\""\
   + " --SRLs="              + str(SRLs)
+#  + " --layers="            + str(layers) \
 log.debug(command)
 try:
     check_call(command, shell=True)
