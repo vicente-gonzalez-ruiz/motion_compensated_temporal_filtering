@@ -169,11 +169,22 @@ MIN_SLOPE = 40000
 RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 slope = [None]*TRLs
 log.debug("Subband / Slope::")
+'''
 for s in range(TRLs):
-    slope[TRLs-s-1] = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s]))
-    if slope[TRLs-s-1] < 0:
+    _slope_ = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s]))
+    if _slope_ < 0:
         slope[TRLs-s-1] = 0
+    else:
+        slope[TRLs-s-1] = _slope_
     log.debug("{} / {}".format(s, slope[TRLs-s-1]))
+'''
+for s in range(TRLs):
+    _slope_ = int(round(MAX_SLOPE - quality*GAINS[s]))
+    if _slope_ < 0:
+        slope[s] = 0
+    else:
+        slope[s] = _slope_
+    log.debug("{} / {}".format(s, slope[s]))
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
