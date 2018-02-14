@@ -637,10 +637,10 @@ int main(int argc, char *argv[]) {
       printf("\n");
       printf("   -[-b]lock_size = size of the blocks in the motion estimation process (%d)\n", block_size);
       printf("   -[-]bor[d]der_size = size of the border of the blocks in the motion estimation process (%d)\n", border_size);
-      printf("   -[-e]ven_fn = output file with the even pictures (\"%s\")\n", even_fn);
+      printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", even_fn);
       printf("   -[-i]motion_fn = input file with the initial motion fields (\"%s\")\n", imotion_fn);
       printf("   -[-m]otion_fn = output file with the motion fields (\"%s\")\n", imotion_fn);
-      printf("   -[-o]dd_fn = output file with odd pictures (\"%s\")\n", odd_fn);
+      printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", odd_fn);
       printf("   -[-p]ictures = number of images to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x);
       printf("   -[-]pixels_in_[y] = size of the Y dimension of the pictures (%d)\n", pixels_in_y);
