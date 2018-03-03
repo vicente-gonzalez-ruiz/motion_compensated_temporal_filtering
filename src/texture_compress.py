@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-#  Compress textures (temporal subbands) generated in the analysis
-#  phase. The number of bits allocated depends on the "quality"
-#  parameter, begin 0.0 the minumun quality.
+# Compress textures (temporal subbands) generated in the analysis
+# phase. The number of bits allocated depends on the "quality"
+# parameter, begin 0.0 the minumun quality.
 
-# To determine the slopes whith must be applied to each temporal
+# To determine the slopes which must be applied to each temporal
 # subband (the slope for each subband-layer), it must be known that
-# typically, the quality of a image/temporal-subband is reduced with
+# typically, the quality of an image/temporal-subband is reduced with
 # an increment in the slope, linearly:
 #
 #  PSNR[dB]
