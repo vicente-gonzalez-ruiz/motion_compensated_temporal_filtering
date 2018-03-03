@@ -12,6 +12,14 @@
   ```
   source ./compile
   ```
+
+remember to define the variable MCTF and to put the dir `~/bin` at the
+beggining of the PATH variable:
+
+  ```
+  export MCTF=~/MCTF-video-coding/"
+  export PATH=~/bin:$PATH
+  ```
   
 ## MCJ2K encoding/decoding:
 
