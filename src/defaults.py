@@ -53,7 +53,7 @@ class Defaults():
     #texture_slopes = "43000, 43256, 43512, 43768, 44024, 44280, 44536, 44792"
     #quantization_max = 50000
     #quantization_min = 42000
-    quality = 1.0
+    quality = 0.5 # 1.0 = max, 0.0 = min
     
     # Number of Temporal Resolution Levels.
     TRLs = 4

@@ -3,7 +3,7 @@
 
 # Compress textures (temporal subbands) generated in the analysis
 # phase. The number of bits allocated depends on the "quality"
-# parameter, begin 0.0 the minumun quality.
+# parameter, begin 0.0 the minimun quality.
 
 # To determine the slopes which must be applied to each temporal
 # subband (the slope for each subband-layer), it must be known that
@@ -33,7 +33,7 @@
 #
 # To determine such number, we can use the fact that a linear
 # decrement in the slope produces a linear increment in the
-# quality. Thus,for example, if we have Q subband-layers and a total
+# quality. Thus, for example, if we have Q subband-layers and a total
 # increment (decoding all the subband-layers) in quality of x dB
 # (inside the subband), each subband-layer constributes with an
 # increment of x/Q dB, and this is true for all the subband-layers of
@@ -104,6 +104,7 @@ import logging
 
 logging.basicConfig()
 log = logging.getLogger("texture_compress__orthogonal")
+log.setLevel(logging.DEBUG)
 
 parser = arguments_parser(description="Compress the texture.")
 parser.GOPs()
@@ -127,9 +128,9 @@ quality = float(args.quality)
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
 
-MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
-HIGH                 = "high"            # High frequency subbands.
-LOW                  = "low"             # Low frequency subbands.
+MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
+HIGH               = "high"            # High frequency subbands.
+LOW                = "low"             # Low frequency subbands.
 
 '''
 def kdu_transcode(filename, slope):
@@ -165,6 +166,8 @@ else :
     exit (0)
 
 MAX_SLOPE = 50000
+MIN_SLOPE = 40000
+RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 log.debug("Subband / Slope::")
 
 #slope = [[None]*TRLs for x in range(layers)]
@@ -173,25 +176,35 @@ slope = [[None]*layers for x in range(TRLs)]
 #import ipdb; ipdb.set_trace()
 
 '''
-MIN_SLOPE = 40000
-RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 for s in range(TRLs):
     _slope_ = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s]))
     if _slope_ < 0:
-        slope[TRLs-s-1] = 0
+        slope[TRLs-s-1][0] = 0
     else:
-        slope[TRLs-s-1] = _slope_
-    log.debug("{} / {}".format(s, slope[TRLs-s-1]))
+        slope[TRLs-s-1][0] = _slope_
+    log.debug("{} / {}".format(s, slope[TRLs-s-1][0]))
 '''
 
-for q in range(layers):
+for l in range(layers):
     for s in range(TRLs):
-        _slope_ = int(round(MAX_SLOPE - quality*GAINS[s] - 256*GAINS[s]*q))
+        _slope_ = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s] + l*256))
         if _slope_ < 0:
-            slope[s][q] = 0
+            slope[TRLs-s-1][l] = 0
         else:
-            slope[s][q] = _slope_
-            log.debug("{} {} / {}".format(s, q, slope[s][q]))
+            slope[TRLs-s-1][l] = _slope_
+        log.debug("subband={} layer={} / slope={}".format(s, l, slope[TRLs-s-1][l]))
+
+'''
+for l in range(layers):
+    for s in range(TRLs):
+        log.debug("GAINS[{}]={}".format(s, GAINS[s]))
+        _slope_ = int(round(MAX_SLOPE - quality*GAINS[s] - 256*GAINS[s]*l))
+        if _slope_ < 0:
+            slope[s][l] = 0
+        else:
+            slope[s][l] = _slope_
+            log.debug("{} {} / {}".format(s, l, slope[s][l]))
+'''
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
