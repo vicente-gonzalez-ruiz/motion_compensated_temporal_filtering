@@ -165,7 +165,7 @@ while image_number < pictures + 1:
 
 # Transcoding of M "subbands"
 subband = 1
-pictures = GOPs * GOP_size - 1
+pictures = (GOPs - 1) * GOP_size + 1
 fields = pictures // 2
 while subband < TRLs:
 
