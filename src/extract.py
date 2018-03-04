@@ -99,14 +99,12 @@ for i in range(1, TRLs):
     number_of_quality_layers_in_M[i] = len([x for x in subband_layers_to_copy
                                             if x[0]=='M' and x[1]==i])
     print("Number of quality layers in M_{} = {}".format(i, number_of_quality_layers_in_M[i]))
-
-quit()
     
 def kdu_transcode(filename, layers):
     try:
         check_call("trace kdu_transcode Clayers=" + str(layers)
                    + " -i " + filename
-                   + " -o " + "transcode_quality/" + filename,
+                   + " -o " + "/tmp/" + filename,
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
