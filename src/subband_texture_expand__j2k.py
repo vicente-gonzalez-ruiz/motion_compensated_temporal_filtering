@@ -60,11 +60,13 @@ def decode (component, image_number) :
         # If there is no file textures of the current iteration, is
         # created with a neutral texture.
 
+        print("Generating empty {}".format(image_filename))
         f = open(image_filename + ".rawl", "wb")
         for a in range(pixels_in_x * pixels_in_y) :
             f.write(struct.pack('B', 128))  # BYTES_PER_COMPONENT = 1   # 1 byte for components used unweighted.
             #f.write('%c' % 128) # BYTES_PER_COMPONENT = 2   # 2 bytes for weighted or components that are used weighted.
         f.close()
+        print("Done")
 
     # MUX
     try:
