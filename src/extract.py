@@ -101,6 +101,7 @@ for i in range(1, TRLs):
     print("Number of quality layers in M_{} = {}".format(i, number_of_quality_layers_in_M[i]))
     
 def kdu_transcode(filename, layers):
+    print("transcoding {} to {} layers".format(filename, layers))
     if layers>0:
         try:
             check_call("trace kdu_transcode Clayers=" + str(layers)
