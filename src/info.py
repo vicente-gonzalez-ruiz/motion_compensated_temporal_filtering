@@ -101,9 +101,12 @@ colors = ('Y', 'U', 'V')
 length = 0
 for c in colors:
     filename = "low_" + str(TRLs - 1) + "_" + "%04d" % 0 + "_" + c + ".j2c"
-    with io.open(filename, "rb") as file:
-        file.seek(0, 2)
-        length += file.tell()
+    try:
+        with io.open(filename, "rb") as file:
+            file.seek(0, 2)
+            length += file.tell()
+    except:
+        pass
 
 kbps_total = 0
 kbps_total_pro = 0
@@ -133,9 +136,12 @@ for GOP_number in range(GOPs-1):
     length = 0
     for c in colors:
         filename = "low_" + str(TRLs - 1) + "_" + "%04d" % GOP_number + "_" + c + ".j2c"
-        with io.open(filename, "rb") as file:
-            file.seek(0, 2)
-            length += file.tell()
+        try:
+            with io.open(filename, "rb") as file:
+                file.seek(0, 2)
+                length += file.tell()
+        except:
+            pass
 
     kbps = float(length) * 8.0 / GOP_time / 1000.0
     sys.stdout.write("%8d " % int(round(kbps)))
@@ -159,9 +165,12 @@ for GOP_number in range(GOPs-1):
         for i in range(pics_in_subband):
             for c in range(4):
                 filename = "motion_residue_" + str(subband) + "_" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "_" + str(c) + ".j2c"
-                with io.open(filename, "rb") as file:
-                    file.seek(0, 2)
-                    length += file.tell()
+                try:
+                    with io.open(filename, "rb") as file:
+                        file.seek(0, 2)
+                        length += file.tell()
+                except:
+                    pass
 
         kbps = float(length) * 8.0 / GOP_time / 1000.0
         sys.stdout.write("%7d " % int(round(kbps)))
@@ -171,10 +180,13 @@ for GOP_number in range(GOPs-1):
         for i in range(pics_in_subband):
             for c in colors:
                 filename = "high_" + str(subband) + "_" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "_" + c + ".j2c"
-                with io.open(filename, "rb") as file:
-                    file.seek(0, 2)
-                    length += file.tell()
-                    
+                try:
+                    with io.open(filename, "rb") as file:
+                        file.seek(0, 2)
+                        length += file.tell()
+                except:
+                    pass
+                
         kbps = float(length) * 8.0 / GOP_time / 1000.0
         sys.stdout.write("%6d " % int(round(kbps)))
         kbps_total += kbps
