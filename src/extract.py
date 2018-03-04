@@ -157,7 +157,7 @@ while subband < TRLs:
 
         for component in range(4):
             
-            filename = MOTION + "_" + str(subband) + "_" + str_field + "_comp" + str(component) + ".j2c"
+            filename = MOTION + "_" + str(subband) + "_" + str_field + "_" + str(component) + ".j2c"
             kdu_transcode(filename, number_of_quality_layers_in_M[subband])
 
         field += 1
@@ -183,11 +183,12 @@ while image_number < pictures - 1:
 
     image_number += 1
 
+# Posiblemente quitar
 subband = 1
 while subband < TRLs:
 
     try:
-        check_call("cp frame_types_" + str(subband) + " transcode_quality/",
+        check_call("cp frame_types_" + str(subband) + " /tmp/",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
