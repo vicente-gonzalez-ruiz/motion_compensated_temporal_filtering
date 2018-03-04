@@ -101,13 +101,14 @@ for i in range(1, TRLs):
     print("Number of quality layers in M_{} = {}".format(i, number_of_quality_layers_in_M[i]))
     
 def kdu_transcode(filename, layers):
-    try:
-        check_call("trace kdu_transcode Clayers=" + str(layers)
-                   + " -i " + filename
-                   + " -o " + "/tmp/" + filename,
-                   shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
+    if layers>0:
+        try:
+            check_call("trace kdu_transcode Clayers=" + str(layers)
+                       + " -i " + filename
+                       + " -o " + "/tmp/" + filename,
+                       shell=True)
+        except CalledProcessError:
+            sys.exit(-1)
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
