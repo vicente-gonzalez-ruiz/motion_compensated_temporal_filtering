@@ -169,6 +169,8 @@ while subband < TRLs:
     subband += 1
 
 # Transcoding of L subband
+pictures = (GOPs - 1) * GOP_size + 1
+print("pictures = {}".format(pictures))
 image_number = 0
 while image_number < pictures - 1:
 
