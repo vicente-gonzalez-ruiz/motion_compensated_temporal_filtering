@@ -240,6 +240,9 @@ EXE	+= $(MCTF_BIN)/texture_compress__orthogonal
 $(MCTF_BIN)/compress:	compress.py
 EXE	+= $(MCTF_BIN)/compress
 
+$(MCTF_BIN)/extract:	extract.py
+EXE	+= $(MCTF_BIN)/extract
+
 $(MCTF_BIN)/synthesize_step:	synthesize_step.py
 EXE	+= $(MCTF_BIN)/synthesize_step
 
