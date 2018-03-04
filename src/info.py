@@ -39,7 +39,7 @@ TRLs = int(args.TRLs)
 
 gop=GOP()
 GOP_size            = gop.get_size(TRLs) # number_of_GOPs = int(math.ceil((self.pictures * 1.0)/ GOP_size))
-pictures            = GOP_size * GOPs + 1
+pictures            = GOP_size * (GOPs-1) + 1
 # Weighting value, to be applied between the GOP0, and the rest.
 average_ponderation = (pictures - 1.0) / pictures
 GOP0_time           = 1.0              / FPS
