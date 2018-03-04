@@ -80,7 +80,7 @@ all_subband_layers = generate_list_of_subband_layers(T=TRLs,
 
 print("Subband layers = {}".format(all_subband_layers))
 print("QSLs = {}".format(QSLs))
-print("Number of subband-layers = {}".format(len(all_subband_layers))
+print("Number of subband-layers = {}".format(len(all_subband_layers)))
 
 subband_layers_to_copy = all_subband_layers[:QSLs]
 print("Subband layers to copy = {}".format(subband_layers_to_copy))
