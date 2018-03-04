@@ -145,6 +145,24 @@ while subband < TRLs:
 
     subband += 1
 
+
+# Transcoding of L subband
+image_number = 0
+while image_number < pictures + 1:
+
+    str_image_number = '%04d' % image_number
+
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_Y"
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_U"
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_V"
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    image_number += 1
+
 # Transcoding of M "subbands"
 subband = 1
 pictures = GOPs * GOP_size - 1
@@ -167,25 +185,6 @@ while subband < TRLs:
     fields /= 2
 
     subband += 1
-
-# Transcoding of L subband
-pictures = (GOPs - 1) * GOP_size + 1
-print("pictures = {}".format(pictures))
-image_number = 0
-while image_number < pictures - 1:
-
-    str_image_number = '%04d' % image_number
-
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_Y"
-    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
-
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_U"
-    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
-
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_V"
-    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
-
-    image_number += 1
 
 # Posiblemente quitar
 subband = 1
