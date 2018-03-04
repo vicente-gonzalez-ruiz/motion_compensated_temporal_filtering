@@ -146,7 +146,7 @@ def kdu_transcode(filename, slope):
 
 # Slope computation
 if   TRLs == 1 :
-    pass
+    GAINS = [1.0]
 elif TRLs == 2 :
     GAINS = [1.0, 1.2460784922] # [L1/L1, L1/H1]
 elif TRLs == 3 :
