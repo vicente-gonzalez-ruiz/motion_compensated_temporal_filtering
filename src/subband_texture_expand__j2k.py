@@ -84,6 +84,7 @@ def decode (component, image_number) :
                    , shell=True)
         check_call("trace cat " + image_filename + ".rawl >> " + file, shell=True)
     except:
+        print("Unable to open {}".format(image_filename))
         check_call("trace cat /tmp/128 >> "+ file, shell=True)
 
 
