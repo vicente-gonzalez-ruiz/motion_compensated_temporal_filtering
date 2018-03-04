@@ -5,9 +5,9 @@
 
 # Extracts a codestream from a bigger one.
 
-# To determine the slopes whith must be applied to each temporal
+# To determine the slopes which must be applied to each temporal
 # subband (the slope for each subband-layer), it must be known that
-# typically, the quality of a image/temporal-subband is reduced with
+# typically, the quality of an image/temporal-subband is reduced with
 # an increment in the slope, linearly:
 #
 #  PSNR[dB]
@@ -47,21 +47,23 @@
 # easy to see that the optimal order for the subband-layers of these
 # temporal subbands should be:
 #
-# L1.l7 (= Subband-layer 7 of temporal subband L1) which increases x/8
-# dB the quality of each GOP.
+#   L1.l7 (= Subband-layer 7 of temporal subband L1) which increases
+#   x/8 dB the quality of each GOP.
 #
-# L1.l6 which produces a total increase of x/8 + x/8 = x/4 = 0.25*x dB
-# in the quality of each GOP.
+#   L1.l6 which produces a total increase of x/8 + x/8 = x/4 = 0.25*x dB
+#   in the quality of each GOP.
 #
 # At this point, we can "transmit" the next subband-layer of L1 or the
 # first subband-layer of H1 (after having "transmitted" the
 # corresponding subband-layer of M1). Experimentally we have
 # determined that is better (in general) to "transmit" the next
-# subband-layer of L1: L1.l5.
+# subband-layer of L1:
 #
-# M1.
+#   L1.l5.
 #
-# H1.l7, L1.l4, H1.l6, L1.l3, H1.l5, ...
+#   M1.
+#
+#   H1.l7, L1.l4, H1.l6, L1.l3, H1.l5, ...
 #
 # In terms of slopes, if MAX_SLOPE (50K) generates the minimum
 # quality, we should use a slope "quantization_step" for subband H1
