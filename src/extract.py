@@ -120,9 +120,10 @@ print("pictures = {}".format(pictures))
 
 # Transcoding of H subbands
 subband = 1
+pictures -= 1 # First GOP is out
 while subband < TRLs:
 
-    pictures = (pictures + 1) // 2 - 1
+    pictures = (pictures + 1) // 2
     print("Transcoding subband H[{}] of {} pictures".format(subband, pictures))
     
     image_number = 0
