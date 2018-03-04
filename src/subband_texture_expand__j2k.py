@@ -76,7 +76,8 @@ def decode_old (component, image_number) :
 
 def decode (component, image_number) :
 
-    # Decode.
+    image_filename = file + "_" + str('%04d' % image_number) + "_" + str(component)
+
     try:
         check_call("trace kdu_expand"
                    + " -i " + image_filename + ".j2c"
