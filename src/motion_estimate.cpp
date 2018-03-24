@@ -100,6 +100,21 @@ void local_me_for_block
 	  (pred_py[px] - ref[NEXT][py + y[NEXT]][px + x[NEXT]]);	\
       }									\
     }									\
+    
+#define MSE(_y,_x)						\
+  MVC_CPU_TYPE y[2] = {mv_prev_y_by_bx + _y, mv_next_y_by_bx - _y};	\
+  MVC_CPU_TYPE x[2] = {mv_prev_x_by_bx + _x, mv_next_x_by_bx - _x};	\
+  int error[2] = {0, 0};						\
+									\
+  for(int py=luby; py<rbby; py++) {					\
+    TC_CPU_TYPE *pred_py = pred[py];					\
+      for(int px=lubx; px<rbbx; px++) {					\
+	error[PREV] += 						\
+	  (pred_py[px] - ref[PREV][py + y[PREV]][px + x[PREV]]) * (pred_py[px] - ref[PREV][py + y[PREV]][px + x[PREV]]);	\
+	error[NEXT] += 						\
+	  (pred_py[px] - ref[NEXT][py + y[NEXT]][px + x[NEXT]]) * (pred_py[px] - ref[NEXT][py + y[NEXT]][px + x[NEXT]]);	\
+      }									\
+    }									\    
 
   /** \brief The calculations needed to perform the upgrade mainly consist of:\n\n
    * Minimum mistake for all checked positions:\n
