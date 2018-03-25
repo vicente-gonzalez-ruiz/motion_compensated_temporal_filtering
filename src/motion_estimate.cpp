@@ -148,8 +148,25 @@ void local_me_for_block
     vx[NEXT] = x[NEXT];
   }
   
+  /* 1. Position (-1,-1). Up - Left. MSE*/ {
+    MSE(-1,-1);
+    
+    min_error[PREV] = error[PREV];
+    vy[PREV] = y[PREV];
+    vx[PREV] = x[PREV];
+
+    min_error[NEXT] = error[NEXT];
+    vy[NEXT] = y[NEXT];
+    vx[NEXT] = x[NEXT];
+  }  
+  
   /* 2. Position (-1,1). Up - Right. */ {
     COMPUTE_ERRORS(-1,1);
+    UPDATE_VECTORS;
+  }
+  
+  /* 2. Position (-1,1). Up - Right. MSE*/ {
+    MSE(-1,1);
     UPDATE_VECTORS;
   }
   
@@ -158,8 +175,18 @@ void local_me_for_block
     UPDATE_VECTORS;
   }
   
+  /* 3. Position (1,-1). Down - left. MSE*/ {
+    MSE(1,-1);
+    UPDATE_VECTORS;
+  }
+  
   /* 4. Position (1,1). Down - Right. */ {
     COMPUTE_ERRORS(1,1);
+    UPDATE_VECTORS;
+  }
+  
+  /* 4. Position (1,1). Down - Right. MSE*/ {
+    MSE(1,1);
     UPDATE_VECTORS;
   }
   
@@ -168,8 +195,18 @@ void local_me_for_block
     UPDATE_VECTORS;
   }
   
+  /* 5. Position (-1,0). Up. MSE*/ {
+    MSE(-1,0);
+    UPDATE_VECTORS;
+  }
+  
   /* 6. Position (1,0). Down. */ {
     COMPUTE_ERRORS(1,0);
+    UPDATE_VECTORS;
+  }
+  
+  /* 6. Position (1,0). Down. MSE*/ {
+    MSE(1,0);
     UPDATE_VECTORS;
   }
   
@@ -178,8 +215,18 @@ void local_me_for_block
     UPDATE_VECTORS;
   }
   
+  /* 7. Position (0,1). Right. MSE*/ {
+    MSE(0,1);
+    UPDATE_VECTORS;
+  }
+  
   /* 8. Position (0,-1). Left. */ {
     COMPUTE_ERRORS(0,-1);
+    UPDATE_VECTORS;
+  }
+  
+  /* 8. Position (0,-1). Left. MSE*/ {
+    MSE(0,-1);
     UPDATE_VECTORS;
   }
   
@@ -188,7 +235,13 @@ void local_me_for_block
     UPDATE_VECTORS;
   }
   
+  /* 9. Position (0,0). MSE*/ {
+    MSE(0,0);
+    UPDATE_VECTORS;
+  }
+  
 #undef COMPUTE_ERRORS
+#undef MSE
 #undef UPDATE_VECTORS
   
   mv[PREV][Y_FIELD][by][bx] = vy[PREV];
