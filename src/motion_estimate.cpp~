@@ -153,14 +153,11 @@ void local_me_for_block
       p_s = numVecesAparecido/numTotalPixeles;				\
       i_s = -log2(p_s);							\
       entropiaErrorPrev += p_s * i_s;					\
-      if(entropiaErrorPrev <= minEE_prev) {				\
-        minEE_prev = entropiaErrorPrev;					\
-      }									\
     }									\
   }									\
   entropiaErrorPrev = entropiaErrorPrev/numTotalPixeles;		\
-                                                                        \
-  /** Lo mismo para la entropia de la matriz Next */			\
+
+  /** Lo mismo para la entropia de la matriz Next */
 
 
   /** \brief The calculations needed to perform the upgrade mainly consist of:\n\n
