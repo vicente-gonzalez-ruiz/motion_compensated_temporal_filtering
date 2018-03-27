@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-#  Compress textures (temporal subbands) generated in the analysis
-#  phase. The number of bits allocated depends on the "quality"
-#  parameter, begin 0.0 the minumun quality.
+# Compress textures (temporal subbands) generated in the analysis
+# phase. The number of bits allocated depends on the "quality"
+# parameter, begin 0.0 the minimun quality.
 
-# To determine the slopes whith must be applied to each temporal
+# To determine the slopes which must be applied to each temporal
 # subband (the slope for each subband-layer), it must be known that
-# typically, the quality of a image/temporal-subband is reduced with
+# typically, the quality of an image/temporal-subband is reduced with
 # an increment in the slope, linearly:
 #
 #  PSNR[dB]
@@ -33,7 +33,7 @@
 #
 # To determine such number, we can use the fact that a linear
 # decrement in the slope produces a linear increment in the
-# quality. Thus,for example, if we have Q subband-layers and a total
+# quality. Thus, for example, if we have Q subband-layers and a total
 # increment (decoding all the subband-layers) in quality of x dB
 # (inside the subband), each subband-layer constributes with an
 # increment of x/Q dB, and this is true for all the subband-layers of
@@ -47,34 +47,34 @@
 # easy to see that the optimal order for the subband-layers of these
 # temporal subbands should be:
 #
-# L1.l7 (= Subband-layer 7 of temporal subband L1) which increases x/8
-# dB the quality of each GOP.
+#   L1.l7 (= Subband-layer 7 of temporal subband L1) which increases
+#   x/8 dB the quality of each GOP.
 #
-# L1.l6 which produces a total increase of x/8 + x/8 = x/4 = 0.25*x dB
-# in the quality of each GOP.
+#   L1.l6 which produces a total increase of x/8 + x/8 = x/4 = 0.25*x
+#   dB in the quality of each GOP.
 #
 # At this point, we can "transmit" the next subband-layer of L1 or the
 # first subband-layer of H1 (after having "transmitted" the
 # corresponding subband-layer of M1). Experimentally we have
-# determined that is better (in general) to "transmit" the next
+# determined that it is better (in general) to "transmit" the next
 # subband-layer of L1: L1.l5.
 #
-# M1.
+#   M1.
 #
-# H1.l7, L1.l4, H1.l6, L1.l3, H1.l5, ...
+#   H1.l7, L1.l4, H1.l6, L1.l3, H1.l5, ...
 #
 # In terms of slopes, if MAX_SLOPE (50K) generates the minimum
 # quality, we should use a slope "quantization_step" for subband H1
 # and the slope:
 #
-# MAX_SLOPE - quality*Q/GAIN[1][0]
+#   MAX_SLOPE - quality*Q/GAIN[1][0]
 #
 # for L1, where Q is the number of quality layers and GAIN[1][0] is
 # the energy gain of subband L1 compared to H1.
 #
 # In general, for temporal subband "t", we have:
 #
-# MAX_SLOPE - GAIN[TRLs][t]*quantization_step*Q
+#   MAX_SLOPE - GAIN[TRLs][t]*quantization_step*Q
 #
 # The quality of the recontruction is controlled by the
 # quantization_step parameter. If quantization_step=1 we get the
@@ -104,6 +104,7 @@ import logging
 
 logging.basicConfig()
 log = logging.getLogger("texture_compress__orthogonal")
+log.setLevel(logging.DEBUG)
 
 parser = arguments_parser(description="Compress the texture.")
 parser.GOPs()
@@ -127,9 +128,9 @@ quality = float(args.quality)
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
 
-MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
-HIGH                 = "high"            # High frequency subbands.
-LOW                  = "low"             # Low frequency subbands.
+MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
+HIGH               = "high"            # High frequency subbands.
+LOW                = "low"             # Low frequency subbands.
 
 '''
 def kdu_transcode(filename, slope):
@@ -145,7 +146,7 @@ def kdu_transcode(filename, slope):
 
 # Slope computation
 if   TRLs == 1 :
-    pass
+    GAINS = [1.0]
 elif TRLs == 2 :
     GAINS = [1.0, 1.2460784922] # [L1/L1, L1/H1]
 elif TRLs == 3 :
@@ -165,6 +166,8 @@ else :
     exit (0)
 
 MAX_SLOPE = 50000
+MIN_SLOPE = 40000
+RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 log.debug("Subband / Slope::")
 
 #slope = [[None]*TRLs for x in range(layers)]
@@ -173,25 +176,35 @@ slope = [[None]*layers for x in range(TRLs)]
 #import ipdb; ipdb.set_trace()
 
 '''
-MIN_SLOPE = 40000
-RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 for s in range(TRLs):
     _slope_ = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s]))
     if _slope_ < 0:
-        slope[TRLs-s-1] = 0
+        slope[TRLs-s-1][0] = 0
     else:
-        slope[TRLs-s-1] = _slope_
-    log.debug("{} / {}".format(s, slope[TRLs-s-1]))
+        slope[TRLs-s-1][0] = _slope_
+    log.debug("{} / {}".format(s, slope[TRLs-s-1][0]))
 '''
 
-for q in range(layers):
+for l in range(layers):
     for s in range(TRLs):
-        _slope_ = int(round(MAX_SLOPE - quality*GAINS[s] - 256*GAINS[s]*q))
+        _slope_ = int(round(MAX_SLOPE - RANGE_SLOPES*quality/GAINS[s] + l*256))
         if _slope_ < 0:
-            slope[s][q] = 0
+            slope[TRLs-s-1][l] = 0
         else:
-            slope[s][q] = _slope_
-            log.debug("{} {} / {}".format(s, q, slope[s][q]))
+            slope[TRLs-s-1][l] = _slope_
+        log.debug("subband={} layer={} / slope={}".format(s, l, slope[TRLs-s-1][l]))
+
+'''
+for l in range(layers):
+    for s in range(TRLs):
+        log.debug("GAINS[{}]={}".format(s, GAINS[s]))
+        _slope_ = int(round(MAX_SLOPE - quality*GAINS[s] - 256*GAINS[s]*l))
+        if _slope_ < 0:
+            slope[s][l] = 0
+        else:
+            slope[s][l] = _slope_
+            log.debug("{} {} / {}".format(s, l, slope[s][l]))
+'''
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)

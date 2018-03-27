@@ -39,7 +39,7 @@ pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 
-def decode (component, image_number) :
+def decode_old (component, image_number) :
 
     try:
         image_filename = file + "_" + str('%04d' % image_number) + "_" + str(component)
@@ -60,11 +60,13 @@ def decode (component, image_number) :
         # If there is no file textures of the current iteration, is
         # created with a neutral texture.
 
+        print("Generating empty {}".format(image_filename))
         f = open(image_filename + ".rawl", "wb")
         for a in range(pixels_in_x * pixels_in_y) :
             f.write(struct.pack('B', 128))  # BYTES_PER_COMPONENT = 1   # 1 byte for components used unweighted.
             #f.write('%c' % 128) # BYTES_PER_COMPONENT = 2   # 2 bytes for weighted or components that are used weighted.
         f.close()
+        print("Done")
 
     # MUX
     try:
@@ -72,6 +74,26 @@ def decode (component, image_number) :
     except CalledProcessError:
         sys.exit(-1)
 
+def decode (component, image_number) :
+
+    image_filename = file + "_" + str('%04d' % image_number) + "_" + str(component)
+
+    try:
+        check_call("trace kdu_expand"
+                   + " -i " + image_filename + ".j2c"
+                   + " -o " + image_filename + ".rawl"
+                   , shell=True)
+        check_call("trace cat " + image_filename + ".rawl >> " + file, shell=True)
+    except:
+        print("Unable to open {}".format(image_filename))
+        check_call("trace cat /tmp/128 >> "+ file, shell=True)
+
+
+f = open("/tmp/128", "wb")
+for a in range(pixels_in_x * pixels_in_y) :
+    f.write(struct.pack('B', 128))  # BYTES_PER_COMPONENT = 1   # 1 byte for components used unweighted.
+f.close()
+        
 image_number = 0
 while image_number < pictures :
 

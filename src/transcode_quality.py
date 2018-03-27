@@ -3,7 +3,6 @@
 
 # Quality transcoding. Extracts a codestream from a bigger one.
 
-
 import sys
 from GOP              import GOP
 from subprocess       import check_call
