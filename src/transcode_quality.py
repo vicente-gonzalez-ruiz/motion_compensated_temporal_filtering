@@ -1,7 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-# Quality transcoding. Extracts a codestream from a bigger one.
+# Quality transcoding. Extracts a codestream from a bigger one,
+# preserving the FPS and spatial resolution. A number of quality
+# layers of each image of each temporal subband (that is, a number of
+# subband-layers) will be copied to the output.
+
+# Example of use:
+#
+#  mctf transcode_quality --layers=1 # <- Will output L^{T-1}_{Q-1}
+#                                    # where T=number of TRLs,
+#                                    # Q=number of quality layers.
+#
+#  mctf transcode_quality --layers=2 # <- Will output L^{T-1}_{Q-1}
+#                                    # and depending on Q, will output
+#                                    # L^{T-1}_{Q-2} or M^{T-1}.
 
 import sys
 from GOP              import GOP
@@ -14,33 +27,37 @@ logging.basicConfig()
 log = logging.getLogger("transcode_quality")
 
 parser = arguments_parser(description="Transcodes in quality a MCJ2K sequence.")
+args = parser.parse_known_args()[0]
+
 parser.GOPs()
+GOPs = int(args.GOPs)
+
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.add_argument("--quality",
-                    help="Quality.",
-                    default=0.25)
-parser.texture_layers()
-parser.TRLs()
-
-args = parser.parse_known_args()[0]
-GOPs = int(args.GOPs)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-quality = float(args.qstep)
+
+#parser.add_argument("--quality",
+#                    help="Quality.",
+#                    default=0.25)
+# quality = float(args.qstep)
+
+parser.texture_layers()
 texture_layers = int(args.texture_layers)
+
+parser.TRLs()
 TRLs = int(args.TRLs)
 
 LOW = "low"
 HIGH = "high"
 MOTION = "motion_residue"
 
-def kdu_transcode(filename, slope):
+def kdu_transcode(filename, layers):
     try:
         check_call("trace kdu_transcode"
-                   + "slope=" + str(slops)
                    + " -i " + filename
                    + " -o " + "transcode_quality/" + filename,
+                   + " Clayers=" + str(layers), 
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
@@ -69,11 +86,33 @@ elif TRLs == 7 :
 elif TRLs == 8 :
     GAINS = [1.0, 1.0117165706, 2.0226778348, 4.0393126714, 8.0305936232, 15.6879129862, 28.7065276104, 42.8346456693]
 else :
-    sys.stderr.write("Gains are not available for " + str(TRLs) + " TRLs. Enter them in texture_compress.py")
+    sys.stderr.write("Gains are not available for " + str(TRLs) + " TRLs. Enter them in transcode_quality.py")
     exit (0)
 
-MAX_SLOPE = 50000
-MIN_SLOPE = 40000
+# We know the number of subband-layers (quality layers of each
+# temporal subband): texture_layers and the number of subbands
+# (TRLs). If for example, texture_layers (Q)==8, and TRLs (T)==5, the
+# order of subband-layers should be: L^4_7 (one quality layer of L^4),
+# L^4_6 (two quality levels of L^4), M^4 (the first and only layer of
+# M4), L^4_5 (in total, tree quality layers of L^4), 
+
+# Q=4, T=5:
+
+# q=1: L^4_3
+# q=2: L^4_2, M^4, H^4_3
+# q=3: L^4_1,      H^4_2, M^3, H^3_3
+# q=4: L^4_0,      H^4_1,      H^3_2, M^2, H^2_3
+# q=5:             H^4_0,      H^3_1,      H^2_2
+# q=6:                         H^3_0,      H^2_1, M^1, H^1_3
+# q=7:                                     H^2_0,      H^1_2
+# q=8:                                                 H^1_1
+# q=9:                                                 H^1_0
+
+#### OLD ####
+    
+# Useful range of slopes in Kakadu
+MAX_SLOPE = 50000 # Min quality
+MIN_SLOPE = 40000 # Max quality
 RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
     
 slope = [None]*TRLs # Among temporal subbands (subband / slope):

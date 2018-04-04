@@ -7,7 +7,7 @@
 # spatial resolutions.
 
 # Reducing the number of spatial resolutions is trivial, using the
-# facility provided by the image transcoder, because to performe a
+# facility provided by the image transcoder, because to perform a
 # transcoding, all the images can be trancoded discarding the highest
 # spatial resolution levels, and the motion information must be
 # interpreted in this case as if over-pixel ME/MC had been
