@@ -123,7 +123,7 @@ class arguments_parser(argparse.ArgumentParser):
 
     def quality(self):
         self.add_argument("--quality",
-                          help="Quality of texture subbands. ",
+                          help="Quality of texture subbands (min slope in Kakadu). ",
                           default=Defaults.quality)
 
     def quantization(self):

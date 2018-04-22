@@ -14,7 +14,7 @@ from arguments_parser import arguments_parser
 import logging
 
 logging.basicConfig()
-log = logging.getLogger("texture_compress__constant") # remove __constant
+log = logging.getLogger("texture_compress__constant") # remove __constant (some day)
 
 parser = arguments_parser(description="Compress a texture subband.")
 args = parser.parse_known_args()[0]
@@ -31,6 +31,7 @@ pixels_in_x = int(args.pixels_in_x)
 parser.pixels_in_y()
 pixels_in_y = int(args.pixels_in_y)
 
+# Min slope in Kakadu
 parser.quality()
 quality = float(args.quality)
 
@@ -40,6 +41,8 @@ TRLs = int(args.TRLs)
 parser.SRLs()
 SRLs = int(args.SRLs)
 
+################### 
+
 MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
 HIGH                 = "high"
 LOW                  = "low"
@@ -48,11 +51,12 @@ LOW                  = "low"
 MAX_SLOPE = 50000 # Min quality
 MIN_SLOPE = 40000 # Max quality
 RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
+Q_STEP = 256 # In Kakadu, this should avoid the generation of empty layers
 
 slope = [None]*layers
 
 for q in range(layers):
-    _slope_ = int(round(MAX_SLOPE - quality - 256*q))
+    _slope_ = int(round(MAX_SLOPE - quality - Q_STEP*q))
     if _slope_ < 0:
         slope[q] = 0
     else:

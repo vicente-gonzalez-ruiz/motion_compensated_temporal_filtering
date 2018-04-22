@@ -42,8 +42,8 @@ pixels_in_y = int(args.pixels_in_y)
 #                    default=0.25)
 # quality = float(args.qstep)
 
-parser.texture_layers()
-texture_layers = int(args.texture_layers)
+parser.layers() # New value for texture layers
+texture_layers = int(args.layers)
 
 parser.TRLs()
 TRLs = int(args.TRLs)
