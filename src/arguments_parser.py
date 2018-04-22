@@ -11,13 +11,13 @@ class arguments_parser(argparse.ArgumentParser):
 
     def always_B(self):
         self.add_argument("--always_B",
-                          help="Use only B frames.",
+                          help="Use only B frames",
                           default=Defaults.always_B)
 
     def block_overlaping(self):
         self.add_argument("--block_overlaping",
                           help="Number of overlaped pixels between the "
-                          "blocks in the motion compensation process.",
+                          "blocks in the motion compensation process",
                           default=Defaults.block_overlaping)
 
     def block_size(self):
@@ -35,44 +35,44 @@ class arguments_parser(argparse.ArgumentParser):
     def distortions(self):
         self.add_argument("--distortions",
                           help="Path file which in each line there a "
-                          "distortion (PSNR) per frame.",
+                          "distortion (PSNR) per frame",
                           default=Defaults.distortions)
     # Unused?
     def FPS(self):
         self.add_argument("--FPS",
-                          help="frames per second.",
+                          help="frames per second",
                           default=Defaults.FPS)
 
     def GOPs(self):
         self.add_argument("--GOPs",
-                          help="Group Of Pictures to process.",
+                          help="Group Of Pictures to process",
                           default=Defaults.GOPs)
 
     def max_search_range(self):
         self.add_argument("--max_search_range",
-                          help="Maximum search range allowed during ME.",
+                          help="Maximum search range allowed during ME",
                           default=Defaults.max_search_range)
         
     def min_block_size(self):
         self.add_argument("--min_block_size",
-                          help="Minimal block size allowed during ME.",
+                          help="Minimal block size allowed during ME",
                           default=Defaults.min_block_size)
 
     def motion_layers(self):
         self.add_argument("--motion_layers",
-                          help="Number of quality layers for motion subbands. ",
+                          help="Number of quality layers for motion subbands",
                           default=Defaults.motion_layers)
 
     def motion_quantization(self):
         self.add_argument("--motion_quantization",
                           help="Controls the quality level and the bit-rate "
-                          "of the code-stream of motion data.",
+                          "of the code-stream of motion data",
                           default=Defaults.motion_quantization)
 
     def motion_quantization_step(self):
         self.add_argument("--motion_quantization_step",
                           help="Quantization step for compressing "
-                          "motion data.",
+                          "motion data",
                           default=Defaults.motion_quantization_step)
 
     # No aquí?
@@ -83,12 +83,12 @@ class arguments_parser(argparse.ArgumentParser):
 
     def pixels_in_x(self):
         self.add_argument("--pixels_in_x",
-                          help="Width of the pictures.",
+                          help="Width of the pictures",
                           default=Defaults.pixels_in_x)
 
     def pixels_in_y(self):
         self.add_argument("--pixels_in_y",
-                          help="Height of the pictures.",
+                          help="Height of the pictures",
                           default=Defaults.pixels_in_y)
 
     # Unused?
@@ -102,12 +102,12 @@ class arguments_parser(argparse.ArgumentParser):
     def search_range(self):
         self.add_argument("--search_range",
                           help="Size (in pixels) of the search areas "
-                          "in the motion estimation process.",
+                          "in the motion estimation proces",
                           default=Defaults.search_range)
 
     def SRLs(self):
         self.add_argument("--SRLs",
-                          help="Spatial Resolution Levels.",
+                          help="Spatial Resolution Levels",
                           default=Defaults.SRLs)
 
     def subpixel_accuracy(self):
@@ -118,33 +118,33 @@ class arguments_parser(argparse.ArgumentParser):
     def layers(self):
         self.add_argument("--layers",
                           help="Number of quality layers for "
-                          "texture subbands. ",
+                          "texture subbands",
                           default=Defaults.layers)
 
     def quality(self):
         self.add_argument("--quality",
-                          help="Quality of texture subbands (min slope in Kakadu). ",
+                          help="Quality of texture subbands (min slope in Kakadu)",
                           default=Defaults.quality)
 
     def quantization(self):
         self.add_argument("--quantization",
                           help="Controls the quality level and the bit-rate "
-                          "of the code-stream of texture data.",
+                          "of the code-stream of texture data",
                           default=Defaults.quantization)
                           
     def quantization_step(self):
         self.add_argument("--quantization_step",
                           help="Quantization step for compressing "
-                          "texture data.",
+                          "texture data",
                           default=Defaults.quantization_step)
     def TRLs(self):
         self.add_argument("--TRLs",
-                          help="Temporal Resolution Levels.",
+                          help="Temporal Resolution Levels",
                           default=Defaults.TRLs)
 
     def update_factor(self):
         self.add_argument("--update_factor",
-                          help="Weight of the update step of MCTF.",
+                          help="Weight of the update step of MCTF",
                           default=Defaults.update_factor)
 
     #def using_gains(self):
