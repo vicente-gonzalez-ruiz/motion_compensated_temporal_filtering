@@ -60,12 +60,11 @@ LOW                  = "low"
 
 # {{{ Compute slopes
 slope = []
-_slope_ = quantization_min
-while _slope_ < quantization_max:
-    print(_slope_, quantization_min, quantization_max, quantization_step)
+_slope_ = quantization_max
+while _slope_ > quantization_min:
     #input()
     slope.append(_slope_)
-    _slope_ += quantization_step
+    _slope_ -= quantization_step
 # }}}
     
 # {{{ Write slopes to disk
