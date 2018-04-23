@@ -39,7 +39,7 @@ pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 quantization_max = int(args.quantization_max)
 quantization_min = int(args.quantization_min)
-quantization_step = int(args.quantization_min)
+quantization_step = int(args.quantization_step)
 # Min slope in Kakadu
 #quality = float(args.quality)
 SRLs = int(args.SRLs)
@@ -62,7 +62,8 @@ LOW                  = "low"
 slope = []
 _slope_ = quantization_min
 while _slope_ < quantization_max:
-    print(_slope_)
+    print(_slope_, quantization_min, quantization_max, quantization_step)
+    #input()
     slope.append(_slope_)
     _slope_ += quantization_step
 # }}}
@@ -70,7 +71,7 @@ while _slope_ < quantization_max:
 # {{{ Write slopes to disk
 with io.open('slopes.txt', 'w') as file:
     for i in slope:
-        file.write('{}'.format(i))
+        file.write('{}\n'.format(i))
 # }}}
 
 #for q in range(layers):

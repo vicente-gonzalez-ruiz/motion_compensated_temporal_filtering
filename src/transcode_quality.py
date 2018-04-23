@@ -22,6 +22,7 @@ from   GOP              import GOP
 from   subprocess       import check_call
 from   subprocess       import CalledProcessError
 from   arguments_parser import arguments_parser
+import io
 
 # {{{ Logging
 
@@ -35,7 +36,7 @@ log = logging.getLogger("transcode_quality")
 parser = arguments_parser(description="Transcodes in quality a MCJ2K sequence.")
 parser.GOPs()
 parser.add_argument("--layers",
-                    help="Number of quality layers to output"
+                    help="Number of quality layers to output",
                     default=8)
 #parser.layers()       # Number of layers to copy
 #parser.quantization_max()
@@ -82,12 +83,15 @@ RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 
 Q_STEP = 256 # In Kakadu, this should avoid the generation of empty layers
 
-slope = [[0 for q in range(layers)] for t in range(TRLs)]
-layer = 0
+#slope = [[0 for l in range(layers)] for t in range(TRLs)]
+slope = []
+slope.append([])
+#layer = 0
 with io.open('slopes.txt', 'r') as file:
     for line in file:
-        slope[0][layer] = int(line)
-        layer += 1
+        slope[0].append(int(line))
+        #slope[0][layer] = int(line)
+        #layer += 1
 
 # TRLs = 1
 #  L^0
@@ -98,13 +102,14 @@ with io.open('slopes.txt', 'r') as file:
 # :
 
 for s in range(1,TRLs):
+    slope.append([])
     for l in range(layers):
-        slope[s][l] = slope[0][l]/gains[s]
+        slope[s].append(int(slope[0][l]*gain[s]))
 
 for l in range(layers):
-    print()
     for s in range(TRLs):
-        print(slope[s][l])
+        print('{} '.format(slope[s][l]), end="")
+    print()
 
 # {{{ Compute slopes
 #for s in range(TRLs):
