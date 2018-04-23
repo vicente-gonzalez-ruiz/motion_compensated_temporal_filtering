@@ -16,12 +16,12 @@
 #                                    # and depending on Q, will output
 #                                    # L^{T-1}_{Q-2} or M^{T-1}.
 
-import sys
-from GOP              import GOP
-from subprocess       import check_call
-from subprocess       import CalledProcessError
-from arguments_parser import arguments_parser
 import logging
+import sys
+from   GOP              import GOP
+from   subprocess       import check_call
+from   subprocess       import CalledProcessError
+from   arguments_parser import arguments_parser
 
 logging.basicConfig()
 log = logging.getLogger("transcode_quality")
