@@ -56,12 +56,12 @@ parser.pixels_in_x()
 parser.pixels_in_y()
 parser.search_range()
 parser.subpixel_accuracy()
-parser.layers()
-parser.quality()
+#parser.layers()
+#parser.quality()
 #parser.quantization()
-#parser.quantization_step()
-#parser.quantization_max()
-#parser.quantization_min()
+parser.quantization_step()
+parser.quantization_max()
+parser.quantization_min()
 parser.SRLs()
 parser.TRLs()
 parser.update_factor()
@@ -78,12 +78,12 @@ motion_quantization = str(args.motion_quantization); log.debug("motion_quantizat
 motion_quantization_step = str(args.motion_quantization_step); log.debug("motion_quantization_step={}".format(motion_quantization_step))
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-layers = str(args.layers)
-quality = float(args.quality)
+#layers = str(args.layers)
+#quality = float(args.quality)
 #quantization = str(args.quantization)
-#quantization_step = str(args.quantization_step)
-#quantization_max = int(args.quantization_max)
-#quantization_min = int(args.quantization_min)
+quantization_step = str(args.quantization_step)
+quantization_max = int(args.quantization_max)
+quantization_min = int(args.quantization_min)
 search_range = int(args.search_range)
 subpixel_accuracy = int(args.subpixel_accuracy)
 TRLs = int(args.TRLs)
@@ -113,7 +113,7 @@ if TRLs > 1:
         sys.exit(-1)
 
     try:
-        # Compress the fields of motion. A layer quality is used without loss.
+        # Compress motion
         check_call("mctf motion_compress"
                    + " --block_size="               + str(block_size)
                    + " --GOPs="                     + str(GOPs)
@@ -130,17 +130,17 @@ if TRLs > 1:
         sys.exit(-1)
 
 try:
-    # Compressed textures. Quality layers are used, with loss.
+    # Compress texture
     check_call("mctf texture_compress__"         + MCTF_QUANTIZER
                + " --GOPs="                      + str(GOPs)
                + " --pixels_in_x="               + str(pixels_in_x)
                + " --pixels_in_y="               + str(pixels_in_y)
-               + " --layers="                    + str(layers)
+#               + " --layers="                    + str(layers)
 #               + " --quantization="              + str(quantization)
-#               + " --quantization_step="         + str(quantization_step)
-#               + " --quantization_max="          + str(quantization_max)
-#               + " --quantization_min="          + str(quantization_min)
-               + " --quality="                   + str(quality)
+               + " --quantization_step="         + str(quantization_step)
+               + " --quantization_max="          + str(quantization_max)
+               + " --quantization_min="          + str(quantization_min)
+#               + " --quality="                   + str(quality)
                + " --SRLs="                      + str(SRLs)
                + " --TRLs="                      + str(TRLs)
                , shell=True)

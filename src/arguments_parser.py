@@ -115,27 +115,25 @@ class arguments_parser(argparse.ArgumentParser):
                           help="Subpixel motion estimation precission",
                           default=Defaults.subpixel_accuracy)
 
-    def layers(self):
-        self.add_argument("--layers",
-                          help="Number of quality layers for "
-                          "texture subbands",
-                          default=Defaults.layers)
 
-    def quality(self):
-        self.add_argument("--quality",
-                          help="Quality of texture subbands (min slope in Kakadu)",
-                          default=Defaults.quality)
+    #def quality(self):
+    #    self.add_argument("--quality",
+    #                      help="Quality of texture subbands (min slope in Kakadu)",
+    #                      default=Defaults.quality)
 
-    def quantization(self):
-        self.add_argument("--quantization",
-                          help="Controls the quality level and the bit-rate "
-                          "of the code-stream of texture data",
-                          default=Defaults.quantization)
+    def quantization_max(self):
+        self.add_argument("--quantization_max",
+                         help="Maximum quantization (minimum quality)",
+                         default=Defaults.quantization_max)
+    
+    def quantization_min(self):
+        self.add_argument("--quantization_min",
+                          help="Minimum quantization (maximum quality)",
+                          default=Defaults.quantization_min)
                           
     def quantization_step(self):
         self.add_argument("--quantization_step",
-                          help="Quantization step for compressing "
-                          "texture data",
+                          help="Define the number of quality layers",
                           default=Defaults.quantization_step)
     def TRLs(self):
         self.add_argument("--TRLs",

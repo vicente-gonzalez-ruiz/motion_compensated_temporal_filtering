@@ -12,6 +12,7 @@ from subprocess import check_call
 from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
 import logging
+import io
 
 # {{{ Logging
 logging.basicConfig()
@@ -50,19 +51,34 @@ HIGH                 = "high"
 LOW                  = "low"
 
 # Typical range of useful slopes in Kakadu
-MAX_SLOPE = 50000 # Min quality
-MIN_SLOPE = 40000 # Max quality
-RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
-Q_STEP = 256 # In Kakadu, this should avoid the generation of empty layers
+#MAX_SLOPE = 50000 # Min quality
+#MIN_SLOPE = 40000 # Max quality
+#RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
+#Q_STEP = 256 # In Kakadu, this should avoid the generation of empty layers
 
-slope = [None]*layers
+#slope = [None]*layers
 
-for q in range(layers):
-    _slope_ = int(round(MAX_SLOPE - quality - Q_STEP*q))
-    if _slope_ < 0:
-        slope[q] = 0
-    else:
-        slope[q] = _slope_
+# {{{ Compute slopes
+slope = []
+_slope_ = quantization_min
+while _slope_ < quantization_max:
+    print(_slope_)
+    slope.append(_slope_)
+    _slope_ += quantization_step
+# }}}
+    
+# {{{ Write slopes to disk
+with io.open('slopes.txt', 'w') as file:
+    for i in slope:
+        file.write('{}'.format(i))
+# }}}
+
+#for q in range(layers):
+#    _slope_ = int(round(quantization_max - quality - quantization_step*q))
+#    if _slope_ < 0:
+#        slope[q] = 0
+#    else:
+#        slope[q] = _slope_
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)

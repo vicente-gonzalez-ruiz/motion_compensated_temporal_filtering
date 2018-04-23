@@ -35,7 +35,7 @@ class Defaults():
     motion_layers = 1
     motion_quantization = 0 # 0 -> No quantization
     motion_quantization_step = 0
-    #motion_slopes = "0"
+    motion_slopes = "0"
     
     # Size of the search areas in the motion estimation process.
     search_range = 4
@@ -47,9 +47,10 @@ class Defaults():
     subpixel_accuracy = 0
 
     # Texture quantization.
-    layers = 8
-    quantization = 42000 # Max quality
-    quantization_step = 256
+    #layers = 8
+    quantization_min = 42000 # Max quality
+    quantization_max = 50000 # Min quality
+    quantization_step = 256  # If smaller, possible empty layers
     #texture_slopes = "43000, 43256, 43512, 43768, 44024, 44280, 44536, 44792"
     #quantization_max = 50000
     #quantization_min = 42000

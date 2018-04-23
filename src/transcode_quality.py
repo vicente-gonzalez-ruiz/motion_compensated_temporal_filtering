@@ -34,16 +34,20 @@ log = logging.getLogger("transcode_quality")
 
 parser = arguments_parser(description="Transcodes in quality a MCJ2K sequence.")
 parser.GOPs()
-parser.layers()       # Number of layers to copy
-parser.quantization() # Min slope used when compressing
-parser.quantization_step()
+parser.add_argument("--layers",
+                    help="Number of quality layers to output"
+                    default=8)
+#parser.layers()       # Number of layers to copy
+#parser.quantization_max()
+#parser.quantization_min()
+#parser.quantization_step()
 parser.TRLs()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
 layers = int(args.layers)
-quality = float(args.quality)
-quantization_step = int(args.quantization_step)
+#quality = float(args.quality)
+#quantization_step = int(args.quantization_step)
 TRLs = int(args.TRLs)
 
 # }}}
@@ -53,19 +57,19 @@ TRLs = int(args.TRLs)
 if   TRLs == 1 :
     pass
 elif TRLs == 2 :
-    GAINS = [1.0, 1.2460784922] # [L1/H1]
+    gain = [1.0, 1.2460784922] # [L1/H1]
 elif TRLs == 3 :
-    GAINS = [1.0, 1.2500103877, 1.8652117304] # [L2/H2, L2/H1]
+    gain = [1.0, 1.2500103877, 1.8652117304] # [L2/H2, L2/H1]
 elif TRLs == 4 :
-    GAINS = [1.0, 1.1598810146, 2.1224082769, 3.1669663339]
+    gain = [1.0, 1.1598810146, 2.1224082769, 3.1669663339]
 elif TRLs == 5 :
-    GAINS = [1.0, 1.0877939347, 2.1250255455, 3.8884779989, 5.8022196044]
+    gain = [1.0, 1.0877939347, 2.1250255455, 3.8884779989, 5.8022196044]
 elif TRLs == 6 :
-    GAINS = [1.0, 1.0456562538, 2.0788785438, 4.0611276369, 7.4312544148, 11.0885981772]
+    gain = [1.0, 1.0456562538, 2.0788785438, 4.0611276369, 7.4312544148, 11.0885981772]
 elif TRLs == 7 :
-    GAINS = [1.0, 1.0232370223, 2.0434169985, 4.0625355976, 7.9362383342, 14.5221257323, 21.6692913386]
+    gain = [1.0, 1.0232370223, 2.0434169985, 4.0625355976, 7.9362383342, 14.5221257323, 21.6692913386]
 elif TRLs == 8 :
-    GAINS = [1.0, 1.0117165706, 2.0226778348, 4.0393126714, 8.0305936232, 15.6879129862, 28.7065276104, 42.8346456693]
+    gain = [1.0, 1.0117165706, 2.0226778348, 4.0393126714, 8.0305936232, 15.6879129862, 28.7065276104, 42.8346456693]
 else :
     sys.stderr.write("Gains are not available for " + str(TRLs) + " TRLs. Enter them in transcode_quality.py")
     exit (0)
@@ -78,26 +82,46 @@ RANGE_SLOPES = MAX_SLOPE - MIN_SLOPE
 
 Q_STEP = 256 # In Kakadu, this should avoid the generation of empty layers
 
-# {{{ Init matrix of slopes
 slope = [[0 for q in range(layers)] for t in range(TRLs)]
-# }}}
+layer = 0
+with io.open('slopes.txt', 'r') as file:
+    for line in file:
+        slope[0][layer] = int(line)
+        layer += 1
+
+# TRLs = 1
+#  L^0
+# TRLs = 2
+#  L^1, H^1
+# TRLs = 3
+#  L^2, H^2, H^1
+# :
+
+for s in range(1,TRLs):
+    for l in range(layers):
+        slope[s][l] = slope[0][l]/gains[s]
+
+for l in range(layers):
+    print()
+    for s in range(TRLs):
+        print(slope[s][l])
 
 # {{{ Compute slopes
-for s in range(TRLs):
-    log.debug("Temporal subband {}".format(s))
-    for q in range(layers):
-        log.debug("Subband-layer {}".format(q))
-        _slope_ = int(round(MAX_SLOPE - quality - Q_STEP*q) / GAINS[s])
-        if _slope_ < 0:
-            slope[s][q] = (0, s, q)
-        else:
-            slope[s][q] = (_slope_, s, q)
-        log.debug("Slope {}".format(slope[s][q]))
+#for s in range(TRLs):
+#    log.debug("Temporal subband {}".format(s))
+#    for q in range(layers):
+#        log.debug("Subband-layer {}".format(q))
+#        _slope_ = int(round(MAX_SLOPE - quality - Q_STEP*q) / GAINS[s])
+#        if _slope_ < 0:
+#            slope[s][q] = (0, s, q)
+#        else:
+#            slope[s][q] = (_slope_, s, q)
+#        log.debug("Slope {}".format(slope[s][q]))
 # }}}
 
 # }}}
 
-print("{}".format(slope))
+#print("{}".format(slope))
         
 # {{{ GOPs and pictures
 
