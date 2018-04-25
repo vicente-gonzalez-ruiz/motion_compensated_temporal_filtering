@@ -55,9 +55,41 @@
 # L1.l3 (5), H1.l3 (4), L1.l2 (3.53), H1.l2 (2.83), L1.l1 (2.5), H1.l1
 # (2), L1.l0 (1.77), H1.l0 (1.41).
 #
-# If X=1dB, slope(L1.l3)=1, slope(H1.l3)=1/1.25=0.8,
-# slope(L1.l2)=1/sqrt(2)=0.71, slope(H1.l2)=0.56, slope(L1.l1)=0.5,
-# slope(H1.l1)=0.4, slope(L1.l0)=0.35, slope(H1.l0)=0.28.
+# If X=1dB, slope(L1.l3)=1 (5 times smaller than in the previous
+# example), slope(H1.l3)=1/1.25=0.8, slope(L1.l2)=1/sqrt(2)=0.71,
+# slope(H1.l2)=1/1.25/sqrt(2)=0.56, slope(L1.l1)=1/sqrt(2)^2=0.5,
+# slope(H1.l1)=1/1.25/sqrt(2)^2=0.4, slope(L1.l0)=1/sqrt(2)^3=0.35,
+# slope(H1.l0)=1/1.25/sqrt(2)^3=0.28. Logically, the ordering does not
+# varie as a function of Q.
+#
+# If we use for example 8 quality layers, slope(L1.l7)=1,
+# slope(L1.l6)=1/sqrt(2), slope(L1.l5)=1/sqrt(2)=^2 ... and
+# slope(H1.l7)=1/1.25, slope(H1.l6)=1/1.25/sqrt(2) ..., so the
+# ordering is the same than in the previous example.
+#
+# If TRLs=3, we have the following subband attenuations: 1.0,
+# 1.2500103877, 1.8652117304. For 4 quality-layers, we have:
+# slope(L2.l3)=1, slope(L2.l2)=1/sqrt(2)=0.71,
+# slope(L2.l1)=1/sqrt(2)^2=0.5,
+# slope(L2.l0)=1/sqrt(2)^3=0.35. slope(H2.l3)=1/1.25=0.8,
+# slope(H2.l2)=1/1.25/sqrt(2)=0.56, slope(H2.l1)=1/1.25/sqrt(2)^2=0.4,
+# slope(H2.l0)=1/1.25/sqrt(2)^3=0.28, slope(H1.l3)=1/1.86=0.54,
+# slope(H1.l2)=1/1.86/sqrt(2)=0.38,
+# slope(H1.l1)=1/1.86/sqrt(2)^2=0.26,
+# slope(H1.l0)=1/1.86/sqrt(2)^3=0.19. So the ordering is:
+#
+#  1. L2.l3 (1),
+#  2. H2.l3 (0.8),
+#  3. L2.l2 (0.71),
+#  4. H2.l2 (0.56),
+#  5. H1.l3 (0.54),
+#  6. L2.l1 (0.5),
+#  7. H2.l1 (0.4),
+#  8. H1.l2 (0.38),
+#  9. L2.l0 (0.35),
+# 10. H2.l0 (0.28),
+# 11. H1.l1 (0.26),
+# 12. H1.l0 (0.19)
 
 import logging
 import sys
