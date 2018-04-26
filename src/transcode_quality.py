@@ -181,7 +181,10 @@ for s in range(TRLs,1):
 # Sort the subband_layers by their relative slope
 sorted_subband_layers = subband_layers.sort(key=operator.itemgetter(3))
 
+# Number of subband layers to copy from the L subband
+L_mumber_of_trancoded_layers
 
+# Number of subband layers to copy from the H subbands
 
 # -------
 
