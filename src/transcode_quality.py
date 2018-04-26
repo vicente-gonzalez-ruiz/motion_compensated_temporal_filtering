@@ -69,14 +69,21 @@
 #
 # If TRLs=3, we have the following subband attenuations: 1.0,
 # 1.2500103877, 1.8652117304. For 4 quality-layers, we have:
-# slope(L2.l3)=1, slope(L2.l2)=1/sqrt(2)=0.71,
+# 
+# slope(L2.l3)=1,
+# slope(L2.l2)=1/sqrt(2)=0.71,
 # slope(L2.l1)=1/sqrt(2)^2=0.5,
-# slope(L2.l0)=1/sqrt(2)^3=0.35. slope(H2.l3)=1/1.25=0.8,
-# slope(H2.l2)=1/1.25/sqrt(2)=0.56, slope(H2.l1)=1/1.25/sqrt(2)^2=0.4,
-# slope(H2.l0)=1/1.25/sqrt(2)^3=0.28, slope(H1.l3)=1/1.86=0.54,
+# slope(L2.l0)=1/sqrt(2)^3=0.35,
+# slope(H2.l3)=1/1.25=0.8,
+# slope(H2.l2)=1/1.25/sqrt(2)=0.56,
+# slope(H2.l1)=1/1.25/sqrt(2)^2=0.4,
+# slope(H2.l0)=1/1.25/sqrt(2)^3=0.28,
+# slope(H1.l3)=1/1.86=0.54,
 # slope(H1.l2)=1/1.86/sqrt(2)=0.38,
 # slope(H1.l1)=1/1.86/sqrt(2)^2=0.26,
-# slope(H1.l0)=1/1.86/sqrt(2)^3=0.19. So the ordering is:
+# slope(H1.l0)=1/1.86/sqrt(2)^3=0.19.
+# 
+# So the ordering is:
 #
 #  1. L2.l3 (1),
 #  2. H2.l3 (0.8),
@@ -98,6 +105,7 @@ from   subprocess       import check_call
 from   subprocess       import CalledProcessError
 from   arguments_parser import arguments_parser
 import io
+import operator
 
 # {{{ Logging
 
@@ -126,8 +134,59 @@ layers = int(args.layers)
 #quantization_step = int(args.quantization_step)
 TRLs = int(args.TRLs)
 
-# }}}
+# }}} Arguments parsing
 
+# {{{ Set attenuations among temporal subbands
+
+if   TRLs == 1 :
+    pass
+elif TRLs == 2 :
+    gain = [1.0, 1.2460784922] # [L1/H1]
+elif TRLs == 3 :
+    gain = [1.0, 1.2500103877, 1.8652117304] # [L2/H2, L2/H1]
+elif TRLs == 4 :
+    gain = [1.0, 1.1598810146, 2.1224082769, 3.1669663339]
+elif TRLs == 5 :
+    gain = [1.0, 1.0877939347, 2.1250255455, 3.8884779989, 5.8022196044]
+elif TRLs == 6 :
+    gain = [1.0, 1.0456562538, 2.0788785438, 4.0611276369, 7.4312544148, 11.0885981772]
+elif TRLs == 7 :
+    gain = [1.0, 1.0232370223, 2.0434169985, 4.0625355976, 7.9362383342, 14.5221257323, 21.6692913386]
+elif TRLs == 8 :
+    gain = [1.0, 1.0117165706, 2.0226778348, 4.0393126714, 8.0305936232, 15.6879129862, 28.7065276104, 42.8346456693]
+else :
+    sys.stderr.write("Gains are not available for " + str(TRLs) + " TRLs. Enter them in transcode_quality.py")
+    exit (0)
+
+# }}} Set attenuations among temporal subbands
+
+# {{{ subband_layers: a list of tuples ('L'|'H', subband, layer, relative slope)
+
+# Read the number of quality layers used for texture compression
+quality_layers = sum(1 for line in open('slopes.txt'))
+    
+subband_layers = []
+    
+# L
+for q in range(quality_layers):
+    subband_layers.append(('L', TRLs, q, 1/math.sqrt(2.0)^q))
+
+# H's
+for s in range(TRLs,1):
+    for q in range(quality_layers):
+        subband_layers.append(('H', s, q, 1/gains[s]/math.sqrt(2.0)^q))
+
+# }}} subband_layers: a list of tuples ('L'|'H', subband, layer, relative slope)
+
+# Sort the subband_layers by their relative slope
+sorted_subband_layers = subband_layers.sort(key=operator.itemgetter(3))
+
+
+
+# -------
+
+
+        
 # {{{ Slope computation of each subband-layer of each temporal subband
 
 if   TRLs == 1 :
