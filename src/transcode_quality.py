@@ -184,17 +184,14 @@ sorted = subband_layers.sort(key=operator.itemgetter(3))
 # Truncate the list
 truncated = del sorted[layers]
 
-# Number of subband layers to copy from L subband
-L_layers = truncated.count('L')
-
-# Number of subband layers to copy from H subbands
-H_layers = []
-for s in range(1, TRLs):
-    H_layers.append(truncated.count(
-H_layers
-layers = Counter(item[0] for item in truncated)
-
-# Number of subband layers to copy from the H subbands
+# {{{ Count the number of subband-layers per subband
+layers = {}
+layers[('L', TRLs)] = 0
+for i in range(TRLs):
+    layers[('H', i)] = 0
+for i in truncated:
+    layers[(i[0], i[1]] += 1
+# }}}
 
 # -------
 
