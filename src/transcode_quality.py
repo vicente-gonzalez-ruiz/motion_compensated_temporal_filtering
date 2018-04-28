@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-# Quality transcoding. Extracts a codestream from a bigger one,
+# Quality transcoding. Extracts a codestream from a longest one,
 # preserving the FPS and spatial resolution. A number of quality
 # layers of each image of each temporal subband (that is, a number of
 # subband-layers) will be copied to the output.
@@ -178,7 +178,7 @@ for s in range(TRLs,1):
 
 # }}} subband_layers: a list of tuples ('L'|'H', subband, layer, relative slope)
 
-# Sort the subband_layers by their relative slope
+# Sort the subband-layers by their relative slope
 sorted = subband_layers.sort(key=operator.itemgetter(3))
 
 # Truncate the list
@@ -193,6 +193,70 @@ for i in truncated:
     layers[(i[0], i[1]] += 1
 # }}}
 
+def transcode_image(filename, layers):
+    try:
+        check_call("trace kdu_transcode"
+                   + " -i " + filename
+                   + " -o " + "transcode_quality/" + filename,
+                   + " Clayers=" + str(layers), 
+                   shell=True)
+    except CalledProcessError:
+        sys.exit(-1)
+
+# {{{ GOPs and pictures
+
+gop=GOP()
+GOP_size = gop.get_size(TRLs)
+log.debug("GOP_size = {}".format(GOP_size))
+
+pictures = (GOPs - 1) * GOP_size + 1
+log.debug("pictures = {}".format(pictures))
+
+# }}}
+
+# Transcoding of H subbands
+subband = 1
+while subband < TRLs:
+
+    pictures = (pictures + 1) // 2 - 1
+    log.debug("Transcoding subband H[{}] of {} pictures".format(subband, pictures))
+    
+    image_number = 0
+    while image_number < pictures:
+
+        str_image_number = '%04d' % image_number
+
+        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_Y" 
+        transcode_image(filename + ".j2c", slope[subband])
+
+        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_U" 
+        transcode_image(filename + ".j2c", slope[subband])
+
+        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_V" 
+        transcode_image(filename + ".j2c", slope[subband])
+
+        image_number += 1
+
+    subband += 1
+
+# Transcoding of L subband
+pictures - 1:
+
+    str_image_number = '%04d' % image_number
+
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_Y"
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_U"
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_V"
+    kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
+
+    image_number += 1
+
+
+sys.quit()
 # -------
 
 
@@ -284,7 +348,7 @@ log.debug("pictures = {}".format(pictures))
 # }}}
 
 # {{{ Transcode the (texture) subbands
-        
+
 LOW = "low"
 HIGH = "high"
 MOTION = "motion_residue"
@@ -371,9 +435,8 @@ while subband < TRLs:
     subband += 1
 '''
 
-# Transcoding of L subband
-image_number = 0
-while image_number < pictures - 1:
+# Transcoding of L subband image_number = 0 while image_number <
+pictures - 1:
 
     str_image_number = '%04d' % image_number
 
