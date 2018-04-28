@@ -182,7 +182,7 @@ for s in range(TRLs,1):
 sorted = subband_layers.sort(key=operator.itemgetter(3))
 
 # Truncate the list
-truncated = del sorted[layers]
+truncated = del sorted[layers:]
 
 # {{{ Count the number of subband-layers per subband
 layers = {}
