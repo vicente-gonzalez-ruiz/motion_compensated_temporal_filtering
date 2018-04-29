@@ -223,14 +223,14 @@ def transcode_image(filename, layers):
         except CalledProcessError:
             sys.exit(-1)
 
-# {{{ GOPs and pictures
+# {{{ GOPs and images
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
 log.info("GOP_size = {}".format(GOP_size))
 
-pictures = (GOPs - 1) * GOP_size + 1
-log.info("pictures = {}".format(pictures))
+images = (GOPs - 1) * GOP_size + 1
+log.info("images = {}".format(images))
 
 # }}}
 
@@ -241,41 +241,27 @@ HIGH = "high"
 subband = 1
 while subband < TRLs:
 
-    pictures = (pictures + 1) // 2
-    log.info("Transcoding subband H[{}] with {} pictures".format(subband, pictures - 1))
-    
-    image_number = 0
-    while image_number < pictures - 1:
+    images = (images + 1) // 2
+    log.info("Transcoding subband H[{}] with {} images".format(subband, images - 1))
 
-        str_image_number = '%04d' % image_number
-
-        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_Y" 
-        transcode_image(filename + ".j2c", layers[('H', subband)])
-
-        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_U" 
-        transcode_image(filename + ".j2c", layers[('H', subband)])
-
-        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_V" 
-        transcode_image(filename + ".j2c", layers[('H', subband)])
-
-        image_number += 1
+    try:
+        check_call("mctf transcode_quality_subband"
+                   + " --subband " + HIGH + "_" + str(subband)
+                   + " --layers " + str(layers[('H', subband)])
+                   + " --images " + str(images - 1),
+                   shell=True)
+    except CalledProcessError:
+        sys.exit(-1)
 
     subband += 1
 
 # Transcoding of L subband
-log.info("Transcoding subband L[{}] with {} pictures".format(subband, pictures - 1))
-image_number = 0
-while image_number < pictures - 1:
-
-    str_image_number = '%04d' % image_number
-
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_Y"
-    transcode_image(filename + ".j2c", layers[('L', TRLs - 1)])
-
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_U"
-    transcode_image(filename + ".j2c", layers[('L', TRLs - 1)])
-
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_V"
-    transcode_image(filename + ".j2c", layers[('L', TRLs - 1)])
-
-    image_number += 1
+log.info("Transcoding subband L[{}] with {} images".format(subband, images - 1))
+try:
+    check_call("mctf transcode_quality_subband"
+               + " --subband " + LOW + "_" + str(TRLs - 1)
+               + " --layers " + str(layers[('L', TRLs - 1)])
+               + " --images " + str(images - 1),
+               shell=True)
+except CalledProcessError:
+    sys.exit(-1)

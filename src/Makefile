@@ -337,6 +337,9 @@ EXE	+= $(BIN)/psnr_vs_br
 $(MCTF_BIN)/transcode_quality:	transcode_quality.py
 EXE	+= $(MCTF_BIN)/transcode_quality
 
+$(MCTF_BIN)/transcode_quality_subband:	transcode_quality_subband.py
+EXE	+= $(MCTF_BIN)/transcode_quality_subband
+
 $(MCTF_BIN)/header_size:	header_size.c
 EXE	+= $(MCTF_BIN)/header_size
 
