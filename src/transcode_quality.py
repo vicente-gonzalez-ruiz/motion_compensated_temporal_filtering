@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 #!/home/vruiz/.pyenv/shims/python -i
+#!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
 # Quality transcoding. Extracts a codestream from a longest one,
@@ -171,35 +171,42 @@ else :
 
 # Read the number of quality layers used for texture compression
 quality_layers = sum(1 for line in open('slopes.txt'))
-    
+log.info("original number of quality layers={}".format(quality_layers))
+
 subband_layers = []
     
 # L
 for q in range(quality_layers):
-    subband_layers.append(('L', TRLs, q, 1.0/(math.sqrt(2.0)**q)))
+    subband_layers.append(('L', TRLs-1, q, 1.0/(math.sqrt(2.0)**q)))
 
 # H's
-for s in range(TRLs,1):
+for s in range(1,TRLs):
     for q in range(quality_layers):
-        subband_layers.append(('H', s, q, 1.0/(gains[s]/(math.sqrt(2.0)**q))))
+        subband_layers.append(('H', TRLs-s, q, 1.0/(gain[s]*(math.sqrt(2.0)**q))))
 
 log.info("subband_layers={}".format(subband_layers))
         
 # }}} subband_layers: a list of tuples ('L'|'H', subband, layer, relative slope)
 
 # Sort the subband-layers by their relative slope
-subband_layers.sort(key=operator.itemgetter(3))
+subband_layers.sort(key=operator.itemgetter(3), reverse=True)
+log.info("(after sorting) subband_layers={}".format(subband_layers))
 
 # Truncate the list
 del subband_layers[layers:]
 
+log.info("(after truncating) subband_layers={}".format(subband_layers))
+
 # {{{ Count the number of subband-layers per subband
+
 layers = {}
-layers[('L', TRLs)] = 0
-for i in range(TRLs):
+layers[('L', TRLs-1)] = 0
+for i in range(TRLs-1,0,-1):
     layers[('H', i)] = 0
+
 for i in subband_layers:
     layers[(i[0], i[1])] += 1
+
 # }}}
 
 log.info("layers={}".format(layers))
@@ -235,10 +242,10 @@ subband = 1
 while subband < TRLs:
 
     pictures = (pictures + 1) // 2
-    log.info("Transcoding subband H[{}] with {} pictures".format(subband, pictures))
+    log.info("Transcoding subband H[{}] with {} pictures".format(subband, pictures - 1))
     
     image_number = 0
-    while image_number < pictures:
+    while image_number < pictures - 1:
 
         str_image_number = '%04d' % image_number
 
@@ -256,19 +263,19 @@ while subband < TRLs:
     subband += 1
 
 # Transcoding of L subband
-log.info("Transcoding subband L[{}] with {} pictures".format(subband, pictures))
+log.info("Transcoding subband L[{}] with {} pictures".format(subband, pictures - 1))
 image_number = 0
-while image_number < pictures:
+while image_number < pictures - 1:
 
     str_image_number = '%04d' % image_number
 
     filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_Y"
-    transcode_image(filename + ".j2c", layers[('L', TRLs)])
+    transcode_image(filename + ".j2c", layers[('L', TRLs - 1)])
 
     filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_U"
-    transcode_image(filename + ".j2c", layers[('L', TRLs)])
+    transcode_image(filename + ".j2c", layers[('L', TRLs - 1)])
 
     filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_V"
-    transcode_image(filename + ".j2c", layers[('L', TRLs)])
+    transcode_image(filename + ".j2c", layers[('L', TRLs - 1)])
 
     image_number += 1
