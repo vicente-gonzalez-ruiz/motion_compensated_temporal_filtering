@@ -4,8 +4,12 @@
 
 # Quality transcoding of a subband.
 #
-# Input: original subband, number of images and number of quality-layers.
+# Input: original subband, number of images and number of
+# quality-layers.
+#
 # Output: truncated subband.
+
+# {{{ Importing
 
 import logging
 import sys
@@ -16,6 +20,8 @@ from   arguments_parser import arguments_parser
 import io
 import operator
 import math
+
+# }}}
 
 # {{{ Logging
 
@@ -47,9 +53,11 @@ log.info("subband={}".format(subband))
 log.info("layers={}".format(layers))
 log.info("images={}".format(images))
 
-# }}} Arguments parsing
+# }}}
 
 def transcode_image(filename, layers):
+# {{{
+
     print(filename, layers)
     if layers > 0:
         try:
@@ -61,6 +69,7 @@ def transcode_image(filename, layers):
         except CalledProcessError:
             sys.exit(-1)
 
+# }}}
 
 image_number = 0
 while image_number < images:
