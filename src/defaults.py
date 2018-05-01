@@ -49,15 +49,16 @@ class Defaults():
     # Texture quantization.
     #layers = 8
     quantization_min = 42000 # Max quality
+    #quantization_min = 45000
     quantization_max = 50000 # Min quality
-    quantization_step = 256  # If smaller, possible empty layers
+    quantization_step = 1024 # If smaller than 256, possible empty layers
     #texture_slopes = "43000, 43256, 43512, 43768, 44024, 44280, 44536, 44792"
     #quantization_max = 50000
     #quantization_min = 42000
     #quality = 0.5 # 1.0 = max, 0.0 = min
     
     # Number of Temporal Resolution Levels.
-    TRLs = 4
+    TRLs = 6 # GOP_size = 32
 
     # Weight of the update step.
     update_factor = 0 # 1.0/4 # 0 -> No updating.

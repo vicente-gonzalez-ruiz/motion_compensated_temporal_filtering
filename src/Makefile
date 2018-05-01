@@ -121,8 +121,10 @@ EXE	+= $(MCTF_BIN)/config-lfb.txt
 $(MCTF_BIN)/mccp:	mccp.sh
 EXE	+= $(MCTF_BIN)/mccp
 
-$(BIN)/vshow:	vshow.sh
-EXE	+= $(BIN)/vshow
+#$(BIN)/vshow:	vshow.sh
+#EXE	+= $(BIN)/vshow
+$(MCTF_BIN)/show:	show.sh
+EXE	+= $(MCTF_BIN)/show
 
 $(MCTF_BIN)/split:	split.cpp display.cpp
 	$(CC) $(GCC_FLAGS) -D ANALYZE $< -o $@ -lm

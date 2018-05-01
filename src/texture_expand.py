@@ -68,7 +68,7 @@ if TRLs > 1 :
 try:
     check_call("mctf subband_texture_expand__" + MCTF_TEXTURE_CODEC
                + " --file="        + "\"" + LOW + "_" + str(TRLs - 1) + "\""
-               + " --pictures="    + str(GOPs+1)
+               + " --pictures="    + str(GOPs)
                + " --pixels_in_x=" + str(pixels_in_x)
                + " --pixels_in_y=" + str(pixels_in_y)
                + " --subband="     + str(TRLs)

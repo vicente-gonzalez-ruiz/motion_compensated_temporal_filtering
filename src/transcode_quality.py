@@ -254,7 +254,7 @@ try:
     check_call("mctf transcode_quality_subband"
                + " --subband " + LOW + "_" + str(TRLs - 1)
                + " --layers " + str(layers[('L', TRLs - 1)])
-               + " --images " + str(images - 1),
+               + " --images " + str(GOPs),
                shell=True)
 except CalledProcessError:
     sys.exit(-1)
