@@ -129,7 +129,7 @@ parser = arguments_parser(description="Transcodes in quality a MCJ2K sequence.")
 parser.GOPs()
 parser.add_argument("--layers",
                     help="Number of quality layers to output",
-                    default=8)
+                    default=16)
 parser.TRLs()
 
 args = parser.parse_known_args()[0]

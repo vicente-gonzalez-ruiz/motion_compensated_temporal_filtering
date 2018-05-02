@@ -8,3 +8,10 @@ cp ../slopes.tx .
 cp ../*type* .
 mctf expand --GOPs=9 --TRLs=6
 mctf show
+mkdir transcode_quality
+mctf transcode_quality --GOPs=9 --TRLs=6
+cp ../motion*.j2c .
+cp ../*type* .
+mctf info --GOPs=9 --TRLs=6
+mctf expand --GOPs=9 --TRLs=6
+mctf show
