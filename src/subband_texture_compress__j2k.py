@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
 #  Compress textures, using the J2K codec.

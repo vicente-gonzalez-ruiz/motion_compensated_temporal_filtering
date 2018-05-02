@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
 # Handle J2C files with format <low/high>_<subband>_<image>_<Y/U/V>.j2c

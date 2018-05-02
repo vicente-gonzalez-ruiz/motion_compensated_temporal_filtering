@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #!/home/vruiz/.pyenv/shims/python -i
 # -*- coding: iso-8859-15 -*-
 
