@@ -212,6 +212,9 @@ for i in subband_layers:
 
 log.info("layers={}".format(layers))
 
+with io.open("layers.txt", 'w') as file:
+    file.write("{}\n".format(layers))
+
 # }}}
 
 # {{{ GOPs and images
@@ -230,21 +233,30 @@ log.info("images = {}".format(images))
 LOW = "low"
 HIGH = "high"
 
+#import pdb; pdb.set_trace()
+
 # Transcoding of H subbands
 subband = 1
 while subband < TRLs:
 
     images = (images + 1) // 2
-    log.info("Transcoding subband H[{}] with {} images".format(subband, images - 1))
+    if layers[('H', subband)] > 0:
+        log.info("Transcoding subband H[{}] with {} images".format(subband, images - 1))
 
-    try:
-        check_call("mctf transcode_quality_subband"
-                   + " --subband " + HIGH + "_" + str(subband)
-                   + " --layers " + str(layers[('H', subband)])
-                   + " --images " + str(images - 1),
-                   shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
+        try:
+            check_call("mctf transcode_quality_subband"
+                       + " --subband " + HIGH + "_" + str(subband)
+                       + " --layers " + str(layers[('H', subband)])
+                       + " --images " + str(images - 1),
+                       shell=True)
+        except CalledProcessError:
+            sys.exit(-1)
+
+        try:
+            check_call("trace cp motion_residue_" + str(subband) + "*.j2c transcode_quality",
+	               shell=True)
+        except CalledProcessError:
+            sys.exit(-1)
 
     subband += 1
 

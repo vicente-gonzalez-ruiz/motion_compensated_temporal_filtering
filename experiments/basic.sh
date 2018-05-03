@@ -68,10 +68,12 @@ cd tmp
 cp ../*.j2c .
 cp ../slopes.tx .
 cp ../*type* .
+cp ../slopes.txt .
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
 mctf show
 mkdir transcode_quality
 mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs
+cd transcode_quality
 cp ../motion*.j2c .
 cp ../*type* .
 mctf info --GOPs=$GOPs --TRLs=$TRLs

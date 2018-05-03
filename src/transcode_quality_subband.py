@@ -59,15 +59,14 @@ def transcode_image(filename, layers):
 # {{{
 
     print(filename, layers)
-    if layers > 0:
-        try:
-            check_call("trace kdu_transcode"
-                       + " -i " + filename
-                       + " -o " + "transcode_quality/" + filename
-                       + " Clayers=" + str(layers), 
-                       shell=True)
-        except CalledProcessError:
-            sys.exit(-1)
+    try:
+        check_call("trace kdu_transcode"
+                   + " -i " + filename
+                   + " -o " + "transcode_quality/" + filename
+                   + " Clayers=" + str(layers), 
+                   shell=True)
+    except CalledProcessError:
+        sys.exit(-1)
 
 # }}}
 

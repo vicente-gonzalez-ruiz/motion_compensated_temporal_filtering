@@ -68,9 +68,9 @@ while _slope_ > quantization_min:
 # }}}
     
 # {{{ Write slopes to disk
-with io.open('slopes.txt', 'w') as file:
+with io.open("slopes.txt", 'w') as file:
     for i in slope:
-        file.write('{}\n'.format(i))
+        file.write("{}\n".format(i))
 # }}}
 
 #for q in range(layers):

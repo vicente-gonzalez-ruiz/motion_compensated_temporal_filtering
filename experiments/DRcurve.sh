@@ -57,26 +57,31 @@ done
 
 set -x
 
-rm low_0
-ln -s ~/Videos/container_352x288x30x420x300.yuv low_0
+rm -f low_0
+ln -s $video low_0
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
-lines=`wc -l ~/.bashrc | cut -f 1 -d " "`
-mkdir transcode_quality
-rm container_DRcurve.dat
+layers=`wc -l slopes.txt | cut -f 1 -d " "`
+subband_layers=`echo $layers*$TRLs | bc`
+rm -f container_DRcurve.dat
 
-for i in `seq 1 $lines`;
+for i in `seq 1 $subband_layers`;
 do
     echo Running for layers=$i
-    mctf transcode_quality --GOPs=$GOPs --TRLs=TRLs --layers=$i
-    cp motion*.j2c transcode_quality
+    mkdir transcode_quality
+#    cp motion*.j2c transcode_quality
     cp *type* transcode_quality
+    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --layers=$i
     cd transcode_quality
-    rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --pictures_per_second=$FPS | grep "Total average:" | cut -d " " -f 5`
-    echo -n $rate >> container_DRcurve.dat
-    mctf expand --GOPs=9 --TRLs=6
+    rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
+    echo -n $rate >> ../container_DRcurve.dat
+    echo -ne '\t'  >> ../container_DRcurve.dat
+    mctf expand --GOPs=$GOPs --TRLs=$TRLs
     RMSE=`snr --file_A=../low_0 --file_B=low_0 2> /dev/null | grep RMSE | cut -f 3`
+    echo -n $RMSE >> ../container_DRcurve.dat
+    echo -ne '\t' >> ../container_DRcurve.dat
+    cat ../layers.txt >> ../container_DRcurve.dat
     cd ..
-    echo $RMSE >> container_DRcurve.dat
+    rm -rf transcode_quality
 done
 set +x
