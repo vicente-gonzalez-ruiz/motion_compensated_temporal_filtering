@@ -14,7 +14,7 @@ usage() {
     echo "  [-x X dimension ($X_DIM)]"
     echo "  [-y Y dimension ($Y_DIM)]"
     echo "  [-f frames/second ($FPS)]"
-    echo "  [-t ($TRLs)]"
+    echo "  [-t TRLs ($TRLs)]"
     echo "  [-? (help)]"
 }
 
@@ -56,6 +56,8 @@ while getopts "v:p:x:y:f:q:g:?" opt; do
 done
 
 set -x
+
+rm low_0
 ln -s ~/Videos/container_352x288x30x420x300.yuv low_0
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
