@@ -25,9 +25,6 @@ while getopts "v:p:x:y:f:q:g:?" opt; do
 	v)
 	    VIDEO="${OPTARG}"
 	    ;;
-	p)
-	    PICTURES="${OPTARG}"
-	    ;;
 	x)
 	    X_DIM="${OPTARG}"
 	    ;;
