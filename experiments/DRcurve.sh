@@ -63,7 +63,7 @@ mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 layers=`wc -l slopes.txt | cut -f 1 -d " "`
 subband_layers=`echo $layers*$TRLs | bc`
-rm -f container_DRcurve.dat
+rm -f DRcurve.dat
 
 for i in `seq 1 $subband_layers`;
 do
@@ -74,13 +74,13 @@ do
     mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --layers=$i
     cd transcode_quality
     rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
-    echo -n $rate >> ../container_DRcurve.dat
-    echo -ne '\t'  >> ../container_DRcurve.dat
+    echo -n $rate >> ../DRcurve.dat
+    echo -ne '\t'  >> ../DRcurve.dat
     mctf expand --GOPs=$GOPs --TRLs=$TRLs
     RMSE=`snr --file_A=../low_0 --file_B=low_0 2> /dev/null | grep RMSE | cut -f 3`
-    echo -n $RMSE >> ../container_DRcurve.dat
-    echo -ne '\t' >> ../container_DRcurve.dat
-    cat ../layers.txt >> ../container_DRcurve.dat
+    echo -n $RMSE >> ../DRcurve.dat
+    echo -ne '\t' >> ../DRcurve.dat
+    cat ../layers.txt >> ../DRcurve.dat
     cd ..
     rm -rf transcode_quality
 done
