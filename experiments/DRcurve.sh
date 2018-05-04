@@ -6,6 +6,7 @@ TRLs=6
 y_dim=288
 x_dim=352
 FPS=30
+QSTEP=2048
 
 usage() {
     echo $0
@@ -15,10 +16,11 @@ usage() {
     echo "  [-y Y dimension ($Y_DIM)]"
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
+    echo "  [-q quantization_step ($QSTEP)"
     echo "  [-? (help)]"
 }
 
-while getopts "v:p:x:y:f:q:g:?" opt; do
+while getopts "v:p:x:y:f:q:g:q:?" opt; do
     case ${opt} in
         v)
             video="${OPTARG}"
@@ -37,6 +39,9 @@ while getopts "v:p:x:y:f:q:g:?" opt; do
             ;;
 	g)
             GOPs="${GOPs}"
+            ;;
+	q)
+            QSTEP="${QSTEP}"
             ;;
         ?)
             usage
@@ -59,7 +64,7 @@ set -x
 
 rm -f low_0
 ln -s $video low_0
-mctf compress --GOPs=$GOPs --TRLs=$TRLs
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --quantization_step=$QSTEP
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 layers=`wc -l slopes.txt | cut -f 1 -d " "`
 subband_layers=`echo $layers*$TRLs | bc`
