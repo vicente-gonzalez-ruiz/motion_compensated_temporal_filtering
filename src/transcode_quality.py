@@ -214,7 +214,7 @@ with io.open("layers.txt", 'w') as file:
     log.info("{}:{}".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
     for i in range(TRLs-1,0,-1):
         log.info("{}:{}".format(('H', i), slayers_per_subband[('H', i)]))
-        file.write("{}:{}".format(('H', i), slayers_per_subband[('H', i)]))
+        file.write("{}:{} ".format(('H', i), slayers_per_subband[('H', i)]))
     file.write("\n")
 
 # }}}
