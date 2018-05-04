@@ -202,18 +202,20 @@ log.info("(after truncating) subband_layers={}".format(subband_layers))
 
 # {{{ Count the number of subband-layers per subband
 
-layers = {}
-layers[('L', TRLs-1)] = 0
+slayers_per_subband = {}
+slayers_per_subband[('L', TRLs-1)] = 0
 for i in range(TRLs-1,0,-1):
-    layers[('H', i)] = 0
+    slayers_per_subband[('H', i)] = 0
 
 for i in subband_layers:
-    layers[(i[0], i[1])] += 1
-
-log.info("layers={}".format(layers))
+    slayers_per_subband[(i[0], i[1])] += 1
 
 with io.open("layers.txt", 'w') as file:
-    file.write("{}\n".format(layers))
+    log.info("{}:{}".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
+    for i in range(TRLs-1,0,-1):
+        log.info("{}:{}".format(('H', i), slayers_per_subband[('H', i)]))
+        file.write("{}:{}".format(('H', i), slayers_per_subband[('H', i)]))
+    file.write("\n")
 
 # }}}
 
@@ -240,13 +242,13 @@ subband = 1
 while subband < TRLs:
 
     images = (images + 1) // 2
-    if layers[('H', subband)] > 0:
+    if slayers_per_subband[('H', subband)] > 0:
         log.info("Transcoding subband H[{}] with {} images".format(subband, images - 1))
 
         try:
             check_call("mctf transcode_quality_subband"
                        + " --subband " + HIGH + "_" + str(subband)
-                       + " --layers " + str(layers[('H', subband)])
+                       + " --layers " + str(slayers_per_subband[('H', subband)])
                        + " --images " + str(images - 1),
                        shell=True)
         except CalledProcessError:
@@ -265,7 +267,7 @@ log.info("Transcoding subband L[{}] with {} images".format(subband, images - 1))
 try:
     check_call("mctf transcode_quality_subband"
                + " --subband " + LOW + "_" + str(TRLs - 1)
-               + " --layers " + str(layers[('L', TRLs - 1)])
+               + " --layers " + str(slayers_per_subband[('L', TRLs - 1)])
                + " --images " + str(GOPs),
                shell=True)
 except CalledProcessError:
