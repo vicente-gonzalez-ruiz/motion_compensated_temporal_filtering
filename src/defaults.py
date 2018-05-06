@@ -47,11 +47,11 @@ class Defaults():
     subpixel_accuracy = 0
 
     # Texture quantization.
-    #layers = 8
-    quantization_min = 41000 # Max quality
+    layers = 8
+    #quantization_min = 41000 # Max quality
     #quantization_min = 45000
-    quantization_max = 45000 # Min quality
-    quantization_step = 256 # If smaller than 256, possible empty layers
+    #quantization_max = 45000 # Min quality
+    #quantization_step = 256 # If smaller than 256, possible empty layers
     #texture_slopes = "43000, 43256, 43512, 43768, 44024, 44280, 44536, 44792"
     #quantization_max = 50000
     #quantization_min = 42000
