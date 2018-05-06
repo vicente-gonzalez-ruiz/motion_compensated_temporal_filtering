@@ -167,61 +167,56 @@ else :
 
 # }}}
 
-# {{{ Average of the slope of each quality layer of each temporal subband
+# {{{ Compute slope averages
 
 # H subbands
 subband = 1
 while subband < TRLs:
-
     images = (images + 1) // 2
+    average = [0]*layers
 
-    with io.open("high_{}_{}".format(subband, image), 'r') as file:
-        log.info("{}:{}".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
-    file.write("{}:{} ".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
-    for i in range(TRLs-1,0,-1):
-        log.info("{}:{}".format(('H', i), slayers_per_subband[('H', i)]))
-        file.write("{}:{} ".format(('H', i), slayers_per_subband[('H', i)]))
-    file.write("\n")
+    for image in range(images):    
+        fname = "high_{}_{}.txt".format(subband, image)
+        with io.open(fname, 'r') as file:
+            slopes = file.readlines().split(',')
+        log.info("{}: {}".format(fname, slopes))
+        for i in range(layers):
+            average[i] += int(slopes[i])
 
+    for l in range(layers):
+        average[l] //= images
 
-    if slayers_per_subband[('H', subband)] > 0:
-        log.info("Transcoding subband H[{}] with {} images".format(subband, images - 1))
+    log.info("high_{}: {}".format(subband, average))
 
-        try:
-            check_call("mctf transcode_quality_subband"
-                       + " --subband " + HIGH + "_" + str(subband)
-                       + " --layers " + str(slayers_per_subband[('H', subband)])
-                       + " --images " + str(images - 1),
-                       shell=True)
-        except CalledProcessError:
-            sys.exit(-1)
+    with io.open("high_{}.txt".format(subband)) as file:
+        file.write("{}".format(average))
 
-        try:
-            check_call("trace cp motion_residue_" + str(subband) + "*.j2c transcode_quality",
-	               shell=True)
-        except CalledProcessError:
-            sys.exit(-1)
+# L subband
 
-    subband += 1
+for image in range(GOPs):
+    fname = "low_{}_{}.txt".format(subband, image)
+    with io.open(fname, 'r') as file:
+        slopes = file.readlines().split('.')
+    log.info("{}: {}".format(fname, slopes))        
+    for i in range(layers):
+        average[i] += int(slopes[i])
 
-for s in range(1,TRLs):
-    for q in range(layers):
+for l in range(layers):
+    average[l] //= images
+
+log.info("low_{}: {}".format(subband, average))
+    
+with io.open("low_{}.txt".format(TRLs-1)) as file:
+    file.write("{}".format(average))
 
 # }}}
 
-
-
-
-# {{{ Define subband_layers: a list of tuples ('L'|'H', subband, layer, relative slope)
-
-# Read the number of quality layers used for texture compression
-quality_layers = sum(1 for line in open('slopes.txt'))
-log.info("original number of quality layers={}".format(quality_layers))
+# {{{ Define subband_layers: a list of tuples ('L'|'H', subband, layer, slope)
 
 subband_layers = []
     
 # L
-for q in range(quality_layers):
+for q in range(layers):
     subband_layers.append(('L', TRLs-1, q, 1.0/(math.sqrt(2.0)**q)))
 
 # H's
