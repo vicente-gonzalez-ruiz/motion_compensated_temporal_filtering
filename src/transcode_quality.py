@@ -127,18 +127,18 @@ log.setLevel('INFO')
 
 parser = arguments_parser(description="Transcodes in quality a MCJ2K sequence.")
 parser.GOPs()
-parser.add_argument("--layers",
+parser.add_argument("--keep_layers",
                     help="Number of quality layers to output",
                     default=16)
 parser.TRLs()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
-layers = int(args.layers)
+keep_layers = int(args.keep_layers)
 TRLs = int(args.TRLs)
 
 log.info("GOPs={}".format(GOPs))
-log.info("layers={}".format(layers))
+log.info("keep_layers={}".format(keep_layers))
 log.info("TRLs={}".format(TRLs))
 
 # }}}
@@ -166,6 +166,51 @@ else :
     exit (0)
 
 # }}}
+
+# {{{ Average of the slope of each quality layer of each temporal subband
+
+# H subbands
+subband = 1
+while subband < TRLs:
+
+    images = (images + 1) // 2
+
+    with io.open("high_{}_{}".format(subband, image), 'r') as file:
+        log.info("{}:{}".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
+    file.write("{}:{} ".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
+    for i in range(TRLs-1,0,-1):
+        log.info("{}:{}".format(('H', i), slayers_per_subband[('H', i)]))
+        file.write("{}:{} ".format(('H', i), slayers_per_subband[('H', i)]))
+    file.write("\n")
+
+
+    if slayers_per_subband[('H', subband)] > 0:
+        log.info("Transcoding subband H[{}] with {} images".format(subband, images - 1))
+
+        try:
+            check_call("mctf transcode_quality_subband"
+                       + " --subband " + HIGH + "_" + str(subband)
+                       + " --layers " + str(slayers_per_subband[('H', subband)])
+                       + " --images " + str(images - 1),
+                       shell=True)
+        except CalledProcessError:
+            sys.exit(-1)
+
+        try:
+            check_call("trace cp motion_residue_" + str(subband) + "*.j2c transcode_quality",
+	               shell=True)
+        except CalledProcessError:
+            sys.exit(-1)
+
+    subband += 1
+
+for s in range(1,TRLs):
+    for q in range(layers):
+
+# }}}
+
+
+
 
 # {{{ Define subband_layers: a list of tuples ('L'|'H', subband, layer, relative slope)
 

@@ -28,24 +28,20 @@ parser = arguments_parser(description="Compress texture data using JPEG 2000.")
 parser.add_argument("--file",
                     help="File that contains the texture data.",
                     default="")
-#parser.layers()
 parser.add_argument("--pictures",
                     help="Number of pictures to compress.",
                     default=3)
 parser.pixels_in_x()
 parser.pixels_in_y()
-parser.add_argument("--slopes",
-                    help="Slopes used for compression",
-                    default="45000")
+parser.layers()
 parser.SRLs()
 
 args = parser.parse_known_args()[0]
 file = args.file
-#layers = int(args.layers)
+layers = int(args.layers)
 pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
-slopes = args.slopes
 SRLs = int(args.SRLs)
 
 def encode (component,           # Y, U or V.
@@ -86,18 +82,19 @@ def encode (component,           # Y, U or V.
             command = "trace kdu_compress" \
               + " -i "          + image_filename + ".rawl" \
               + " -o "          + image_filename + ".j2c" \
-              + " Creversible=" + "no" \
-              + " -slope \""    + slopes  + "\""\
               + " -no_weights" \
+              + " Creversible=" + "no" \
+              + " Clayers="     + str(layers) \
               + " Nprecision="  + str(bits_per_component) \
               + " Nsigned="     + "no" \
               + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'" \
               + " Clevels="     + str(Clevels) \
-              + " Cuse_sop="    + "no"
-#              + " Clayers="     + str(layers) \
+              + " Cuse_sop="    + "no" \
+              + " | awk '/thresholds/{getline; print}' > " + image_filename + "_slopes.txt" 
+
             log.debug("{}".format(command))
             check_call(command, shell=True)
-
+            
         except CalledProcessError :
             sys.exit(-1)
 
