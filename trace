@@ -1,0 +1,3 @@
+/root/MCTF-video-coding/bin/motion_estimate
+/root/MCTF-video-coding/bin/compile motion_estimate
+/root/MCTF-video-coding/bin/src/motion_estimate.cpp

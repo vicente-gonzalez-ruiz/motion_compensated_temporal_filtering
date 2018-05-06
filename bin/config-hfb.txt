@@ -1,0 +1,24 @@
+[WAVELET]
+DECOMPOSITION_LEVEL=3
+#posiblilities: 0-Convolution 9/7F, 1- Lifting 9/7F
+TRANSFORM_TYPE=0
+WIDTH=512
+HEIGHT=512
+
+[CODING]
+#0-No rate control, then rplanes and Q must be specified, 1-Rate Control
+RATE_CONTROL_TYPE=1
+#target bitrate
+BIT_RATE=1.0
+#0-LTW_FLOAT, 3-LTW_SIGNO
+CODING_MODE=2
+#if ratecontrol type
+RPLANES_PARAMETER=0
+Q_PARAMETER=0
+#0-imagen 1-video
+CODING_TYPE=0
+
+[OTHERS]
+#measure time in secconds (Timing =1), timing=0 time in miliseconds
+TIMING=0
+VERBOSE=1
