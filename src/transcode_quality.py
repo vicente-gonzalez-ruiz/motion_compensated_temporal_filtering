@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
 #!/home/vruiz/.pyenv/shims/python -i
+#!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
 # Transcode a MCTF sequence in quality.
@@ -131,15 +131,18 @@ parser.add_argument("--keep_layers",
                     help="Number of quality layers to output",
                     default=16)
 parser.TRLs()
+parser.layers()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
 keep_layers = int(args.keep_layers)
 TRLs = int(args.TRLs)
+layers = int(args.layers)
 
 log.info("GOPs={}".format(GOPs))
 log.info("keep_layers={}".format(keep_layers))
 log.info("TRLs={}".format(TRLs))
+log.info("layers={}".format(layers))
 
 # }}}
 
@@ -166,6 +169,18 @@ else :
     exit (0)
 
 # }}}
+import pdb; pdb.set_trace()
+
+# {{{ GOPs and images
+
+gop=GOP()
+GOP_size = gop.get_size(TRLs)
+log.info("GOP_size = {}".format(GOP_size))
+
+images = (GOPs - 1) * GOP_size + 1
+log.info("images = {}".format(images))
+
+# }}}
 
 # {{{ Compute slope averages
 
@@ -176,9 +191,9 @@ while subband < TRLs:
     average = [0]*layers
 
     for image in range(images):    
-        fname = "high_{}_{}.txt".format(subband, image)
+        fname = "high_{}_{:04d}_Y.txt".format(subband, image)
         with io.open(fname, 'r') as file:
-            slopes = file.readlines().split(',')
+            slopes = file.read().replace(' ','').replace('\n','').split(',')
         log.info("{}: {}".format(fname, slopes))
         for i in range(layers):
             average[i] += int(slopes[i])
@@ -194,7 +209,7 @@ while subband < TRLs:
 # L subband
 
 for image in range(GOPs):
-    fname = "low_{}_{}.txt".format(subband, image)
+    fname = "low_{}_{:04d}_Y.txt".format(subband, image)
     with io.open(fname, 'r') as file:
         slopes = file.readlines().split('.')
     log.info("{}: {}".format(fname, slopes))        
@@ -216,13 +231,17 @@ with io.open("low_{}.txt".format(TRLs-1)) as file:
 subband_layers = []
     
 # L
-for q in range(layers):
-    subband_layers.append(('L', TRLs-1, q, 1.0/(math.sqrt(2.0)**q)))
+with io.open("low_{}.txt".format(TRLs-1)) as file:
+    slopes = file.readlines().split()
+for index, slope in enumerate(slopes):
+    subband_layers.append(('L', TRLs-1, index, slope))
 
 # H's
-for s in range(1,TRLs):
-    for q in range(quality_layers):
-        subband_layers.append(('H', TRLs-s, q, 1.0/(gain[s]*(math.sqrt(2.0)**q))))
+for subband in range(1,TRLs):
+    with io.open("high_{}.txt".format(subband)) as file:
+        slopes = file.readlines().split()
+    for index, slope in enumarte(slopes):
+        subband_layers.append(('H', TRLs-s, index, slope//gain[s]))
 
 log.info("subband_layers={}".format(subband_layers))
         
@@ -235,7 +254,7 @@ subband_layers.sort(key=operator.itemgetter(3), reverse=True)
 log.info("(after sorting) subband_layers={}".format(subband_layers))
 
 # Truncate the list
-del subband_layers[layers:]
+del subband_layers[keep_layers:]
 log.info("(after truncating) subband_layers={}".format(subband_layers))
 
 # }}}
@@ -260,23 +279,10 @@ with io.open("layers.txt", 'w') as file:
 
 # }}}
 
-# {{{ GOPs and images
-
-gop=GOP()
-GOP_size = gop.get_size(TRLs)
-log.info("GOP_size = {}".format(GOP_size))
-
-images = (GOPs - 1) * GOP_size + 1
-log.info("images = {}".format(images))
-
-# }}}
-
 # {{{ Transcoding
 
 LOW = "low"
 HIGH = "high"
-
-#import pdb; pdb.set_trace()
 
 # Transcoding of H subbands
 subband = 1

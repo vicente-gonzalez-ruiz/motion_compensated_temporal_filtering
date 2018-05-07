@@ -6,7 +6,7 @@ TRLs=6
 y_dim=288
 x_dim=352
 FPS=30
-QSTEP=2048
+LAYERS=8
 
 usage() {
     echo $0
@@ -16,11 +16,11 @@ usage() {
     echo "  [-y Y dimension ($Y_DIM)]"
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
-    echo "  [-q quantization_step ($QSTEP)"
+    echo "  [-l layers ($LAYERS)"
     echo "  [-? (help)]"
 }
 
-while getopts "v:p:x:y:f:q:g:q:?" opt; do
+while getopts "v:p:x:y:f:q:g:l:?" opt; do
     case ${opt} in
         v)
             video="${OPTARG}"
@@ -40,8 +40,8 @@ while getopts "v:p:x:y:f:q:g:q:?" opt; do
 	g)
             GOPs="${GOPs}"
             ;;
-	q)
-            QSTEP="${QSTEP}"
+	l)
+            LAYERS="${LAYERS}"
             ;;
         ?)
             usage
@@ -64,10 +64,9 @@ set -x
 
 rm -f low_0
 ln -s $video low_0
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --quantization_step=$QSTEP
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --layers=$LAYERS
 mctf info --GOPs=$GOPs --TRLs=$TRLs
-layers=`wc -l slopes.txt | cut -f 1 -d " "`
-subband_layers=`echo $layers*$TRLs | bc`
+subband_layers=`echo $LAYERS*$TRLs | bc`
 rm -f DRcurve.dat
 
 for i in `seq 1 $subband_layers`;
@@ -76,7 +75,7 @@ do
     mkdir transcode_quality
 #    cp motion*.j2c transcode_quality
     cp *type* transcode_quality
-    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --layers=$i
+    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i
     cd transcode_quality
     rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
     echo -n $rate >> ../DRcurve.dat

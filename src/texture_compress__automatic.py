@@ -56,7 +56,7 @@ log.debug("pictures = {}".format(pictures))
 subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) // 2
-    slopes = ','.join(str(i) for i in slope)
+    #slopes = ','.join(str(i) for i in slope)
     command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
       + " --file="              + HIGH + "_" + str(subband) \
       + " --pictures="          + str(pictures - 1) \
@@ -74,7 +74,7 @@ while subband < TRLs:
     subband += 1
 
 # Compression of the LOW frequency temporal subband.
-slopes = ','.join(str(i) for i in slope)
+#slopes = ','.join(str(i) for i in slope)
 command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
   + " --file="              + LOW + "_" + str(TRLs - 1) \
   + " --pictures="          + str(pictures) \

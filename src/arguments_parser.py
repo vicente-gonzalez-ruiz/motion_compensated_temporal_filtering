@@ -115,6 +115,10 @@ class arguments_parser(argparse.ArgumentParser):
                           help="Subpixel motion estimation precission",
                           default=Defaults.subpixel_accuracy)
 
+    def layers(self):
+        self.add_argument("--layers",
+                          help="Number of quality layers",
+                          default=Defaults.layers)
 
     #def quality(self):
     #    self.add_argument("--quality",

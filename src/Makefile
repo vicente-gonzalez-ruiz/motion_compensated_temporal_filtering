@@ -236,6 +236,9 @@ EXE	+= $(MCTF_BIN)/subband_texture_compress__j2k
 $(MCTF_BIN)/texture_compress__constant:	texture_compress__constant.py
 EXE	+= $(MCTF_BIN)/texture_compress__constant
 
+$(MCTF_BIN)/texture_compress__constant:	texture_compress__automatic.py
+EXE	+= $(MCTF_BIN)/texture_compress__automatic
+
 $(MCTF_BIN)/texture_compress__orthogonal:	texture_compress__orthogonal.py
 EXE	+= $(MCTF_BIN)/texture_compress__orthogonal
 

@@ -90,7 +90,7 @@ def encode (component,           # Y, U or V.
               + " Sdims='{'"    + str(sDimY) + "," + str(sDimX) + "'}'" \
               + " Clevels="     + str(Clevels) \
               + " Cuse_sop="    + "no" \
-              + " | awk '/thresholds/{getline; print}' > " + image_filename + "_slopes.txt" 
+              + " | awk '/thresholds/{getline; print}' > " + image_filename + ".txt" 
 
             log.debug("{}".format(command))
             check_call(command, shell=True)
