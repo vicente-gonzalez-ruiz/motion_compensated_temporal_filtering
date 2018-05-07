@@ -169,7 +169,6 @@ else :
     exit (0)
 
 # }}}
-import pdb; pdb.set_trace()
 
 # {{{ GOPs and images
 
@@ -187,7 +186,7 @@ log.info("images = {}".format(images))
 # H subbands
 subband = 1
 while subband < TRLs:
-    images = (images + 1) // 2
+    images = (images + 1) // 2 - 1
     average = [0]*layers
 
     for image in range(images):    
@@ -203,45 +202,50 @@ while subband < TRLs:
 
     log.info("high_{}: {}".format(subband, average))
 
-    with io.open("high_{}.txt".format(subband)) as file:
-        file.write("{}".format(average))
+    with io.open("high_{}.txt".format(subband), 'w') as file:
+        for i in average:           
+            file.write("{} ".format(i))
 
+    subband += 1
+    
 # L subband
-
+average = [0]*layers
 for image in range(GOPs):
-    fname = "low_{}_{:04d}_Y.txt".format(subband, image)
+    fname = "low_{}_{:04d}_Y.txt".format(TRLs-1, image)
     with io.open(fname, 'r') as file:
-        slopes = file.readlines().split('.')
+        slopes = file.read().replace(' ','').replace('\n','').split(',')
     log.info("{}: {}".format(fname, slopes))        
     for i in range(layers):
         average[i] += int(slopes[i])
 
 for l in range(layers):
-    average[l] //= images
+    average[l] //= GOPs
 
 log.info("low_{}: {}".format(subband, average))
     
-with io.open("low_{}.txt".format(TRLs-1)) as file:
-    file.write("{}".format(average))
+with io.open("low_{}.txt".format(TRLs-1), 'w') as file:
+    for i in average:
+        file.write("{} ".format(i))
 
 # }}}
 
+import pdb; pdb.set_trace()
 # {{{ Define subband_layers: a list of tuples ('L'|'H', subband, layer, slope)
 
 subband_layers = []
     
 # L
-with io.open("low_{}.txt".format(TRLs-1)) as file:
-    slopes = file.readlines().split()
+with io.open("low_{}.txt".format(TRLs-1), 'r') as file:
+    slopes = file.read().split()
 for index, slope in enumerate(slopes):
-    subband_layers.append(('L', TRLs-1, index, slope))
+    subband_layers.append(('L', TRLs-1, index, int(slope)))
 
 # H's
 for subband in range(1,TRLs):
     with io.open("high_{}.txt".format(subband)) as file:
-        slopes = file.readlines().split()
-    for index, slope in enumarte(slopes):
-        subband_layers.append(('H', TRLs-s, index, slope//gain[s]))
+        slopes = file.read().split()
+    for index, slope in enumerate(slopes):
+        subband_layers.append(('H', TRLs-subband, index, int(slope)//gain[subband]))
 
 log.info("subband_layers={}".format(subband_layers))
         
