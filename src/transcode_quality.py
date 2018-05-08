@@ -318,7 +318,7 @@ while subband < TRLs:
     subband += 1
 
 # Transcoding of L subband
-log.info("Transcoding subband L[{}] with {} images".format(subband, images - 1))
+log.info("Transcoding subband L[{}] with {} images".format(subband, TRLs - 1))
 try:
     check_call("mctf transcode_quality_subband"
                + " --subband " + LOW + "_" + str(TRLs - 1)
