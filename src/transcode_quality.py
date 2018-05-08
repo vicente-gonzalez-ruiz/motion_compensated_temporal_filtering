@@ -1,5 +1,5 @@
-#!/home/vruiz/.pyenv/shims/python -i
 #!/usr/bin/env python3
+#!/home/vruiz/.pyenv/shims/python -i
 # -*- coding: iso-8859-15 -*-
 
 # Transcode a MCTF sequence in quality.
@@ -139,10 +139,10 @@ keep_layers = int(args.keep_layers)
 TRLs = int(args.TRLs)
 layers = int(args.layers)
 
-log.info("GOPs={}".format(GOPs))
-log.info("keep_layers={}".format(keep_layers))
-log.info("TRLs={}".format(TRLs))
-log.info("layers={}".format(layers))
+log.info("GOPs = {}".format(GOPs))
+log.info("keep_layers = {}".format(keep_layers))
+log.info("TRLs = {}".format(TRLs))
+log.info("layers = {}".format(layers))
 
 # }}}
 
@@ -186,10 +186,10 @@ log.info("images = {}".format(images))
 # H subbands
 subband = 1
 while subband < TRLs:
-    images = (images + 1) // 2 - 1
+    images = (images + 1) // 2
     average = [0]*layers
 
-    for image in range(images):    
+    for image in range(images-1):    
         fname = "high_{}_{:04d}_Y.txt".format(subband, image)
         with io.open(fname, 'r') as file:
             slopes = file.read().replace(' ','').replace('\n','').split(',')
@@ -198,7 +198,7 @@ while subband < TRLs:
             average[i] += int(slopes[i])
 
     for l in range(layers):
-        average[l] //= images
+        average[l] //= (images-1)
 
     log.info("high_{}: {}".format(subband, average))
 
@@ -229,7 +229,7 @@ with io.open("low_{}.txt".format(TRLs-1), 'w') as file:
 
 # }}}
 
-import pdb; pdb.set_trace()
+#import pdb; pdb.set_trace()
 # {{{ Define subband_layers: a list of tuples ('L'|'H', subband, layer, slope)
 
 subband_layers = []
@@ -238,14 +238,15 @@ subband_layers = []
 with io.open("low_{}.txt".format(TRLs-1), 'r') as file:
     slopes = file.read().split()
 for index, slope in enumerate(slopes):
-    subband_layers.append(('L', TRLs-1, index, int(slope)))
+    subband_layers.append(('L', TRLs-1, layers-index-1, int(slope)))
 
 # H's
 for subband in range(1,TRLs):
     with io.open("high_{}.txt".format(subband)) as file:
         slopes = file.read().split()
     for index, slope in enumerate(slopes):
-        subband_layers.append(('H', TRLs-subband, index, int(slope)//gain[subband]))
+        #subband_layers.append(('H', TRLs-subband, layers-index-1, int(float(slope)//gain[subband])))
+        subband_layers.append(('H', TRLs-subband, layers-index-1, int(slope)))
 
 log.info("subband_layers={}".format(subband_layers))
         

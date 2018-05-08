@@ -6,42 +6,49 @@ TRLs=6
 y_dim=288
 x_dim=352
 FPS=30
-LAYERS=8
+layers=8
 
 usage() {
     echo $0
-    echo "  [-v video file name ($VIDEO)]"
+    echo "  [-v video file name ($video)]"
     echo "  [-g GOPs ($GOPs)]"
-    echo "  [-x X dimension ($X_DIM)]"
-    echo "  [-y Y dimension ($Y_DIM)]"
+    echo "  [-x X dimension ($x_dim)]"
+    echo "  [-y Y dimension ($y_dim)]"
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
-    echo "  [-l layers ($LAYERS)"
+    echo "  [-l layers ($layers)"
     echo "  [-? (help)]"
 }
 
-while getopts "v:p:x:y:f:q:g:l:?" opt; do
+while getopts "v:p:x:y:f:t:g:l:?" opt; do
     case ${opt} in
         v)
             video="${OPTARG}"
+	    echo video=$video
             ;;
         x)
             x_dim="${OPTARG}"
+	    echo x_dim=$x_dim
             ;;
         y)
             y_dim="${OPTARG}"
+	    echo y_dim=$y_dim
             ;;
         f)
             FPS="${OPTARG}"
+	    echo FPS=$FPS
             ;;
         t)
-            TRLs="${TRLs}"
+            TRLs="${OPTARG}"
+	    echo TRLs=$TRLs
             ;;
 	g)
-            GOPs="${GOPs}"
+            GOPs="${OPTARG}"
+	    echo GOPs=$GOPs
             ;;
 	l)
             LAYERS="${LAYERS}"
+	    echo layers=$layers
             ;;
         ?)
             usage

@@ -1,18 +1,18 @@
 #!/bin/bash
 
-VIDEO=~/Videos/mobile_352x288x30x420x300.yuv
+video=~/Videos/mobile_352x288x30x420x300.yuv
 GOPs=9
 TRLs=6
-Y_DIM=288
-X_DIM=352
+y_dim=288
+x_dim=352
 FPS=30
 
 usage() {
     echo $0
-    echo "  [-v video file name ($VIDEO)]"
+    echo "  [-v video file name ($video)]"
     echo "  [-g GOPs ($GOPs)]"
-    echo "  [-x X dimension ($X_DIM)]"
-    echo "  [-y Y dimension ($Y_DIM)]"
+    echo "  [-x X dimension ($x_dim)]"
+    echo "  [-y Y dimension ($y_dim)]"
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
     echo "  [-? (help)]"
@@ -20,25 +20,31 @@ usage() {
 
 (echo $0 $@ 1>&2)
 
-while getopts "v:p:x:y:f:q:g:?" opt; do
+while getopts "v:p:x:y:f:t:g:?" opt; do
     case ${opt} in
 	v)
-	    VIDEO="${OPTARG}"
+	    video="${OPTARG}"
+	    echo video=$video
 	    ;;
 	x)
-	    X_DIM="${OPTARG}"
+	    x_dim="${OPTARG}"
+	    echo x_dim=$x_dim
 	    ;;
 	y)
-	    Y_DIM="${OPTARG}"
+	    y_dim="${OPTARG}"
+	    echo y_dim=$y_dim
 	    ;;
 	f)
 	    FPS="${OPTARG}"
+	    echo FPS=$FPS
 	    ;;
 	t)
-	    TRLs="${TRLs}"
+	    TRLs="${OPTARG}"
+	    echo TRLs=$TRLs
 	    ;;
 	g)
-	    GOPs="${GOPs}"
+	    GOPs="${OPTARG}"
+	    echo GOPs=$GOPs
 	    ;;
 	?)
             usage
@@ -60,21 +66,20 @@ done
 set -x
 
 rm low_0
-ln -s $VIDEO low_0
+ln -s $video low_0
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mkdir tmp
 cd tmp
 cp ../*.j2c .
-cp ../slopes.tx .
 cp ../*type* .
-cp ../slopes.txt .
+cp ../*.txt .
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
 mctf show
 mkdir transcode_quality
 mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs
 cd transcode_quality
-cp ../motion*.j2c .
+#cp ../motion*.j2c .
 cp ../*type* .
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs

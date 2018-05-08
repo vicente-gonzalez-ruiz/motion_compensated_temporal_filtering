@@ -22,6 +22,7 @@ import logging
 
 logging.basicConfig()
 log = logging.getLogger("subband_motion_compress__j2k")
+log.setLevel('INFO')
 
 ## Number of components of a motion field.
 COMPONENTS          = 4
@@ -52,7 +53,7 @@ blocks_in_x = int(args.blocks_in_x)
 blocks_in_y = int(args.blocks_in_y)
 fields = int(args.fields)
 file = args.file
-slopes = args.slopes; log.debug("slopes={}".format(slopes))
+slopes = args.slopes; log.info("slopes={}".format(slopes))
 
 ## Number of levels of the DWT to be applied in compression.
 spatial_dwt_levels = 0 # 1 # SRLs - 1
@@ -98,6 +99,8 @@ for comp_number in range (0, COMPONENTS) :
         except CalledProcessError:
             sys.exit(-1)
 
+
+        log.info("Compressing {}".format(campoMov_name))
         try:
             # Compress.
             check_call("trace kdu_compress"
