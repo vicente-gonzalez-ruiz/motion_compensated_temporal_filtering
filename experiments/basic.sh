@@ -6,6 +6,7 @@ TRLs=6
 y_dim=288
 x_dim=352
 FPS=30
+keep_layers=8
 
 usage() {
     echo $0
@@ -15,12 +16,13 @@ usage() {
     echo "  [-y Y dimension ($y_dim)]"
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
+    echo "  [-k keep layers ($keep_layers)]"
     echo "  [-? (help)]"
 }
 
 (echo $0 $@ 1>&2)
 
-while getopts "v:p:x:y:f:t:g:?" opt; do
+while getopts "v:p:x:y:f:t:g:k:?" opt; do
     case ${opt} in
 	v)
 	    video="${OPTARG}"
@@ -45,6 +47,10 @@ while getopts "v:p:x:y:f:t:g:?" opt; do
 	g)
 	    GOPs="${OPTARG}"
 	    echo GOPs=$GOPs
+	    ;;
+	k)
+	    keep_layers="${OPTARG}"
+	    echo keep_layers=$keep_layers
 	    ;;
 	?)
             usage
@@ -77,7 +83,7 @@ cp ../*.txt .
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
 mctf show
 mkdir transcode_quality
-mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs
+mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers
 cd transcode_quality
 #cp ../motion*.j2c .
 cp ../*type* .

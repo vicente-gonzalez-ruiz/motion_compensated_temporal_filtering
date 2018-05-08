@@ -237,8 +237,9 @@ subband_layers = []
 # L
 with io.open("low_{}.txt".format(TRLs-1), 'r') as file:
     slopes = file.read().split()
+range_of_slopes = int(slopes[0]) - int(slopes[layers-1])
 for index, slope in enumerate(slopes):
-    subband_layers.append(('L', TRLs-1, layers-index-1, int(slope)))
+    subband_layers.append(('L', TRLs-1, layers-index-1, int(slope)-42000))
 
 # H's
 for subband in range(1,TRLs):
@@ -246,7 +247,9 @@ for subband in range(1,TRLs):
         slopes = file.read().split()
     for index, slope in enumerate(slopes):
         #subband_layers.append(('H', TRLs-subband, layers-index-1, int(float(slope)//gain[subband])))
-        subband_layers.append(('H', TRLs-subband, layers-index-1, int(slope)))
+        #subband_layers.append(('H', TRLs-subband, layers-index-1, int(slope)))
+        #subband_layers.append(('H', TRLs-subband, layers-index-1, int(float(slope)-range_of_slopes*gain[subband])))
+        subband_layers.append(('H', TRLs-subband, layers-index-1, (int(slope)-42000)//gain[subband]))
 
 log.info("subband_layers={}".format(subband_layers))
         

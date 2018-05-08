@@ -82,7 +82,7 @@ def encode (component,           # Y, U or V.
             command = "trace kdu_compress" \
               + " -i "          + image_filename + ".rawl" \
               + " -o "          + image_filename + ".j2c" \
-              + " -no_weights" \
+              + " -no_weights -slope 42000" \
               + " Creversible=" + "no" \
               + " Clayers="     + str(layers) \
               + " Nprecision="  + str(bits_per_component) \
