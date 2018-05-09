@@ -32,10 +32,10 @@ class Defaults():
 
     # Controls the quality level and the bit-rate of the code-stream
     # of motions.
-    motion_layers = 1
-    motion_quantization = 0 # 0 -> No quantization
-    motion_quantization_step = 0
-    motion_slopes = "0"
+    #motion_layers = 1
+    #motion_quantization = 0 # 0 -> No quantization
+    #motion_quantization_step = 0
+    #motion_slopes = "0"
     
     # Size of the search areas in the motion estimation process.
     search_range = 4
@@ -46,7 +46,7 @@ class Defaults():
     # Subpixel motion estimation order.
     subpixel_accuracy = 0
 
-    # Texture quantization.
+    # Texture quantization parameters.
     layers = 8
     #quantization_min = 41000 # Max quality
     #quantization_min = 45000
@@ -59,6 +59,17 @@ class Defaults():
     
     # Number of Temporal Resolution Levels.
     TRLs = 6 # GOP_size = 32
+
+    #
+    #    TRLs GOP_size
+    #    ---- --------
+    #       1        1
+    #       2        2
+    #       3        4
+    #       4        8
+    #       5       16
+    #       6       32
+    #       7       64
 
     # Weight of the update step.
     update_factor = 0 # 1.0/4 # 0 -> No updating.

@@ -15,43 +15,46 @@
 #
 #  * Using a GOP_size=4:
 #
-#    TRLs GOP_size
-#    ---- --------
-#       1        1
-#       2        2
-#       3        4
-#       4        8
-#       5       16
-#       6       32
-#       7       64
-#
 #    mctf compress --TRLs=3
 #
 #  * Controlling quantization:
 #
 #    mctf compress --quality=50
 
+# {{{ Importing
+
 import sys
 import os
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from arguments_parser import arguments_parser
+
+# }}}
+
+# {{{ Logging
+
 import logging
 
 logging.basicConfig()
 log = logging.getLogger("compress")
+log.setLevel('INFO')
 
-parser = arguments_parser(description="Encodes a sequence of pictures into a MCJ2K stream")
+# }}}
+
+# {{{ Arguments parsing
+
+from arguments_parser import arguments_parser
+
+parser = arguments_parser(description="Encodes a sequence of imagesy into a MCJ2K stream")
 parser.always_B()
 parser.block_overlaping()
 parser.block_size()
 parser.border_size()
 parser.GOPs()
 parser.min_block_size()
-parser.motion_layers()
-parser.motion_quantization()
-parser.motion_quantization_step()
+#parser.motion_layers()
+#parser.motion_quantization()
+#parser.motion_quantization_step()
 parser.pixels_in_x()
 parser.pixels_in_y()
 parser.search_range()
@@ -68,9 +71,9 @@ block_size = int(args.block_size)
 min_block_size = int(args.min_block_size)
 border_size = int(args.border_size)
 GOPs = int(args.GOPs)
-motion_layers = str(args.motion_layers); log.debug("motion_layers={}".format(motion_layers))
-motion_quantization = str(args.motion_quantization); log.debug("motion_quantization={}".format(motion_quantization))
-motion_quantization_step = str(args.motion_quantization_step); log.debug("motion_quantization_step={}".format(motion_quantization_step))
+#motion_layers = str(args.motion_layers); log.debug("motion_layers={}".format(motion_layers))
+#motion_quantization = str(args.motion_quantization); log.debug("motion_quantization={}".format(motion_quantization))
+#motion_quantization_step = str(args.motion_quantization_step); log.debug("motion_quantization_step={}".format(motion_quantization_step))
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 layers = str(args.layers)
@@ -80,9 +83,12 @@ TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
 update_factor = float(args.update_factor)
 
+# }}}
+
 MCTF_QUANTIZER       = os.environ["MCTF_QUANTIZER"]
 
 if TRLs > 1:
+    # {{{
     try:
         # Temporal analysis of image sequence. Temporal decorrelation.
         check_call("mctf analyze"
@@ -110,15 +116,17 @@ if TRLs > 1:
                    + " --min_block_size="           + str(min_block_size)
                    + " --pixels_in_x="              + str(pixels_in_x)
                    + " --pixels_in_y="              + str(pixels_in_y)
-                   + " --motion_layers="            + str(motion_layers)
-                   + " --motion_quantization="      + str(motion_quantization)
-                   + " --motion_quantization_step=" + str(motion_quantization_step)
+#                   + " --motion_layers="            + str(motion_layers)
+#                   + " --motion_quantization="      + str(motion_quantization)
+#                   + " --motion_quantization_step=" + str(motion_quantization_step)
                    + " --SRLs="                     + str(SRLs)
                    + " --TRLs="                     + str(TRLs)
                    , shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
+    # }}} if TRLS > 1
+    
 try:
     # Compress texture
     check_call("mctf texture_compress__"         + MCTF_QUANTIZER

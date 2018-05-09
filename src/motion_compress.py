@@ -1,37 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-#  Compresses data movement.
 #
-#  Motion fields are compressed without loss, generating a separate
-#  file for each level of temporal resolution and a different stream
-#  for each GOP. Compression is done thinking about how the
-#  decompressor will perform decompression.
+#  Compresses motion data.
 #
-#  Removed: the temporal redundancy between bands and bidirectional
-#  redundancy.\n
-#  - The first states that, if the sub-band "i+1" one component of a
-#  vector vale "2x" in the sub-band "i" that component of the vector
-#  should be worth "x".  
-#  - The second is that, if a component back better "-x", the 
-#  corresponding component forward should be worth "x".
-#
-#  Finally a reversible entropy coder that compresses the wastes used.
 
 import os
 import sys
 from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
-from arguments_parser import arguments_parser
+
+# {{{ Logging 
+
 import logging
 
 logging.basicConfig()
 log = logging.getLogger("motion_compress")
+log.setLevel('INFO')
 
-#MOTION_CODER_NAME = "gzip"
-#MOTION_CODER_NAME = "kdu_v_compress"
+# }}}
+
 MCTF_MOTION_CODEC  = os.environ["MCTF_MOTION_CODEC"]
+
+# {{{ Arguments parsing
+
+from arguments_parser import arguments_parser
 
 parser = arguments_parser(description="Compress the motion data.")
 parser.pixels_in_x()
@@ -39,9 +33,9 @@ parser.pixels_in_y()
 parser.block_size()
 parser.min_block_size()
 parser.GOPs()
-parser.motion_layers()
-parser.motion_quantization()
-parser.motion_quantization_step()
+#parser.motion_layers()
+#parser.motion_quantization()
+#parser.motion_quantization_step()
 parser.TRLs()
 
 args = parser.parse_known_args()[0]
@@ -50,28 +44,22 @@ pixels_in_y = int(args.pixels_in_y)
 block_size = int(args.block_size)
 min_block_size = int(args.min_block_size)
 GOPs = int(args.GOPs)
-layers = int(args.motion_layers); log.debug("layers={}".format(layers))
-quantization = int(args.motion_quantization); log.debug("quantization={}".format(quantization))
-quantization_step = int(args.motion_quantization_step); log.debug("quantization_step={}".format(quantization_step))
+#layers = int(args.motion_layers); log.debug("layers={}".format(layers))
+#quantization = int(args.motion_quantization); log.debug("quantization={}".format(quantization))
+#quantization_step = int(args.motion_quantization_step); log.debug("quantization_step={}".format(quantization_step))
 TRLs = int(args.TRLs)
+
+# }}}
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
-pictures = (GOPs - 1) * GOP_size + 1
-
-## Number of pictures of a temporal resolution.
-fields      = pictures // 2
-iterations  = TRLs - 1
-
-## Number of blocks in the Y direction.
+images = (GOPs - 1) * GOP_size + 1
+fields = images // 2
 blocks_in_y = pixels_in_y // block_size
-
-## Number of blocks in the X direction.
 blocks_in_x = pixels_in_x // block_size
 
-iter   = 1
-
-while iter < iterations:
+iter = 1
+while iter < TRLs - 1:
 
     # Unmapped fields of movement between levels of resolution.
     try:
@@ -86,11 +74,11 @@ while iter < iterations:
     except CalledProcessError:
         sys.exit(-1)
 
-    # Calculate the block size used in this temporal iteration.
+    # Calculate the block size used in this temporal resolution level.
     block_size = block_size // 2
     if (block_size < min_block_size):
+        
         block_size = min_block_size
-
         fields //= 2
         iter += 1
         blocks_in_y = pixels_in_y // block_size
@@ -124,8 +112,8 @@ else:
 #import ipdb; ipdb.set_trace()
 
 iter = 1
-fields = pictures // 2
-while iter <= iterations:
+fields = images // 2
+while iter <= TRLs - 1:
 
     try:
         check_call("mctf subband_motion_compress__" + MCTF_MOTION_CODEC
