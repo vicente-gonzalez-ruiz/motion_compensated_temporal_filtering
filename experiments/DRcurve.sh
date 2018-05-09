@@ -47,7 +47,7 @@ while getopts "v:p:x:y:f:t:g:l:?" opt; do
 	    echo GOPs=$GOPs
             ;;
 	l)
-            LAYERS="${LAYERS}"
+            layers="${OPTARG}"
 	    echo layers=$layers
             ;;
         ?)
@@ -71,7 +71,7 @@ set -x
 
 rm -f low_0
 ln -s $video low_0
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --layers=$LAYERS
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --layers=$layers
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 subband_layers=`echo $LAYERS*$TRLs | bc`
 rm -f DRcurve.dat
