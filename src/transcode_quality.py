@@ -16,7 +16,7 @@
 #
 # Examples:
 #
-#  mctf transcode_quality --layers=16
+#  mctf transcode_quality --keep_layers=16
 #
 # Procedure.
 #
