@@ -1,36 +1,17 @@
-/**
- * \file texture.cpp
- * \author Vicente Gonzalez-Ruiz.
- * \date Last modification: 2015, January 7.
- * \brief Simple operations on textures.
- */
+/* Texture stuff */
 
-/** \brief Maximum width of a component. */
+/* Limits */
 #define PIXELS_IN_X_MAX 16384
 
-/** 
- * \tparam IO_TYPE is a special template type to store data in disk.
- * \tparam CPU_TYPE is a special template type to store data in RAM.
-*/
 template <typename IO_TYPE, typename CPU_TYPE>
-
-/** 
- * \brief A texture class.
- */
 class texture {
 
 private:
-  /** \brief A horizontal line of an picture. */
   IO_TYPE line[PIXELS_IN_X_MAX];
 
 public:
 
-  /** \brief The constructor.
-   * \param y_dim Dimension 'Y' of a picture.
-   * \param x_dim Dimension 'Y' of a picture.
-   * \param border_dim Border size of a picture.
-   * \returns A matrix (2D) with margins (border).
-   */
+  /* Allocate a texture image */
   CPU_TYPE **alloc(int y_dim, int x_dim, int border_dim) {
     CPU_TYPE **data = new CPU_TYPE * [ y_dim + border_dim*2 ];
     for(int y=0; y<(y_dim + border_dim*2); y++) {
@@ -45,13 +26,7 @@ public:
     return data;
   }
 
-
-  /** \brief Extends the image, copying the value of the nearest pixel (CPU_TYPE).
-   * \param data A matrix (2D) with margins (border).
-   * \param y_dim Dimension 'Y' of a picture.
-   * \param x_dim Dimension 'X' of a picture.
-   * \param border_dim Border size of a picture.
-   */
+  /* Extends an image, copying the value of the nearest pixel (CPU_TYPE). */
   void fill_border(CPU_TYPE **data, int y_dim, int x_dim, int border_dim) {
 
     /** Region 1: Upper left corner. */
@@ -113,12 +88,7 @@ public:
   }
 
 
-  /** \brief Read an image from disk to memory.
-   * \param fd File.
-   * \param img A matrix (2D).
-   * \param y_dim Dimension 'Y' of a picture.
-   * \param x_dim Dimension 'X' of a picture.
-   */
+  /* Read an image from disk. */
   void read(FILE *fd, CPU_TYPE **img, int y_dim, int x_dim) {
     for(int y=0; y<y_dim; y++) {
       int read = fread(line, sizeof(IO_TYPE), x_dim, fd);
@@ -128,12 +98,7 @@ public:
     }
   }
 
-  /** \brief Write an image from memory to disk.
-   * \param fd File.
-   * \param img A matrix (2D).
-   * \param y_dim Dimension 'Y' of a picture.
-   * \param x_dim Dimension 'X' of a picture.
-   */
+  /* Write an image to disk. */
   void write(FILE *fd, CPU_TYPE **img, int y_dim, int x_dim) {
     for(int y=0; y<y_dim; y++) {
       for(int x=0; x<x_dim; x++) {
@@ -144,9 +109,6 @@ public:
   }
 
 };
-
-
-
 
 
 

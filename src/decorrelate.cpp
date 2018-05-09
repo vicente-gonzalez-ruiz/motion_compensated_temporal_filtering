@@ -1,3 +1,7 @@
+/* De/correlate a sequence of images using the input bidirectional
+   motion vector fields.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -13,27 +17,15 @@
 #include "motion.cpp"
 #include "entropy.h"
 
-
-/** \brief TC = Texture Component; IO = Input Output. */
-#define TC_IO_TYPE unsigned char
-/** \brief TC = Texture Component; CPU = Central Processing Unit. */
-#define TC_CPU_TYPE short
-/** \brief Minimum value. */
+#define TC_IO_TYPE unsigned char /* TC = Texture Component; IO = Input Output. */
+#define TC_CPU_TYPE short /* TC = Texture Component; CPU = Central Processing Unit. */
 #define MIN_TC_VAL 0
-/** \brief Maximum value. */
 #define MAX_TC_VAL 255
-/** \brief Filter bank type. */
 #define TEXTURE_INTERPOLATION_FILTER _5_3
-/** \brief Number of components. */
 #define COMPONENTS 3
-/** \brief Dimension 'X' of a picture. */
 #define PIXELS_IN_X 352
-/** \brief Dimension 'Y' of a picture. */
 #define PIXELS_IN_Y 288
-/** \brief If defined, shows information about predictions. */
-#define GET_PREDICTION
-/* \brief If defined, shows information about the execution. */
-//#define DEBUG
+#define GET_PREDICTION /* If defined, shows information about predictions. */
 
 /** \brief When it is used to analyze, uses information about the movement to generate a prediction of the odd images (predicted frames) from the pairs (reference images).\n
  * Then the predictions are subtracted at odd images to generate high temporal frequency band (images of error).\n

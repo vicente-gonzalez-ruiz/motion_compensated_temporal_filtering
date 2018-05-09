@@ -18,6 +18,7 @@ import io
 
 logging.basicConfig()
 log = logging.getLogger("texture_compress__automatic") # remove __automatic (some day)
+log.setLevel('INFO')
 
 # }}}
 
@@ -32,12 +33,19 @@ parser.SRLs()
 parser.TRLs()
 
 args = parser.parse_known_args()[0]
-GOPs = int(args.GOPs); log.debug("GOPs={}".format(GOPs))
+GOPs = int(args.GOPs)
 layers = int(args.layers)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 SRLs = int(args.SRLs)
 TRLs = int(args.TRLs)
+
+log.info("GOPs = {}".format(GOPs))
+log.info("layers = {}".format(layers))
+log.info("pixels_in_x = {}".format(pixels_in_x))
+log.info("pixels_in_y = {}".format(pixels_in_y))
+log.info("SRLs = {}".format(SRLs))
+log.info("TRLs = {}".format(TRLs))
 
 # }}}
 
@@ -47,19 +55,19 @@ LOW                  = "low"
 
 gop      = GOP()
 GOP_size = gop.get_size(TRLs)
-log.debug("GOP_size = {}".format(GOP_size))
+log.info("GOP_size = {}".format(GOP_size))
 
-pictures = (GOPs - 1) * GOP_size + 1
-log.debug("pictures = {}".format(pictures))
+images = (GOPs - 1) * GOP_size + 1
+log.info("images = {}".format(images))
 
 # Compression of HIGH frequency temporal subbands.
 subband = 1
 while subband < TRLs:
-    pictures = (pictures + 1) // 2
+    images = (images + 1) // 2
     #slopes = ','.join(str(i) for i in slope)
     command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
       + " --file="              + HIGH + "_" + str(subband) \
-      + " --pictures="          + str(pictures - 1) \
+      + " --images="            + str(images - 1) \
       + " --pixels_in_x="       + str(pixels_in_x) \
       + " --pixels_in_y="       + str(pixels_in_y) \
       + " --layers="            + str(layers) \
@@ -77,7 +85,7 @@ while subband < TRLs:
 #slopes = ','.join(str(i) for i in slope)
 command = "mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC \
   + " --file="              + LOW + "_" + str(TRLs - 1) \
-  + " --pictures="          + str(pictures) \
+  + " --images="            + str(images) \
   + " --pixels_in_x="       + str(pixels_in_x) \
   + " --pixels_in_y="       + str(pixels_in_y) \
   + " --layers="            + str(layers) \

@@ -1,27 +1,16 @@
-/**
- * \file bidirectional_motion_decorrelate.cpp
- * \author Vicente Gonzalez-Ruiz.
- * \date Last modification: 2015, January 7.
- * \brief Bidirectional motion decorrelation. In most scenes, 
- * the movement is linear.\n For this reason, we encrypt the field 
- * forward as the prediction error of the field back changed sign.
- *
- * The MCTF project has been supported by the Junta de Andalucía through
- * the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
- * sobre Internet" (P10-TIC-6548).
- */
+/* Bidirectionan motion vectors decorrelation.
 
-#include <stdio.h>  /* NULL, FILE, (f)printf(), stdout, fopen() */
-#include <stdlib.h> /* abs(), exit(), EXIT_FAILURE */
+   In most sequences, the movement is almos linear (at least in short
+   intervals of time), so, the backward vector can be used to predict
+   the forward one, simply by changing the sign.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include "display.cpp"
 #include "motion.cpp"
 
-/** \brief Correlation / Decorrelation of fields.
- * \param blocks_in_x Dimension 'X' of blocks in a picture.
- * \param blocks_in_y Dimension 'Y' of blocks in a picture.
- * \param field A field.
- */
 void decorrelate_field
 (
  int blocks_in_x,
@@ -53,14 +42,9 @@ void decorrelate_field
 
 #include <getopt.h>
 
-/** \brief Provides a main function which reads in parameters from the command line and a parameter file.
- * \param argc The number of command line arguments of the program.
- * \param argv The contents of the command line arguments of the program.
- * \returns Notifies proper execution.
- */
 int main(int argc, char *argv[]) {
 
-#if defined DEBUG
+#if defined INFO
   info("%s: ", argv[0]);
   for(int i=1; i<argc; i++) {
     info("%s ", argv[i]);
@@ -177,8 +161,6 @@ int main(int argc, char *argv[]) {
     }
   }
   
-  /* RUN. */
-  
   FILE *input_fd = fopen( input_fn, "r" );
   if(!input_fd) {
     error("%s: unable to read \"%s\" ... aborting!\n",
@@ -193,9 +175,7 @@ int main(int argc, char *argv[]) {
     abort();
   }
 
-  /** \tparam MVC_TYPE Motion vector component type. */
   motion < MVC_TYPE > motion;
-
   MVC_TYPE ****field = motion.alloc(blocks_in_y, blocks_in_x);
   
   for(int i=0; i<fields; i++) {

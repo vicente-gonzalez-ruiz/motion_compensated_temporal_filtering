@@ -100,14 +100,14 @@ except CalledProcessError:
 
 # Compress.
 
-slopes = []
-for i in range(layers):
-    slopes.append(quantization + i * quantization_step)
+#slopes = []
+#for i in range(layers):
+#    slopes.append(quantization + i * quantization_step)
 
-if len(slopes) == 1:
-    str_slopes = str(slopes[0])
-else:
-    str_slopes = ', '.join(str(i) for i in slopes)
+#if len(slopes) == 1:
+#    str_slopes = str(slopes[0])
+#else:
+#    str_slopes = ', '.join(str(i) for i in slopes)
     
 #import ipdb; ipdb.set_trace()
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-#  Compress textures, using the J2K codec.
+#  Compress texture subbands, using the J2K codec.
 
 import shutil
 import os
@@ -14,15 +14,18 @@ from  subprocess  import check_call
 from  subprocess  import CalledProcessError
 from arguments_parser import arguments_parser
 from defaults import Defaults
+
+# {{{ Logging
+
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger("subband_texture_compress__j2k")
+log.setLevel('INFO')
 
-## Number of bytes per component.
-#  - Use 1 byte for unweighted components.
-#  - Use 2 bytes for weighted components or that weighted.
-BYTES_PER_COMPONENT = 1 # 2
+# }}}
+
+# {{{ Arguments parsing
 
 parser = arguments_parser(description="Compress texture data using JPEG 2000.")
 parser.add_argument("--file",
@@ -43,6 +46,18 @@ pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 SRLs = int(args.SRLs)
+
+log.info("file = {}".format(file))
+log.info("layers = {}".format(layers))
+log.info("images = {}".format(images))
+log.info("pixels_in_x = {}".format(pixels_in_x))
+log.info("pixels_in_y = {}".format(pixels_in_y))
+log.info("SRLs = {}".format(SRLs))
+
+# }}}
+
+
+BYTES_PER_COMPONENT = 1 # 2
 
 def encode (component,           # Y, U or V.
             jump_demux,          # Number of bytes of distance between
@@ -135,4 +150,3 @@ except CalledProcessError :
 encode ('Y', " " + "0"                + " " + str(Y_size), Y_size, bits_per_component, pixels_in_x,   pixels_in_y)
 encode ('U', " " + str(Y_size)        + " " + str(U_size), U_size, bits_per_component, pixels_in_x//2, pixels_in_y//2)
 encode ('V', " " + str(Y_size+U_size) + " " + str(V_size), V_size, bits_per_component, pixels_in_x//2, pixels_in_y//2)
-

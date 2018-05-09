@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-## Compressing the motion vectors, using the codec J2K.
-#  The compression consists of two major steps:\n
-#  - Demultiplexing components.
-#  - Encode components (lossless compression).\n
-#
-#  Additionally is calculated the size in bytes of motion fields belonging 
-#  to each component, each image and each temporal subband.\n It records in 
-#  a file that can be consulted later. In these calculations do not take 
-#  into account the size of the header of a codestream.
+# Compressing of the motion vector fields using the codec J2K.
 
 import os
 import sys
@@ -24,11 +16,8 @@ logging.basicConfig()
 log = logging.getLogger("subband_motion_compress__j2k")
 log.setLevel('INFO')
 
-## Number of components of a motion field.
 COMPONENTS          = 4
-## Number of bytes for each component.
 BYTES_PER_COMPONENT = 2
-## Number of bits for each component.
 BITS_PER_COMPONENT  = BYTES_PER_COMPONENT * 8
 
 parser = arguments_parser(description="Compress the motion data using JPEG 2000.")
@@ -44,18 +33,17 @@ parser.add_argument("--fields",
 parser.add_argument("--file",
                     help="name of the file with the motion fields.",
                     default="")
-parser.add_argument("--slopes",
-                    help="Slopes used for compression",
-                    default=Defaults.motion_slopes)
+#parser.add_argument("--slopes",
+#                    help="Slopes used for compression",
+#                    default=Defaults.motion_slopes)
 
 args = parser.parse_known_args()[0]
 blocks_in_x = int(args.blocks_in_x)
 blocks_in_y = int(args.blocks_in_y)
 fields = int(args.fields)
 file = args.file
-slopes = args.slopes; log.info("slopes={}".format(slopes))
+#slopes = args.slopes; log.info("slopes={}".format(slopes))
 
-## Number of levels of the DWT to be applied in compression.
 spatial_dwt_levels = 0 # 1 # SRLs - 1
 
 ## Number of bytes required by the movement information (uncompressed)

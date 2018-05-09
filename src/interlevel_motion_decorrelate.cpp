@@ -6,11 +6,23 @@
    +----------+
    |  ........|--+
    |  .       |  |
-   |  .       |  | Subband S
+   |  .  X    |  | Subband S
    |  .       |  |
    +----------+  |
       +----------+
           NEXT
+
+       PREV             PREV
+   +----------+     +----------+
+   |  ........|--+  |  ........|--+
+   |  .       |  |  |  .       |  |
+   |  . X/2   |  |  |  . X/2   |  | Subband S-1
+   |  .       |  |  |  .       |  |
+   +----------+  |  +----------+  |
+      +----------+     +----------+
+          NEXT             NEXT
+
+   
  */
 
 #include <stdio.h>
@@ -252,14 +264,13 @@ int main(int argc, char *argv[]) {
 #if defined INFO
     info("%s: %d\n",argv[0], i);
 #endif
-    
-    /* Read the motion field that serves as reference (higher temporal
-       iteration). */
+
     motion.read(reference_fd, reference, blocks_in_y, blocks_in_x);
     
     /** De/correlate two consecutive motion fields using the same
 	reference. */
     for(int p=0; p<2; p++) {
+      
 #if defined ANALYZE
       motion.read(predicted_fd, predicted, blocks_in_y, blocks_in_x);
       if(feof(predicted_fd)) break;
@@ -280,6 +291,7 @@ int main(int argc, char *argv[]) {
 #else
       motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
 #endif
+      
     }
   }
 }

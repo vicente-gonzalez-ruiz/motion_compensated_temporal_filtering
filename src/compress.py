@@ -3,24 +3,6 @@
 
 # Compression of a sequence of images.
 
-# Examples:
-#
-#  * Show default parameters:
-#
-#    mctf compress --help
-#
-#  * Compress using the default parameters:
-#
-#    mctf compress
-#
-#  * Using a GOP_size=4:
-#
-#    mctf compress --TRLs=3
-#
-#  * Controlling quantization:
-#
-#    mctf compress --quality=50
-
 # {{{ Importing
 
 import sys
