@@ -131,8 +131,9 @@ EXE	+= $(MCTF_BIN)/show
 $(MCTF_BIN)/split:	split.sh
 EXE += $(MCTF_BIN)/split
 
-$(MCTF_BIN)/merge:	split.cpp display.cpp
-	$(CC) $(GCC_FLAGS) $< -o $@ -lm
+#$(MCTF_BIN)/merge:	split.cpp display.cpp
+#	$(CC) $(GCC_FLAGS) $< -o $@ -lm
+$(MCTF_BIN)/split:	merge.sh
 EXE += $(MCTF_BIN)/merge
 
 $(MCTF_BIN)/motion_estimate:	motion_estimate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
