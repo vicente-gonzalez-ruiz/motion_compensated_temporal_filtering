@@ -6,6 +6,7 @@
   2. `compile`: script for creating MCTF's executables.
   3. `README.txt`: this, file.
   4. `src`: source files of MCTF.
+  5. `experiments`: experiment scripts.
 
 ## Compilation and environment variable declaration:
 
@@ -21,12 +22,25 @@ beggining of the PATH variable:
   export PATH=~/bin:$PATH
   ```
   
+## Configuration:
+
+```
+export MCTF_TEXTURE_CODEC="j2k"
+export MCTF_MOTION_CODEC="j2k"
+#export MCTF_QUANTIZER="orthogonal"
+export MCTF_QUANTIZER="automatic"
+```
+
+--------------
+
+
 ## MCJ2K encoding/decoding:
 
 ```
 export MCTF_TEXTURE_CODEC="j2k"
 export MCTF_MOTION_CODEC="j2k"
-export MCTF_QUANTIZER="orthogonal"
+#export MCTF_QUANTIZER="orthogonal"
+export MCTF_QUANTIZER="automatic"
 mkdir tmp
 cd tmp
 wget http://www.hpca.ual.es/~vruiz/videos/container_352x288x30x420x300.avi
