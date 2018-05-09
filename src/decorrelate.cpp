@@ -75,7 +75,7 @@ void predict
 	int mvx0 = mv[PREV][X_FIELD][by][bx] + bx * block_size;
 	int mvx1 = mv[NEXT][X_FIELD][by][bx] + bx * block_size;
 
-	/* each block is copied. */
+	/* Each block is copied. */
 	for(int y=-dwt_border; y<(block_size+dwt_border); y++) {
 	  for(int x=-dwt_border; x<(block_size+dwt_border); x++) {
 	    prediction_block[y+dwt_border][x+dwt_border]
@@ -87,13 +87,13 @@ void predict
 	  }
 	}
 	
-	/** Apply DWT to each block. */
+	/* Apply DWT to each block. */
 	overlap_dwt->analyze(prediction_block,
 			     block_size + dwt_border * 2,
 			     block_size + dwt_border * 2,
 			     levels);
 	
-	/** Copy to "prediction_picture" high frequency subbands. */ {
+	/* Copy to "prediction_picture" high frequency subbands. */ {
 	  for(int l=1; l<=levels; l++) {
 	    int bs = block_size>>l;
 	    for(int y=0; y<bs; y++) {
@@ -130,7 +130,7 @@ void predict
 	  } /* for(l) */
 	} /* High frequency subbands. */
 	
-	/** Copy to "prediction_picture" low frequency subband (LL). */ { 
+	/* Copy to "prediction_picture" low frequency subband (LL). */ { 
 	  int bs = block_size>>levels;
 	  for(int y=0; y<bs; y++) {
 	    for(int x=0; x<bs; x++) {
@@ -148,7 +148,7 @@ void predict
       } /* for(blocks_in_y) */
     } /* for(blocks_in_x) */
     
-    /** The prediction image is generated.*/
+    /* The prediction image is generated.*/
     overlap_dwt->synthesize(prediction_picture[c], pixels_in_y, pixels_in_x, levels);
    
 #ifdef _1_ 
@@ -171,11 +171,6 @@ void predict
 
 #include <getopt.h>
 
-/** \brief Provides a main function which reads in parameters from the command line and a parameter file.
- * \param argc The number of command line arguments of the program.
- * \param argv The contents of the command line arguments of the program.
- * \returns Notifies proper execution.
- */
 int main(int argc, char *argv[]) {
 
 #if defined DEBUG
@@ -317,7 +312,6 @@ int main(int argc, char *argv[]) {
       break;
       
     case '?':
-      //      print::info("[0;32m\n");
 #if defined ANALYZE
       printf("+------------------+\n");
       printf("| MCTF decorrelate |\n");
@@ -444,7 +438,7 @@ int main(int argc, char *argv[]) {
 	    argv[0], prediction_fn);
       abort();
     }
-#if defined DEBUG
+#if defined INFO
     info("%s: writing predictions in \"%s\"\n",
 	 argv[0], prediction_fn);
 #endif
@@ -487,14 +481,12 @@ int main(int argc, char *argv[]) {
 
   int blocks_in_y = pixels_in_y[0]/block_size;
   int blocks_in_x = pixels_in_x[0]/block_size;
-#if defined DEBUG
+#if defined INFO
   info("%s: blocks_in_y = %d\n", argv[0], blocks_in_y);
   info("%s: blocks_in_x = %d\n", argv[0], blocks_in_x);
 #endif
 
-  /** \tparam MVC_TYPE Motion vector component type. */
   motion < MVC_TYPE > motion;
-  /** \tparam TC_IO_TYPE TC = Texture Component; IO = Input Output */
   texture < TC_IO_TYPE, TC_CPU_TYPE > image;
 
   MVC_TYPE ****mv = motion.alloc(blocks_in_y, blocks_in_x);
@@ -517,7 +509,7 @@ int main(int argc, char *argv[]) {
 		0);
 
   int picture_border_size = 4*search_range + block_overlaping;
-#if defined DEBUG
+#if defined INFO
   info("%s: picture_border = %d\n", argv[0], picture_border_size);
 #endif
 
@@ -564,9 +556,9 @@ int main(int argc, char *argv[]) {
     image.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
   }
 
-  /** Interpolate the chroma of reference [0], to have the same size as the luma. 
-      This is necessary because the fields of motion apply to chroma with the same 
-      precision as the luma. */
+  /* Interpolate the chroma of reference [0], to have the same size as
+      the luma.  This is necessary because the fields of motion apply
+      to chroma with the same precision as the luma. */
 
   /* Chroma Cb. */
 
@@ -669,9 +661,9 @@ int main(int argc, char *argv[]) {
   
   for(int i=0; i<pictures/2; i++) {
     
-#if defined ANALYZE /** DECORRELATION or SYNTHESIZE (Correlation). Depends if ANALYZE is defined. */     
+#if defined ANALYZE     
 
-#if defined DEBUG
+#if defined INFO
     info("%s: reading picture %d of \"%s\".\n",
 	 argv[0], i, odd_fn);
 #endif
@@ -684,7 +676,7 @@ int main(int argc, char *argv[]) {
 
 #else /* SYNTHESIZE (Correlation). */
 
-#if defined DEBUG
+#if defined INFO
     info("%s: reding picture %d of \"%s\".\n",
 	 argv[0], i, high_fn);
 #endif
@@ -699,16 +691,14 @@ int main(int argc, char *argv[]) {
 	}
       }
     }
-
-#endif /* SYNTHESIZE. */
-
-#if defined DEBUG
-    info("%s: reading picture %d of \"%s\".\n",
-	 argv[0], i, even_fn);
+    
 #endif
-
-    /* It reads reference [1], interpolating the chroma. */
-
+    
+#if defined INFO
+    info("%s: reading picture %d of \"%s\".\n", argv[0], i, even_fn);
+#endif
+    
+    /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
       image.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
     }
@@ -734,7 +724,7 @@ int main(int argc, char *argv[]) {
     image_dwt->synthesize(reference[1][2], pixels_in_y[0], pixels_in_x[0], 1);
 
     /* Interpolate and fill edges. */
-
+    
     for(int c = 0; c < COMPONENTS; c++) {
       
       for(int s = 1; s <= subpixel_accuracy; s++) {
@@ -764,16 +754,16 @@ int main(int argc, char *argv[]) {
 			pixels_in_y[0] << subpixel_accuracy,
 			pixels_in_x[0] << subpixel_accuracy,
 			picture_border_size << subpixel_accuracy);
-
+      
     }
 
     /* Motion fields are read. */
-#if defined DEBUG
+#if defined INFO
     info("%s: reading motion vector field %d in \"%s\".\n",
 	 argv[0], i, motion_in_fn);
 #endif
     motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
-
+    
 #if defined ANALYZE
     float motion_entropy = 0.0; {
       static int count[256];
@@ -803,8 +793,7 @@ int main(int argc, char *argv[]) {
 	the entropy of the "wrong image" then the predicted image
 	replaces the "wrong image". */
 
-    /* Write the residue image, the chroma subsampling. */
-
+    /* Write the residue image, the chroma is subsampled. */
     predict(block_overlaping << subpixel_accuracy,
 	    block_size << subpixel_accuracy,
 	    blocks_in_y,
@@ -817,7 +806,7 @@ int main(int argc, char *argv[]) {
 	    prediction_block,
 	    prediction,
 	    reference);
-
+    
     for(int c=0; c<COMPONENTS; c++) {
       for(int y=0; y<pixels_in_y[0] << subpixel_accuracy; y++) {
 	for(int x=0; x<pixels_in_x[0] << subpixel_accuracy; x++) {
@@ -827,8 +816,8 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /** Sub-sampled the three components because the motion
-	compensation is made to the original video resolution. */
+    /* Subsample the three components because the motion compensation
+	is made to the original video resolution. */
     for(int c=0; c<COMPONENTS; c++) {
       image_dwt->analyze(prediction[c],
 			 pixels_in_y[0] << subpixel_accuracy,
@@ -841,7 +830,7 @@ int main(int argc, char *argv[]) {
     image_dwt->analyze(prediction[2], pixels_in_y[0], pixels_in_x[0], 1);
 
 #if defined GET_PREDICTION
-#if defined DEBUG
+#if defined INFO
     info("%s: writing picture %d of \"%s\".\n",
 	 argv[0], i, prediction_fn);
 #endif /* DEBUG */
@@ -914,7 +903,7 @@ int main(int argc, char *argv[]) {
     float residue_entropy = 0.0, predicted_entropy = 1.0; {
       static int predicted_count[256];
       static int residue_count[256];
-
+      
       if (!always_B) {
 	
 	for(int i=0; i<256; i++) {

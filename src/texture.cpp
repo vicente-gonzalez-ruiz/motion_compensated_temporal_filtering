@@ -10,7 +10,7 @@ private:
   IO_TYPE line[PIXELS_IN_X_MAX];
 
 public:
-
+  
   /* Allocate a texture image */
   CPU_TYPE **alloc(int y_dim, int x_dim, int border_dim) {
     CPU_TYPE **data = new CPU_TYPE * [ y_dim + border_dim*2 ];
