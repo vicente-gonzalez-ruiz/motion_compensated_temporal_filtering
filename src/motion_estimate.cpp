@@ -1,9 +1,4 @@
-/**
- * \file motion_estimate.cpp
- * \author Vicente Gonzalez-Ruiz.
- * \date Last modification: 2015, January 7.
- * \brief Motion estimation.
- */
+/* Log-search bidirectional block-based motion estimation */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,54 +14,16 @@
 #include "texture.cpp"
 #include "motion.cpp"
 
-/** \brief Trigger for if_defined.\n
- * Greatly accelerates the process of motion estimation, although the search is sub-optimal.\n
- * Estimates the motion of a block from the reference image to the predicted image, 
- * use a search area of +-1. Uses a spiral search, ending at (0,0).\n
- * The movement is estimated from a search point determined by the current value of 
- * the motion vectors.\n For example, if the input value of a motion vector is (-1,0), 
- * the spots are checked (-2,-1), (-2,0), (-2,1), (-1,-1), (-1,0), (-1,1), (0,-1), 
- * (0,0) and (0,1). */
 #define FAST_SEARCH
-/** \brief TC = Texture Component; IO = Input Output. */
-#define TC_IO_TYPE unsigned char
-/** \brief TC = Texture Component; CPU = Central Processing Unit. */
+#define TC_IO_TYPE unsigned char /* TC = Texture Component; IO = Input Output */
 #define TC_CPU_TYPE short
-/** \brief Filter bank type applied to textures. */
 #define TEXTURE_INTERPOLATION_FILTER _5_3
-/** \brief Filter bank type applied to motion vectors. */
 #define MOTION_INTERPOLATION_FILTER Haar
-/* \brief Motion vectors components. */
-//#define MVC_TYPE char
-/** \brief MVC = Motion Vectors Components; IO = Input Output. */
-#define MVC_IO_TYPE short
-/** \brief MVC = Motion Vectors Components; CPU = Central Processing Unit. */
+#define MVC_IO_TYPE short /* MVC = Motion Vectors Components */
 #define MVC_CPU_TYPE short
-/* \brief Trigger for if_defined.\n
- * Displays real time information about running. */
-//#define DEBUG
-/* \brief Trigger for if_defined.\n
- * Outputs the motion vectors to the stdout. */
-//#define GNUPLOT
-/* \brief Trigger for if_defined.\n
- * Set to zero the motion vectors. */
-//#define CLEAR_MVS
 
 #if defined FAST_SEARCH
 
-/** \brief Motion estimation for blocks of variable size using only luminance.\n
- * Each block generates two motion vectors, one referring to the previous image and one to the next.\n
- * It plans to use a quad-tree to encode the location and size of the blocks and the blocks can be any size.
- * \param mv [PREV|NEXT][Y|X][coor_y][coor_x].
- * \param ref [PREV|NEXT][coor_y][coor_x]
- * \param pred [coor_y][coor_x]
- * \param luby Coordinate upper-left block, for the Y axis.
- * \param lubx Coordinate upper-left block, for the X axis.
- * \param rbby Coordinate lower-right block, for the Y axis.
- * \param rbbx Coordinate lower-right block, for the X axis.
- * \param by Vector coordinate in the field of movement, for the Y axis.
- * \param bx Vector coordinate in the field of movement, for the X axis.
- */
 void local_me_for_block
 (
  MVC_CPU_TYPE ****mv,/* [PREV|NEXT][Y|X][coor_y][coor_x] */
@@ -85,7 +42,6 @@ void local_me_for_block
   MVC_CPU_TYPE mv_next_y_by_bx = mv[NEXT][Y_FIELD][by][bx];
   MVC_CPU_TYPE mv_next_x_by_bx = mv[NEXT][X_FIELD][by][bx];
 
-  /** \brief For updating vectors is needed calculating the error vectors. */
 #define COMPUTE_ERRORS(_y,_x)						\
   MVC_CPU_TYPE y[2] = {mv_prev_y_by_bx + _y, mv_next_y_by_bx - _y};	\
   MVC_CPU_TYPE x[2] = {mv_prev_x_by_bx + _x, mv_next_x_by_bx - _x};	\
@@ -101,13 +57,6 @@ void local_me_for_block
       }									\
     }									\
 
-  /** \brief The calculations needed to perform the upgrade mainly consist of:\n\n
-   * Minimum mistake for all checked positions:\n
-   * - min_error [PREV] refers to the previous image.\n
-   * - min_error [NEXT] to the next. */
-  /** \brief Best motion vector, calculated in each direction:\n
-   * - (vy [PREV], vx [PREV]) points to the previous image.\n
-   * - (vy [NEXT], vx [NEXT]) to the next image. */
 #define UPDATE_VECTORS							\
   if(error[PREV] <= min_error[PREV]) {					\
     vy[PREV] = y[PREV];							\
@@ -183,16 +132,8 @@ void local_me_for_block
 
 } /* local_me_for_block() */
 
-/** \brief Estimates the motion of a block from the reference image to the predicted image, 
- * use a search area of +-1.
- * \param mv [PREV|NEXT][Y|X][coor_y][coor_x].
- * \param ref [PREV|NEXT][coor_y][coor_x].
- * \param pred [coor_y][coor_x].
- * \param block_size Size block.
- * \param border_size Size border or margins.
- * \param blocks_in_y Dimension 'Y' of blocks in a picture.
- * \param blocks_in_x Dimension 'X' of blocks in a picture.
- */
+/* Estimates the motion of a block from the reference image to the
+ * predicted image, use a search area of +-1. */
 void local_me_for_image
 (
  MVC_CPU_TYPE ****mv,         /* [PREV|NEXT][Y|X][coor_y][coor_x] */
@@ -205,7 +146,7 @@ void local_me_for_image
 ) {
   
   for(int by=0; by<blocks_in_y; by++) {
-#if defined DEBUG_
+#if defined INFO
     info("%d/%d ", by, blocks_in_y); info_flush();
 #endif
     for(int bx=0; bx<blocks_in_x; bx++) {
@@ -219,15 +160,12 @@ void local_me_for_image
       local_me_for_block(mv, ref, pred, luby, lubx, rbby, rbbx, by, bx);
     }
   }
-#if defined DEBUG
+#if defined INFO
   info("\n");
 #endif
 }
 
-/** \brief Recalculates the number of blocks in each level DWT (Discrete Wavelet Transform).
- * \param x Number of blocks in a given axis (X or Y) of an image.
- * \param y level DWT.
- * \returns New number of blocks.
+/* Number of blocks in each level DWT (Discrete Wavelet Transform).
  */
 int desp(int x, int y) {
   int i;
@@ -237,26 +175,6 @@ int desp(int x, int y) {
 
 # endif /* FAST_SEARCH */
 
-/** \brief Predicted_pic divided into square blocks disjoint and are
- * sought in reference_pic [0] and reference_pic [1]. Only the luma is
- * used to estimate the motion.\n As a result returned in 'mv' motion
- * vectors calculated.\n These vectors are also an input parameter when
- * we look at an area near an already precalculated displacement (eg, at
- * a level higher temporal resolution).
- * \param mv [PREV|NEXT][y_field|x_field][y_coor][x_coor].
- * \param ref [PREV|NEXT][y_coor][x_coor].
- * \param pred [coor_y][coor_x].
- * \param pixels_in_y Dimension 'Y' of pixels in a picture.
- * \param pixels_in_x Dimension 'X' of pixels in a picture.
- * \param block_size Size block.
- * \param border_size Size border or margins.
- * \param subpixel_accuracy Precision level 'sub-pixel'.
- * \param search_range Search range.
- * \param blocks_in_y Dimension 'Y' of blocks in a picture.
- * \param blocks_in_x Dimension 'X' of blocks in a picture.
- * \param pic_dwt Magnifying images by a factor of 2, to adapt to a new level of DWT.
- * \param mv_dwt Magnifying vectors by a factor of 2, to adapt to a new level of DWT.
-*/
 void me_for_image
 (MVC_CPU_TYPE ****mv,           /* [PREV|NEXT][y_field|x_field][y_coor][x_coor] */
  TC_CPU_TYPE ***ref,            /* [PREV|NEXT][y_coor][x_coor] */
@@ -275,7 +193,7 @@ void me_for_image
 #if defined FAST_SEARCH
   
   int dwt_levels = (int)rint(log((double)search_range)/log(2.0)) - 1;
-#if defined DEBUG
+#if defined INFO
   info("motion_estimate: dwt_levels = %d\n", dwt_levels);
 #endif
 
@@ -284,8 +202,8 @@ void me_for_image
   pic_dwt->analyze(ref[NEXT], pixels_in_y, pixels_in_x, dwt_levels);
   pic_dwt->analyze(pred, pixels_in_y, pixels_in_x, dwt_levels);
 
-  /** \brief Over-pixel estimation. */
-#if defined DEBUG
+  /* Over-pixel estimation. */
+#if defined INFO
   info("motion_estimate: over-pixel motion estimation level=%d\n", dwt_levels);
 #endif
 
@@ -303,12 +221,12 @@ void me_for_image
     int blocks_in_y_l = desp(blocks_in_y, l);
     int blocks_in_x_l = desp(blocks_in_x, l);
 
-    /** - Wide images on a factor of 2. */
+    /* Expand images in a factor of 2. */
     pic_dwt->synthesize(ref[PREV], Y_l, X_l, 1);
     pic_dwt->synthesize(ref[NEXT], Y_l, X_l, 1);
     pic_dwt->synthesize(pred, Y_l, X_l, 1);
 
-    /** - Motion fields expanded by a factor of 2. This is necessary
+    /*  Motion fields expanded by a factor of 2. This is necessary
 	because in the next iteration the reference and predicted
 	images are twice as large. */
     mv_dwt->synthesize(mv[PREV][Y_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
@@ -316,8 +234,8 @@ void me_for_image
     mv_dwt->synthesize(mv[PREV][X_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
     mv_dwt->synthesize(mv[NEXT][X_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
     
-    /** - Doubles the motion vectors, because the calculated values now
-	referenced to an image twice as large in each dimension. */
+    /* Multiply by 2 the motion vectors, because the calculated values
+       now referenced to an image twice as large in each dimension. */
     for(int by=0; by<blocks_in_y_l; by++) {
       for(int bx=0; bx<blocks_in_x_l; bx++) {
 
@@ -346,7 +264,7 @@ void me_for_image
 	  mv[NEXT][X_FIELD][by][bx] = -search_range;
       }
     }
-#if defined DEBUG
+#if defined INFO
     info("motion_estimate: over-pixel motion estimation level=%d\n",l);
 #endif
     local_me_for_image(mv,
@@ -357,18 +275,18 @@ void me_for_image
 		       blocks_in_y_l, blocks_in_x_l);
   }
   
-  /** Sub-pixel estimation. */
+  /* Sub-pixel estimation. */
   for(int l=1; l<=subpixel_accuracy; l++) {
-#if defined DEBUG
+#if defined INFO
     info("motion_estimate: sub-pixel motion estimation level=%d\n",l);
 #endif
     
-    /** - Wide images on a factor of 2. */
+    /* Expand images on a factor of 2. */
     pic_dwt->synthesize(ref[PREV], pixels_in_y<<l, pixels_in_x<<l, 1);
     pic_dwt->synthesize(ref[NEXT], pixels_in_y<<l, pixels_in_x<<l, 1);
     pic_dwt->synthesize(pred, pixels_in_y<<l, pixels_in_x<<l, 1);
     
-    /** - Motion fields expanded by a factor of 2. */
+    /* Motion fields expanded by a factor of 2. */
     for(int by=0; by<blocks_in_y; by++) {
       for(int bx=0; bx<blocks_in_x; bx++) {
 
@@ -406,7 +324,7 @@ void me_for_image
 		       blocks_in_y, blocks_in_x);
   }
 
-  /* - The images as they were left to the next search. */
+  /* Interpolate. */
   pic_dwt->analyze(ref[PREV], pixels_in_y << subpixel_accuracy, pixels_in_x << subpixel_accuracy, subpixel_accuracy);
   pic_dwt->analyze(ref[NEXT], pixels_in_y << subpixel_accuracy, pixels_in_x << subpixel_accuracy, subpixel_accuracy);
   pic_dwt->analyze(pred, pixels_in_y << subpixel_accuracy, pixels_in_x << subpixel_accuracy, subpixel_accuracy);
@@ -482,14 +400,9 @@ void me_for_image
 
 #include <getopt.h>
 
-/** \brief Provides a main function which reads in parameters from the command line and a parameter file.
- * \param argc The number of command line arguments of the program.
- * \param argv The contents of the command line arguments of the program.
- * \returns Notifies proper execution.
- */
 int main(int argc, char *argv[]) {
 
-#if defined DEBUG
+#if defined INFO
   info("%s ", argv[0]);
   for(int i=1; i<argc; i++) {
     info("%s ", argv[i]);
@@ -551,77 +464,77 @@ int main(int argc, char *argv[]) {
       
     case 'b':
       block_size = atoi(optarg);
-#if defined DEBUG
+#if defined INFO
       info("%s: block_size=%d\n", argv[0], block_size);
 #endif
       break;
       
     case 'e':
       even_fn = optarg;
-#if defined DEBUG
+#if defined INFO
       info("%s: even_fn=\"%s\"\n", argv[0], even_fn);
 #endif
       break;
 
     case 'i':
       imotion_fn = optarg;
-#if defined DEBUG
+#if defined INFO
       info("%s: imotion_fn=\"%s\"\n", argv[0], imotion_fn);
 #endif
       break;
 
     case 'm':
       motion_fn = optarg;
-#if defined DEBUG
+#if defined INFO
       info("%s: motion_fn=\"%s\"\n", argv[0], motion_fn);
 #endif
       break;
 
     case 'o':
       odd_fn = optarg;
-#if defined DEBUG
+#if defined INFO
       info("%s: odd_fn=\"%s\"\n", argv[0], odd_fn);
 #endif
       break;
 
     case 'd':
       border_size = atoi(optarg);
-#if defined DEBUG
+#if defined INFO
       info("%s: border_size=%d\n", argv[0], border_size);
 #endif
       break;
 
     case 'p':
       pictures = atoi(optarg);
-#if defined DEBUG
+#if defined INFO
       info("%s: pictures=%d\n", argv[0], pictures);
 #endif
       break;
       
     case 'x':
       pixels_in_x = atoi(optarg);
- #if defined DEBUG
+ #if defined INFO
      info("%s: pixels_in_x=%d\n", argv[0], pixels_in_x);
 #endif
       break;
       
     case 'y':
       pixels_in_y = atoi(optarg);
-#if defined DEBUG
+#if defined INFO
       info("%s: pixels_in_y=%d\n", argv[0], pixels_in_y);
 #endif
       break;
       
     case 's':
       search_range = atoi(optarg);
-#if defined DEBUG
+#if defined INFO
       info("%s: search_range=%d\n", argv[0], search_range);
 #endif
       break;
       
     case 'a':
       subpixel_accuracy = atoi(optarg);
-#if defined DEBUG
+#if defined INFO
       info("%s: subpixel_accuracy=%d\n", argv[0], subpixel_accuracy);
 #endif
       break;
@@ -662,7 +575,7 @@ int main(int argc, char *argv[]) {
     motion_fd = fopen(motion_fn, "r");
     if(!motion_fd) {
       reuse_motion = 0;
-#if defined DEBUG
+#if defined INFO
       info("%s: computing motion information\n", argv[0]);
 #endif
       motion_fd = fopen(motion_fn, "w");
@@ -672,7 +585,7 @@ int main(int argc, char *argv[]) {
 	abort();
       }
     } else {
-#if defined DEBUG
+#if defined INFO
       info("%s: reusing motion information \"%s\"\n",
 	   argv[0], motion_fn);
 #endif
@@ -684,7 +597,7 @@ int main(int argc, char *argv[]) {
   FILE *imotion_fd; {
     imotion_fd = fopen(imotion_fn, "r");
     if(!imotion_fd) {
-#if defined DEBUG
+#if defined INFO
       info("%s: \"%s\" does not exist: initial_motion_fn = \"%s\"\n",
 	   argv[0], imotion_fn, "/dev/zero");
 #endif
@@ -744,7 +657,7 @@ int main(int argc, char *argv[]) {
 
   int blocks_in_y = pixels_in_y/block_size;
   int blocks_in_x = pixels_in_x/block_size;
-#if defined DEBUG
+#if defined INFO
   info("%s: blocks_in_y=%d\n", argv[0], blocks_in_y);
   info("%s: blocks_in_x=%d\n", argv[0], blocks_in_x);
 #endif
@@ -783,7 +696,7 @@ int main(int argc, char *argv[]) {
 
   for(int i=0; i<pictures/2; i++) {
 
-#if defined DEBUG
+#if defined INFO
     info("%s: reading picture %d of \"%s\".\n",
 	 argv[0], i, odd_fn);
 #endif
@@ -795,7 +708,7 @@ int main(int argc, char *argv[]) {
     fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
     fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
 
-#if defined DEBUG
+#if defined INFO
     info("%s: reading picture %d of \"%s\".\n",
 	 argv[0], i, even_fn);
 #endif
@@ -819,7 +732,7 @@ int main(int argc, char *argv[]) {
 			pixels_in_x,
 			picture_border_size);
 
-#if defined DEBUG
+#if defined INFO
     info("%s: reading initial motion vectors.\n", argv[0]);
 #endif
     //motion.read(imotion_fd, mv, blocks_in_y, blocks_in_x);
@@ -854,7 +767,7 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-#if defined DEBUG
+#if defined INFO
     info("Backward motion vector field:");
     for(int y=0; y<blocks_in_y; y++) {
       info("\n");
@@ -893,7 +806,7 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-#if defined DEBUG
+#if defined INFO
     info("%s: writing motion vector field %d in \"%s\".\n",
 	 argv[0], i, motion_fn);
 #endif

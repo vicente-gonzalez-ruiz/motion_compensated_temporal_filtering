@@ -1,9 +1,9 @@
 #!/bin/bash
 
-low_fn  = "low_0/"
-even_fn = "even_1/"
-odd_fn  = "odd_1/"
-images  = 33
+low="low_0/"
+even="even_1/"
+odd="odd_1/"
+images=33
 
 usage() {
     echo $0
@@ -54,22 +54,25 @@ done
 
 set -x
 
-ln -s ${even}"0000_Y" $low
-ln -s ${even}"0000_U" $low
-ln -s ${even}"0000_V" $low
+mkdir $low
 
-image = 0
-while [ $image -le ((images/2)) ]
+ln -s ../${even}"0000_Y" $low
+ln -s ../${even}"0000_U" $low
+ln -s ../${even}"0000_V" $low
+
+image=0
+images_2=`echo $images/2 | bc`
+while [ $image -le $images_2 ]
 do
-    _odd=(($image*2+1))
-    ln -s $odd$(printf "%04d_Y" $image) $low$(printf "%04d_Y" $_odd)
-    ln -s $odd$(printf "%04d_U" $image) $low$(printf "%04d_U" $_odd)
-    ln -s $odd$(printf "%04d_V" $image) $low$(printf "%04d_V" $_odd)
+    _odd=`echo $image*2+1 | bc`
+    ln -s ../$odd$(printf "%04d.Y.pgm" $image) $low/$(printf "%04d.Y.pgm" $_odd)
+    ln -s ../$odd$(printf "%04d.U.pgm" $image) $low/$(printf "%04d.U.pgm" $_odd)
+    ln -s ../$odd$(printf "%04d.V.pgm" $image) $low/$(printf "%04d.V.pgm" $_odd)
 
-    _even=(($image*2+1))
-    ln -s $even$(printf "%04d_Y" $image) $low$(printf "%04d_Y" $_even)
-    ln -s $even$(printf "%04d_U" $image) $low$(printf "%04d_U" $_even)
-    ln -s $even$(printf "%04d_V" $image) $low$(printf "%04d_V" $_even)
+    _even=`echo $image*2+2 | bc`
+    ln -s ../$even$(printf "%04d.Y.pgm" $image) $low/$(printf "%04d.Y.pgm" $_even)
+    ln -s ../$even$(printf "%04d.U.pgm" $image) $low/$(printf "%04d.U.pgm" $_even)
+    ln -s ../$even$(printf "%04d.V.pgm" $image) $low/$(printf "%04d.V.pgm" $_even)
 
     ((image++))
 done

@@ -1,9 +1,9 @@
 /* Bidirectional Motion Vector Fields (BMVF) stuff */
 
-//#define PREV     0 /* Backwards motion vector field */
-//#define NEXT     1 /* Forwards motion vector field */
-//#define X_FIELD  0 /* X components of a field */
-//#define Y_FIELD  1 /* Y components of a field */
+#define PREV     0 /* Backwards motion vector field */
+#define NEXT     1 /* Forwards motion vector field */
+#define X_FIELD  0 /* X components of a field */
+#define Y_FIELD  1 /* Y components of a field */
 
 /* Limits */
 #define PIXELS_IN_X_MAX 16384
