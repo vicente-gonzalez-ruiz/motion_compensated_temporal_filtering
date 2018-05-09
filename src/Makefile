@@ -126,8 +126,9 @@ EXE	+= $(MCTF_BIN)/mccp
 $(MCTF_BIN)/show:	show.sh
 EXE	+= $(MCTF_BIN)/show
 
-$(MCTF_BIN)/split:	split.cpp display.cpp
-	$(CC) $(GCC_FLAGS) -D ANALYZE $< -o $@ -lm
+#$(MCTF_BIN)/split:	split.cpp display.cpp
+#	$(CC) $(GCC_FLAGS) -D ANALYZE $< -o $@ -lm
+$(MCTF_BIN)/split:	split.sh
 EXE += $(MCTF_BIN)/split
 
 $(MCTF_BIN)/merge:	split.cpp display.cpp

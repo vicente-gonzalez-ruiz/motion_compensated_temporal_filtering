@@ -54,22 +54,22 @@ done
 
 set -x
 
-ln -s ${low}"0000_Y" $even
-ln -s ${low}"0000_U" $even
-ln -s ${low}"0000_V" $even
+ln -s ${low}"0000.Y.pgm" $even
+ln -s ${low}"0000.U.pgm" $even
+ln -s ${low}"0000.V.pgm" $even
 
 image = 0
 while [ $image -le ((images/2)) ]
 do
     _odd=(($image*2+1))
-    ln -s $low$(printf "%04d_Y" $_odd) $odd$(printf "%04d_Y" $image)
-    ln -s $low$(printf "%04d_U" $_odd) $odd$(printf "%04d_U" $image)
-    ln -s $low$(printf "%04d_V" $_odd) $odd$(printf "%04d_V" $image)
+    ln -s $low$(printf "%04d.Y.pgm" $_odd) $odd$(printf "%04d.Y.pgm" $image)
+    ln -s $low$(printf "%04d.U.pgm" $_odd) $odd$(printf "%04d.U.pgm" $image)
+    ln -s $low$(printf "%04d.V.pgm" $_odd) $odd$(printf "%04d.V.pgm" $image)
 
     _even=(($image*2+1))
-    ln -s $low$(printf "%04d_Y" $_even) $even$(printf "%04d_Y" $image)
-    ln -s $low$(printf "%04d_U" $_even) $even$(printf "%04d_U" $image)
-    ln -s $low$(printf "%04d_V" $_even) $even$(printf "%04d_V" $image)
+    ln -s $low$(printf "%04d.Y.pgm" $_even) $even$(printf "%04d.Y.pgm" $image)
+    ln -s $low$(printf "%04d.U.pgm" $_even) $even$(printf "%04d.U.pgm" $image)
+    ln -s $low$(printf "%04d.V.pgm" $_even) $even$(printf "%04d.V.pgm" $image)
 
     ((image++))
 done

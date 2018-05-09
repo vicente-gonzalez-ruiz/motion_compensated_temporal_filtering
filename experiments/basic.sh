@@ -1,6 +1,6 @@
 #!/bin/bash
 
-video=~/Videos/mobile_352x288x30x420x300.yuv
+video=~/Videos/mobile_352x288x30x420x300.avi
 GOPs=9
 TRLs=6
 y_dim=288
@@ -71,7 +71,26 @@ done
 
 set -x
 
-rm low_0
+rm -rf low_0
+mkdir low_0
+ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p low_0/%4d.Y
+x_dim_2=`echo $x_dim/2 | bc`
+y_dim_2=`echo $y_dim/2 | bc`
+for i in low_0/*.Y
+do
+    rawtopgm $x_dim $y_dim < $i > $i.pgm
+done
+for i in low_0/*.U
+do
+    rawtopgm $x_dim_2 $y_dim_2 < $i > $i.pgm
+done
+for i in low_0/*.V
+do
+    rawtopgm $x_dim_2 $y_dim_2 < $i > $i.pgm
+done
+
+#ffmpeg -i $video low_0/%4d.pgm
+exit
 ln -s $video low_0
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
