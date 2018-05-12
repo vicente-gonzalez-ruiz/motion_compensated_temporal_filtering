@@ -87,9 +87,12 @@ public:
 
   }
 
-
   /* Read an image from disk. */
   void read(FILE *fd, CPU_TYPE **img, int y_dim, int x_dim) {
+    char x[80];
+    fgets(x, 80, fd); /* Magic number */
+    fgets(x, 80, fd); /* rows and cols */
+    fgets(x, 80, fd); /* Max value */
     for(int y=0; y<y_dim; y++) {
       int read = fread(line, sizeof(IO_TYPE), x_dim, fd);
       for(int x=0; x<x_dim; x++) {
@@ -100,6 +103,9 @@ public:
 
   /* Write an image to disk. */
   void write(FILE *fd, CPU_TYPE **img, int y_dim, int x_dim) {
+    fprintf(fd, "P5\n");
+    fprintf(fd, "%d %d\n", x_dim, y_dim);
+    fprintf(fd, "255\n");
     for(int y=0; y<y_dim; y++) {
       for(int x=0; x<x_dim; x++) {
 	line[x] = img[y][x];

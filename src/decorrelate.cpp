@@ -1,5 +1,16 @@
 /* De/correlate a sequence of images using the input bidirectional
-   motion vector fields.
+   motion vector fields. When it is used to analyze, uses information
+   about the movement to generate a prediction of the odd images
+   (predicted frames) from the pairs (reference images). Then the
+   predictions are subtracted at odd images to generate high temporal
+   frequency band (images of error). If the predicted image has a
+   lower or equal to the image entropy residue, then the predicted
+   image which becomes part of the high frequency subband. When used
+   to synthesize, the motion information used to generate a prediction
+   of the odd images from the even-numbered images. Then the
+   predictions are combined with the high temporal frequency band
+   (error images) to generate the odd images. The subtraction or the
+   sum of images is performed in the image domain.
  */
 
 #include <stdio.h>
@@ -27,25 +38,6 @@
 #define PIXELS_IN_Y 288
 #define GET_PREDICTION /* If defined, shows information about predictions. */
 
-/** \brief When it is used to analyze, uses information about the movement to generate a prediction of the odd images (predicted frames) from the pairs (reference images).\n
- * Then the predictions are subtracted at odd images to generate high temporal frequency band (images of error).\n
- * If the predicted image has a lower or equal to the image entropy residue, then the predicted image which becomes part of the high frequency subband.\n\n
- * When used to synthesize, the motion information used to generate a prediction of the odd images from the even-numbered images.\n 
- * Then the predictions are combined with the high temporal frequency band (error images) to generate the odd images.\n\n
- * The subtraction or the sum of images is performed in the image domain.
- * \param block_overlaping Level of overlapping between blocks.
- * \param block_size Size block.
- * \param blocks_in_y Dimension 'Y' of blocks in a picture.
- * \param blocks_in_x Dimension 'X' of blocks in a picture.
- * \param components Number of components.
- * \param pixels_in_y Dimension 'Y' of pixels in a picture.
- * \param pixels_in_x Dimension 'X' of pixels in a picture.
- * \param mv Two motion vectors.
- * \param overlap_dwt A texture interpolation filter.
- * \param prediction_block A prediction block in a prediction picture.
- * \param prediction_picture A prediction picture.
- * \param reference_picture A reference picture.
- */
 void predict
 (
  int block_overlaping,
@@ -184,6 +176,7 @@ int main(int argc, char *argv[]) {
   int block_overlaping = 0;
   int block_size = 16;
   int components = COMPONENTS;
+  char *component={'Y', 'U', 'V'};
   char *even_fn = (char *)"even";
   char *frame_types_fn = (char *)"frame_types";
   char *high_fn = (char *)"high";
@@ -354,7 +347,8 @@ int main(int argc, char *argv[]) {
       error("%s: Unrecognized argument. Aborting ...\n", argv[0]);
     }
   }
-  
+
+#ifdef _1_
   FILE *even_fd; {
     even_fd = fopen(even_fn, "r");
     if(!even_fd) {
@@ -465,6 +459,8 @@ int main(int argc, char *argv[]) {
     }
   }
 
+#endif /* _1_ */
+  
   class dwt2d <
   TC_CPU_TYPE,
     TEXTURE_INTERPOLATION_FILTER <
@@ -549,11 +545,22 @@ int main(int argc, char *argv[]) {
   TC_CPU_TYPE *line = (TC_CPU_TYPE *)malloc(pixels_in_x[0]*sizeof(TC_CPU_TYPE));
 #endif
   
-  /** Begin decorrelation. */
+  /* Decorrelation begins ... */
 
-  /** The first image (reference [0]) is read. */
+  /* The first image (reference [0]) is read. */
   for(int c=0; c<COMPONENTS; c++) {
-    image.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+    // image.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+    char fn[80];
+    sprintf(fn, "%s/%4d_%s.pgm", even_fn, image_number, component[c]);
+    FILE *fd = fopen(fn, "r");
+#ifdef _DEBUG_
+    if(!fd) {
+      error("%s: unable to read \"%s\" ... aborting!\n",
+	    argv[0], fn);
+      abort();
+    }
+#endif
+    image.read(fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
   }
 
   /* Interpolate the chroma of reference [0], to have the same size as
@@ -668,10 +675,20 @@ int main(int argc, char *argv[]) {
 	 argv[0], i, odd_fn);
 #endif
 
-    /** The next image is read (which is what we will predicir). */
-
+    /* The next image (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
-      image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      //image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      char fn[80];
+      sprintf(fn, "%s/%4d_%s.pgm", odd_fn, image_number, component[c]);
+      FILE *fd = fopen(fn, "r");
+#ifdef _DEBUG_
+      if(!fd) {
+	error("%s: unable to read \"%s\" ... aborting!\n",
+	      argv[0], fn);
+	abort();
+      }
+#endif
+      image.read(fd, predict[c], pixels_in_y[c], pixels_in_x[c]);
     }
 
 #else /* SYNTHESIZE (Correlation). */
@@ -681,10 +698,19 @@ int main(int argc, char *argv[]) {
 	 argv[0], i, high_fn);
 #endif
 
-    /** The residue image is read. */
-
+    /* Read residue image */
     for(int c=0; c<COMPONENTS; c++) {
-      image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+      //image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+      sprintf(fn, "%s/%4d_%s.pgm", high_fn, image_number, component[c]);
+      FILE *fd = fopen(fn, "r");
+#ifdef _DEBUG_
+      if(!fd) {
+	error("%s: unable to read \"%s\" ... aborting!\n",
+	      argv[0], fn);
+	abort();
+      }
+#endif
+      image.read(fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  residue[c][y][x] -= 128;

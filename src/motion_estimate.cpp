@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdarg.h>
 #include <string.h>
+//#include <netpbm/pgm.h>
 #include "display.cpp"
 #include "Haar.cpp"
 #include "5_3.cpp"
@@ -46,16 +47,16 @@ void local_me_for_block
   MVC_CPU_TYPE y[2] = {mv_prev_y_by_bx + _y, mv_next_y_by_bx - _y};	\
   MVC_CPU_TYPE x[2] = {mv_prev_x_by_bx + _x, mv_next_x_by_bx - _x};	\
   int error[2] = {0, 0};						\
-									\
+  									\
   for(int py=luby; py<rbby; py++) {					\
     TC_CPU_TYPE *pred_py = pred[py];					\
-      for(int px=lubx; px<rbbx; px++) {					\
-	error[PREV] += abs						\
-	  (pred_py[px] - ref[PREV][py + y[PREV]][px + x[PREV]]);	\
-	error[NEXT] += abs						\
-	  (pred_py[px] - ref[NEXT][py + y[NEXT]][px + x[NEXT]]);	\
-      }									\
+    for(int px=lubx; px<rbbx; px++) {					\
+      error[PREV] += abs						\
+	(pred_py[px] - ref[PREV][py + y[PREV]][px + x[PREV]]);		\
+      error[NEXT] += abs						\
+	(pred_py[px] - ref[NEXT][py + y[NEXT]][px + x[NEXT]]);		\
     }									\
+  }
 
 #define UPDATE_VECTORS							\
   if(error[PREV] <= min_error[PREV]) {					\
@@ -568,7 +569,7 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
-  
+#ifdef _1_
   int reuse_motion = 1;
 
   FILE *motion_fd; {
@@ -623,7 +624,8 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
-
+#endif
+  
   int picture_border_size = search_range + border_size;
 
   texture < TC_IO_TYPE, TC_CPU_TYPE > texture;
@@ -635,7 +637,7 @@ int main(int argc, char *argv[]) {
 		    pixels_in_x << subpixel_accuracy,
 		    picture_border_size << subpixel_accuracy/*2*/);
 
-    /* This initialization seems not necessary. */
+    /* This initialization seems to be unnecessary. */
     for(int y=0; y<pixels_in_y << subpixel_accuracy; y++) {
       for(int x=0; x<pixels_in_x <<subpixel_accuracy; x++) {
 	reference[i][y][x] = 0;
@@ -648,7 +650,7 @@ int main(int argc, char *argv[]) {
 		  pixels_in_x << subpixel_accuracy,
 		  picture_border_size << subpixel_accuracy/*2*/);
 
-  /* This initialization seems not necessary. */
+  /* This initialization seems to be unnecessary. */
   for(int y=0; y<pixels_in_y << subpixel_accuracy; y++) {
     for(int x=0; x<pixels_in_x <<subpixel_accuracy; x++) {
       predicted[y][x] = 0;
@@ -681,12 +683,23 @@ int main(int argc, char *argv[]) {
   MVC_CPU_TYPE > >;
   motion_dwt->set_max_line_size(PIXELS_IN_X_MAX);
 
-  /* Read the luma of reference[0]. */
-  texture.read(even_fd, reference[0], pixels_in_y, pixels_in_x);
+  int reference_index = 0;
+  
+  /* Read the luma of reference[0]. */ { 
+    char fn[80];
+    sprintf(fn, "%s/%4d_Y.pgm", even_fn, 0); 
+    FILE *fd = fopen(fn, "r");
+    if(!fd) {
+      error("%s: \"%s\" does not exist ... aborting!\n",
+	    argv[0], image_fn);
+      abort();
+    }
+    texture.read(fd, reference[0], pixels_in_y, pixels_in_x);
+  }
 
   /* Skip to the chroma. */
-  fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
-  fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+  /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+    fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
   /* Fill the edge of the read image. */
   texture.fill_border(reference[0],
@@ -702,11 +715,22 @@ int main(int argc, char *argv[]) {
 #endif
 
     /* Luma. */
-    texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
+    //texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
+    /* Read the luma of predicted. */ { 
+      char fn[80];
+      sprintf(fn, "%s/%4d_Y.pgm", odd_fn, i); 
+      FILE *fd = fopen(fn, "r");
+      if(!fd) {
+	error("%s: \"%s\" does not exist ... aborting!\n",
+	      argv[0], fn);
+	abort();
+      }
+      texture.read(fd, predicted, pixels_in_y, pixels_in_x);
+    }
 
     /* Chroma. */
-    fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
-    fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+    /*fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+      fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
 #if defined INFO
     info("%s: reading picture %d of \"%s\".\n",
@@ -719,12 +743,22 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /* Luma. */
-    texture.read(even_fd, reference[1], pixels_in_y, pixels_in_x);
+    /* Read the luma of reference[1]. */ { 
+      char fn[80];
+      sprintf(fn, "%s/%4d_Y.pgm", even_fn, i); 
+      FILE *fd = fopen(fn, "r");
+      if(!fd) {
+	error("%s: \"%s\" does not exist ... aborting!\n",
+	      argv[0], fn);
+	abort();
+      }
+      texture.read(image_fd, reference[1], pixels_in_y, pixels_in_x);
+    }
+    //texture.read(even_fd, reference[1], pixels_in_y, pixels_in_x);
 
     /* Cromas. */
-    fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
-    fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+    /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+      fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
     /* Fill the edge of the read image. */
     texture.fill_border(reference[1],
@@ -810,7 +844,53 @@ int main(int argc, char *argv[]) {
     info("%s: writing motion vector field %d in \"%s\".\n",
 	 argv[0], i, motion_fn);
 #endif
-    motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
+
+    {
+      char fn[80];
+      sprintf(fn, "%s/%4d_B_x.pgm", motion_fd, i);
+      FILE *fd  = fopen(motion_fn, "w");
+      if(!fd) {
+	error("%s: unable to create the file \"%s\" ... aborting!\n",
+	      argv[0], motion_fn);
+	abort();
+      }
+      motion.write(fd, mv[0][0], blocks_in_y, blocks_in_x);
+    }
+    {
+      char fn[80];
+      sprintf(fn, "%s/%4d_B_y.pgm", motion_fd, i);
+      FILE *fd  = fopen(motion_fn, "w");
+      if(!fd) {
+	error("%s: unable to create the file \"%s\" ... aborting!\n",
+	      argv[0], motion_fn);
+	abort();
+      }
+      motion.write(fd, mv[0][1], blocks_in_y, blocks_in_x);
+    }
+    {
+      char fn[80];
+      sprintf(fn, "%s/%4d_F_y.pgm", motion_fd, i);
+      FILE *fd  = fopen(motion_fn, "w");
+      if(!fd) {
+	error("%s: unable to create the file \"%s\" ... aborting!\n",
+	      argv[0], motion_fn);
+	abort();
+      }
+      motion.write(fd, mv[1][0], blocks_in_y, blocks_in_x);
+    }
+    {
+      char fn[80];
+      sprintf(fn, "%s/%4d_F_x.pgm", motion_fd, i);
+      FILE *fd  = fopen(motion_fn, "w");
+      if(!fd) {
+	error("%s: unable to create the file \"%s\" ... aborting!\n",
+	      argv[0], motion_fn);
+	abort();
+      }
+      motion.write(fd, mv[1][1], blocks_in_y, blocks_in_x);
+    }
+
+    //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
 
     /* SWAP(&reference_pic[0], &reference_pic[1]). */ {
       TC_CPU_TYPE **tmp = reference[0];
