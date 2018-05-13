@@ -30,7 +30,7 @@
 #include "common.h"
 
 #define TEXTURE_INTERPOLATION_FILTER _5_3
-#define GET_PREDICTION /* If defined, shows information about predictions. */
+#define __GET_PREDICTION__ /* If defined, shows information about predictions. */
 
 void predict
 (
@@ -159,13 +159,13 @@ void predict
 
 int main(int argc, char *argv[]) {
 
-#if defined DEBUG
+#if defined __INFO__
   info("%s ", argv[0]);
   for(int i=1; i<argc; i++) {
     info("%s ", argv[i]);
   }
   info("\n");
-#endif
+#endif /* __INFO__ */
 
   int block_overlaping = 0;
   int block_size = 16;
@@ -175,9 +175,9 @@ int main(int argc, char *argv[]) {
   char *frame_types_fn = (char *)"frame_types";
   char *high_fn = (char *)"high";
   char *motion_in_fn = (char *)"motion_in";
-#if defined ANALYZE
+#if defined __ANALYZE__
   char *motion_out_fn = (char *)"motion_out";
-#endif
+#endif /* __ANALYZE__ */
   char *odd_fn = (char *)"odd";
   int pictures = 33;
   int pixels_in_x[COMPONENTS] = {PIXELS_IN_X, PIXELS_IN_X/2, PIXELS_IN_X/2};
@@ -185,8 +185,7 @@ int main(int argc, char *argv[]) {
   int search_range = 4;
   int subpixel_accuracy = 0;
   int always_B = 0; /* By default, not force to have only B frames */
-
-
+  
   int c;
   while(1) {
 
@@ -198,9 +197,9 @@ int main(int argc, char *argv[]) {
       {"frame_types_fn", required_argument, 0, 'f'},
       {"high_fn", required_argument, 0, 'h'},
       {"motion_in_fn", required_argument, 0, 'i'},
-#if defined ANALYZE
+#if defined __ANALYZE__
       {"motion_out_fn", required_argument, 0, 't'},
-#endif
+#endif /* __ANALYZE__ */
       {"odd_fn", required_argument, 0, 'o'},
       {"pictures", required_argument, 0, 'p'},
       {"pixels_in_x", required_argument, 0, 'x'},
@@ -215,11 +214,11 @@ int main(int argc, char *argv[]) {
     int option_index = 0;
 
     c = getopt_long(argc, argv,
-#if defined ANALYZE
+#if defined __ANALYZE__
 		    "v:b:e:f:h:i:t:o:p:x:y:s:a:B:?",
-#else
+#else /* __ANALYZE__ */
 		    "v:b:e:f:h:i:o:p:x:y:s:a:B:?",
-#endif
+#endif /* __ANALYZE__ */
 		    long_options, &option_index);
     
     if(c==-1) {
@@ -299,21 +298,21 @@ int main(int argc, char *argv[]) {
       break;
       
     case '?':
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("+------------------+\n");
       printf("| MCTF decorrelate |\n");
       printf("+------------------+\n");
-#else
+#else /* __ANALYZE__ */
       printf("+----------------+\n");
       printf("| MCTF correlate |\n");
       printf("+----------------+\n");
-#endif
+#endif /* __ANALYZE__ */
       printf("\n");
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("  Block-based time-domain motion decorrelation.\n");
-#else
+#else /* __ANALYZE__ */
       printf("  Block-based time-domain motion correlation.\n");
-#endif
+#endif /* __ANALYZE__ */
       printf("\n");
       printf("  Parameters:\n");
       printf("\n");
@@ -323,9 +322,9 @@ int main(int argc, char *argv[]) {
       printf("   -[-f]rame_types_fn = output file with the frame types (\"%s\")\n", frame_types_fn);
       printf("   -[-h]igh_fn = input file with high-subband pictures (\"%s\")\n", high_fn);
       printf("   -[-]motion_[i]n_fn = input file with the motion fields (\"%s\")\n", motion_in_fn);
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("   -[-]mo[t]ion_out_fn = output file with the motion fields (\"%s\")\n", motion_out_fn);
-#endif
+#endif /* __ANALYZE__ */
       printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", odd_fn);
       printf("   -[-p]ictures = number of images to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x[0]);
@@ -342,164 +341,72 @@ int main(int argc, char *argv[]) {
     }
   }
 
-#ifdef _1_
-  FILE *even_fd; {
-    even_fd = fopen(even_fn, "r");
-    if(!even_fd) {
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], even_fn);
-      abort();
-    }
-  }
-#endif
     int error = mkdir(even_fn, 0700);
-#ifdef _DEBUG_
+#ifdef __DEBUG__
     if(error) {
       error("s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
       abort();
     }
-#endif
+#endif /* __DEBUG__ */
 
-#ifdef _1_
-  FILE *motion_in_fd;{
-    motion_in_fd = fopen(motion_in_fn, "r");
-    if(!motion_in_fd) {
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], motion_in_fn);
-      abort();
-    }
-  }
-#endif
-
-#ifdef _1_
-#if defined ANALYZE
-  FILE *motion_out_fd;{
-    motion_out_fd = fopen(motion_out_fn, "w");
-    if(!motion_out_fd) {
-      error("%s: unable to write \"%s\" ... aborting!\n",
-	    argv[0], motion_out_fn);
-      abort();
-    }
-  }
-#endif
-#endif /* _1_ */
+#if defined __ANALYZE__
   int error = mkdir(motion_out_fn, 0700);
-#ifdef _DEBUG_
+#ifdef __DEBUG__
   if(error) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], motion_out_fn);
     abort();
   }
-#endif
-  
-#ifdef _1_
-  FILE *odd_fd; {
-    odd_fd = fopen(odd_fn,
-#if defined ANALYZE
-		   "r"
-#else
-		    "w"
-#endif
-		   );
-    if(!odd_fd) {
-#if defined ANALYZE
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], odd_fn);
-#else
-      error("%s: unable to write \"%s\" ... aborting!\n",
-	    argv[0], odd_fn);
-#endif
-      abort();
-    }
-  }
-#endif
-#if defined ANALYZE
+#endif /* __DEBUG__ */
+#endif /* __ANALIZE__ */
+
+#if defined __ANALYZE__
   int error = mkdir(odd_fn, 0700);
-#ifdef _DEBUG_
+#ifdef __DEBUG__
   if(error) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
     abort();
   }
-#endif
-#endif /* ANALYZE */
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
 
-#ifdef _1_
-  FILE *high_fd; {
-    high_fd = fopen(high_fn,
-#if defined ANALYZE
-		    "w"
-#else
-		    "r"
-#endif
-		    );
-    if(!high_fd) {
-#if defined ANALYZE
-      error("%s: unable to write \"%s\" ... aborting!\n",
-	    argv[0], high_fn);
-#else
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], high_fn);    
-#endif
-      abort();
-    }
-  }
-#endif /* _1_ */
-#if defined ANALYZE
+#if defined __ANALYZE__
   int error = mkdir(high_fn, 0700);
-#ifdef _DEBUG_
+#ifdef __DEBUG__
   if(error) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], high_fn);
     abort();
   }
-#endif
-#endif /* ANALYZE */
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
 
-#ifdef _1_
-#if defined GET_PREDICTION
-  FILE *prediction_fd; char prediction_fn[80]; {
-    sprintf(prediction_fn, "prediction_%s", even_fn);
-    prediction_fd = fopen(prediction_fn, "w");
-    if(!prediction_fd) {
-      error("%s: unable to write \"%s\" ... aborting!\n",
-	    argv[0], prediction_fn);
-      abort();
-    }
-#if defined INFO
-    info("%s: writing predictions in \"%s\"\n",
-	 argv[0], prediction_fn);
-#endif
-  }
-#endif /* GET_PREDICTION */
-#endif /* _1_ */
-#if defined GET_PREDICTION
+#if defined __GET_PREDICTION__
   {
     char prediction_fn[80];
     sprintf(prediction_fn, "prediction_%s", even_fn);
     int error = mkdir(prediction_fn, 0700);
-#ifdef _DEBUG_
+#ifdef __DEBUG__
     if(error) {
       error("s: \"%s\" cannot be created ... aborting!\n", argv[0], prediction_fn);
       abort();
     }
-#endif
+#endif /* __DEBUG__ */
   }
-#endif /* GET_PREDICTION */
+#endif /* __GET_PREDICTION__ */
   
   FILE *frame_types_fd; {
     frame_types_fd = fopen(frame_types_fn,
-#if defined ANALYZE
+#if defined __ANALYZE__
 			   "w"
-#else
+#else /* __ANALYZE__ */
 			   "r"
-#endif
+#endif /* __ANALYZE__ */
 			   );
     if(!frame_types_fd) {
-#if defined ANALYZE
-      error("%s: unable to write \"%s\" ... aborting!\n",
-	    argv[0], frame_types_fn);
-#else
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], frame_types_fn);    
-#endif
+#if defined __ANALYZE__
+      error("%s: unable to write \"%s\" ... aborting!\n", argv[0], frame_types_fn);
+#else /* __ANALYZE__ */
+      error("%s: unable to read \"%s\" ... aborting!\n", argv[0], frame_types_fn);    
+#endif /* __ANALYZE__ */
       abort();
     }
   }
@@ -520,10 +427,8 @@ int main(int argc, char *argv[]) {
 
   int blocks_in_y = pixels_in_y[0]/block_size;
   int blocks_in_x = pixels_in_x[0]/block_size;
-#if defined INFO
   info("%s: blocks_in_y = %d\n", argv[0], blocks_in_y);
   info("%s: blocks_in_x = %d\n", argv[0], blocks_in_x);
-#endif
 
   motion < MVC_TYPE > motion;
   texture < TC_IO_TYPE, TC_CPU_TYPE > image;
@@ -548,9 +453,7 @@ int main(int argc, char *argv[]) {
 		0);
 
   int picture_border_size = 4*search_range + block_overlaping;
-#if defined INFO
   info("%s: picture_border = %d\n", argv[0], picture_border_size);
-#endif
 
   TC_CPU_TYPE ***reference[2];
   for(int i=0; i<2; i++) {
@@ -589,21 +492,11 @@ int main(int argc, char *argv[]) {
 #endif
   
   /* Decorrelation begins. */
-
-  /* The first image (reference [0]) is read. */
+  
+  /* Read reference [0] (the first image). */
   for(int c=0; c<COMPONENTS; c++) {
     // image.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
-    char fn[80];
-    sprintf(fn, "%s/%4d_%d.pgm", even_fn, image_number, c);
-    FILE *fd = fopen(fn, "r");
-#ifdef _DEBUG_
-    if(!fd) {
-      error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn);
-      abort();
-    }
-#endif
-    image.read(fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
-    fclose(fd);
+    texture.read_image(reference_image[0][c], pixels_in_y[c], pixels_in_x[c], even_fn, 0, c);
   }
 
   /* Interpolate the chroma of reference [0], to have the same size as
@@ -711,75 +604,38 @@ int main(int argc, char *argv[]) {
   
   for(int i=0; i<pictures/2; i++) {
     
-#if defined ANALYZE ///////////////////////////////////////////////////////////
-                                                                             //
-#if defined INFO                                                             // 
-    info("%s: reading picture %d of \"%s\".\n",                              //
-	 argv[0], i, odd_fn);                                                //
-#endif                                                                       //
-                                                                             //
-    /* The next image (to predict) */                                        //
-    for(int c=0; c<COMPONENTS; c++) {                                        //
-      //image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);    //
-      char fn[80];                                                           //
-      sprintf(fn, "%s/%4d_%s.pgm", odd_fn, image_number, component[c]);      //
-      FILE *fd = fopen(fn, "r");                                             //
-#ifdef _DEBUG_ ////////////////////////////////////////////////////////////  //
-      if(!fd) {                                                          //  //
-	error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn); //  //
-	abort();                                                         //  //
-      }                                                                  //  //
-#endif ////////////////////////////////////////////////////////////////////  //
-      image.read(fd, predict[c], pixels_in_y[c], pixels_in_x[c]);            //
-      fclose(fd);                                                            //
-    }                                                                        //
-                                                                             //
-#else /////////////////////////////////////////////////////////////////////////
-                                                                             //
-#if defined INFO ///////////////////////////////////////////////////////     //
-    info("%s: reading picture %d of \"%s\".\n", argv[0], i, high_fn); //     //
-#endif /////////////////////////////////////////////////////////////////     //
-                                                                             //
-    /* Read residue image */                                                 //
-    for(int c=0; c<COMPONENTS; c++) {                                        //
-      //image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);     //
-      sprintf(fn, "%s/%4d_%s.pgm", high_fn, image_number, component[c]);     //
-      FILE *fd = fopen(fn, "r");                                             //
-#ifdef _DEBUG_ ////////////////////////////////////////////////////////////  //
-      if(!fd) {                                                          //  //
-	error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn); //  //
-	abort();                                                         //  //
-      }                                                                  //  //
-#endif ////////////////////////////////////////////////////////////////////  //
-      image.read(fd, residue[c], pixels_in_y[c], pixels_in_x[c]);            //
-      fclose(fd);                                                            //
-      for(int y=0; y<pixels_in_y[c]; y++) {                                  //
-	for(int x=0; x<pixels_in_x[c]; x++) {                                //
-	  residue[c][y][x] -= 128;                                           //
-	}                                                                    //
-      }                                                                      //
-    }                                                                        //
-                                                                             //
-#endif ////////////////////////////////////////////////////////////////////////
+#if defined __ANALYZE__
+    info("%s: reading picture %d of \"%s\".\n", argv[0], i, odd_fn);
+
+    /* The next image (to predict) */
+    for(int c=0; c<COMPONENTS; c++) {
+      //image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      texture.read_image(predicted[c], pixels_in_y[c], pixels_in_x[c], odd_fn, i, c);
+    }
+
+#else /* __ANALYZE__ */
+
+    info("%s: reading picture %d of \"%s\".\n", argv[0], i, high_fn);
+
+    /* Read residue image */
+    for(int c=0; c<COMPONENTS; c++) {
+      //image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+      texture.read_image( residue[c], pixels_in_y[c], pixels_in_x[c], high_fd, i, c);
+      for(int y=0; y<pixels_in_y[c]; y++) {
+	for(int x=0; x<pixels_in_x[c]; x++) {
+	  residue[c][y][x] -= 128;
+	}
+      }
+    }
+
+#endif /* __ANALYZE__ */
     
-#if defined INFO
     info("%s: reading picture %d of \"%s\".\n", argv[0], i, even_fn);
-#endif
     
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
       //image.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
-      char fn[80];
-      sprintf(fn, "%s/%4d_%s.pgm", even_fn, image_number, component[c]);
-      FILE *fd = fopen(fn, "r");
-#ifdef _DEBUG_
-      if(!fd) {
-	error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn);
-	abort();
-      }
-#endif
-      image.read(fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
-      fclose(fd)
+      texture.read_image(reference_image[1][c], pixels_in_y[c], pixels_in_x[c], even_fn, i, c);
     }
 
     /* Croma Cb. */
@@ -804,8 +660,7 @@ int main(int argc, char *argv[]) {
 
     /* Interpolate and fill edges. */
     
-    for(int c = 0; c < COMPONENTS; c++) {
-      
+    for(int c = 0; c < COMPONENTS; c++) {      
       for(int s = 1; s <= subpixel_accuracy; s++) {
 	
 	/* Interpolate. */
@@ -837,29 +692,14 @@ int main(int argc, char *argv[]) {
     }
 
     /* Motion fields are read. */
-#if defined INFO
     info("%s: reading motion vector field %d in \"%s\".\n", argv[0], i, motion_in_fn);
-#endif
-    void read_motion_component(char *fn, int image_number, int FB, int YX) {
-      char fn[80];
-      sprintf(fn, "%s/%4d_%d_%d.pgm", fn, image_number, BF, YX);
-      FILE *fd  = fopen(fn, "r");
-#ifdef __DEBUG_
-      if(!fd) {
-	error("%s: unable to open the file \"%s\" ... aborting!\n", argv[0], fn);
-	abort();
-#endif
-      }
-      motion.read(fd, mv[0][0], blocks_in_y, blocks_in_x);
-      fclose(fd);
-    }
     //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
-    read_motion_component(motion_in_f, image_number, 0, 0);
-    read_motion_component(motion_in_f, image_number, 0, 1);
-    read_motion_component(motion_in_f, image_number, 1, 0);
-    read_motion_component(motion_in_f, image_number, 1, 1);
+    motion.read_component(mv[0][0], motion_in_f, blocks_in_y, blocks_in_x, i, 0, 0);
+    motion.read_component(mv[0][1], motion_in_f, blocks_in_y, blocks_in_x, i, 0, 1);
+    motion.read_component(mv[1][0], motion_in_f, blocks_in_y, blocks_in_x, i, 1, 0);
+    motion.read_component(mv[1][1], motion_in_f, blocks_in_y, blocks_in_x, i, 1, 1);
     
-#if defined ANALYZE
+#if defined __ANALYZE__
     float motion_entropy = 0.0; {
       static int count[256];
       
@@ -882,7 +722,7 @@ int main(int argc, char *argv[]) {
 
       }
     }
-#endif /* ANALYZE */
+#endif /* __ANALYZE__ */
 
     /** If the entropy of the predicted image is less than or equal to
 	the entropy of the "wrong image" then the predicted image
@@ -923,34 +763,18 @@ int main(int argc, char *argv[]) {
     /* The prediction is still on: YUV444; and we must pass it: YUV422. */
     image_dwt->analyze(prediction[1], pixels_in_y[0], pixels_in_x[0], 1);
     image_dwt->analyze(prediction[2], pixels_in_y[0], pixels_in_x[0], 1);
-
-#if defined GET_PREDICTION
-#if defined INFO
-    info("%s: writing picture %d of \"%s\".\n",
-	 argv[0], i, prediction_fn);
-#endif
+    
+#if defined __GET_PREDICTION__
+    info("%s: writing picture %d of \"%s\".\n", argv[0], i, prediction_fn);
     for(int c=0; c<COMPONENTS; c++) {
-      //image.write(prediction_fd, prediction[c], pixels_in_y[c], pixels_in_x[c]);
-      char fn[80];
-      sprintf(fn, "%s/%4d_%s.pgm", prediction_fn, image_number, c);
-      FILE *fd = fopen(fn, "w");
-#ifdef _DEBUG_
-      if(!fd) {
-	error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn);
-	abort();
-      }
-#endif
-      image.write(fd, prediction[c], pixels_in_y[c], pixels_in_x[c]);
-    }
+      write_image(prediction[c], pixels_in_y[c], pixels_in_x[c], prediction_fn, i, c);
 #endif /* GET_PREDICTION */
 
 #if defined ANALYZE
 
     /* The residue image is generated. */
 
-#if defined DEBUG
       info("%s: writing picture %d of \"%s\".\n", argv[0], i, high_fn);
-#endif
 
       /*
 	A subtraction at high resolution and a reduction,
@@ -1041,12 +865,10 @@ int main(int argc, char *argv[]) {
     int motion_size
       = (int)(motion_entropy * (float)blocks_in_y * (float)blocks_in_x);
 
-#if defined DEBUG
     info("predicted_entropy=%f residue_entropy=%f motion_entropy=%f\n",
 	 predicted_entropy, residue_entropy, motion_entropy);
     info("predicted_size=%d residue_size=%d motion_size=%d\n",
 	 predicted_size, residue_size, motion_size);
-#endif
 
     //if(predicted_entropy <= (residue_entropy + motion_entropy)) /* Image of type I. */ {
     if(predicted_size <= (residue_size + motion_size)) {
@@ -1066,11 +888,16 @@ int main(int argc, char *argv[]) {
       }
       
       for(int c=0; c<COMPONENTS; c++) {
-	image.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	//image.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	texture.write_image(residue[c], pixels_in_y[c], pixels_in_x[c], high_fn, i, c);
       }
 
       /* No motion field (other than 0) associated with an image I. */
-      motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
+      //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
+      motion.write_component(zeroes[0][0], motion_out_f, blocks_in_y, blocks_in_x, i, 0, 0);
+      motion.write_component(zeroes[0][1], motion_out_f, blocks_in_y, blocks_in_x, i, 0, 1);
+      motion.write_component(zeroes[1][0], motion_out_f, blocks_in_y, blocks_in_x, i, 1, 0);
+      motion.wirte_component(zeroes[1][1], motion_out_f, blocks_in_y, blocks_in_x, i, 1, 1);
 
     } else {
 
@@ -1091,22 +918,23 @@ int main(int argc, char *argv[]) {
 	    residue[c][y][x] = val;
 	  }
 	}
-	image.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	//image.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	texture.write_image(residue[c], pixels_in_y[c], pixels_in_x[c], high_fn, i, c);
       }
 
       /* The images I have associated motion field. */
-      motion.write(motion_out_fd, mv, blocks_in_y, blocks_in_x);
-
+      //motion.write(motion_out_fd, mv, blocks_in_y, blocks_in_x);
+      motion.write_component(mv[0][0], motion_out_f, blocks_in_y, blocks_in_x, i, 0, 0);
+      motion.write_component(mv[0][1], motion_out_f, blocks_in_y, blocks_in_x, i, 0, 1);
+      motion.write_component(mv[1][0], motion_out_f, blocks_in_y, blocks_in_x, i, 1, 0);
+      motion.wirte_component(mv[1][1], motion_out_f, blocks_in_y, blocks_in_x, i, 1, 1);
     }
 
-#else /* SYNTHESIZE */
+#else /* __SYNTHESIZE__ */
 
-#if defined DEBUG
-    info("%s: writing picture %d of \"%s\".\n",
-	 argv[0], i, odd_fn);
-#endif
+    info("%s: writing picture %d of \"%s\".\n", argv[0], i, odd_fn);
 
-    /** Decompensation. */
+    /** Decorrelation. */
 
     if(fgetc(frame_types_fd) == 'I') {
 
@@ -1133,12 +961,13 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /* We write the predicted image, the chroma subsampling. */
+    /* Write predicted image. */
     for(int c=0; c<COMPONENTS; c++) {
-      image.write(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      //image.write(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      texture.image_write(predicted[c], pixels_in_y[c], pixels_in_x[c], odd_fn, i, c);
     }
 
-#endif /* SYNTHESIZE */
+#endif /* __SYNTHESIZE__ */
     
     /* SWAP(&reference_picture[0], &reference_picture[1]). */ {
       TC_CPU_TYPE ***tmp = reference[0];

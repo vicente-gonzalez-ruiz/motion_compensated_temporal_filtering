@@ -16,27 +16,20 @@
 #include "dwt2d.cpp"
 #include "texture.cpp"
 #include "motion.cpp"
+#include "common.h"
 
 #define __INFO__
 #define __DEBUG__
 
 #define FAST_SEARCH
-#define TC_IO_TYPE unsigned char /* TC = Texture Component; IO = Input Output */
-#define TC_CPU_TYPE short
 #define TEXTURE_INTERPOLATION_FILTER _5_3
 #define MOTION_INTERPOLATION_FILTER Haar
-#define MVC_IO_TYPE short /* MVC = Motion Vectors Components */
-#define MVC_CPU_TYPE short
-
-#define LUMA    0
-#define CROMA_U 1
-#define CROMA_V 2
 
 #if defined FAST_SEARCH
 
 void local_me_for_block
 (
- MVC_CPU_TYPE ****mv,/* [PREV|NEXT][Y|X][coor_y][coor_x] */
+ MVC_TYPE ****mv,    /* [PREV|NEXT][Y|X][coor_y][coor_x] */
  TC_CPU_TYPE ***ref, /* [PREV|NEXT][coor_y][coor_x] */
  TC_CPU_TYPE **pred, /* [coor_y][coor_x] */
  int luby, int lubx, /* Coordinate upper-left block. */
@@ -47,14 +40,14 @@ void local_me_for_block
   int min_error[2];
   int vy[2], vx[2];
 
-  MVC_CPU_TYPE mv_prev_y_by_bx = mv[PREV][Y_FIELD][by][bx];
-  MVC_CPU_TYPE mv_prev_x_by_bx = mv[PREV][X_FIELD][by][bx];
-  MVC_CPU_TYPE mv_next_y_by_bx = mv[NEXT][Y_FIELD][by][bx];
-  MVC_CPU_TYPE mv_next_x_by_bx = mv[NEXT][X_FIELD][by][bx];
+  MVC_TYPE mv_prev_y_by_bx = mv[PREV][Y_FIELD][by][bx];
+  MVC_TYPE mv_prev_x_by_bx = mv[PREV][X_FIELD][by][bx];
+  MVC_TYPE mv_next_y_by_bx = mv[NEXT][Y_FIELD][by][bx];
+  MVC_TYPE mv_next_x_by_bx = mv[NEXT][X_FIELD][by][bx];
 
 #define COMPUTE_ERRORS(_y,_x)						\
-  MVC_CPU_TYPE y[2] = {mv_prev_y_by_bx + _y, mv_next_y_by_bx - _y};	\
-  MVC_CPU_TYPE x[2] = {mv_prev_x_by_bx + _x, mv_next_x_by_bx - _x};	\
+  MVC_TYPE y[2] = {mv_prev_y_by_bx + _y, mv_next_y_by_bx - _y};		\
+  MVC_TYPE x[2] = {mv_prev_x_by_bx + _x, mv_next_x_by_bx - _x};		\
   int error[2] = {0, 0};						\
   									\
   for(int py=luby; py<rbby; py++) {					\
@@ -146,7 +139,7 @@ void local_me_for_block
  * predicted image, use a search area of +-1. */
 void local_me_for_image
 (
- MVC_CPU_TYPE ****mv,         /* [PREV|NEXT][Y|X][coor_y][coor_x] */
+ MVC_TYPE ****mv,             /* [PREV|NEXT][Y|X][coor_y][coor_x] */
  TC_CPU_TYPE ***ref,          /* [PREV|NEXT][coor_y][coor_x] */
  TC_CPU_TYPE **pred,          /* [coor_y][coor_x] */
  int block_size,
@@ -179,7 +172,7 @@ int desp(int x, int y) {
 # endif /* FAST_SEARCH */
 
 void me_for_image
-(MVC_CPU_TYPE ****mv,           /* [PREV|NEXT][y_field|x_field][y_coor][x_coor] */
+(MVC_TYPE ****mv,               /* [PREV|NEXT][y_field|x_field][y_coor][x_coor] */
  TC_CPU_TYPE ***ref,            /* [PREV|NEXT][y_coor][x_coor] */
  TC_CPU_TYPE **pred,            /* [y_coor][x_coor] */
  int pixels_in_y,
@@ -191,7 +184,7 @@ void me_for_image
  int blocks_in_y,
  int blocks_in_x,
  class dwt2d < TC_CPU_TYPE, TEXTURE_INTERPOLATION_FILTER < TC_CPU_TYPE > > *pic_dwt,
- class dwt2d < MVC_CPU_TYPE, MOTION_INTERPOLATION_FILTER < MVC_CPU_TYPE > > *mv_dwt) {
+ class dwt2d < MVC_TYPE, MOTION_INTERPOLATION_FILTER < MVC_TYPE > > *mv_dwt) {
 
 #if defined FAST_SEARCH
   
@@ -587,7 +580,7 @@ int main(int argc, char *argv[]) {
   info("%s: blocks_in_x=%d\n", argv[0], blocks_in_x);
 
   motion < MVC_TYPE > motion;
-  MVC_CPU_TYPE ****mv = motion.alloc(blocks_in_y, blocks_in_x);
+  MVC_TYPE ****mv = motion.alloc(blocks_in_y, blocks_in_x);
 
   class dwt2d <
   TC_CPU_TYPE, TEXTURE_INTERPOLATION_FILTER <
@@ -598,34 +591,17 @@ int main(int argc, char *argv[]) {
   texture_dwt->set_max_line_size(PIXELS_IN_X_MAX);
 
   class dwt2d < 
-  MVC_CPU_TYPE, MOTION_INTERPOLATION_FILTER <
-  MVC_CPU_TYPE > > *motion_dwt
+  MVC_TYPE, MOTION_INTERPOLATION_FILTER <
+  MVC_TYPE > > *motion_dwt
     = new class dwt2d <
-  MVC_CPU_TYPE, MOTION_INTERPOLATION_FILTER <
-  MVC_CPU_TYPE > >;
+  MVC_TYPE, MOTION_INTERPOLATION_FILTER <
+  MVC_TYPE > >;
   motion_dwt->set_max_line_size(PIXELS_IN_X_MAX);
 
   int reference_index = 0;
-
-  void read_image(TC_IO_TYPE **image,
-		  int pixels_in_y,
-		  int pixels_in_x,
-		  char *fn,
-		  int image_number,
-		  int component) {
-    char fn[80];
-    sprintf(fn, "%s/%4d_%d.pgm", fn, image_number, component); 
-    FILE *fd = fopen(fn, "r");
-    if(!fd) {
-      error("%s: \"%s\" does not exist ... aborting!\n", argv[0], fn);
-      abort();
-    }
-    texture.read(fd, image, pixels_in_y, pixels_in_x);
-    fclose(fd);
-  }
   
   /* Read the luma of reference[0]. */
-  read_image(reference[0], pixels_in_y, pixels_in_x, even_fn, 0, LUMA);
+  texture.read_image(reference[0], pixels_in_y, pixels_in_x, even_fn, 0, LUMA);
 
   /* Skip to the chroma. */
   /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
@@ -644,7 +620,7 @@ int main(int argc, char *argv[]) {
     /* Luma. */
     //texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
     /* Read the luma of predicted. */
-      read_image(predicted, pixels_in_y, pixels_in_x, odd_fn, i, LUMA);
+      texture.read_image(predicted, pixels_in_y, pixels_in_x, odd_fn, i, LUMA);
 
     /* Chroma. */
     /*fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
@@ -660,7 +636,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Read the luma of reference[1]. */
-    read_image(reference[1], pixels_in_y, pixels_in_x, even_fn, 0, LUMA);
+    texture.read_image(reference[1], pixels_in_y, pixels_in_x, even_fn, 0, LUMA);
     //texture.read(even_fd, reference[1], pixels_in_y, pixels_in_x);
 
     /* Cromas. */
@@ -747,25 +723,11 @@ int main(int argc, char *argv[]) {
 
     info("%s: writing motion vector field %d in \"%s\".\n", argv[0], i, motion_fn);
 
-    void write_motion_component(char *fn, int image_number, int FB, int YX) {
-      char fn[80];
-      sprintf(fn, "%s/%4d_%d_%d.pgm", fn, image_number, FB, YX);
-      FILE *fd  = fopen(fn, "w");
-#ifdef __DEBUG__
-      if(!fd) {
-	error("%s: unable to create the file \"%s\" ... aborting!\n", argv[0], fn);
-	abort();
-      }
-#endif /* __DEBUG__ */
-      motion.write(fd, mv[FB][YX], blocks_in_y, blocks_in_x);
-      fclose(fd);
-    }
-
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
-    write_motion_component(motion_fn, i, 0, 0);
-    write_motion_component(motion_fn, i, 0, 1);
-    write_motion_component(motion_fn, i, 1, 0);
-    write_motion_component(motion_fn, i, 1, 1);
+    write_motion_component(mv[0][0], blocks_in_y, blocks_in_x, motion_fn, i, 0, 0);
+    write_motion_component(mv[0][1], blocks_in_y, blocks_in_x, motion_fn, i, 0, 1);
+    write_motion_component(mv[1][0], blocks_in_y, blocks_in_x, motion_fn, i, 1, 0);
+    write_motion_component(mv[0][1], blocks_in_y, blocks_in_x, motion_fn, i, 1, 1);
 
     /* SWAP(&reference_pic[0], &reference_pic[1]). */ {
       TC_CPU_TYPE **tmp = reference[0];

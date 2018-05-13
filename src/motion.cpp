@@ -5,9 +5,10 @@
 #define X_FIELD  0 /* X components of a field */
 #define Y_FIELD  1 /* Y components of a field */
 
+#define MVC_TYPE short  /* MVC = Motion Vectors Components */
+
 /* Limits */
 #define PIXELS_IN_X_MAX 16384
-#define MVC_TYPE short
 
 template <typename TYPE>       
 class motion {
@@ -52,15 +53,16 @@ public:
       for(int f=0; f<2; f++) {
 	for(int y=0; y<y_dim; y++) {
 	  int read = fread(data[i][f][y], x_dim, sizeof(TYPE), fd);
-#if defined INFO /** Sign and magnitude */
+#if defined __INFO__ /** Sign and magnitude */
 	  for(int x=0; x<x_dim; x++) {
 	    info("%d ", data[i][f][y][x]);
 	  }
-#endif
+#endif /* __INFO__ */
 	}
       }
     }
   }
+  
   void read(FILE *fd, TYPE **data, int y_dim, int x_dim) {
     char x[80];
     fgets(x, 80, fd); /* Magic number */
@@ -68,14 +70,23 @@ public:
     fgets(x, 80, fd); /* Max value */
     for(int y=0; y<y_dim; y++) {
       int read = fread(data[i][f][y], x_dim, sizeof(TYPE), fd);
-#if defined INFO /** Sign and magnitude */
+#if defined __INFO__ /** Sign and magnitude */
       for(int x=0; x<x_dim; x++) {
 	info("%d ", data[i][f][y][x]);
       }
-#endif
+#endif /* __INFO__ */
     }
   }
 
+  void write(FILE *fd, TYPE **data, int y_dim, int x_dim) {
+    fprintf(fd, "P5\n");
+    fprintf(fd, "%d %d\n", x_dim, y_dim);
+    fprintf(fd, "65535\n");
+    for(int y=0; y<y_dim; y++) {
+      fwrite(data[i][f][y], x_dim, sizeof(TYPE), fd);
+    }
+  }
+  
   /* Writes to disk a BMVF */
   void write_(FILE *fd, TYPE ****data, int y_dim, int x_dim) {
     fprintf(fd, "P5\n");
@@ -90,13 +101,45 @@ public:
     }
   }
 
-  void write(FILE *fd, TYPE **data, int y_dim, int x_dim) {
-    fprintf(fd, "P5\n");
-    fprintf(fd, "%d %d\n", x_dim, y_dim);
-    fprintf(fd, "65535\n");
-    for(int y=0; y<y_dim; y++) {
-      fwrite(data[i][f][y], x_dim, sizeof(TYPE), fd);
+  void read_component(TYPE **component,
+		      int blocks_in_y,
+		      int blocks_in_x,
+		      char *fn,
+		      int field_number,
+		      int FB,
+		      int YX) {
+    char fn[80];
+    sprintf(fn, "%s/%4d_%d_%d.pgm", fn, field_number, FB, YX);
+    FILE *fd  = fopen(fn, "r");
+#ifdef __DEBUG__
+    if(!fd) {
+      error("%s: unable to open the file \"%s\" ... aborting!\n", argv[0], fn);
+      abort();
+#endif /* __DEBUG__ */
     }
+    motion::read(fd, component[FB][YX], blocks_in_y, blocks_in_x);
+    fclose(fd);
+  }
+
+  void write_motion_component(TYPE **component,
+			      int blocks_in_y,
+			      int blocks_in_x,
+			      char *fn,
+			      int image_number,
+			      int FB,
+			      int YX) {
+    char fn[80];
+    sprintf(fn, "%s/%4d_%d_%d.pgm", fn, image_number, FB, YX);
+    FILE *fd  = fopen(fn, "w");
+#ifdef __DEBUG__
+    if(!fd) {
+      error("%s: unable to create the file \"%s\" ... aborting!\n", argv[0], fn);
+      abort();
+    }
+#endif /* __DEBUG__ */
+    motion::write(fd, component[FB][YX], blocks_in_y, blocks_in_x);
+    fclose(fd);
   }
 
 };
+
