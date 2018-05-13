@@ -6,6 +6,8 @@
 #include <stdarg.h>
 #include <string.h>
 //#include <netpbm/pgm.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "display.cpp"
 #include "Haar.cpp"
 #include "5_3.cpp"
@@ -15,6 +17,9 @@
 #include "texture.cpp"
 #include "motion.cpp"
 
+#define __INFO__
+#define __DEBUG__
+
 #define FAST_SEARCH
 #define TC_IO_TYPE unsigned char /* TC = Texture Component; IO = Input Output */
 #define TC_CPU_TYPE short
@@ -22,6 +27,10 @@
 #define MOTION_INTERPOLATION_FILTER Haar
 #define MVC_IO_TYPE short /* MVC = Motion Vectors Components */
 #define MVC_CPU_TYPE short
+
+#define LUMA    0
+#define CROMA_U 1
+#define CROMA_V 2
 
 #if defined FAST_SEARCH
 
@@ -145,25 +154,18 @@ void local_me_for_image
  int blocks_in_y,
  int blocks_in_x
 ) {
-  
   for(int by=0; by<blocks_in_y; by++) {
-#if defined INFO
     info("%d/%d ", by, blocks_in_y); info_flush();
-#endif
     for(int bx=0; bx<blocks_in_x; bx++) {
-	
       /* Region occupied by the block (including the border). */
       int luby = (by  ) * block_size - border_size;
       int lubx = (bx  ) * block_size - border_size;
       int rbby = (by+1) * block_size + border_size;
       int rbbx = (bx+1) * block_size + border_size;
-      
       local_me_for_block(mv, ref, pred, luby, lubx, rbby, rbbx, by, bx);
     }
   }
-#if defined INFO
   info("\n");
-#endif
 }
 
 /* Number of blocks in each level DWT (Discrete Wavelet Transform).
@@ -194,9 +196,7 @@ void me_for_image
 #if defined FAST_SEARCH
   
   int dwt_levels = (int)rint(log((double)search_range)/log(2.0)) - 1;
-#if defined INFO
   info("motion_estimate: dwt_levels = %d\n", dwt_levels);
-#endif
 
   /* DWT applied to images. */
   pic_dwt->analyze(ref[PREV], pixels_in_y, pixels_in_x, dwt_levels);
@@ -204,9 +204,7 @@ void me_for_image
   pic_dwt->analyze(pred, pixels_in_y, pixels_in_x, dwt_levels);
 
   /* Over-pixel estimation. */
-#if defined INFO
   info("motion_estimate: over-pixel motion estimation level=%d\n", dwt_levels);
-#endif
 
   local_me_for_image(mv,
 		     ref,
@@ -265,9 +263,7 @@ void me_for_image
 	  mv[NEXT][X_FIELD][by][bx] = -search_range;
       }
     }
-#if defined INFO
     info("motion_estimate: over-pixel motion estimation level=%d\n",l);
-#endif
     local_me_for_image(mv,
 		       ref,
 		       pred,
@@ -278,9 +274,7 @@ void me_for_image
   
   /* Sub-pixel estimation. */
   for(int l=1; l<=subpixel_accuracy; l++) {
-#if defined INFO
     info("motion_estimate: sub-pixel motion estimation level=%d\n",l);
-#endif
     
     /* Expand images on a factor of 2. */
     pic_dwt->synthesize(ref[PREV], pixels_in_y<<l, pixels_in_x<<l, 1);
@@ -403,7 +397,7 @@ void me_for_image
 
 int main(int argc, char *argv[]) {
 
-#if defined INFO
+#if defined __INFO__
   info("%s ", argv[0]);
   for(int i=1; i<argc; i++) {
     info("%s ", argv[i]);
@@ -465,79 +459,57 @@ int main(int argc, char *argv[]) {
       
     case 'b':
       block_size = atoi(optarg);
-#if defined INFO
       info("%s: block_size=%d\n", argv[0], block_size);
-#endif
       break;
       
     case 'e':
       even_fn = optarg;
-#if defined INFO
       info("%s: even_fn=\"%s\"\n", argv[0], even_fn);
-#endif
       break;
 
     case 'i':
       imotion_fn = optarg;
-#if defined INFO
       info("%s: imotion_fn=\"%s\"\n", argv[0], imotion_fn);
-#endif
       break;
 
     case 'm':
       motion_fn = optarg;
-#if defined INFO
       info("%s: motion_fn=\"%s\"\n", argv[0], motion_fn);
-#endif
       break;
 
     case 'o':
       odd_fn = optarg;
-#if defined INFO
       info("%s: odd_fn=\"%s\"\n", argv[0], odd_fn);
-#endif
       break;
 
     case 'd':
       border_size = atoi(optarg);
-#if defined INFO
       info("%s: border_size=%d\n", argv[0], border_size);
-#endif
       break;
 
     case 'p':
       pictures = atoi(optarg);
-#if defined INFO
       info("%s: pictures=%d\n", argv[0], pictures);
-#endif
       break;
       
     case 'x':
       pixels_in_x = atoi(optarg);
- #if defined INFO
      info("%s: pixels_in_x=%d\n", argv[0], pixels_in_x);
-#endif
       break;
       
     case 'y':
       pixels_in_y = atoi(optarg);
-#if defined INFO
       info("%s: pixels_in_y=%d\n", argv[0], pixels_in_y);
-#endif
       break;
       
     case 's':
       search_range = atoi(optarg);
-#if defined INFO
       info("%s: search_range=%d\n", argv[0], search_range);
-#endif
       break;
       
     case 'a':
       subpixel_accuracy = atoi(optarg);
-#if defined INFO
       info("%s: subpixel_accuracy=%d\n", argv[0], subpixel_accuracy);
-#endif
       break;
       
     case '?':
@@ -569,62 +541,14 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
-#ifdef _1_
-  int reuse_motion = 1;
 
-  FILE *motion_fd; {
-    motion_fd = fopen(motion_fn, "r");
-    if(!motion_fd) {
-      reuse_motion = 0;
-#if defined INFO
-      info("%s: computing motion information\n", argv[0]);
-#endif
-      motion_fd = fopen(motion_fn, "w");
-      if(!motion_fd) {
-	error("%s: unable to create the file \"%s\" ... aborting!\n",
-	      argv[0], motion_fn);
-	abort();
-      }
-    } else {
-#if defined INFO
-      info("%s: reusing motion information \"%s\"\n",
-	   argv[0], motion_fn);
-#endif
-    }
-  }
-
-  if(reuse_motion) exit(0);
-
-  FILE *imotion_fd; {
-    imotion_fd = fopen(imotion_fn, "r");
-    if(!imotion_fd) {
-#if defined INFO
-      info("%s: \"%s\" does not exist: initial_motion_fn = \"%s\"\n",
-	   argv[0], imotion_fn, "/dev/zero");
-#endif
-      imotion_fd = fopen("/dev/zero", "r");
-      /* /dev/zero should always be. */
-    }
-  }
-
-  FILE *even_fd; {
-    even_fd = fopen(even_fn, "r");
-    if(!even_fd) {
-      error("%s: \"%s\" does not exist ... aborting!\n",
-	    argv[0], even_fn);
+    int error = mkdir(odd_fn, 0700);
+#ifdef __DEBUG__
+    if(error) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
       abort();
     }
-  }
-
-  FILE *odd_fd; {
-    odd_fd = fopen(odd_fn, "r");
-    if(!odd_fd) {
-      error("%s: \"%s\" does not exist ... aborting!\n",
-	    argv[0], odd_fn);
-      abort();
-    }
-  }
-#endif
+#endif /* __DEBUG__ */
   
   int picture_border_size = search_range + border_size;
 
@@ -659,10 +583,8 @@ int main(int argc, char *argv[]) {
 
   int blocks_in_y = pixels_in_y/block_size;
   int blocks_in_x = pixels_in_x/block_size;
-#if defined INFO
   info("%s: blocks_in_y=%d\n", argv[0], blocks_in_y);
   info("%s: blocks_in_x=%d\n", argv[0], blocks_in_x);
-#endif
 
   motion < MVC_TYPE > motion;
   MVC_CPU_TYPE ****mv = motion.alloc(blocks_in_y, blocks_in_x);
@@ -684,18 +606,26 @@ int main(int argc, char *argv[]) {
   motion_dwt->set_max_line_size(PIXELS_IN_X_MAX);
 
   int reference_index = 0;
-  
-  /* Read the luma of reference[0]. */ { 
+
+  void read_image(TC_IO_TYPE **image,
+		  int pixels_in_y,
+		  int pixels_in_x,
+		  char *fn,
+		  int image_number,
+		  int component) {
     char fn[80];
-    sprintf(fn, "%s/%4d_Y.pgm", even_fn, 0); 
+    sprintf(fn, "%s/%4d_%d.pgm", fn, image_number, component); 
     FILE *fd = fopen(fn, "r");
     if(!fd) {
-      error("%s: \"%s\" does not exist ... aborting!\n",
-	    argv[0], image_fn);
+      error("%s: \"%s\" does not exist ... aborting!\n", argv[0], fn);
       abort();
     }
-    texture.read(fd, reference[0], pixels_in_y, pixels_in_x);
+    texture.read(fd, image, pixels_in_y, pixels_in_x);
+    fclose(fd);
   }
+  
+  /* Read the luma of reference[0]. */
+  read_image(reference[0], pixels_in_y, pixels_in_x, even_fn, 0, LUMA);
 
   /* Skip to the chroma. */
   /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
@@ -709,33 +639,19 @@ int main(int argc, char *argv[]) {
 
   for(int i=0; i<pictures/2; i++) {
 
-#if defined INFO
-    info("%s: reading picture %d of \"%s\".\n",
-	 argv[0], i, odd_fn);
-#endif
+    info("%s: reading picture %d of \"%s\".\n", argv[0], i, odd_fn);
 
     /* Luma. */
     //texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
-    /* Read the luma of predicted. */ { 
-      char fn[80];
-      sprintf(fn, "%s/%4d_Y.pgm", odd_fn, i); 
-      FILE *fd = fopen(fn, "r");
-      if(!fd) {
-	error("%s: \"%s\" does not exist ... aborting!\n",
-	      argv[0], fn);
-	abort();
-      }
-      texture.read(fd, predicted, pixels_in_y, pixels_in_x);
-    }
+    /* Read the luma of predicted. */
+      read_image(predicted, pixels_in_y, pixels_in_x, odd_fn, i, LUMA);
 
     /* Chroma. */
     /*fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
       fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
-#if defined INFO
-    info("%s: reading picture %d of \"%s\".\n",
-	 argv[0], i, even_fn);
-#endif
+    info("%s: reading picture %d of \"%s\".\n", argv[0], i, even_fn);
+
     /* This initialization seems to do nothing. */
     for(int y=0; y<pixels_in_y << subpixel_accuracy; y++) {
       for(int x=0; x<pixels_in_x <<subpixel_accuracy; x++) {
@@ -743,17 +659,8 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /* Read the luma of reference[1]. */ { 
-      char fn[80];
-      sprintf(fn, "%s/%4d_Y.pgm", even_fn, i); 
-      FILE *fd = fopen(fn, "r");
-      if(!fd) {
-	error("%s: \"%s\" does not exist ... aborting!\n",
-	      argv[0], fn);
-	abort();
-      }
-      texture.read(image_fd, reference[1], pixels_in_y, pixels_in_x);
-    }
+    /* Read the luma of reference[1]. */
+    read_image(reference[1], pixels_in_y, pixels_in_x, even_fn, 0, LUMA);
     //texture.read(even_fd, reference[1], pixels_in_y, pixels_in_x);
 
     /* Cromas. */
@@ -766,9 +673,7 @@ int main(int argc, char *argv[]) {
 			pixels_in_x,
 			picture_border_size);
 
-#if defined INFO
     info("%s: reading initial motion vectors.\n", argv[0]);
-#endif
     //motion.read(imotion_fd, mv, blocks_in_y, blocks_in_x);
     //This does nothing (leave the above).
     for(int by=0; by<blocks_in_y; by++) {
@@ -801,7 +706,7 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-#if defined INFO
+#if defined __INFO__
     info("Backward motion vector field:");
     for(int y=0; y<blocks_in_y; y++) {
       info("\n");
@@ -827,9 +732,9 @@ int main(int argc, char *argv[]) {
       }
     }
     info("\n");
-#endif
+#endif /* __INFO__ */
 
-#if defined GNUPLOT
+#if defined __GNUPLOT__
     for(int y=0; y<blocks_in_y; y++) {
       for(int x=0; x<blocks_in_x; x++) {
 	printf("GNUPLOT %d %d %f %f %f %f\n",
@@ -838,59 +743,29 @@ int main(int argc, char *argv[]) {
 	       (float)mv[NEXT][X_FIELD][y][x], (float)mv[NEXT][Y_FIELD][y][x]);
       }
     }
-#endif
+#endif /* __GNUPLOT__ */
 
-#if defined INFO
-    info("%s: writing motion vector field %d in \"%s\".\n",
-	 argv[0], i, motion_fn);
-#endif
+    info("%s: writing motion vector field %d in \"%s\".\n", argv[0], i, motion_fn);
 
-    {
+    void write_motion_component(char *fn, int image_number, int FB, int YX) {
       char fn[80];
-      sprintf(fn, "%s/%4d_B_x.pgm", motion_fd, i);
-      FILE *fd  = fopen(motion_fn, "w");
+      sprintf(fn, "%s/%4d_%d_%d.pgm", fn, image_number, FB, YX);
+      FILE *fd  = fopen(fn, "w");
+#ifdef __DEBUG__
       if(!fd) {
-	error("%s: unable to create the file \"%s\" ... aborting!\n",
-	      argv[0], motion_fn);
+	error("%s: unable to create the file \"%s\" ... aborting!\n", argv[0], fn);
 	abort();
       }
-      motion.write(fd, mv[0][0], blocks_in_y, blocks_in_x);
-    }
-    {
-      char fn[80];
-      sprintf(fn, "%s/%4d_B_y.pgm", motion_fd, i);
-      FILE *fd  = fopen(motion_fn, "w");
-      if(!fd) {
-	error("%s: unable to create the file \"%s\" ... aborting!\n",
-	      argv[0], motion_fn);
-	abort();
-      }
-      motion.write(fd, mv[0][1], blocks_in_y, blocks_in_x);
-    }
-    {
-      char fn[80];
-      sprintf(fn, "%s/%4d_F_y.pgm", motion_fd, i);
-      FILE *fd  = fopen(motion_fn, "w");
-      if(!fd) {
-	error("%s: unable to create the file \"%s\" ... aborting!\n",
-	      argv[0], motion_fn);
-	abort();
-      }
-      motion.write(fd, mv[1][0], blocks_in_y, blocks_in_x);
-    }
-    {
-      char fn[80];
-      sprintf(fn, "%s/%4d_F_x.pgm", motion_fd, i);
-      FILE *fd  = fopen(motion_fn, "w");
-      if(!fd) {
-	error("%s: unable to create the file \"%s\" ... aborting!\n",
-	      argv[0], motion_fn);
-	abort();
-      }
-      motion.write(fd, mv[1][1], blocks_in_y, blocks_in_x);
+#endif /* __DEBUG__ */
+      motion.write(fd, mv[FB][YX], blocks_in_y, blocks_in_x);
+      fclose(fd);
     }
 
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
+    write_motion_component(motion_fn, i, 0, 0);
+    write_motion_component(motion_fn, i, 0, 1);
+    write_motion_component(motion_fn, i, 1, 0);
+    write_motion_component(motion_fn, i, 1, 1);
 
     /* SWAP(&reference_pic[0], &reference_pic[1]). */ {
       TC_CPU_TYPE **tmp = reference[0];

@@ -27,15 +27,9 @@
 #include "texture.cpp"
 #include "motion.cpp"
 #include "entropy.h"
+#include "common.h"
 
-#define TC_IO_TYPE unsigned char /* TC = Texture Component; IO = Input Output. */
-#define TC_CPU_TYPE short /* TC = Texture Component; CPU = Central Processing Unit. */
-#define MIN_TC_VAL 0
-#define MAX_TC_VAL 255
 #define TEXTURE_INTERPOLATION_FILTER _5_3
-#define COMPONENTS 3
-#define PIXELS_IN_X 352
-#define PIXELS_IN_Y 288
 #define GET_PREDICTION /* If defined, shows information about predictions. */
 
 void predict
@@ -357,7 +351,16 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
+#endif
+    int error = mkdir(even_fn, 0700);
+#ifdef _DEBUG_
+    if(error) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
+      abort();
+    }
+#endif
 
+#ifdef _1_
   FILE *motion_in_fd;{
     motion_in_fd = fopen(motion_in_fn, "r");
     if(!motion_in_fd) {
@@ -366,7 +369,9 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
+#endif
 
+#ifdef _1_
 #if defined ANALYZE
   FILE *motion_out_fd;{
     motion_out_fd = fopen(motion_out_fn, "w");
@@ -377,11 +382,20 @@ int main(int argc, char *argv[]) {
     }
   }
 #endif
-
+#endif /* _1_ */
+  int error = mkdir(motion_out_fn, 0700);
+#ifdef _DEBUG_
+  if(error) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], motion_out_fn);
+    abort();
+  }
+#endif
+  
+#ifdef _1_
   FILE *odd_fd; {
     odd_fd = fopen(odd_fn,
 #if defined ANALYZE
-		    "r"
+		   "r"
 #else
 		    "w"
 #endif
@@ -397,8 +411,18 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
-  
+#endif
+#if defined ANALYZE
+  int error = mkdir(odd_fn, 0700);
+#ifdef _DEBUG_
+  if(error) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
+    abort();
+  }
+#endif
+#endif /* ANALYZE */
 
+#ifdef _1_
   FILE *high_fd; {
     high_fd = fopen(high_fn,
 #if defined ANALYZE
@@ -418,14 +442,21 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
+#endif /* _1_ */
+#if defined ANALYZE
+  int error = mkdir(high_fn, 0700);
+#ifdef _DEBUG_
+  if(error) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], high_fn);
+    abort();
+  }
+#endif
+#endif /* ANALYZE */
 
+#ifdef _1_
 #if defined GET_PREDICTION
   FILE *prediction_fd; char prediction_fn[80]; {
-#if defined ANALYZE
     sprintf(prediction_fn, "prediction_%s", even_fn);
-#else
-    sprintf(prediction_fn, "prediction_%s", even_fn);
-#endif /* ANALYZE */
     prediction_fd = fopen(prediction_fn, "w");
     if(!prediction_fd) {
       error("%s: unable to write \"%s\" ... aborting!\n",
@@ -438,7 +469,21 @@ int main(int argc, char *argv[]) {
 #endif
   }
 #endif /* GET_PREDICTION */
-
+#endif /* _1_ */
+#if defined GET_PREDICTION
+  {
+    char prediction_fn[80];
+    sprintf(prediction_fn, "prediction_%s", even_fn);
+    int error = mkdir(prediction_fn, 0700);
+#ifdef _DEBUG_
+    if(error) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], prediction_fn);
+      abort();
+    }
+#endif
+  }
+#endif /* GET_PREDICTION */
+  
   FILE *frame_types_fd; {
     frame_types_fd = fopen(frame_types_fn,
 #if defined ANALYZE
@@ -459,8 +504,6 @@ int main(int argc, char *argv[]) {
     }
   }
 
-#endif /* _1_ */
-  
   class dwt2d <
   TC_CPU_TYPE,
     TEXTURE_INTERPOLATION_FILTER <
@@ -545,22 +588,22 @@ int main(int argc, char *argv[]) {
   TC_CPU_TYPE *line = (TC_CPU_TYPE *)malloc(pixels_in_x[0]*sizeof(TC_CPU_TYPE));
 #endif
   
-  /* Decorrelation begins ... */
+  /* Decorrelation begins. */
 
   /* The first image (reference [0]) is read. */
   for(int c=0; c<COMPONENTS; c++) {
     // image.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
     char fn[80];
-    sprintf(fn, "%s/%4d_%s.pgm", even_fn, image_number, component[c]);
+    sprintf(fn, "%s/%4d_%d.pgm", even_fn, image_number, c);
     FILE *fd = fopen(fn, "r");
 #ifdef _DEBUG_
     if(!fd) {
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], fn);
+      error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn);
       abort();
     }
 #endif
     image.read(fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+    fclose(fd);
   }
 
   /* Interpolate the chroma of reference [0], to have the same size as
@@ -664,61 +707,60 @@ int main(int argc, char *argv[]) {
     
   }
   
-  /** The other images are processed. */
+  /* The other images are processed. */
   
   for(int i=0; i<pictures/2; i++) {
     
-#if defined ANALYZE     
-
-#if defined INFO
-    info("%s: reading picture %d of \"%s\".\n",
-	 argv[0], i, odd_fn);
-#endif
-
-    /* The next image (to predict) */
-    for(int c=0; c<COMPONENTS; c++) {
-      //image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
-      char fn[80];
-      sprintf(fn, "%s/%4d_%s.pgm", odd_fn, image_number, component[c]);
-      FILE *fd = fopen(fn, "r");
-#ifdef _DEBUG_
-      if(!fd) {
-	error("%s: unable to read \"%s\" ... aborting!\n",
-	      argv[0], fn);
-	abort();
-      }
-#endif
-      image.read(fd, predict[c], pixels_in_y[c], pixels_in_x[c]);
-    }
-
-#else /* SYNTHESIZE (Correlation). */
-
-#if defined INFO
-    info("%s: reding picture %d of \"%s\".\n",
-	 argv[0], i, high_fn);
-#endif
-
-    /* Read residue image */
-    for(int c=0; c<COMPONENTS; c++) {
-      //image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-      sprintf(fn, "%s/%4d_%s.pgm", high_fn, image_number, component[c]);
-      FILE *fd = fopen(fn, "r");
-#ifdef _DEBUG_
-      if(!fd) {
-	error("%s: unable to read \"%s\" ... aborting!\n",
-	      argv[0], fn);
-	abort();
-      }
-#endif
-      image.read(fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-      for(int y=0; y<pixels_in_y[c]; y++) {
-	for(int x=0; x<pixels_in_x[c]; x++) {
-	  residue[c][y][x] -= 128;
-	}
-      }
-    }
-    
-#endif
+#if defined ANALYZE ///////////////////////////////////////////////////////////
+                                                                             //
+#if defined INFO                                                             // 
+    info("%s: reading picture %d of \"%s\".\n",                              //
+	 argv[0], i, odd_fn);                                                //
+#endif                                                                       //
+                                                                             //
+    /* The next image (to predict) */                                        //
+    for(int c=0; c<COMPONENTS; c++) {                                        //
+      //image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);    //
+      char fn[80];                                                           //
+      sprintf(fn, "%s/%4d_%s.pgm", odd_fn, image_number, component[c]);      //
+      FILE *fd = fopen(fn, "r");                                             //
+#ifdef _DEBUG_ ////////////////////////////////////////////////////////////  //
+      if(!fd) {                                                          //  //
+	error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn); //  //
+	abort();                                                         //  //
+      }                                                                  //  //
+#endif ////////////////////////////////////////////////////////////////////  //
+      image.read(fd, predict[c], pixels_in_y[c], pixels_in_x[c]);            //
+      fclose(fd);                                                            //
+    }                                                                        //
+                                                                             //
+#else /////////////////////////////////////////////////////////////////////////
+                                                                             //
+#if defined INFO ///////////////////////////////////////////////////////     //
+    info("%s: reading picture %d of \"%s\".\n", argv[0], i, high_fn); //     //
+#endif /////////////////////////////////////////////////////////////////     //
+                                                                             //
+    /* Read residue image */                                                 //
+    for(int c=0; c<COMPONENTS; c++) {                                        //
+      //image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);     //
+      sprintf(fn, "%s/%4d_%s.pgm", high_fn, image_number, component[c]);     //
+      FILE *fd = fopen(fn, "r");                                             //
+#ifdef _DEBUG_ ////////////////////////////////////////////////////////////  //
+      if(!fd) {                                                          //  //
+	error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn); //  //
+	abort();                                                         //  //
+      }                                                                  //  //
+#endif ////////////////////////////////////////////////////////////////////  //
+      image.read(fd, residue[c], pixels_in_y[c], pixels_in_x[c]);            //
+      fclose(fd);                                                            //
+      for(int y=0; y<pixels_in_y[c]; y++) {                                  //
+	for(int x=0; x<pixels_in_x[c]; x++) {                                //
+	  residue[c][y][x] -= 128;                                           //
+	}                                                                    //
+      }                                                                      //
+    }                                                                        //
+                                                                             //
+#endif ////////////////////////////////////////////////////////////////////////
     
 #if defined INFO
     info("%s: reading picture %d of \"%s\".\n", argv[0], i, even_fn);
@@ -726,7 +768,18 @@ int main(int argc, char *argv[]) {
     
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
-      image.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
+      //image.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
+      char fn[80];
+      sprintf(fn, "%s/%4d_%s.pgm", even_fn, image_number, component[c]);
+      FILE *fd = fopen(fn, "r");
+#ifdef _DEBUG_
+      if(!fd) {
+	error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn);
+	abort();
+      }
+#endif
+      image.read(fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
+      fclose(fd)
     }
 
     /* Croma Cb. */
@@ -785,10 +838,26 @@ int main(int argc, char *argv[]) {
 
     /* Motion fields are read. */
 #if defined INFO
-    info("%s: reading motion vector field %d in \"%s\".\n",
-	 argv[0], i, motion_in_fn);
+    info("%s: reading motion vector field %d in \"%s\".\n", argv[0], i, motion_in_fn);
 #endif
-    motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
+    void read_motion_component(char *fn, int image_number, int FB, int YX) {
+      char fn[80];
+      sprintf(fn, "%s/%4d_%d_%d.pgm", fn, image_number, BF, YX);
+      FILE *fd  = fopen(fn, "r");
+#ifdef __DEBUG_
+      if(!fd) {
+	error("%s: unable to open the file \"%s\" ... aborting!\n", argv[0], fn);
+	abort();
+#endif
+      }
+      motion.read(fd, mv[0][0], blocks_in_y, blocks_in_x);
+      fclose(fd);
+    }
+    //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
+    read_motion_component(motion_in_f, image_number, 0, 0);
+    read_motion_component(motion_in_f, image_number, 0, 1);
+    read_motion_component(motion_in_f, image_number, 1, 0);
+    read_motion_component(motion_in_f, image_number, 1, 1);
     
 #if defined ANALYZE
     float motion_entropy = 0.0; {
@@ -859,19 +928,28 @@ int main(int argc, char *argv[]) {
 #if defined INFO
     info("%s: writing picture %d of \"%s\".\n",
 	 argv[0], i, prediction_fn);
-#endif /* DEBUG */
+#endif
     for(int c=0; c<COMPONENTS; c++) {
-      image.write(prediction_fd, prediction[c], pixels_in_y[c], pixels_in_x[c]);
+      //image.write(prediction_fd, prediction[c], pixels_in_y[c], pixels_in_x[c]);
+      char fn[80];
+      sprintf(fn, "%s/%4d_%s.pgm", prediction_fn, image_number, c);
+      FILE *fd = fopen(fn, "w");
+#ifdef _DEBUG_
+      if(!fd) {
+	error("%s: unable to read \"%s\" ... aborting!\n", argv[0], fn);
+	abort();
+      }
+#endif
+      image.write(fd, prediction[c], pixels_in_y[c], pixels_in_x[c]);
     }
 #endif /* GET_PREDICTION */
 
 #if defined ANALYZE
 
-    /** The residue image is generated. */
+    /* The residue image is generated. */
 
 #if defined DEBUG
-      info("%s: writing picture %d of \"%s\".\n",
-	   argv[0], i, high_fn);
+      info("%s: writing picture %d of \"%s\".\n", argv[0], i, high_fn);
 #endif
 
       /*
