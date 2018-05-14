@@ -265,7 +265,7 @@ int main(int argc, char *argv[]) {
       break;
 
     default:
-      error("%s: Unrecognized argument. Aborting ...\n", argv[0]);
+      error("%s: Unrecognized argument.\n", argv[0]);
     }
   }
 
@@ -395,7 +395,7 @@ int main(int argc, char *argv[]) {
 		       0, c
 #if defined __INFO__
 		       ,
-		       argv
+		       argv[0]
 #endif /* __INFO__ */
 		       );
   }
@@ -439,7 +439,7 @@ int main(int argc, char *argv[]) {
 			 c
 #if defined __INFO__
 			 ,
-			 argv
+			 argv[0]
 #endif /* __INFO__ */
 			 );
       //error.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
@@ -493,7 +493,7 @@ int main(int argc, char *argv[]) {
 			 i, c
 #if defined __INFO__
 			 ,
-			 argv
+			 argv[0]
 #endif /* __INFO__ */
 			 );
     }
@@ -533,7 +533,7 @@ int main(int argc, char *argv[]) {
 			  0, 0
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
 
@@ -544,7 +544,7 @@ int main(int argc, char *argv[]) {
 			  0, 1
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
 
@@ -555,7 +555,7 @@ int main(int argc, char *argv[]) {
 			  1, 0
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
 
@@ -566,7 +566,7 @@ int main(int argc, char *argv[]) {
 			  1, 1
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
 
@@ -618,7 +618,7 @@ int main(int argc, char *argv[]) {
 			  c
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
 
@@ -660,7 +660,7 @@ int main(int argc, char *argv[]) {
 			i
 #if defined __INFO__
 			,
-			argv
+			argv[0]
 #endif /* __INFO__ */
 			);
   }

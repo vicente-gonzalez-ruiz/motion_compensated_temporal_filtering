@@ -244,62 +244,76 @@ int main(int argc, char *argv[]) {
       
     case 'v':
       block_overlaping = atoi(optarg);
+      info("%s: block_overlaping=%d\n", argv[0], block_overlaping);
       break;
       
     case 'b':
       block_size = atoi(optarg);
+      info("%s: block_size=%d\n", argv[0], block_size);
       break;
       
     case 'e':
       even_fn = optarg;
+      info("%s: even_fn=%s\n", argv[0], even_fn);
       break;
 
     case 'f':
       frame_types_fn = optarg;
+      info("%s: frame_types_fn=%s\n", argv[0], frame_types_fn);
       break;
 
     case 'h':
       high_fn = optarg;
+      info("%s: high_fn=%s\n", argv[0], high_fn);
       break;
 
     case 'i':
       motion_in_fn = optarg;
+      info("%s: motion_in_fn=%s\n", argv[0], motion_in_fn);
       break;
 
-#if defined ANALYZE
+#if defined __ANALYZE__
     case 't':
       motion_out_fn = optarg;
+      info("%s: motion_out_fn=%s\n", argv[0], motion_out_fn);
       break;
 #endif
 
     case 'o':
       odd_fn = optarg;
+      info("%s: odd_fn=%s\n", argv[0], odd_fn);
       break;
 
     case 'p':
       pictures = atoi(optarg);
+      info("%s: pictures=%d\n", argv[0], pictures);
       break;
       
     case 'x':
       pixels_in_x[0] = atoi(optarg);
       pixels_in_x[1] = pixels_in_x[2] = pixels_in_x[0]/2;
+      info("%s: pixels_in_x=%d\n", argv[0], pixels_in_x[0]);
      break;
       
     case 'y':
       pixels_in_y[0] = atoi(optarg);
       pixels_in_y[1] = pixels_in_y[2] = pixels_in_y[0]/2;
+      info("%s: pixels_in_y=%d\n", argv[0], pixels_in_y[0]);
       break;
 
     case 's':
       search_range = atoi(optarg);
+      info("%s: search_range=%d\n", argv[0], search_range);
       break;
       
     case 'a':
       subpixel_accuracy = atoi(optarg);
+      info("%s: subpixel_accuracy=%d\n", argv[0], subpixel_accuracy);
       break;
       
     case 'B':
       always_B = atoi(optarg);
+      info("%s: always_B=%d\n", argv[0], always_B);
       break;
       
     case '?':
@@ -342,10 +356,11 @@ int main(int argc, char *argv[]) {
       break;
       
     default:
-      error("%s: Unrecognized argument. Aborting ...\n", argv[0]);
+      error("%s: Unrecognized argument.\n", argv[0]);
     }
   }
 
+#ifdef _1_
   {
     int err = mkdir(even_fn, 0700);
 #ifdef __DEBUG__
@@ -355,6 +370,7 @@ int main(int argc, char *argv[]) {
     }
 #endif /* __DEBUG__ */
   }
+#endif
 
   {
 #if defined __ANALYZE__
@@ -368,6 +384,7 @@ int main(int argc, char *argv[]) {
 #endif /* __ANALYZE__ */
   }
 
+#ifdef _1_
   {
 #if defined __ANALYZE__
     int err = mkdir(odd_fn, 0700);
@@ -379,7 +396,8 @@ int main(int argc, char *argv[]) {
 #endif /* __DEBUG__ */
 #endif /* __ANALYZE__ */
   }
-
+#endif
+  
   {
 #if defined __ANALYZE__
     int err = mkdir(high_fn, 0700);
@@ -516,7 +534,7 @@ int main(int argc, char *argv[]) {
 		       c
 #if defined __INFO__
 		       ,
-		       argv
+		       argv[0]
 #endif /* __INFO__ */
 		       );
   }
@@ -639,7 +657,7 @@ int main(int argc, char *argv[]) {
 			 c
 #if defined __INFO__
 			 ,
-			 argv
+			 argv[0]
 #endif /* __INFO__ */
 			 );
     }
@@ -658,7 +676,7 @@ int main(int argc, char *argv[]) {
 			 c
 #if defined __INFO__
 			 ,
-			 argv
+			 argv[0]
 #endif /* __INFO__ */
 			 );
       for(int y=0; y<pixels_in_y[c]; y++) {
@@ -682,7 +700,7 @@ int main(int argc, char *argv[]) {
 			 c
 #if defined __INFO__
 			 ,
-			 argv
+			 argv[0]
 #endif /* __INFO__ */
 			 );
     }
@@ -750,7 +768,7 @@ int main(int argc, char *argv[]) {
 			  0, 0
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
     motion.read_component(mv[0][1],
@@ -760,7 +778,7 @@ int main(int argc, char *argv[]) {
 			  0, 1
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
     motion.read_component(mv[1][0],
@@ -770,7 +788,7 @@ int main(int argc, char *argv[]) {
 			  1, 0
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
     motion.read_component(mv[1][1],
@@ -780,7 +798,7 @@ int main(int argc, char *argv[]) {
 			  1, 1
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
     
@@ -859,7 +877,7 @@ int main(int argc, char *argv[]) {
 			  c
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
     }
@@ -1005,7 +1023,7 @@ int main(int argc, char *argv[]) {
 			     0, 0
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       motion.write_component(zeroes[0][1],
@@ -1015,7 +1033,7 @@ int main(int argc, char *argv[]) {
 			     0, 1
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
 			     
@@ -1026,7 +1044,7 @@ int main(int argc, char *argv[]) {
 			     1, 0
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
 
@@ -1037,7 +1055,7 @@ int main(int argc, char *argv[]) {
 			     1, 1
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
 
@@ -1072,7 +1090,7 @@ int main(int argc, char *argv[]) {
 			     i, 0, 0
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -1083,7 +1101,7 @@ int main(int argc, char *argv[]) {
 			     0, 1
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
 
@@ -1094,7 +1112,7 @@ int main(int argc, char *argv[]) {
 			     1, 0
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -1105,7 +1123,7 @@ int main(int argc, char *argv[]) {
 			     1, 1
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -1152,7 +1170,7 @@ int main(int argc, char *argv[]) {
 			  c
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
 			  

@@ -125,7 +125,7 @@ public:
 		  int component
 #if defined __INFO__
 		  ,
-		  char *argv[]
+		  char *msg
 #endif /* __INFO__ */
 		  ) {
     char fn_[80];
@@ -133,7 +133,7 @@ public:
     FILE *fd = fopen(fn_, "r");
     if(!fd) {
 #if defined __INFO__
-      info("%s: using \"/dev/zero\" instead of \"%s\"\n", argv[0], fn_);
+      info("%s: using \"/dev/zero\" instead of \"%s\"\n", msg, fn_);
 #endif /* __INFO__ */
       fd = fopen("/dev/zero", "r");
     }
@@ -149,7 +149,7 @@ public:
 		   int component
 #if defined __INFO__
 		   ,
-		   char *argv[]
+		   char *msg
 #endif /* __INFO__ */
 		   ) {
     char fn_[80];
@@ -157,7 +157,7 @@ public:
     FILE *fd = fopen(fn_, "w");
 #if defined __DEBUG__
     if(!fd) {
-      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], fn_);
+      error("%s: \"%s\" cannot be created ... aborting!\n", msg, fn_);
       abort();
     }
 #endif /* __DEBUG__ */

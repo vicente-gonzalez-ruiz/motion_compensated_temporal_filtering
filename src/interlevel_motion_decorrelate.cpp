@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
       break;
       
     default:
-      error("%s: aborting ...\n", argv[0]);
+      error("%s: Unrecognized argument.\n", argv[0]);
       abort();
     }
   }
@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
 			  0, 0
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
 
@@ -255,7 +255,7 @@ int main(int argc, char *argv[]) {
 			  0, 1
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
     motion.read_component(reference[1][0],
@@ -265,7 +265,7 @@ int main(int argc, char *argv[]) {
 			  1, 0
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
     motion.read_component(reference[1][1],
@@ -275,7 +275,7 @@ int main(int argc, char *argv[]) {
 			  1, 1
 #if defined __INFO__
 			  ,
-			  argv
+			  argv[0]
 #endif /* __INFO__ */
 			  );
     
@@ -292,7 +292,7 @@ int main(int argc, char *argv[]) {
 			    0, 0
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
       motion.read_component(predicted[0][1],
@@ -302,7 +302,7 @@ int main(int argc, char *argv[]) {
 			    0, 1
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
       motion.read_component(predicted[1][0],
@@ -312,7 +312,7 @@ int main(int argc, char *argv[]) {
 			    1, 0
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
       motion.read_component(predicted[1][1],
@@ -322,7 +322,7 @@ int main(int argc, char *argv[]) {
 			    1, 1
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
       
@@ -335,7 +335,7 @@ int main(int argc, char *argv[]) {
 			    0, 0
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
       
@@ -346,7 +346,7 @@ int main(int argc, char *argv[]) {
 			    0, 1
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
       
@@ -357,7 +357,7 @@ int main(int argc, char *argv[]) {
 			    1, 0
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
       
@@ -368,7 +368,7 @@ int main(int argc, char *argv[]) {
 			    1, 1
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
       
@@ -390,7 +390,7 @@ int main(int argc, char *argv[]) {
 			     0, 0
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -401,7 +401,7 @@ int main(int argc, char *argv[]) {
 			     0, 1
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -412,7 +412,7 @@ int main(int argc, char *argv[]) {
 			     1, 0
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -423,7 +423,7 @@ int main(int argc, char *argv[]) {
 			     1, 1
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -437,7 +437,7 @@ int main(int argc, char *argv[]) {
 			     0, 0
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -448,7 +448,7 @@ int main(int argc, char *argv[]) {
 			     0, 1
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -459,7 +459,7 @@ int main(int argc, char *argv[]) {
 			     1, 0
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
@@ -470,7 +470,7 @@ int main(int argc, char *argv[]) {
 			     1, 1
 #if defined __INFO__
 			     ,
-			     argv
+			     argv[0]
 #endif /* __INFO__ */
 			     );
       
