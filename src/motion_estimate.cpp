@@ -47,8 +47,8 @@ void local_me_for_block
   MVC_TYPE mv_next_x_by_bx = mv[NEXT][X_FIELD][by][bx];
 
 #define COMPUTE_ERRORS(_y,_x)						\
-  MVC_TYPE y[2] = {mv_prev_y_by_bx + _y, mv_next_y_by_bx - _y};		\
-  MVC_TYPE x[2] = {mv_prev_x_by_bx + _x, mv_next_x_by_bx - _x};		\
+  MVC_TYPE y[2] = {(MVC_TYPE)(mv_prev_y_by_bx + _y), (MVC_TYPE)(mv_next_y_by_bx - _y)}; \
+  MVC_TYPE x[2] = {(MVC_TYPE)(mv_prev_x_by_bx + _x), (MVC_TYPE)(mv_next_x_by_bx - _x)}; \
   int error[2] = {0, 0};						\
   									\
   for(int py=luby; py<rbby; py++) {					\
@@ -536,12 +536,12 @@ int main(int argc, char *argv[]) {
     }
   }
 
-    int error = mkdir(odd_fn, 0700);
+  int err = mkdir(odd_fn, 0700);
 #ifdef __DEBUG__
-    if(error) {
-      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
-      abort();
-    }
+  if(err) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
+    abort();
+  }
 #endif /* __DEBUG__ */
   
   int picture_border_size = search_range + border_size;
@@ -764,7 +764,7 @@ int main(int argc, char *argv[]) {
 			   blocks_in_y, blocks_in_x,
 			   motion_fn,
 			   i,
-			   0, 1,
+			   0, 1
 #if defined __INFO__
 			   ,
 			   argv

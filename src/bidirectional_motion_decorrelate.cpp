@@ -155,9 +155,9 @@ int main(int argc, char *argv[]) {
     }
   }
   
-  int error = mkdir(output_fn, 0700);
+  int err = mkdir(output_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], output_fn);
     abort();
   }

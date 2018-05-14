@@ -345,18 +345,18 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  int error = mkdir(even_fn, 0700);
+  int err = mkdir(even_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
     abort();
   }
 #endif /* __DEBUG__ */
   
 #if defined __ANALYZE__
-  int error = mkdir(motion_out_fn, 0700);
+  int err = mkdir(motion_out_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], motion_out_fn);
     abort();
   }
@@ -364,9 +364,9 @@ int main(int argc, char *argv[]) {
 #endif /* __ANALYZE__ */
 
 #if defined __ANALYZE__
-  int error = mkdir(odd_fn, 0700);
+  int err = mkdir(odd_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
     abort();
   }
@@ -374,9 +374,9 @@ int main(int argc, char *argv[]) {
 #endif /* __ANALYZE__ */
 
 #if defined __ANALYZE__
-  int error = mkdir(high_fn, 0700);
+  int err = mkdir(high_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], high_fn);
     abort();
   }
@@ -387,9 +387,9 @@ int main(int argc, char *argv[]) {
   {
     char prediction_fn[80];
     sprintf(prediction_fn, "prediction_%s", even_fn);
-    int error = mkdir(prediction_fn, 0700);
+    int err = mkdir(prediction_fn, 0700);
 #ifdef __DEBUG__
-    if(error) {
+    if(err) {
       error("s: \"%s\" cannot be created ... aborting!\n", argv[0], prediction_fn);
       abort();
     }

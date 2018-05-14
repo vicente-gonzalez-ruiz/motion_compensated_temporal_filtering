@@ -202,9 +202,9 @@ int main(int argc, char *argv[]) {
   }
   
 #if defined __ANALYZE__
-  int error = mkdir(predicted_fn, 0700);
+  int err = mkdir(predicted_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], predicted_fn);
     abort();
   }
@@ -212,9 +212,9 @@ int main(int argc, char *argv[]) {
 #endif /* __ANALYZE__ */
   
 #if defined __ANALYZE__
-  int error = mkdir(residue_fn, 0700);
+  int err = mkdir(residue_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], residue_fn);
     abort();
   }

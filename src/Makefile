@@ -30,13 +30,6 @@ CFLAGS = -O3 -pipe
 GCC_FLAGS = -O3 -pipe
 CPP_FLAGS = -O3 -pipe
 DEFS =
-
-# Enables debug mode and send messages through stdout.
-#DEFS += -D DEBUG
-
-# Write the executed commands to a trace file
-#DEFS += -D TRACE
-
 GCC_FLAGS += $(DEFS)
 CPP_FLAGS += $(DEFS)
 
@@ -92,8 +85,8 @@ EXE	+= $(BIN)/trace
 $(BIN)/mctf:	mctf.sh
 EXE	+= $(BIN)/mctf
 
-$(MCTF_BIN)/clean:	clean.sh
-EXE	+= $(MCTF_BIN)/clean
+#$(MCTF_BIN)/clean:	clean.sh
+#EXE	+= $(MCTF_BIN)/clean
 
 $(MCTF_BIN)/copy:	copy.sh
 EXE	+= $(MCTF_BIN)/copy
@@ -101,25 +94,25 @@ EXE	+= $(MCTF_BIN)/copy
 $(MCTF_BIN)/mcj2k:	mcj2k.sh
 EXE	+= $(MCTF_BIN)/mcj2k
 
-$(MCTF_BIN)/mcmj2k:	mcmj2k.sh
-EXE	+= $(MCTF_BIN)/mcmj2k
+#$(MCTF_BIN)/mcmj2k:	mcmj2k.sh
+#EXE	+= $(MCTF_BIN)/mcmj2k
 
-$(MCTF_BIN)/mcmjpeg:	mcmjpeg.sh
-EXE	+= $(MCTF_BIN)/mcmjpeg
+#$(MCTF_BIN)/mcmjpeg:	mcmjpeg.sh
+#EXE	+= $(MCTF_BIN)/mcmjpeg
 
-$(MCTF_BIN)/mcltw:	mcltw.sh
-EXE	+= $(MCTF_BIN)/mcltw
+#$(MCTF_BIN)/mcltw:	mcltw.sh
+#EXE	+= $(MCTF_BIN)/mcltw
 
-$(MCTF_BIN)/config-hfb.txt:	config-hfb.txt
-	cp $< $@
-EXE	+= $(MCTF_BIN)/config-hfb.txt
+#$(MCTF_BIN)/config-hfb.txt:	config-hfb.txt
+#	cp $< $@
+#EXE	+= $(MCTF_BIN)/config-hfb.txt
 
-$(MCTF_BIN)/config-lfb.txt:	config-lfb.txt
-	cp $< $@
-EXE	+= $(MCTF_BIN)/config-lfb.txt
+#$(MCTF_BIN)/config-lfb.txt:	config-lfb.txt
+#	cp $< $@
+#EXE	+= $(MCTF_BIN)/config-lfb.txt
 
-$(MCTF_BIN)/mccp:	mccp.sh
-EXE	+= $(MCTF_BIN)/mccp
+#$(MCTF_BIN)/mccp:	mccp.sh
+#EXE	+= $(MCTF_BIN)/mccp
 
 #$(BIN)/vshow:	vshow.sh
 #EXE	+= $(BIN)/vshow
@@ -127,7 +120,7 @@ $(MCTF_BIN)/show:	show.sh
 EXE	+= $(MCTF_BIN)/show
 
 #$(MCTF_BIN)/split:	split.cpp display.cpp
-#	$(CC) $(GCC_FLAGS) -D ANALYZE $< -o $@ -lm
+#	$(CC) $(GCC_FLAGS) -D __ANALYZE__ $< -o $@ -lm
 $(MCTF_BIN)/split:	split.sh
 EXE += $(MCTF_BIN)/split
 
@@ -140,7 +133,7 @@ $(MCTF_BIN)/motion_estimate:	motion_estimate.cpp Haar.cpp 5_3.cpp dwt2d.cpp text
 EXE += $(MCTF_BIN)/motion_estimate
 
 $(MCTF_BIN)/decorrelate:	decorrelate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp entropy.o
-	$(CC) $(CFLAGS) -D ANALYZE $< entropy.o -o $@ -lm
+	$(CC) $(CFLAGS) -D __ANALYZE__ $< entropy.o -o $@ -lm
 EXE += $(MCTF_BIN)/decorrelate
 
 $(MCTF_BIN)/correlate:	decorrelate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
@@ -148,7 +141,7 @@ $(MCTF_BIN)/correlate:	decorrelate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp mo
 EXE += $(MCTF_BIN)/correlate
 
 $(MCTF_BIN)/update:	update.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
-	$(CC) $(CFLAGS) -D ANALYZE $< -o $@ -lm
+	$(CC) $(CFLAGS) -D __ANALYZE__ $< -o $@ -lm
 EXE += $(MCTF_BIN)/update
 
 $(MCTF_BIN)/un_update:	update.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
@@ -175,11 +168,11 @@ $(MCTF_BIN)/analyze:	analyze.py
 EXE	+= $(MCTF_BIN)/analyze
 
 $(MCTF_BIN)/interlevel_motion_decorrelate:	interlevel_motion_decorrelate.cpp
-	$(CC) $(CFLAGS) -D ANALYZE $^ -o $@ -lm
+	$(CC) $(CFLAGS) -D __ANALYZE__ $^ -o $@ -lm
 EXE += $(MCTF_BIN)/interlevel_motion_decorrelate
 
 $(MCTF_BIN)/bidirectional_motion_decorrelate: bidirectional_motion_decorrelate.cpp
-	$(CC) $(CFLAGS) -D ANALYZE $^ -o $@ -lm
+	$(CC) $(CFLAGS) -D __ANALYZE__ $^ -o $@ -lm
 EXE += $(MCTF_BIN)/bidirectional_motion_decorrelate
 
 #$(MCTF_BIN)/motion_compress_cp:	motion_compress_cp.py

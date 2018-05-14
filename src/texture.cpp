@@ -128,12 +128,12 @@ public:
 		  char *argv[]
 #endif /* __INFO__ */
 		  ) {
-    char fn[80];
-    sprintf(fn, "%s/%4d_%d.pgm", fn, image_number, component); 
-    FILE *fd = fopen(fn, "r");
+    char fn_[80];
+    sprintf(fn_, "%s/%4d_%d.pgm", fn, image_number, component); 
+    FILE *fd = fopen(fn_, "r");
     if(!fd) {
 #if defined __INFO__
-      info("%s: using \"/dev/zero\" instead of \"%s\"\n", argv[0], fn);
+      info("%s: using \"/dev/zero\" instead of \"%s\"\n", argv[0], fn_);
 #endif /* __INFO__ */
       fd = fopen("/dev/zero", "r");
     }
@@ -148,12 +148,12 @@ public:
 		   int image_number,
 		   int component,
 		   char *argv[]) {
-    char fn[80];
-    sprintf(fn, "%s/%4d_%d.pgm", fn, image_number, component); 
-    FILE *fd = fopen(fn, "w");
+    char fn_[80];
+    sprintf(fn_, "%s/%4d_%d.pgm", fn, image_number, component); 
+    FILE *fd = fopen(fn_, "w");
 #if defined __DEBUG__
     if(!fd) {
-      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], fn);
+      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], fn_);
       abort();
     }
 #endif /* __DEBUG__ */

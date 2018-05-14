@@ -69,10 +69,10 @@ public:
     fgets(x, 80, fd); /* rows and cols */
     fgets(x, 80, fd); /* Max value */
     for(int y=0; y<y_dim; y++) {
-      int read = fread(data[i][f][y], x_dim, sizeof(TYPE), fd);
+      int read = fread(data[y], x_dim, sizeof(TYPE), fd);
 #if defined __INFO__ /** Sign and magnitude */
       for(int x=0; x<x_dim; x++) {
-	info("%d ", data[i][f][y][x]);
+	info("%d ", data[y][x]);
       }
 #endif /* __INFO__ */
     }
@@ -83,7 +83,7 @@ public:
     fprintf(fd, "%d %d\n", x_dim, y_dim);
     fprintf(fd, "65535\n");
     for(int y=0; y<y_dim; y++) {
-      fwrite(data[i][f][y], x_dim, sizeof(TYPE), fd);
+      fwrite(data[y], x_dim, sizeof(TYPE), fd);
     }
   }
   
@@ -113,12 +113,12 @@ public:
 		      char *argv[]
 #endif /* __INFO__ */
 		      ) {
-    char fn[80];
-    sprintf(fn, "%s/%4d_%d_%d.pgm", fn, field_number, FB, YX);
-    FILE *fd  = fopen(fn, "r");
+    char fn_[80];
+    sprintf(fn_, "%s/%4d_%d_%d.pgm", fn, field_number, FB, YX);
+    FILE *fd  = fopen(fn_, "r");
     if(!fd) {
 #if defined __INFO__
-      info("%s: using \"/dev/zero\" instead of \"%s\"\n", argv[0], fn);
+      info("%s: using \"/dev/zero\" instead of \"%s\"\n", argv[0], fn_);
 #endif /* __INFO__ */
       fd = fopen("/dev/zero", "r");
     }
@@ -134,16 +134,16 @@ public:
 		       int FB,
 		       int YX,
 		       char *argv[]) {
-    char fn[80];
-    sprintf(fn, "%s/%4d_%d_%d.pgm", fn, image_number, FB, YX);
-    FILE *fd  = fopen(fn, "w");
+    char fn_[80];
+    sprintf(fn_, "%s/%4d_%d_%d.pgm", fn, image_number, FB, YX);
+    FILE *fd  = fopen(fn_, "w");
 #ifdef __DEBUG__
     if(!fd) {
-      error("%s: unable to create the file \"%s\" ... aborting!\n", argv[0], fn);
+      error("%s: unable to create the file \"%s\" ... aborting!\n", argv[0], fn_);
       abort();
     }
 #endif /* __DEBUG__ */
-    motion::write(fd, component[FB][YX], blocks_in_y, blocks_in_x);
+    motion::write(fd, component, blocks_in_y, blocks_in_x);
     fclose(fd);
   }
 

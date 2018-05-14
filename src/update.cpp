@@ -272,9 +272,9 @@ int main(int argc, char *argv[]) {
   // {{{
   
 #if not defined __ANALYZE__
-  int error = mkdir(even_fn, 0700);
+  int err = mkdir(even_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
     abort();
   }
@@ -286,9 +286,9 @@ int main(int argc, char *argv[]) {
   // {{{
   
 #if defined __ANALYZE__
-  int error = mkdir(low_fn, 0700);
+  int err = mkdir(low_fn, 0700);
 #ifdef __DEBUG__
-  if(error) {
+  if(err) {
     error("s: \"%s\" cannot be created ... aborting!\n", argv[0], low_fn);
     abort();
   }
