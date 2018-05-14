@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+
+#define __INFO__
+#define __DEBUG__
+
 #include "display.cpp"
 #include "motion.cpp"
 
@@ -19,7 +23,7 @@ void decorrelate_field
  ) {
   for (int y=0; y<blocks_in_y; y++) {
     for (int x=0; x<blocks_in_x; x++) {
-#if defined ANALYZE
+#if defined __ANALYZE__
       /* Decorrelation.*/
       field[NEXT][X_FIELD][y][x] -= field[PREV][X_FIELD][y][x];
       field[NEXT][Y_FIELD][y][x] -= field[PREV][Y_FIELD][y][x];
@@ -27,7 +31,7 @@ void decorrelate_field
       field[NEXT][X_FIELD][y][x] -= 0;
       field[NEXT][Y_FIELD][y][x] -= 0;
       */
-#else
+#else /* __ANALYZE__ */
       /* Correlation.*/
       field[NEXT][X_FIELD][y][x] += field[PREV][X_FIELD][y][x];
       field[NEXT][Y_FIELD][y][x] += field[PREV][Y_FIELD][y][x];
@@ -35,7 +39,7 @@ void decorrelate_field
       field[NEXT][X_FIELD][y][x] += 0;
       field[NEXT][Y_FIELD][y][x] += 0;
       */
-#endif
+#endif /* __ANALYZE__ */
     }
   }
 }
@@ -44,13 +48,13 @@ void decorrelate_field
 
 int main(int argc, char *argv[]) {
 
-#if defined INFO
+#if defined __INFO__
   info("%s: ", argv[0]);
   for(int i=1; i<argc; i++) {
     info("%s ", argv[i]);
   }
   info("\n");
-#endif
+#endif /* __INFO__ */
 
   int blocks_in_x = 11;                  /* blocks_in_x Dimension 'X' of blocks in a picture. */
   int blocks_in_y = 9;                   /* blocks_in_y Dimension 'Y' of blocks in a picture. */
@@ -94,55 +98,45 @@ int main(int argc, char *argv[]) {
       
     case 'x':
       blocks_in_x = atoi(optarg);
-#if defined INFO
       info("%s: blocks_in_x=%d\n", argv[0], blocks_in_x);
-#endif
       break;
       
     case 'y':
       blocks_in_y = atoi(optarg);
-#if defined INFO
       info("%s: blocks_in_y=%d\n", argv[0], blocks_in_y);
- #endif
      break;
 
     case 'f':
       fields = atoi(optarg);
-#if defined INFO
       info("%s: fields=%d\n", argv[0], fields);
-#endif
       break;
       
     case 'i':
       input_fn = optarg;
-#if defined INFO
       info("%s: input = \"%s\"\n", argv[0], input_fn);
-#endif
       break;
 
     case 'o':
       output_fn = optarg;
-#if defined INFO
       info("%s: output = \"%s\"\n", argv[0], output_fn);
- #endif
      break;
 
     case '?':
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("+---------------------------------------+\n");
       printf("| MCTF bidirectional_motion_decorrelate |\n");
       printf("+---------------------------------------+\n");
-#else
+#else /* __ANALYZE__ */
       printf("+-------------------------------------+\n");
       printf("| MCTF bidirectional_motion_correlate |\n");
       printf("+-------------------------------------+\n");
-#endif
+#endif /* __ANALYZE__ */
       printf("\n");
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("  Bidirectional decorrelation of the motion information.\n");
-#else
+#else /* __ANALYZE__ */
       printf("  Bidirectional correlation of the motion information.\n");
-#endif
+#endif /* __ANALYZE__ */
       printf("\n");
       printf("  Parameters:\n");
       printf("\n");
@@ -161,36 +155,36 @@ int main(int argc, char *argv[]) {
     }
   }
   
-  FILE *input_fd = fopen( input_fn, "r" );
-  if(!input_fd) {
-    error("%s: unable to read \"%s\" ... aborting!\n",
-	  argv[0], input_fn);
+  int error = mkdir(output_fn, 0700);
+#ifdef __DEBUG__
+  if(error) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], output_fn);
     abort();
   }
-
-  FILE *output_fd = fopen( output_fn, "w" );
-  if(!output_fd) {
-    error("%s: unable to write \"%s\" ... aborting!\n",
-	  argv[0], output_fn);
-    abort();
-  }
+#endif /* __DEBUG__ */
 
   motion < MVC_TYPE > motion;
   MVC_TYPE ****field = motion.alloc(blocks_in_y, blocks_in_x);
   
   for(int i=0; i<fields; i++) {
     
-#if defined INFO
     info("%s: %d\n",argv[0], i);
-#endif
-    motion.read(input_fd, field, blocks_in_y, blocks_in_x);
+    //motion.read(input_fd, field, blocks_in_y, blocks_in_x);
+    motion.read_component(mv[0][0], input_fn, blocks_in_y, blocks_in_x, i, 0, 0, argv);
+    motion.read_component(mv[0][1], input_fn, blocks_in_y, blocks_in_x, i, 0, 1, argv);
+    motion.read_component(mv[1][0], input_fn, blocks_in_y, blocks_in_x, i, 1, 0, argv);
+    motion.read_component(mv[1][1], input_fn, blocks_in_y, blocks_in_x, i, 1, 1, argv);
 
     decorrelate_field
       (blocks_in_x,
        blocks_in_y,
        field);
 
-    motion.write(output_fd, field, blocks_in_y, blocks_in_x);
+    //motion.write(output_fd, field, blocks_in_y, blocks_in_x);
+    motion.write_component(mv[0][0], output_fn, blocks_in_y, blocks_in_x, i, 0, 0, argv);
+    motion.write_component(mv[0][1], output_fn, blocks_in_y, blocks_in_x, i, 0, 1, argv);
+    motion.write_component(mv[1][0], output_fn, blocks_in_y, blocks_in_x, i, 1, 0, argv);
+    motion.write_component(mv[1][1], output_fn, blocks_in_y, blocks_in_x, i, 1, 1, argv);
 
   }
 }

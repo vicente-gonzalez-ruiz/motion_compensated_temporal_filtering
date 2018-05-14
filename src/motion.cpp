@@ -107,27 +107,33 @@ public:
 		      char *fn,
 		      int field_number,
 		      int FB,
-		      int YX) {
+		      int YX
+#if defined __INFO__
+		      ,
+		      char *argv[]
+#endif /* __INFO__ */
+		      ) {
     char fn[80];
     sprintf(fn, "%s/%4d_%d_%d.pgm", fn, field_number, FB, YX);
     FILE *fd  = fopen(fn, "r");
-#ifdef __DEBUG__
     if(!fd) {
-      error("%s: unable to open the file \"%s\" ... aborting!\n", argv[0], fn);
-      abort();
-#endif /* __DEBUG__ */
+#if defined __INFO__
+      info("%s: using \"/dev/zero\" instead of \"%s\"\n", argv[0], fn);
+#endif /* __INFO__ */
+      fd = fopen("/dev/zero", "r");
     }
     motion::read(fd, component[FB][YX], blocks_in_y, blocks_in_x);
     fclose(fd);
   }
 
-  void write_motion_component(TYPE **component,
-			      int blocks_in_y,
-			      int blocks_in_x,
-			      char *fn,
-			      int image_number,
-			      int FB,
-			      int YX) {
+  void write_component(TYPE **component,
+		       int blocks_in_y,
+		       int blocks_in_x,
+		       char *fn,
+		       int image_number,
+		       int FB,
+		       int YX,
+		       char *argv[]) {
     char fn[80];
     sprintf(fn, "%s/%4d_%d_%d.pgm", fn, image_number, FB, YX);
     FILE *fd  = fopen(fn, "w");

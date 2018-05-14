@@ -9,6 +9,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "display.cpp"
+
+#define __INFO__
+#define __DEBUG__
+
 #include "Haar.cpp"
 #include "5_3.cpp"
 //#include "13_7.cpp"
@@ -17,9 +21,6 @@
 #include "texture.cpp"
 #include "motion.cpp"
 #include "common.h"
-
-#define __INFO__
-#define __DEBUG__
 
 #define FAST_SEARCH
 #define TEXTURE_INTERPOLATION_FILTER _5_3
@@ -598,10 +599,17 @@ int main(int argc, char *argv[]) {
   MVC_TYPE > >;
   motion_dwt->set_max_line_size(PIXELS_IN_X_MAX);
 
-  int reference_index = 0;
-  
   /* Read the luma of reference[0]. */
-  texture.read_image(reference[0], pixels_in_y, pixels_in_x, even_fn, 0, LUMA);
+  texture.read_image(reference[0],
+		     pixels_in_y, pixels_in_x,
+		     even_fn,
+		     0,
+		     LUMA
+#if defined __INFO__
+		     ,
+		     argv
+#endif /* __INFO__ */
+		     );
 
   /* Skip to the chroma. */
   /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
@@ -620,7 +628,16 @@ int main(int argc, char *argv[]) {
     /* Luma. */
     //texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
     /* Read the luma of predicted. */
-      texture.read_image(predicted, pixels_in_y, pixels_in_x, odd_fn, i, LUMA);
+    texture.read_image(predicted,
+		       pixels_in_y, pixels_in_x,
+		       odd_fn,
+		       i,
+		       LUMA
+#if defined __INFO__
+		       ,
+		       argv
+#endif /* __INFO__ */
+		       );
 
     /* Chroma. */
     /*fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
@@ -636,7 +653,16 @@ int main(int argc, char *argv[]) {
     }
 
     /* Read the luma of reference[1]. */
-    texture.read_image(reference[1], pixels_in_y, pixels_in_x, even_fn, 0, LUMA);
+    texture.read_image(reference[1],
+		       pixels_in_y, pixels_in_x,
+		       even_fn,
+		       0,
+		       LUMA
+#if defined __INFO__
+		       ,
+		       argv
+#endif /* __INFO__ */
+		       );
     //texture.read(even_fd, reference[1], pixels_in_y, pixels_in_x);
 
     /* Cromas. */
@@ -724,10 +750,46 @@ int main(int argc, char *argv[]) {
     info("%s: writing motion vector field %d in \"%s\".\n", argv[0], i, motion_fn);
 
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
-    write_motion_component(mv[0][0], blocks_in_y, blocks_in_x, motion_fn, i, 0, 0);
-    write_motion_component(mv[0][1], blocks_in_y, blocks_in_x, motion_fn, i, 0, 1);
-    write_motion_component(mv[1][0], blocks_in_y, blocks_in_x, motion_fn, i, 1, 0);
-    write_motion_component(mv[0][1], blocks_in_y, blocks_in_x, motion_fn, i, 1, 1);
+    motion.write_component(mv[0][0],
+			   blocks_in_y, blocks_in_x,
+			   motion_fn,
+			   i,
+			   0, 0
+#if defined __INFO__
+			   ,
+			   argv
+#endif /* __INFO__ */
+			   );
+    motion.write_component(mv[0][1],
+			   blocks_in_y, blocks_in_x,
+			   motion_fn,
+			   i,
+			   0, 1,
+#if defined __INFO__
+			   ,
+			   argv
+#endif /* __INFO__ */
+			   );
+    motion.write_component(mv[1][0],
+			   blocks_in_y, blocks_in_x,
+			   motion_fn,
+			   i,
+			   1, 0
+#if defined __INFO__
+			   ,
+			   argv
+#endif /* __INFO__ */
+			   );
+    motion.write_component(mv[1][1],
+			   blocks_in_y, blocks_in_x,
+			   motion_fn,
+			   i,
+			   1, 1
+#if defined __INFO__
+			   ,
+			   argv
+#endif /* __INFO__ */
+			   );
 
     /* SWAP(&reference_pic[0], &reference_pic[1]). */ {
       TC_CPU_TYPE **tmp = reference[0];

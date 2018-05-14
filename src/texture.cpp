@@ -104,23 +104,6 @@ public:
     }
   }
 
-  void read_image(CPU_TYPE **image,
-		  int pixels_in_y,
-		  int pixels_in_x,
-		  char *fn,
-		  int image_number,
-		  int component) {
-    char fn[80];
-    sprintf(fn, "%s/%4d_%d.pgm", fn, image_number, component); 
-    FILE *fd = fopen(fn, "r");
-    if(!fd) {
-      error("%s: \"%s\" does not exist ... aborting!\n", argv[0], fn);
-      abort();
-    }
-    texture::read(fd, image, pixels_in_y, pixels_in_x);
-    fclose(fd);
-  }
-
   /* Write an image to disk. */
   void write(FILE *fd, CPU_TYPE **img, int y_dim, int x_dim) {
     fprintf(fd, "P5\n");
@@ -134,19 +117,46 @@ public:
     }
   }
 
+  void read_image(CPU_TYPE **image,
+		  int pixels_in_y,
+		  int pixels_in_x,
+		  char *fn,
+		  int image_number,
+		  int component
+#if defined __INFO__
+		  ,
+		  char *argv[]
+#endif /* __INFO__ */
+		  ) {
+    char fn[80];
+    sprintf(fn, "%s/%4d_%d.pgm", fn, image_number, component); 
+    FILE *fd = fopen(fn, "r");
+    if(!fd) {
+#if defined __INFO__
+      info("%s: using \"/dev/zero\" instead of \"%s\"\n", argv[0], fn);
+#endif /* __INFO__ */
+      fd = fopen("/dev/zero", "r");
+    }
+    texture::read(fd, image, pixels_in_y, pixels_in_x);
+    fclose(fd);
+  }
+
   void write_image(CPU_TYPE **image,
 		   int pixels_in_y,
 		   int pixels_in_x,
 		   char *fn,
 		   int image_number,
-		   int component) {
+		   int component,
+		   char *argv[]) {
     char fn[80];
     sprintf(fn, "%s/%4d_%d.pgm", fn, image_number, component); 
     FILE *fd = fopen(fn, "w");
+#if defined __DEBUG__
     if(!fd) {
       error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], fn);
       abort();
     }
+#endif /* __DEBUG__ */
     texture::write(fd, image, pixels_in_y, pixels_in_x);
     fclose(fd);
   }

@@ -29,6 +29,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdarg.h>
+
+#define __INFO__
+#define __DEBUG__
+
 #include "display.cpp"
 #include "Haar.cpp"
 #include "5_3.cpp"
@@ -134,62 +138,50 @@ int main(int argc, char *argv[]) {
       
     case 'x':
       blocks_in_x = atoi(optarg);
-#if defined INFO
       info("%s: blocks_in_x=%d\n", argv[0], blocks_in_x);
-#endif
       break;
       
     case 'y':
       blocks_in_y = atoi(optarg);
-#if defined INFO
       info("%s: blocks_in_y=%d\n", argv[0], blocks_in_y);
-#endif
       break;
 
     case 'f':
       fields_in_predicted = atoi(optarg);
-#if defined INFO
       info("%s: fields_in_predicted=%d\n", argv[0], fields_in_predicted);
-#endif
       break;
 
     case 'p':
       predicted_fn = optarg;
-#if defined INFO
       info("%s: predicted_fn = \"%s\"\n", argv[0], predicted_fn);
-#endif
       break;
 
     case 'r':
       reference_fn = optarg;
-#if defined INFO
       info("%s: reference_fn = \"%s\"\n", argv[0], reference_fn);
-#endif
       break;
 
     case 'e':
       residue_fn = optarg;
-#if defined INFO
       info("%s: residue_fn = \"%s\"\n", argv[0], residue_fn);
-#endif
       break;
       
     case '?':
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("+------------------------------------+\n");
       printf("| MCTF interlevel_motion_decorrelate |\n");
       printf("+------------------------------------+\n");
-#else
+#else /* __ANALYZE__ */
       printf("+----------------------------------+\n");
       printf("| MCTF interlevel_motion_correlate |\n");
       printf("+----------------------------------+\n");
-#endif
+#endif /* __ANALYZE__ */
       printf("\n");
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("  Interlevel decorrelation of the motion information\n");
-#else
+#else /* __ANALYZE__ */
       printf("  Interlevel correlation of the motion information\n");
-#endif
+#endif /* __ANALYZE__ */
       printf("\n");
       printf("  Parameters:\n");
       printf("\n");
@@ -209,50 +201,25 @@ int main(int argc, char *argv[]) {
     }
   }
   
-  FILE *predicted_fd = fopen(predicted_fn,
-#if defined ANALYZE
-			     "r"
-#else
-			     "w"
-#endif
-			     );
-  if(!predicted_fd) {
-#if defined ANALYZE
-    error("%s: unable to read \"%s\" ... aborting!\n", argv[0], predicted_fn);
-#else
-    error("%s: unable to write \"%s\" ... aborting!\n", argv[0], predicted_fn);    
-#endif
+#if defined __ANALYZE__
+  int error = mkdir(predicted_fn, 0700);
+#ifdef __DEBUG__
+  if(error) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], predicted_fn);
     abort();
   }
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
   
-  FILE *reference_fd = fopen(reference_fn, "r");
-  if(reference_fd) {
-#if defined INFO
-    info("%s: reference file name = \"%s\"\n",argv[0], reference_fn);
-#endif
-  } else {
-    reference_fd = fopen("/dev/zero", "r");
- #if defined INFO
-   info("%s: \"%s\" does not exist: reference file name=\"%s\"\n",argv[0],
-		 reference_fn, "/dev/zero");
-#endif
-  }
-
-  FILE *residue_fd = fopen(residue_fn,
-#if defined ANALYZE
-			   "w"
-#else
-			   "r"
-#endif
-			   );
-  if(!residue_fd) {
-#if defined ANALYZE
-    error("%s: unable to write \"%s\" ... aborting!\n", argv[0], residue_fn);
-#else
-    error("%s: unable to read \"%s\" ... aborting!\n", argv[0], residue_fn);    
-#endif
+#if defined __ANALYZE__
+  int error = mkdir(residue_fn, 0700);
+#ifdef __DEBUG__
+  if(error) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], residue_fn);
     abort();
   }
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
 
   motion < MVC_TYPE > motion;
   MVC_TYPE ****predicted = motion.alloc(blocks_in_y, blocks_in_x);
@@ -261,23 +228,145 @@ int main(int argc, char *argv[]) {
   
   for(int i=0; i<fields_in_predicted; i++) {
     
-#if defined INFO
     info("%s: %d\n",argv[0], i);
-#endif
 
-    motion.read(reference_fd, reference, blocks_in_y, blocks_in_x);
+    //motion.read(reference_fd, reference, blocks_in_y, blocks_in_x);
+    motion.read_component(reference[0][0],
+			  reference_fn,
+			  blocks_in_y, blocks_in_x,
+			  i,
+			  0, 0
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+
+    motion.read_component(reference[0][1],
+			  reference_fn,
+			  blocks_in_y, blocks_in_x,
+			  i,
+			  0, 1
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+    motion.read_component(reference[1][0],
+			  reference_fn,
+			  blocks_in_y, blocks_in_x,
+			  i,
+			  1, 0
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+    motion.read_component(reference[1][1],
+			  reference_fn,
+			  blocks_in_y, blocks_in_x,
+			  i,
+			  1, 1
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
     
     /** De/correlate two consecutive motion fields using the same
 	reference. */
     for(int p=0; p<2; p++) {
       
-#if defined ANALYZE
-      motion.read(predicted_fd, predicted, blocks_in_y, blocks_in_x);
-      if(feof(predicted_fd)) break;
-#else
-      motion.read(residue_fd, residue, blocks_in_y, blocks_in_x);
-      if(feof(residue_fd)) break;
-#endif
+#if defined __ANALYZE__
+      //motion.read(predicted_fd, predicted, blocks_in_y, blocks_in_x);
+      motion.read_component(predicted[0][0],
+			    predicted_fn,
+			    blocks_in_y, blocks_in_x,
+			    i,
+			    0, 0
+#if defined __INFO__
+			    ,
+			    argv
+#endif /* __INFO__ */
+			    );
+      motion.read_component(predicted[0][1],
+			    predicted_fn,
+			    blocks_in_y, blocks_in_x,
+			    i,
+			    0, 1
+#if defined __INFO__
+			    ,
+			    argv
+#endif /* __INFO__ */
+			    );
+      motion.read_component(predicted[1][0],
+			    predicted_fn,
+			    blocks_in_y, blocks_in_x,
+			    i,
+			    1, 0
+#if defined __INFO__
+			    ,
+			    argv
+#endif /* __INFO__ */
+			    );
+      motion.read_component(predicted[1][1],
+			    predicted_fn,
+			    blocks_in_y, blocks_in_x,
+			    i,
+			    1, 1
+#if defined __INFO__
+			    ,
+			    argv
+#endif /* __INFO__ */
+			    );
+      
+#else /* __ANALYZE__ */
+      //motion.read(residue_fd, residue, blocks_in_y, blocks_in_x);
+      motion.read_component(residue[0][0],
+			    residue_fn,
+			    blocks_in_y, blocks_in_x,
+			    i,
+			    0, 0
+#if defined __INFO__
+			    ,
+			    argv
+#endif /* __INFO__ */
+			    );
+      
+      motion.read_component(residue[0][1],
+			    residue_fn,
+			    blocks_in_y, blocks_in_x,
+			    i,
+			    0, 1
+#if defined __INFO__
+			    ,
+			    argv
+#endif /* __INFO__ */
+			    );
+      
+      motion.read_component(residue[1][0],
+			    residue_fn, blocks_in_y,
+			    blocks_in_x,
+			    i,
+			    1, 0
+#if defined __INFO__
+			    ,
+			    argv
+#endif /* __INFO__ */
+			    );
+      
+      motion.read_component(residue[1][1],
+			    residue_fn,
+			    blocks_in_y, blocks_in_x,
+			    i,
+			    1, 1
+#if defined __INFO__
+			    ,
+			    argv
+#endif /* __INFO__ */
+			    );
+      
+#endif /* __ANALYZE__ */
       
       decorrelate_field
 	(blocks_in_x,
@@ -286,11 +375,100 @@ int main(int argc, char *argv[]) {
 	 reference,
 	 residue);
       
-#if defined ANALYZE
-      motion.write(residue_fd, residue, blocks_in_y, blocks_in_x);
-#else
-      motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
-#endif
+#if defined __ANALYZE__
+      //motion.write(residue_fd, residue, blocks_in_y, blocks_in_x);
+      motion.write_component(residue[0][0],
+			     residue_fn,
+			     blocks_in_y, blocks_in_x,
+			     i,
+			     0, 0
+#if defined __INFO__
+			     ,
+			     argv
+#endif /* __INFO__ */
+			     );
+      
+      motion.write_component(residue[0][1],
+			     residue_fn,
+			     blocks_in_y, blocks_in_x,
+			     i,
+			     0, 1
+#if defined __INFO__
+			     ,
+			     argv
+#endif /* __INFO__ */
+			     );
+      
+      motion.write_component(residue[1][0],
+			     residue_fn,
+			     blocks_in_y, blocks_in_x,
+			     i,
+			     1, 0
+#if defined __INFO__
+			     ,
+			     argv
+#endif /* __INFO__ */
+			     );
+      
+      motion.write_component(residue[1][1],
+			     residue_fn,
+			     blocks_in_y, blocks_in_x,
+			     i,
+			     1, 1
+#if defined __INFO__
+			     ,
+			     argv
+#endif /* __INFO__ */
+			     );
+      
+
+#else /* __ANALYZE__ */
+      //motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
+      motion.write_component(predicted[0][0],
+			     predicted_fn,
+			     blocks_in_y, blocks_in_x,
+			     i,
+			     0, 0
+#if defined __INFO__
+			     ,
+			     argv
+#endif /* __INFO__ */
+			     );
+      
+      motion.write_component(predicted[0][1],
+			     predicted_fn,
+			     blocks_in_y, blocks_in_x,
+			     i,
+			     0, 1
+#if defined __INFO__
+			     ,
+			     argv
+#endif /* __INFO__ */
+			     );
+      
+      motion.write_component(predicted[1][0],
+			     predicted_fn,
+			     blocks_in_y, blocks_in_x,
+			     i,
+			     1, 0
+#if defined __INFO__
+			     ,
+			     argv
+#endif /* __INFO__ */
+			     );
+      
+      motion.write_component(predicted[1][1],
+			     predicted_fn,
+			     blocks_in_y, blocks_in_x,
+			     i,
+			     1, 1
+#if defined __INFO__
+			     ,
+			     argv
+#endif /* __INFO__ */
+			     );
+      
+#endif /* __ANALYZE__ */
       
     }
   }

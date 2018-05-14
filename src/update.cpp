@@ -1,15 +1,12 @@
-/**
- * \file update.cpp
- * \author Vicente Gonzalez-Ruiz.
- * \date Last modification: 2015, January 7.
- * \brief Update.
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdarg.h>
 #include <string.h>
+
+#define __INFO__
+#define __DEBUG__
+
 //#include "Haar.cpp"
 #include "5_3.cpp"
 //#include "13_7.cpp"
@@ -18,55 +15,21 @@
 #include "texture.cpp"
 #include "motion.cpp"
 #include "display.cpp"
+#include "common.h"
 
-/** \brief TC = Texture Component; IO = Input Output. */
-#define TC_IO_TYPE unsigned char
-/** \brief TC = Texture Component; CPU = Central Processing Unit. */
-#define TC_CPU_TYPE short
-/** \brief TEC = Texture Error Component; IO = Input Output. */
-#define TEC_IO_TYPE unsigned char
-/** \brief TEC = Texture Error Component; CPU = Central Processing Unit. */
-#define TEC_CPU_TYPE short
-/** \brief Maximum texture component value. */
-#define MAX_TC_VAL 255
-/** \brief Minimum texture component value. */
-#define MIN_TC_VAL 0
-/** \brief Filter bank type. */
 #define TEXTURE_INTERPOLATION_FILTER _5_3
-/** \brief Number of components. */
-#define COMPONENTS 3
-/** \brief Dimension 'X' of a picture. */
-#define PIXELS_IN_X 352
-/** \brief Dimension 'Y' of a picture. */
-#define PIXELS_IN_Y 288
-/* \brief If defined, shows information about the execution. */
-//#define DEBUG
 
-/** \brief Clipping.
- * \param x Element to clip.
- * \param dim Clipping dimension.
- * \returns Clipped element.
- */
+/* Clipping. */
 int clip(int x, int dim) {
   if(x<0) return 0;
   if(x>=dim) return dim-1;
   return x;   
 }
 
-/** \brief Add the pairs images (S_ {2t}) to the prediction error. 
- * This should reduce the aliasing and therefore improve cornering 
- * R/D for maximum frame-rate. A lower frame-rate, should be improved 
- * visual quality.
- * \param block_size Size block.
- * \param blocks_in_y Dimension 'Y' of blocks in a picture.
- * \param blocks_in_x Dimension 'X' of blocks in a picture.
- * \param components Number of components.
- * \param mv Two motion vectors.
- * \param pixels_in_y Dimension 'Y' of pixels in a picture.
- * \param pixels_in_x Dimension 'X' of pixels in a picture.
- * \param reference_picture A reference picture.
- * \param residue_picture A residue picture.
- * \param update_factor Level update.\n For example, a value equal to 1/4 means that the high-frequency subband is 4 times less important than the low-frequency subband.
+/* Adds even images (S_ {2i}) to the prediction error.  This should
+ * reduce the aliasing. A value for update_factor equal to 1/4 means
+ * that the high-frequency subband is 4 times less important than the
+ * low-frequency subband.
  */
 void update
 (
@@ -97,11 +60,11 @@ void update
 	      //aux *= update_factor /* 1<<iteration */;
 
 	      aux
-#ifdef ANALYZE
+#ifdef __ANALYZE__
 		+= 
-#else
+#else /* __ANALYZE__ */
 		-=
-#endif
+#endif /* __ANALYZE__ */
 		residue_picture[c][by*block_size+y][bx*block_size+x] * update_factor;
 
 	      //aux /= update_factor;
@@ -122,11 +85,11 @@ void update
 	      //aux *= update_factor;
 
 	      aux
-#ifdef ANALYZE
+#ifdef __ANALYZE__
 		+= 
-#else
+#else /* __ANALYZE__ */
 		-=
-#endif
+#endif /* __ANALYZE__ */
 		residue_picture[c][by*block_size+y][bx*block_size+x] * update_factor;
 
 	      //aux /= update_factor;
@@ -150,23 +113,18 @@ void update
 
 #include <getopt.h>
 
-/** \brief Provides a main function which reads in parameters from the command line and a parameter file.
- * \param argc The number of command line arguments of the program.
- * \param argv The contents of the command line arguments of the program.
- * \returns Notifies proper execution.
- */
 int main(int argc, char *argv[]) {
   // {{{
 
   // {{{ Command line support
 
-#if defined DEBUG
+#if defined __INFO__
   info("%s ", argv[0]);
   for(int i=1; i<argc; i++) {
     info("%s ", argv[i]);
   }
   info("\n");
-#endif
+#endif /* __INFO__ */
   int block_size = 16;
   int components = COMPONENTS;
   char *even_fn = (char *)"even";
@@ -271,21 +229,21 @@ int main(int argc, char *argv[]) {
       break;
       
     case '?':
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("+-------------+\n");
       printf("| MCTF update |\n");
       printf("+-------------+\n");
-#else
+#else /* __ANALYZE_ */
       printf("+----------------+\n");
       printf("| MCTF un_update |\n");
       printf("+----------------+\n");
-#endif
+#endif /* __ANALYZE__ */
       printf("\n");
-#if defined ANALYZE
+#if defined __ANALYZE__
       printf("  Block-based time-domain motion updating\n");
-#else
+#else /* __ANALYZE__ */
       printf("  Block-based time-domain motion updating\n");
-#endif
+#endif  /* __ANALYZE__ */
       printf("\n");
       printf("  Parameters:\n");
       printf("\n");
@@ -311,81 +269,33 @@ int main(int argc, char *argv[]) {
 
   // }}}
 
-  FILE *even_fd; {
-    // {{{
-
-    even_fd = fopen(even_fn,
-#if defined ANALYZE
-		    "r"
-#else
-		    "w"
-#endif
-		    );
-    if(!even_fd) {
-      
-#if defined ANALYZE
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], even_fn);
-#else
-      error("%s: unable to write \"%s\" ... aborting!\n",
-	    argv[0], even_fn);    
-#endif
-      abort();
-    }
-
-    // }}}
+  // {{{
+  
+#if not defined __ANALYZE__
+  int error = mkdir(even_fn, 0700);
+#ifdef __DEBUG__
+  if(error) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
+    abort();
   }
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
 
-  FILE *high_fd; {
-    // {{{
+  // }}}
 
-    high_fd = fopen(high_fn, "r");
-    if(!high_fd) {
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], high_fn);
-      abort();
-    }
-
-    // }}}
+  // {{{
+  
+#if defined __ANALYZE__
+  int error = mkdir(low_fn, 0700);
+#ifdef __DEBUG__
+  if(error) {
+    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], low_fn);
+    abort();
   }
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
 
-  FILE *low_fd; {
-    // {{{
-
-    low_fd = fopen(low_fn,
-#if defined ANALYZE
-		   "w"
-#else
-		   "r"
-#endif
-		   );
-    if(!low_fd) {
-#if defined ANALYZE
-      error("%s: unable to write \"%s\" ... aborting!\n",
-	    argv[0], low_fn);
-#else
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], low_fn);    
-#endif
-      abort();
-    }
-
-    // }}}
-  }
-
-
-  FILE *motion_fd; {
-    // {{{
-
-    motion_fd = fopen(motion_fn, "r");
-    if(!motion_fd) {
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], motion_fn);
-      abort();
-    }
-
-    // }}}
-  }
+  // }}}
 
   FILE *frame_types_fd; {
     // {{{
@@ -400,41 +310,47 @@ int main(int argc, char *argv[]) {
     // }}}
   }
 
-
-  class dwt2d < TC_CPU_TYPE, TEXTURE_INTERPOLATION_FILTER < TC_CPU_TYPE > > *image_dwt; {
-    // {{{
-
-    image_dwt = new class dwt2d < TC_CPU_TYPE, TEXTURE_INTERPOLATION_FILTER < TC_CPU_TYPE > >;
+  class dwt2d <
+    TC_CPU_TYPE,
+    TEXTURE_INTERPOLATION_FILTER <
+      TC_CPU_TYPE
+      >
+    > *image_dwt = new class dwt2d <
+      TC_CPU_TYPE,
+    TEXTURE_INTERPOLATION_FILTER <
+      TC_CPU_TYPE
+      >
+    >;
     image_dwt->set_max_line_size(PIXELS_IN_X_MAX);
-
-    // }}}
-  }
   
-  class dwt2d < TEC_CPU_TYPE, TEXTURE_INTERPOLATION_FILTER < TEC_CPU_TYPE > > *error_dwt; {
-    // {{{
-
-    error_dwt = new class dwt2d < TEC_CPU_TYPE, TEXTURE_INTERPOLATION_FILTER < TEC_CPU_TYPE > >;
+  class dwt2d <
+    TC_CPU_TYPE,
+    TEXTURE_INTERPOLATION_FILTER <
+      C_CPU_TYPE
+      >
+    > *error_dwt = new class dwt2d <
+    TC_CPU_TYPE,
+    TEXTURE_INTERPOLATION_FILTER <
+      TC_CPU_TYPE
+      >
+    >;
     error_dwt->set_max_line_size(PIXELS_IN_X_MAX);
-
-    // }}}
-  }
 
   int blocks_in_y = pixels_in_y[0]/block_size;
   int blocks_in_x = pixels_in_x[0]/block_size;
-#if defined DEBUG
+#if defined __DEBUG__
   info("%s: blocks in Y=%d\n", argv[0], blocks_in_y);
   info("%s: blocks in X=%d\n", argv[0], blocks_in_x);
-#endif
+#endif /* __DEBUG__ */
 
-  /** \tparam MVC_TYPE Motion vector component type. */
   motion < MVC_TYPE > motion;
 
   MVC_TYPE ****mv; {
     mv = motion.alloc(blocks_in_y, blocks_in_x);
   }
 
-  texture < TC_IO_TYPE, TC_CPU_TYPE > image;
-  texture < TEC_IO_TYPE, TEC_CPU_TYPE > error;
+  texture < TC_IO_TYPE, TC_CPU_TYPE > texture;//image;
+  //texture < TC_IO_TYPE, TC_CPU_TYPE > error;
 
   TC_CPU_TYPE ***reference[2] /* In (5/3) we have 2 references */; {
     // {{{
@@ -442,16 +358,16 @@ int main(int argc, char *argv[]) {
     for(int i=0; i<2; i++) {
       reference[i] = new TC_CPU_TYPE ** [COMPONENTS];
       for(int c=0; c<COMPONENTS; c++) {
-	reference[i][c] = image.alloc(pixels_in_y[0], pixels_in_x[0], 0);
+	reference[i][c] = texture.alloc(pixels_in_y[0], pixels_in_x[0], 0);
       }
     }
 
     // }}}
   }
-  TEC_CPU_TYPE ***residue; {
-    residue = new TEC_CPU_TYPE ** [COMPONENTS];
+  TC_CPU_TYPE ***residue; {
+    residue = new TC_CPU_TYPE ** [COMPONENTS];
     for (int c=0; c<COMPONENTS; c++) {
-      residue[c] = error.alloc(pixels_in_y[0], pixels_in_x[0], 0);
+      residue[c] = texture.alloc(pixels_in_y[0], pixels_in_x[0], 0);
     }
 
     // }}}
@@ -460,23 +376,21 @@ int main(int argc, char *argv[]) {
   piy[0] = piy[1] = piy[2] = pixels_in_y[0];
   pix[0] = pix[1] = pix[2] = pixels_in_x[0];
 
-  // {{{ Read reference[0] de even_? 
+  // {{{ Read reference[0] from even_? 
 
-#if defined DEBUG
-#ifdef ANALYZE
+#if defined __ANALYZE__
   info("%s: reading picture 0 from \"%s\".\n", argv[0], even_fn);
-#else
+#else /* __ANALYZE__ */
   info("%s: reading picture 0 from \"%s\".\n", argv[0], low_fn);
-#endif
-#endif
+#endif /* __ANALYZE__ */
   for(int c=0; c<COMPONENTS; c++) {
-    image.read(
-#ifdef ANALYZE
-	       even_fd,
-#else
-	       low_fd,
-#endif
-	       reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+    texture.read_image(reference[0][c], pixels_in_y[c], pixels_in_x[c],
+#ifdef __ANALYZE__	       
+		       even_fn,
+#else /* __ANALYZE__ */
+		       low_fn,
+#endif /* __ANALYZE__ */
+		       0, c);
   }
 
   for(int y=0; y<pixels_in_y[0]/2; y++) {
@@ -485,18 +399,21 @@ int main(int argc, char *argv[]) {
       reference[0][2][y][x] = 0;
     }
   }
+  
   for(int y=pixels_in_y[0]/2; y<pixels_in_y[0]; y++) {
     for(int x=0; x<pixels_in_x[0]/2; x++) {
       reference[0][1][y][x] = 0;
       reference[0][2][y][x] = 0;
     }
   }
+  
   for(int y=pixels_in_y[0]/2; y<pixels_in_y[0]; y++) {
     for(int x=pixels_in_x[0]/2; x<pixels_in_x[0]; x++) {
       reference[0][1][y][x] = 0;
       reference[0][2][y][x] = 0;
     }
   }
+  
   image_dwt->synthesize(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
   image_dwt->synthesize(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
   
@@ -506,11 +423,10 @@ int main(int argc, char *argv[]) {
   for(i; i<pictures/2; i++) {
 
     // {{{ Read residue de high_? 
-#if defined DEBUG
     info("%s: reading picture %d from \"%s\".\n", argv[0], i, high_fn);
-#endif
     for(int c=0; c<COMPONENTS; c++) {
-      error.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+      texture.read_image(residue[c], pixels_in_y[c], pixels_in_x[c], high_fn, i, c);
+      //error.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       // We recover the original dynamic range of the residue.
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
@@ -519,7 +435,7 @@ int main(int argc, char *argv[]) {
       }
     }
     
-#if defined UPDATE_STEP
+#if defined __UPDATE_STEP__
     for(int y=0; y<pixels_in_y[0]/2; y++) {
       for(int x=pixels_in_x[0]/2; x<pixels_in_x[0]; x++) {
 	residue[1][y][x] = 0;
@@ -540,32 +456,28 @@ int main(int argc, char *argv[]) {
     }
     error_dwt->synthesize(residue[1], pixels_in_y[0], pixels_in_x[0], 1);
     error_dwt->synthesize(residue[2], pixels_in_y[0], pixels_in_x[0], 1);
-#endif
+#endif /* __UPDATE_STEP__ */
     
     // }}}
     
     // {{{ Read reference[1] de even_? 
     
-#if defined DEBUG
-#ifdef ANALYZE 
+#ifdef __ANALYZE__ 
     info("%s: reading picture %d from \"%s\".\n", argv[0], i, even_fn);
-#else
+#else /* __ANALYZE__ */
     info("%s: reading picture %d from \"%s\".\n", argv[0], i, low_fn);
-#endif
-#endif
+#endif /* __ANALYZE__ */
     for(int c=0; c<COMPONENTS; c++) {
-      image.read(
-#ifdef ANALYZE 
-		 even_fd,
-#else
-		 low_fd,
-#endif
-		 reference[1][c], pixels_in_y[c], pixels_in_x[c]);
+      texture.read_image(reference[1][c], pixels_in_y[c], pixels_in_x[c],
+#ifdef __ANALYZE__ 
+			 even_fd,
+#else /* __ANALYZE__ */
+			 low_fd,
+#endif /* __ANALYZE__ */
+			 i, c);
     }
 
-
     //fprintf(stderr, "(read_1) reference[0][0][0][0]=%d reference[1][0][0][0]=%d\n", reference[0][0][0][0], reference[1][0][0][0]);
-
 
     for(int y=0; y<pixels_in_y[0]/2; y++) {
       for(int x=pixels_in_x[0]/2; x<pixels_in_x[0]; x++) {
@@ -592,7 +504,50 @@ int main(int argc, char *argv[]) {
     
     // {{{ Reading the motion fields
 
-    motion.read(motion_fd, mv, blocks_in_y, blocks_in_x);
+    //motion.read(motion_fd, mv, blocks_in_y, blocks_in_x);
+    motion.read_component(mv[0][0],
+			  motion_in_fn,
+			  blocks_in_y, blocks_in_x,
+			  i,
+			  0, 0
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+
+    motion.read_component(mv[0][1],
+			  motion_in_fn,
+			  blocks_in_y, blocks_in_x,
+			  i,
+			  0, 1
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+
+    motion.read_component(mv[1][0],
+			  motion_in_fn,
+			  blocks_in_y, blocks_in_x,
+			  i,
+			  1, 0
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+
+    motion.read_component(mv[1][1],
+			  motion_in_fn,
+			  blocks_in_y, blocks_in_x,
+			  i,
+			  1, 1
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
 
     // }}}
 					    
@@ -621,25 +576,31 @@ int main(int argc, char *argv[]) {
     
     // {{{ Write reference[0] en low_? 
 
-#if defined DEBUG
-#ifdef ANALYZE 
+#ifdef __ANALYZE__ 
     info("%s: writing picture %d from \"%s\".\n", argv[0], i, low_fn);
-#else
+#else /* __ANALYZE__ */
     info("%s: writing picture %d from \"%s\".\n", argv[0], i, even_fn);
-#endif
-#endif
+#endif /* __ANALYZE__ */
     
     image_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
     image_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
      
     for(int c=0; c<COMPONENTS; c++) {
-      image.write(
-#ifdef ANALYZE
-		  low_fd,
-#else
-		  even_fd,
-#endif
-		  reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+      texture.write_image(reference[1][c],
+			  pixels_in_y[c], pixels_in_x[c],
+#ifdef __ANALYZE__
+			  low_fd,
+#else /* __ANALYZE__ */
+			  even_fd,
+#endif /* __ANALYZE__ */
+			  i,
+			  c
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+
     }
 
     // }}}
@@ -657,25 +618,30 @@ int main(int argc, char *argv[]) {
 
   // {{{ Write reference[0] in low_? 
 
-#if defined DEBUG
-#ifdef ANALYZE 
+#ifdef __ANALYZE__ 
   info("%s: writing picture %d from \"%s\".\n", argv[0], i, low_fn);
-#else
+#else /* __ANALYZE__ */
   info("%s: writing picture %d from \"%s\".\n", argv[0], i, even_fn);
-#endif
-#endif
+#endif /* __ANALYZE__ */
   
   image_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
   image_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
   
   for(int c=0; c<COMPONENTS; c++) {
-    image.write(
-#ifdef ANALYZE
-		low_fd,
-#else
-		even_fd,
-#endif
-		reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+    texture.write_image(reference[0][c],
+			pixels_in_y[c], pixels_in_x[c],
+#ifdef __ANALYZE__
+			low_fd,
+#else /* __ANALYZE__ */
+			even_fd,
+#endif /* __ANALYZE__ */
+			c,
+			i
+#if defined __INFO__
+			,
+			argv
+#endif /* __INFO__ */
+			);
   }
 
   // }}}
