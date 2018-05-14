@@ -75,7 +75,7 @@ set -x
 
 rm -rf low_0
 mkdir low_0
-number_of_images=`echo "2^$TRLs*($GOPs-1)+1" | bc`
+number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
 ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images low_0/%4d.Y
 x_dim_2=`echo $x_dim/2 | bc`
 y_dim_2=`echo $y_dim/2 | bc`

@@ -13,6 +13,7 @@
 
 #define __INFO__
 #define __DEBUG__
+#define __WARNING__
 
 #include "display.cpp"
 #include "motion.cpp"
@@ -174,6 +175,7 @@ int main(int argc, char *argv[]) {
     
     info("%s: %d\n",argv[0], i);
     //motion.read(input_fd, field, blocks_in_y, blocks_in_x);
+    // {{{ field[0][0] <- input
     motion.read_component(field[0][0],
 			  blocks_in_y, blocks_in_x,
 			  input_fn,
@@ -184,6 +186,8 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+    // {{{ field[0][1] <- input
     motion.read_component(field[0][1],
 			  blocks_in_y, blocks_in_x,
 			  input_fn,
@@ -194,6 +198,8 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+    // {{{ field[1][0] <- input
     motion.read_component(field[1][0],
 			  blocks_in_y, blocks_in_x,
 			  input_fn,
@@ -204,6 +210,8 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+    // {{{ field[1][1] <- input
     motion.read_component(field[1][1],
 			  blocks_in_y, blocks_in_x,
 			  input_fn,
@@ -214,6 +222,7 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
 
     decorrelate_field
       (blocks_in_x,
@@ -221,16 +230,19 @@ int main(int argc, char *argv[]) {
        field);
 
     //motion.write(output_fd, field, blocks_in_y, blocks_in_x);
+    // {{{ field[0][0] -> output
     motion.write_component(field[0][0],
 			   blocks_in_y, blocks_in_x,
 			   output_fn,
 			   i,
 			   0, 0
 #if defined __INFO__
-			  ,
-			  argv[0]
+			   ,
+			   argv[0]
 #endif /* __INFO__ */
-			  );
+			   );
+    // }}}
+    // {{{ 
     motion.write_component(field[0][1],
 			   blocks_in_y, blocks_in_x,
 			   output_fn,
@@ -241,26 +253,31 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+    // {{{ field[1][0] -> output
     motion.write_component(field[1][0],
 			   blocks_in_y, blocks_in_x,
 			   output_fn,
 			   i,
 			   1, 0
 #if defined __INFO__
-			  ,
-			  argv[0]
+			   ,
+			   argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+    // {{{ field[1][1] -> output
     motion.write_component(field[1][1],
 			   blocks_in_y, blocks_in_x,
 			   output_fn,
 			   i,
 			   1, 1
 #if defined __INFO__
-			  ,
-			  argv[0]
+			   ,
+			   argv[0]
 #endif /* __INFO__ */
-			  );
+			   );
+    // }}}
 
   }
 }

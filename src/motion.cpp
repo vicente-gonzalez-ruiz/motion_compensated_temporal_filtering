@@ -117,8 +117,8 @@ public:
     sprintf(fn_, "%s/%04d_%d_%d.pgm", fn, field_number, FB, YX);
     FILE *fd  = fopen(fn_, "r");
     if(!fd) {
-#if defined __INFO__
-      info("%s: using \"/dev/zero\" instead of \"%s\"\n", msg, fn_);
+#if defined __WARNING__
+      warning("%s: using \"/dev/zero\" instead of \"%s\"\n", msg, fn_);
 #endif /* __INFO__ */
       fd = fopen("/dev/zero", "r");
     }

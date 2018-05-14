@@ -23,6 +23,7 @@
 
 #define __INFO__
 #define __DEBUG__
+#define __WARNING__
 
 #include "display.cpp"
 //#include "Haar.cpp"
@@ -527,6 +528,7 @@ int main(int argc, char *argv[]) {
   /* Read reference [0] (the first image). */
   for(int c=0; c<COMPONENTS; c++) {
     // image.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+    // {{{ reference[0] <- even
     texture.read_image(reference[0][c],
 		       pixels_in_y[c], pixels_in_x[c],
 		       even_fn,
@@ -537,6 +539,7 @@ int main(int argc, char *argv[]) {
 		       argv[0]
 #endif /* __INFO__ */
 		       );
+    // }}}
   }
 
   /* Interpolate the chroma of reference [0], to have the same size as
@@ -650,6 +653,7 @@ int main(int argc, char *argv[]) {
     /* The next image (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
       //image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      // {{{ predicted <- odd
       texture.read_image(predicted[c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 odd_fn,
@@ -660,6 +664,7 @@ int main(int argc, char *argv[]) {
 			 argv[0]
 #endif /* __INFO__ */
 			 );
+      // }}}
     }
 
 #else /* __ANALYZE__ */
@@ -669,6 +674,7 @@ int main(int argc, char *argv[]) {
     /* Read residue image */
     for(int c=0; c<COMPONENTS; c++) {
       //image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+      // {{{ residue -> high
       texture.read_image(residue[c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 high_fn,
@@ -679,6 +685,7 @@ int main(int argc, char *argv[]) {
 			 argv[0]
 #endif /* __INFO__ */
 			 );
+      // }}}
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  residue[c][y][x] -= 128;
@@ -693,6 +700,7 @@ int main(int argc, char *argv[]) {
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
       //image.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
+      // {{{ reference[1] <- even
       texture.read_image(reference[1][c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 even_fn,
@@ -703,6 +711,7 @@ int main(int argc, char *argv[]) {
 			 argv[0]
 #endif /* __INFO__ */
 			 );
+      // }}}
     }
 
     /* Croma Cb. */
@@ -761,6 +770,7 @@ int main(int argc, char *argv[]) {
     /* Motion fields are read. */
     info("%s: reading motion vector field %d in \"%s\".\n", argv[0], i, motion_in_fn);
     //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
+    // {{{ mv[0][0] <- motion_in
     motion.read_component(mv[0][0],
 			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
@@ -771,6 +781,8 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+    // {{{ mv[0][1] <- motion_in
     motion.read_component(mv[0][1],
 			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
@@ -781,6 +793,8 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+    // {{{ mv[1][0] <- motion_in
     motion.read_component(mv[1][0],
 			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
@@ -791,6 +805,8 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+    // {{{ mv[1][1] <- motion_in
     motion.read_component(mv[1][1],
 			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
@@ -801,7 +817,7 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
-    
+    // }}}
 #if defined __ANALYZE__
     float motion_entropy = 0.0; {
       static int count[256];
@@ -870,6 +886,7 @@ int main(int argc, char *argv[]) {
 #if defined __GET_PREDICTION__
     info("%s: writing picture %d of \"%s\".\n", argv[0], i, prediction_fn);
     for(int c=0; c<COMPONENTS; c++) {
+      // {{{ prediction -> prediction
       texture.write_image(prediction[c],
 			  pixels_in_y[c], pixels_in_x[c],
 			  prediction_fn,
@@ -880,10 +897,11 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+      // }}}
     }
 #endif /* __GET_PREDICTION__ */
     
-#if defined ANALYZE
+#if defined __ANALYZE__
     
     /* The residue image is generated. */
     
@@ -1002,6 +1020,7 @@ int main(int argc, char *argv[]) {
       
       for(int c=0; c<COMPONENTS; c++) {
 	//image.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	// {{{ residue -> high
 	texture.write_image(residue[c],
 			    pixels_in_y[c], pixels_in_x[c],
 			    high_fn,
@@ -1009,13 +1028,15 @@ int main(int argc, char *argv[]) {
 			    c
 #if defined __INFO__
 			    ,
-			    argv
+			    argv[0]
 #endif /* __INFO__ */
 			    );
+	// }}}
       }
 
       /* No motion field (other than 0) associated with an image I. */
       //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
+      // {{{ zeroes[0][0] -> motion_out
       motion.write_component(zeroes[0][0],
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
@@ -1026,6 +1047,8 @@ int main(int argc, char *argv[]) {
 			     argv[0]
 #endif /* __INFO__ */
 			     );
+      // }}}
+      // {{{ zeroes[0][1] -> motion_out
       motion.write_component(zeroes[0][1],
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
@@ -1036,7 +1059,8 @@ int main(int argc, char *argv[]) {
 			     argv[0]
 #endif /* __INFO__ */
 			     );
-			     
+      // }}}
+      // {{{ zeroes[1][0] -> motion_out
       motion.write_component(zeroes[1][0],
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
@@ -1047,7 +1071,8 @@ int main(int argc, char *argv[]) {
 			     argv[0]
 #endif /* __INFO__ */
 			     );
-
+      // }}}
+      // {{{ zeroes[1][1] -> motion_out
       motion.write_component(zeroes[1][1],
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
@@ -1058,7 +1083,7 @@ int main(int argc, char *argv[]) {
 			     argv[0]
 #endif /* __INFO__ */
 			     );
-
+      // }}}
     } else {
 
       /* Indicated in the code-stream which is an image B. */
@@ -1079,21 +1104,36 @@ int main(int argc, char *argv[]) {
 	  }
 	}
 	//image.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-	texture.write_image(residue[c], pixels_in_y[c], pixels_in_x[c], high_fn, i, c);
+	// {{{ residue -> high
+	texture.write_image(residue[c],
+			    pixels_in_y[c], pixels_in_x[c],
+			    high_fn,
+			    i,
+			    c
+#if defined __INFO__
+			    ,
+			    argv[0]
+#endif /* __INFO__ */
+			    );
+
+	// }}}
       }
 
       /* The images I have associated motion field. */
       //motion.write(motion_out_fd, mv, blocks_in_y, blocks_in_x);
+      // {{{ mv[0][0] -> motion_out
       motion.write_component(mv[0][0],
-			     motion_out_fn,
 			     blocks_in_y, blocks_in_x,
-			     i, 0, 0
+			     motion_out_fn,
+			     i,
+			     0, 0
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
-      
+      // }}}
+      // {{{ mv[0][1] -> motion_out
       motion.write_component(mv[0][1],
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
@@ -1104,7 +1144,8 @@ int main(int argc, char *argv[]) {
 			     argv[0]
 #endif /* __INFO__ */
 			     );
-
+      // }}}
+      // {{{ mv[1][0] -> motion_out
       motion.write_component(mv[1][0],
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
@@ -1115,8 +1156,9 @@ int main(int argc, char *argv[]) {
 			     argv[0]
 #endif /* __INFO__ */
 			     );
-      
-      motion.wirte_component(mv[1][1],
+      // }}}
+      // {{{ mv[1][1] -> motion_out
+      motion.write_component(mv[1][1],
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
@@ -1126,10 +1168,11 @@ int main(int argc, char *argv[]) {
 			     argv[0]
 #endif /* __INFO__ */
 			     );
+      // }}}
       
     }
     
-#else /* __SYNTHESIZE__ */
+#else /* __ANALYZE__ */
 
     info("%s: writing picture %d of \"%s\".\n", argv[0], i, odd_fn);
 
@@ -1163,6 +1206,7 @@ int main(int argc, char *argv[]) {
     /* Write predicted image. */
     for(int c=0; c<COMPONENTS; c++) {
       //image.write(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      // {{{ predicted -> odd
       texture.write_image(predicted[c],
 			  pixels_in_y[c], pixels_in_x[c],
 			  odd_fn,
@@ -1173,10 +1217,10 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
-			  
+      // }}}			  
     }
 
-#endif /* __SYNTHESIZE__ */
+#endif /* __ANALYZE__ */
     
     /* SWAP(&reference_picture[0], &reference_picture[1]). */ {
       TC_CPU_TYPE ***tmp = reference[0];

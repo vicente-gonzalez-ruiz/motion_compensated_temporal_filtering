@@ -20,6 +20,17 @@ void error(const char *args, ...) {
 #endif /* __DEBUG__ */
 }
 
+void warning(const char *args, ...) {
+#if defined __WARNING__
+  va_list ap;
+  va_start(ap, args);
+  fprintf(stderr,"[0;33m");
+  vfprintf(stderr, args, ap);
+  fprintf(stderr,"[1;0m");
+  fflush(stderr);
+#endif /* __WARNING__ */
+}
+
 void info_flush() {
 #if defined __INFO__
   fflush(stdout);

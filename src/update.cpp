@@ -8,6 +8,7 @@
 
 #define __INFO__
 #define __DEBUG__
+#define __WARNING__
 
 #include "display.cpp"
 //#include "Haar.cpp"
@@ -186,40 +187,49 @@ int main(int argc, char *argv[]) {
 
     case 'b':
       block_size = atoi(optarg);
+      info("block_size=%d\n", block_size);
       break;
       
     case 'e':
       even_fn = optarg;
+      info("even_fn=%s\n", even_fn);
       break;
 
     case 'f':
       frame_types_fn = optarg;
+      info("frame_types_fn=%s\n", frame_types_fn);
       break;
 
     case 'h':
       high_fn = optarg;
+      info("high_fn=%s\n", high_fn);
       break;
 
     case 'l':
       low_fn = optarg;
+      info("low_fn=%s\n", low_fn);
       break;
 
     case 'm':
       motion_fn = optarg;
+      info("motion_fn=%s\n", motion_fn);
       break;
 
     case 'p':
       pictures = atoi(optarg);
+      info("pictures=%d\n", pictures);
       break;
       
     case 'x':
       pixels_in_x[0] = atoi(optarg);
       pixels_in_x[1] = pixels_in_x[2] = pixels_in_x[0]/2;
+      info("pixels_in_x=%d\n", pixels_in_x[0]);
       break;
       
     case 'y':
       pixels_in_y[0] = atoi(optarg);
       pixels_in_y[1] = pixels_in_y[2] = pixels_in_y[0]/2;
+      info("pixels_in_y=%d\n", pixels_in_y[0]);
       break;
 
     case 'a':
@@ -432,6 +442,7 @@ int main(int argc, char *argv[]) {
     // {{{ Read residue de high_? 
     info("%s: reading picture %d from \"%s\".\n", argv[0], i, high_fn);
     for(int c=0; c<COMPONENTS; c++) {
+      //error.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       texture.read_image(residue[c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 high_fn,
@@ -442,7 +453,6 @@ int main(int argc, char *argv[]) {
 			 argv[0]
 #endif /* __INFO__ */
 			 );
-      //error.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       // We recover the original dynamic range of the residue.
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
@@ -633,12 +643,12 @@ int main(int argc, char *argv[]) {
       reference[0] = reference[1];
       reference[1] = tmp;
     }    
-
+    
     // }}}
   }
-
+  
   // {{{ Write reference[0] in low_? 
-
+  
 #ifdef __ANALYZE__ 
   info("%s: writing picture %d from \"%s\".\n", argv[0], i, low_fn);
 #else /* __ANALYZE__ */
@@ -666,6 +676,6 @@ int main(int argc, char *argv[]) {
   }
 
   // }}}
-
+  
   // }}}
 }

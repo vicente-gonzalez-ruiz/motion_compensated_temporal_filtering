@@ -11,6 +11,7 @@
 
 #define __INFO__
 #define __DEBUG__
+#define __WARNING__
 
 #include "display.cpp"
 #include "Haar.cpp"
@@ -602,6 +603,7 @@ int main(int argc, char *argv[]) {
   motion_dwt->set_max_line_size(PIXELS_IN_X_MAX);
 
   /* Read the luma of reference[0]. */
+  // {{{ reference[0] <- even
   texture.read_image(reference[0],
 		     pixels_in_y, pixels_in_x,
 		     even_fn,
@@ -612,6 +614,7 @@ int main(int argc, char *argv[]) {
 		     argv[0]
 #endif /* __INFO__ */
 		     );
+  // }}}
 
   /* Skip to the chroma. */
   /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
@@ -629,7 +632,7 @@ int main(int argc, char *argv[]) {
 
     /* Luma. */
     //texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
-    /* Read the luma of predicted. */
+    // {{{ predicted <- odd
     texture.read_image(predicted,
 		       pixels_in_y, pixels_in_x,
 		       odd_fn,
@@ -640,6 +643,7 @@ int main(int argc, char *argv[]) {
 		       argv[0]
 #endif /* __INFO__ */
 		       );
+    // }}}
 
     /* Chroma. */
     /*fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
@@ -655,16 +659,18 @@ int main(int argc, char *argv[]) {
     }
 
     /* Read the luma of reference[1]. */
+    // {{{ reference[1] <- even
     texture.read_image(reference[1],
 		       pixels_in_y, pixels_in_x,
 		       even_fn,
-		       0,
+		       i,
 		       LUMA
 #if defined __INFO__
 		       ,
 		       argv[0]
 #endif /* __INFO__ */
 		       );
+    // }}}
     //texture.read(even_fd, reference[1], pixels_in_y, pixels_in_x);
 
     /* Cromas. */
@@ -752,6 +758,7 @@ int main(int argc, char *argv[]) {
     info("%s: writing motion vector field %d in \"%s\".\n", argv[0], i, motion_fn);
 
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
+    // {{{ mv[0][0] -> motion
     motion.write_component(mv[0][0],
 			   blocks_in_y, blocks_in_x,
 			   motion_fn,
@@ -762,6 +769,8 @@ int main(int argc, char *argv[]) {
 			   argv[0]
 #endif /* __INFO__ */
 			   );
+    // }}}
+    // {{{ mv[0][1] -> motion
     motion.write_component(mv[0][1],
 			   blocks_in_y, blocks_in_x,
 			   motion_fn,
@@ -772,6 +781,8 @@ int main(int argc, char *argv[]) {
 			   argv[0]
 #endif /* __INFO__ */
 			   );
+    // }}}
+    // {{{ mv[1][0] -> motion
     motion.write_component(mv[1][0],
 			   blocks_in_y, blocks_in_x,
 			   motion_fn,
@@ -782,6 +793,8 @@ int main(int argc, char *argv[]) {
 			   argv[0]
 #endif /* __INFO__ */
 			   );
+    // }}}
+    // {{{ mv[1][1] -> motion
     motion.write_component(mv[1][1],
 			   blocks_in_y, blocks_in_x,
 			   motion_fn,
@@ -792,7 +805,7 @@ int main(int argc, char *argv[]) {
 			   argv[0]
 #endif /* __INFO__ */
 			   );
-
+    // }}}
     /* SWAP(&reference_pic[0], &reference_pic[1]). */ {
       TC_CPU_TYPE **tmp = reference[0];
       reference[0] = reference[1];
