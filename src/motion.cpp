@@ -114,7 +114,7 @@ public:
 #endif /* __INFO__ */
 		      ) {
     char fn_[80];
-    sprintf(fn_, "%s/%4d_%d_%d.pgm", fn, field_number, FB, YX);
+    sprintf(fn_, "%s/%04d_%d_%d.pgm", fn, field_number, FB, YX);
     FILE *fd  = fopen(fn_, "r");
     if(!fd) {
 #if defined __INFO__
@@ -139,7 +139,7 @@ public:
 #endif /* __INFO__ */
 		       ) {
     char fn_[80];
-    sprintf(fn_, "%s/%4d_%d_%d.pgm", fn, image_number, FB, YX);
+    sprintf(fn_, "%s/%04d_%d_%d.pgm", fn, image_number, FB, YX);
     FILE *fd  = fopen(fn_, "w");
 #ifdef __DEBUG__
     if(!fd) {

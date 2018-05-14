@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
     int err = mkdir(predicted_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
-      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], predicted_fn);
+      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], predicted_fn);
       abort();
     }
 #endif /* __DEBUG__ */
@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
     int err = mkdir(residue_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
-      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], residue_fn);
+      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], residue_fn);
       abort();
     }
 #endif /* __DEBUG__ */

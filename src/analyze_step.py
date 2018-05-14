@@ -47,12 +47,12 @@ update_factor = float(args.update_factor)
 try :
     # Lazzy transform.
     check_call("mctf split"
-               + " --even_fn="     + "even_" + str(subband)
-               + " --low_fn="      + "low_"  + str(subband-1)
-               + " --odd_fn="      + "odd_"  + str(subband)
-               + " --pictures="    + str(pictures)
-               + " --pixels_in_x=" + str(pixels_in_x)
-               + " --pixels_in_y=" + str(pixels_in_y)
+               + " -e "     + "even_" + str(subband)
+               + " -l "      + "low_"  + str(subband-1)
+               + " -o "      + "odd_"  + str(subband)
+               + " -i "    + str(pictures)
+#               + " --pixels_in_x=" + str(pixels_in_x)
+#               + " --pixels_in_y=" + str(pixels_in_y)
                , shell=True)
 except CalledProcessError :
     sys.exit(-1)

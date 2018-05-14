@@ -129,7 +129,7 @@ public:
 #endif /* __INFO__ */
 		  ) {
     char fn_[80];
-    sprintf(fn_, "%s/%4d_%d.pgm", fn, image_number, component); 
+    sprintf(fn_, "%s/%04d_%d.pgm", fn, image_number, component); 
     FILE *fd = fopen(fn_, "r");
     if(!fd) {
 #if defined __INFO__
@@ -146,10 +146,14 @@ public:
 		   int pixels_in_x,
 		   char *fn,
 		   int image_number,
-		   int component,
-		   char *argv[]) {
+		   int component
+#if defined __INFO__
+		   ,
+		   char *argv[]
+#endif /* __INFO__ */
+		   ) {
     char fn_[80];
-    sprintf(fn_, "%s/%4d_%d.pgm", fn, image_number, component); 
+    sprintf(fn_, "%s/%04d_%d.pgm", fn, image_number, component); 
     FILE *fd = fopen(fn_, "w");
 #if defined __DEBUG__
     if(!fd) {

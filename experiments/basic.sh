@@ -1,8 +1,10 @@
 #!/bin/bash
 
 video=~/Videos/mobile_352x288x30x420x300.avi
-GOPs=9
-TRLs=6
+#GOPs=9
+GOPs=2
+#TRLs=6
+TRLS=2
 y_dim=288
 x_dim=352
 FPS=30
@@ -73,26 +75,37 @@ set -x
 
 rm -rf low_0
 mkdir low_0
-ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p low_0/%4d.Y
+number_of_images=`echo "2^$TRLs*($GOPs-1)+1" | bc`
+ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images low_0/%4d.Y
 x_dim_2=`echo $x_dim/2 | bc`
 y_dim_2=`echo $y_dim/2 | bc`
-for i in low_0/*.Y
-do
-    rawtopgm $x_dim $y_dim < $i > $i.pgm
+img=1
+while [ $img -le $number_of_images ]; do
+    _img=$(printf "%04d" $img)
+    let img_1=img-1
+    _img_1=$(printf "%04d" $img_1)
+    rawtopgm   $x_dim   $y_dim < low_0/$_img.Y > low_0/${_img_1}_0.pgm
+    rawtopgm $x_dim_2 $y_dim_2 < low_0/$_img.U > low_0/${_img_1}_1.pgm
+    rawtopgm $x_dim_2 $y_dim_2 < low_0/$_img.V > low_0/${_img_1}_2.pgm
+    let img=img+1 
 done
-for i in low_0/*.U
-do
-    rawtopgm $x_dim_2 $y_dim_2 < $i > $i.pgm
-done
-for i in low_0/*.V
-do
-    rawtopgm $x_dim_2 $y_dim_2 < $i > $i.pgm
-done
+#for i in `seq 0 $number_of_images`
+#do
+#    rawtopgm $x_dim $y_dim < $i > $i.pgm
+#done
+#for i in low_0/*.U
+#do
+#    rawtopgm $x_dim_2 $y_dim_2 < $i > $i.pgm
+#done
+#for i in low_0/*.V
+#do
+#    rawtopgm $x_dim_2 $y_dim_2 < $i > $i.pgm
+#done
 
 #ffmpeg -i $video low_0/%4d.pgm
-exit
-ln -s $video low_0
+#ln -s $video low_0
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
+exit
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mkdir tmp
 cd tmp

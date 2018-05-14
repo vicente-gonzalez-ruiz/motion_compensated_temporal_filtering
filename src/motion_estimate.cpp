@@ -537,15 +537,15 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    int err = mkdir(odd_fn, 0700);
+    int err = mkdir(motion_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
-      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
+      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], motion_fn);
       abort();
     }
 #endif /* __DEBUG__ */
   }
-  
+ 
   int picture_border_size = search_range + border_size;
 
   texture < TC_IO_TYPE, TC_CPU_TYPE > texture;
