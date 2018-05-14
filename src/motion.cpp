@@ -122,7 +122,7 @@ public:
 #endif /* __INFO__ */
       fd = fopen("/dev/zero", "r");
     }
-    motion::read(fd, component[FB][YX], blocks_in_y, blocks_in_x);
+    motion::read(fd, component, blocks_in_y, blocks_in_x);
     fclose(fd);
   }
 
@@ -132,8 +132,12 @@ public:
 		       char *fn,
 		       int image_number,
 		       int FB,
-		       int YX,
-		       char *argv[]) {
+		       int YX
+#if defined __INFO__
+		       ,
+		       char *argv[]
+#endif /* __INFO__ */
+		       ) {
     char fn_[80];
     sprintf(fn_, "%s/%4d_%d_%d.pgm", fn, image_number, FB, YX);
     FILE *fd  = fopen(fn_, "w");

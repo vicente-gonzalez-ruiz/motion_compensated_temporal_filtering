@@ -3,10 +3,13 @@
 #include <math.h>
 #include <stdarg.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define __INFO__
 #define __DEBUG__
 
+#include "display.cpp"
 //#include "Haar.cpp"
 #include "5_3.cpp"
 //#include "13_7.cpp"
@@ -14,7 +17,6 @@
 #include "dwt2d.cpp"
 #include "texture.cpp"
 #include "motion.cpp"
-#include "display.cpp"
 #include "common.h"
 
 #define TEXTURE_INTERPOLATION_FILTER _5_3
@@ -41,7 +43,7 @@ void update
  int *pixels_in_y,
  int *pixels_in_x,
  TC_CPU_TYPE ****reference_picture,
- TEC_CPU_TYPE ***residue_picture,
+ TC_CPU_TYPE ***residue_picture,
  float update_factor
 ) {
   // {{{
@@ -326,7 +328,7 @@ int main(int argc, char *argv[]) {
   class dwt2d <
     TC_CPU_TYPE,
     TEXTURE_INTERPOLATION_FILTER <
-      C_CPU_TYPE
+      TC_CPU_TYPE
       >
     > *error_dwt = new class dwt2d <
     TC_CPU_TYPE,
@@ -390,7 +392,12 @@ int main(int argc, char *argv[]) {
 #else /* __ANALYZE__ */
 		       low_fn,
 #endif /* __ANALYZE__ */
-		       0, c);
+		       0, c
+#if defined __INFO__
+		       ,
+		       argv
+#endif /* __INFO__ */
+		       );
   }
 
   for(int y=0; y<pixels_in_y[0]/2; y++) {
@@ -425,7 +432,16 @@ int main(int argc, char *argv[]) {
     // {{{ Read residue de high_? 
     info("%s: reading picture %d from \"%s\".\n", argv[0], i, high_fn);
     for(int c=0; c<COMPONENTS; c++) {
-      texture.read_image(residue[c], pixels_in_y[c], pixels_in_x[c], high_fn, i, c);
+      texture.read_image(residue[c],
+			 pixels_in_y[c], pixels_in_x[c],
+			 high_fn,
+			 i,
+			 c
+#if defined __INFO__
+			 ,
+			 argv
+#endif /* __INFO__ */
+			 );
       //error.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       // We recover the original dynamic range of the residue.
       for(int y=0; y<pixels_in_y[c]; y++) {
@@ -470,11 +486,16 @@ int main(int argc, char *argv[]) {
     for(int c=0; c<COMPONENTS; c++) {
       texture.read_image(reference[1][c], pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__ 
-			 even_fd,
+			 even_fn,
 #else /* __ANALYZE__ */
-			 low_fd,
+			 low_fn,
 #endif /* __ANALYZE__ */
-			 i, c);
+			 i, c
+#if defined __INFO__
+			 ,
+			 argv
+#endif /* __INFO__ */
+			 );
     }
 
     //fprintf(stderr, "(read_1) reference[0][0][0][0]=%d reference[1][0][0][0]=%d\n", reference[0][0][0][0], reference[1][0][0][0]);
@@ -506,8 +527,8 @@ int main(int argc, char *argv[]) {
 
     //motion.read(motion_fd, mv, blocks_in_y, blocks_in_x);
     motion.read_component(mv[0][0],
-			  motion_in_fn,
 			  blocks_in_y, blocks_in_x,
+			  motion_fn,
 			  i,
 			  0, 0
 #if defined __INFO__
@@ -517,8 +538,8 @@ int main(int argc, char *argv[]) {
 			  );
 
     motion.read_component(mv[0][1],
-			  motion_in_fn,
 			  blocks_in_y, blocks_in_x,
+			  motion_fn,
 			  i,
 			  0, 1
 #if defined __INFO__
@@ -528,8 +549,8 @@ int main(int argc, char *argv[]) {
 			  );
 
     motion.read_component(mv[1][0],
-			  motion_in_fn,
 			  blocks_in_y, blocks_in_x,
+			  motion_fn,
 			  i,
 			  1, 0
 #if defined __INFO__
@@ -539,8 +560,8 @@ int main(int argc, char *argv[]) {
 			  );
 
     motion.read_component(mv[1][1],
-			  motion_in_fn,
 			  blocks_in_y, blocks_in_x,
+			  motion_fn,
 			  i,
 			  1, 1
 #if defined __INFO__
@@ -589,9 +610,9 @@ int main(int argc, char *argv[]) {
       texture.write_image(reference[1][c],
 			  pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
-			  low_fd,
+			  low_fn,
 #else /* __ANALYZE__ */
-			  even_fd,
+			  even_fn,
 #endif /* __ANALYZE__ */
 			  i,
 			  c
@@ -631,9 +652,9 @@ int main(int argc, char *argv[]) {
     texture.write_image(reference[0][c],
 			pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
-			low_fd,
+			low_fn,
 #else /* __ANALYZE__ */
-			even_fd,
+			even_fn,
 #endif /* __ANALYZE__ */
 			c,
 			i

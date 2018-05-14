@@ -8,11 +8,11 @@
 //#include <netpbm/pgm.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "display.cpp"
 
 #define __INFO__
 #define __DEBUG__
 
+#include "display.cpp"
 #include "Haar.cpp"
 #include "5_3.cpp"
 //#include "13_7.cpp"
@@ -536,13 +536,15 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  int err = mkdir(odd_fn, 0700);
+  {
+    int err = mkdir(odd_fn, 0700);
 #ifdef __DEBUG__
-  if(err) {
-    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
-    abort();
-  }
+    if(err) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
+      abort();
+    }
 #endif /* __DEBUG__ */
+  }
   
   int picture_border_size = search_range + border_size;
 

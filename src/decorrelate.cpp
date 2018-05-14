@@ -18,6 +18,8 @@
 #include <math.h>
 #include <stdarg.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define __INFO__
 #define __DEBUG__
@@ -174,7 +176,6 @@ int main(int argc, char *argv[]) {
   int block_overlaping = 0;
   int block_size = 16;
   int components = COMPONENTS;
-  char *component={'Y', 'U', 'V'};
   char *even_fn = (char *)"even";
   char *frame_types_fn = (char *)"frame_types";
   char *high_fn = (char *)"high";
@@ -345,48 +346,56 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  int err = mkdir(even_fn, 0700);
-#ifdef __DEBUG__
-  if(err) {
-    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
-    abort();
-  }
-#endif /* __DEBUG__ */
-  
-#if defined __ANALYZE__
-  int err = mkdir(motion_out_fn, 0700);
-#ifdef __DEBUG__
-  if(err) {
-    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], motion_out_fn);
-    abort();
-  }
-#endif /* __DEBUG__ */
-#endif /* __ANALYZE__ */
-
-#if defined __ANALYZE__
-  int err = mkdir(odd_fn, 0700);
-#ifdef __DEBUG__
-  if(err) {
-    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
-    abort();
-  }
-#endif /* __DEBUG__ */
-#endif /* __ANALYZE__ */
-
-#if defined __ANALYZE__
-  int err = mkdir(high_fn, 0700);
-#ifdef __DEBUG__
-  if(err) {
-    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], high_fn);
-    abort();
-  }
-#endif /* __DEBUG__ */
-#endif /* __ANALYZE__ */
-
-#if defined __GET_PREDICTION__
   {
-    char prediction_fn[80];
-    sprintf(prediction_fn, "prediction_%s", even_fn);
+    int err = mkdir(even_fn, 0700);
+#ifdef __DEBUG__
+    if(err) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
+      abort();
+    }
+#endif /* __DEBUG__ */
+  }
+
+  {
+#if defined __ANALYZE__
+    int err = mkdir(motion_out_fn, 0700);
+#ifdef __DEBUG__
+    if(err) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], motion_out_fn);
+      abort();
+    }
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
+  }
+
+  {
+#if defined __ANALYZE__
+    int err = mkdir(odd_fn, 0700);
+#ifdef __DEBUG__
+    if(err) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
+      abort();
+    }
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
+  }
+
+  {
+#if defined __ANALYZE__
+    int err = mkdir(high_fn, 0700);
+#ifdef __DEBUG__
+    if(err) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], high_fn);
+      abort();
+    }
+#endif /* __DEBUG__ */
+#endif /* __ANALYZE__ */
+  }
+  
+#if defined __GET_PREDICTION__
+  char prediction_fn[80];
+  sprintf(prediction_fn, "prediction_%s", even_fn);
+  {
     int err = mkdir(prediction_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
@@ -448,7 +457,7 @@ int main(int argc, char *argv[]) {
       zeroes[1][1][by][bx] = 0;
     }
   }
-
+  
   TC_CPU_TYPE **prediction_block =
     texture.alloc((pixels_in_y[0]/blocks_in_y + block_overlaping*2)
 		  << subpixel_accuracy,
@@ -469,7 +478,7 @@ int main(int argc, char *argv[]) {
 		      picture_border_size << subpixel_accuracy);
     }
   }
-
+  
   TC_CPU_TYPE ***predicted = new TC_CPU_TYPE ** [COMPONENTS];
   for(int c=0; c<COMPONENTS; c++) {
     predicted[c] = texture.alloc(pixels_in_y[c], /* c */
@@ -500,7 +509,16 @@ int main(int argc, char *argv[]) {
   /* Read reference [0] (the first image). */
   for(int c=0; c<COMPONENTS; c++) {
     // image.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
-    texture.read_image(reference_image[0][c], pixels_in_y[c], pixels_in_x[c], even_fn, 0, c);
+    texture.read_image(reference[0][c],
+		       pixels_in_y[c], pixels_in_x[c],
+		       even_fn,
+		       0,
+		       c
+#if defined __INFO__
+		       ,
+		       argv
+#endif /* __INFO__ */
+		       );
   }
 
   /* Interpolate the chroma of reference [0], to have the same size as
@@ -614,17 +632,35 @@ int main(int argc, char *argv[]) {
     /* The next image (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
       //image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
-      texture.read_image(predicted[c], pixels_in_y[c], pixels_in_x[c], odd_fn, i, c);
+      texture.read_image(predicted[c],
+			 pixels_in_y[c], pixels_in_x[c],
+			 odd_fn,
+			 i,
+			 c
+#if defined __INFO__
+			 ,
+			 argv
+#endif /* __INFO__ */
+			 );
     }
 
 #else /* __ANALYZE__ */
 
     info("%s: reading picture %d of \"%s\".\n", argv[0], i, high_fn);
-
+    
     /* Read residue image */
     for(int c=0; c<COMPONENTS; c++) {
       //image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-      texture.read_image( residue[c], pixels_in_y[c], pixels_in_x[c], high_fd, i, c);
+      texture.read_image(residue[c],
+			 pixels_in_y[c], pixels_in_x[c],
+			 high_fn,
+			 i,
+			 c
+#if defined __INFO__
+			 ,
+			 argv
+#endif /* __INFO__ */
+			 );
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  residue[c][y][x] -= 128;
@@ -639,7 +675,16 @@ int main(int argc, char *argv[]) {
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
       //image.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
-      texture.read_image(reference_image[1][c], pixels_in_y[c], pixels_in_x[c], even_fn, i, c);
+      texture.read_image(reference[1][c],
+			 pixels_in_y[c], pixels_in_x[c],
+			 even_fn,
+			 i,
+			 c
+#if defined __INFO__
+			 ,
+			 argv
+#endif /* __INFO__ */
+			 );
     }
 
     /* Croma Cb. */
@@ -699,8 +744,8 @@ int main(int argc, char *argv[]) {
     info("%s: reading motion vector field %d in \"%s\".\n", argv[0], i, motion_in_fn);
     //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
     motion.read_component(mv[0][0],
-			  motion_in_fn,
 			  blocks_in_y, blocks_in_x,
+			  motion_in_fn,
 			  i,
 			  0, 0
 #if defined __INFO__
@@ -709,8 +754,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			  );
     motion.read_component(mv[0][1],
-			  motion_in_fn,
 			  blocks_in_y, blocks_in_x,
+			  motion_in_fn,
 			  i,
 			  0, 1
 #if defined __INFO__
@@ -719,8 +764,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			  );
     motion.read_component(mv[1][0],
-			  motion_in_fn,
 			  blocks_in_y, blocks_in_x,
+			  motion_in_fn,
 			  i,
 			  1, 0
 #if defined __INFO__
@@ -729,15 +774,15 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			  );
     motion.read_component(mv[1][1],
+			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
-			  blocks_in_y,
-			  blocks_in_x,
 			  i,
 			  1, 1
 #if defined __INFO__
 			  ,
 			  argv
 #endif /* __INFO__ */
+			  );
     
 #if defined __ANALYZE__
     float motion_entropy = 0.0; {
@@ -790,16 +835,16 @@ int main(int argc, char *argv[]) {
 	}
       }
     }
-
+    
     /* Subsample the three components because the motion compensation
-	is made to the original video resolution. */
+       is made to the original video resolution. */
     for(int c=0; c<COMPONENTS; c++) {
       image_dwt->analyze(prediction[c],
 			 pixels_in_y[0] << subpixel_accuracy,
 			 pixels_in_x[0] << subpixel_accuracy,
 			 subpixel_accuracy);
     }
-
+    
     /* The prediction is still on: YUV444; and we must pass it: YUV422. */
     image_dwt->analyze(prediction[1], pixels_in_y[0], pixels_in_x[0], 1);
     image_dwt->analyze(prediction[2], pixels_in_y[0], pixels_in_x[0], 1);
@@ -817,52 +862,53 @@ int main(int argc, char *argv[]) {
 			  argv
 #endif /* __INFO__ */
 			  );
+    }
 #endif /* __GET_PREDICTION__ */
-
+    
 #if defined ANALYZE
-
+    
     /* The residue image is generated. */
-
-      info("%s: writing picture %d of \"%s\".\n", argv[0], i, high_fn);
-
-      /*
-	A subtraction at high resolution and a reduction,
-	vs, 
-	Two reductions and a subtraction at low resolution.
-
-	Without truncating:
-
-	1 2 3 4   1 1 2 2   0  1  1  2     0.5  1.5
-	5 6 7 8 - 5 5 6 6 = 0  1  1  2 -> -0.5 -1.5
-	8 7 6 5   8 8 7 7   0 -1 -1 -2
-	4 3 2 1   4 4 3 3   0 -1 -1 -2
-
-           |         |
-           v         v
-
-	3.5 5.5 - 3.0 4.0 =  0.5  1.5
-        5.5 3.5   6.0 5.0   -0.5 -1.5
-
-	Truncating:
-
-	1 2 3 4   1 1 2 2   0  1  1  2     0  1
-	5 6 7 8 - 5 5 6 6 = 0  1  1  2 -> -1 -2
-	8 7 6 5   8 8 7 7   0 -1 -1 -2
-	4 3 2 1   4 4 3 3   0 -1 -1 -2
-
-           |         |
-           v         v
-
-	3 5     -   3 4 =  0  1
-        5 3         6 5   -1 -2
-	
-	That is, the motion compensation at high resolution is the
-	same as at low resolution (if the predictions are equal).
-       */
-
-
-      /* Compensation is applied (with clipping). The compensation is
-	 done over-pixel resolution. */
+    
+    info("%s: writing picture %d of \"%s\".\n", argv[0], i, high_fn);
+    
+    /*
+      A subtraction at high resolution and a reduction,
+      vs, 
+      Two reductions and a subtraction at low resolution.
+      
+      Without truncating:
+      
+      1 2 3 4   1 1 2 2   0  1  1  2     0.5  1.5
+      5 6 7 8 - 5 5 6 6 = 0  1  1  2 -> -0.5 -1.5
+      8 7 6 5   8 8 7 7   0 -1 -1 -2
+      4 3 2 1   4 4 3 3   0 -1 -1 -2
+      
+      |         |
+      v         v
+      
+      3.5 5.5 - 3.0 4.0 =  0.5  1.5
+      5.5 3.5   6.0 5.0   -0.5 -1.5
+      
+      Truncating:
+      
+      1 2 3 4   1 1 2 2   0  1  1  2     0  1
+      5 6 7 8 - 5 5 6 6 = 0  1  1  2 -> -1 -2
+      8 7 6 5   8 8 7 7   0 -1 -1 -2
+      4 3 2 1   4 4 3 3   0 -1 -1 -2
+      
+      |         |
+      v         v
+      
+      3 5     -   3 4 =  0  1
+      5 3         6 5   -1 -2
+      
+      That is, the motion compensation at high resolution is the
+      same as at low resolution (if the predictions are equal).
+    */
+    
+    
+    /* Compensation is applied (with clipping). The compensation is
+       done over-pixel resolution. */
     for(int c=0; c<COMPONENTS; c++) {
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
@@ -873,7 +919,7 @@ int main(int argc, char *argv[]) {
 	}
       }
     }
-
+    
     /* The entropy of the residual image and the predicted image is
        calculated. We only use the luma. */
 
@@ -953,8 +999,8 @@ int main(int argc, char *argv[]) {
       /* No motion field (other than 0) associated with an image I. */
       //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
       motion.write_component(zeroes[0][0],
-			     motion_out_fn,
 			     blocks_in_y, blocks_in_x,
+			     motion_out_fn,
 			     i,
 			     0, 0
 #if defined __INFO__
@@ -963,8 +1009,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			     );
       motion.write_component(zeroes[0][1],
-			     motion_out_fn,
 			     blocks_in_y, blocks_in_x,
+			     motion_out_fn,
 			     i,
 			     0, 1
 #if defined __INFO__
@@ -974,8 +1020,8 @@ int main(int argc, char *argv[]) {
 			     );
 			     
       motion.write_component(zeroes[1][0],
-			     motion_out_fn,
 			     blocks_in_y, blocks_in_x,
+			     motion_out_fn,
 			     i,
 			     1, 0
 #if defined __INFO__
@@ -985,8 +1031,8 @@ int main(int argc, char *argv[]) {
 			     );
 
       motion.write_component(zeroes[1][1],
-			     motion_out_fn,
 			     blocks_in_y, blocks_in_x,
+			     motion_out_fn,
 			     i,
 			     1, 1
 #if defined __INFO__
@@ -1031,8 +1077,8 @@ int main(int argc, char *argv[]) {
 			     );
       
       motion.write_component(mv[0][1],
-			     motion_out_fn,
 			     blocks_in_y, blocks_in_x,
+			     motion_out_fn,
 			     i,
 			     0, 1
 #if defined __INFO__
@@ -1042,8 +1088,8 @@ int main(int argc, char *argv[]) {
 			     );
 
       motion.write_component(mv[1][0],
-			     motion_out_fn,
 			     blocks_in_y, blocks_in_x,
+			     motion_out_fn,
 			     i,
 			     1, 0
 #if defined __INFO__
@@ -1053,8 +1099,8 @@ int main(int argc, char *argv[]) {
 			     );
       
       motion.wirte_component(mv[1][1],
-			     motion_out_fn,
 			     blocks_in_y, blocks_in_x,
+			     motion_out_fn,
 			     i,
 			     1, 1
 #if defined __INFO__
@@ -1099,7 +1145,7 @@ int main(int argc, char *argv[]) {
     /* Write predicted image. */
     for(int c=0; c<COMPONENTS; c++) {
       //image.write(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
-      texture.image_write(predicted[c],
+      texture.write_image(predicted[c],
 			  pixels_in_y[c], pixels_in_x[c],
 			  odd_fn,
 			  i,

@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define __INFO__
 #define __DEBUG__
@@ -154,15 +156,17 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
-  
-  int err = mkdir(output_fn, 0700);
-#ifdef __DEBUG__
-  if(err) {
-    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], output_fn);
-    abort();
-  }
-#endif /* __DEBUG__ */
 
+  {
+    int err = mkdir(output_fn, 0700);
+#ifdef __DEBUG__
+    if(err) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], output_fn);
+      abort();
+    }
+#endif /* __DEBUG__ */
+  }
+  
   motion < MVC_TYPE > motion;
   MVC_TYPE ****field = motion.alloc(blocks_in_y, blocks_in_x);
   
@@ -170,10 +174,46 @@ int main(int argc, char *argv[]) {
     
     info("%s: %d\n",argv[0], i);
     //motion.read(input_fd, field, blocks_in_y, blocks_in_x);
-    motion.read_component(mv[0][0], input_fn, blocks_in_y, blocks_in_x, i, 0, 0, argv);
-    motion.read_component(mv[0][1], input_fn, blocks_in_y, blocks_in_x, i, 0, 1, argv);
-    motion.read_component(mv[1][0], input_fn, blocks_in_y, blocks_in_x, i, 1, 0, argv);
-    motion.read_component(mv[1][1], input_fn, blocks_in_y, blocks_in_x, i, 1, 1, argv);
+    motion.read_component(field[0][0],
+			  blocks_in_y, blocks_in_x,
+			  input_fn,
+			  i,
+			  0, 0
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+    motion.read_component(field[0][1],
+			  blocks_in_y, blocks_in_x,
+			  input_fn,
+			  i,
+			  0, 1
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+    motion.read_component(field[1][0],
+			  blocks_in_y, blocks_in_x,
+			  input_fn,
+			  i,
+			  1, 0
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+    motion.read_component(field[1][1],
+			  blocks_in_y, blocks_in_x,
+			  input_fn,
+			  i,
+			  1, 1
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
 
     decorrelate_field
       (blocks_in_x,
@@ -181,10 +221,46 @@ int main(int argc, char *argv[]) {
        field);
 
     //motion.write(output_fd, field, blocks_in_y, blocks_in_x);
-    motion.write_component(mv[0][0], output_fn, blocks_in_y, blocks_in_x, i, 0, 0, argv);
-    motion.write_component(mv[0][1], output_fn, blocks_in_y, blocks_in_x, i, 0, 1, argv);
-    motion.write_component(mv[1][0], output_fn, blocks_in_y, blocks_in_x, i, 1, 0, argv);
-    motion.write_component(mv[1][1], output_fn, blocks_in_y, blocks_in_x, i, 1, 1, argv);
+    motion.write_component(field[0][0],
+			   blocks_in_y, blocks_in_x,
+			   output_fn,
+			   i,
+			   0, 0
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+    motion.write_component(field[0][1],
+			   blocks_in_y, blocks_in_x,
+			   output_fn,
+			   i,
+			   0, 1
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+    motion.write_component(field[1][0],
+			   blocks_in_y, blocks_in_x,
+			   output_fn,
+			   i,
+			   1, 0
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
+    motion.write_component(field[1][1],
+			   blocks_in_y, blocks_in_x,
+			   output_fn,
+			   i,
+			   1, 1
+#if defined __INFO__
+			  ,
+			  argv
+#endif /* __INFO__ */
+			  );
 
   }
 }

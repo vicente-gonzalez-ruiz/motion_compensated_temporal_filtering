@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdarg.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define __INFO__
 #define __DEBUG__
@@ -202,23 +204,27 @@ int main(int argc, char *argv[]) {
   }
   
 #if defined __ANALYZE__
-  int err = mkdir(predicted_fn, 0700);
+  {
+    int err = mkdir(predicted_fn, 0700);
 #ifdef __DEBUG__
-  if(err) {
-    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], predicted_fn);
-    abort();
-  }
+    if(err) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], predicted_fn);
+      abort();
+    }
 #endif /* __DEBUG__ */
+  }
 #endif /* __ANALYZE__ */
   
 #if defined __ANALYZE__
-  int err = mkdir(residue_fn, 0700);
+  {
+    int err = mkdir(residue_fn, 0700);
 #ifdef __DEBUG__
-  if(err) {
-    error("s: \"%s\" cannot be created ... aborting!\n", argv[0], residue_fn);
-    abort();
-  }
+    if(err) {
+      error("s: \"%s\" cannot be created ... aborting!\n", argv[0], residue_fn);
+      abort();
+    }
 #endif /* __DEBUG__ */
+  }
 #endif /* __ANALYZE__ */
 
   motion < MVC_TYPE > motion;
@@ -232,8 +238,8 @@ int main(int argc, char *argv[]) {
 
     //motion.read(reference_fd, reference, blocks_in_y, blocks_in_x);
     motion.read_component(reference[0][0],
-			  reference_fn,
 			  blocks_in_y, blocks_in_x,
+			  reference_fn,
 			  i,
 			  0, 0
 #if defined __INFO__
@@ -243,8 +249,8 @@ int main(int argc, char *argv[]) {
 			  );
 
     motion.read_component(reference[0][1],
-			  reference_fn,
 			  blocks_in_y, blocks_in_x,
+			  reference_fn,
 			  i,
 			  0, 1
 #if defined __INFO__
@@ -253,8 +259,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			  );
     motion.read_component(reference[1][0],
-			  reference_fn,
 			  blocks_in_y, blocks_in_x,
+			  reference_fn,
 			  i,
 			  1, 0
 #if defined __INFO__
@@ -263,8 +269,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			  );
     motion.read_component(reference[1][1],
-			  reference_fn,
 			  blocks_in_y, blocks_in_x,
+			  reference_fn,
 			  i,
 			  1, 1
 #if defined __INFO__
@@ -280,8 +286,8 @@ int main(int argc, char *argv[]) {
 #if defined __ANALYZE__
       //motion.read(predicted_fd, predicted, blocks_in_y, blocks_in_x);
       motion.read_component(predicted[0][0],
-			    predicted_fn,
 			    blocks_in_y, blocks_in_x,
+			    predicted_fn,
 			    i,
 			    0, 0
 #if defined __INFO__
@@ -290,8 +296,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			    );
       motion.read_component(predicted[0][1],
-			    predicted_fn,
 			    blocks_in_y, blocks_in_x,
+			    predicted_fn,
 			    i,
 			    0, 1
 #if defined __INFO__
@@ -300,8 +306,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			    );
       motion.read_component(predicted[1][0],
-			    predicted_fn,
 			    blocks_in_y, blocks_in_x,
+			    predicted_fn,
 			    i,
 			    1, 0
 #if defined __INFO__
@@ -310,8 +316,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			    );
       motion.read_component(predicted[1][1],
-			    predicted_fn,
 			    blocks_in_y, blocks_in_x,
+			    predicted_fn,
 			    i,
 			    1, 1
 #if defined __INFO__
@@ -323,8 +329,8 @@ int main(int argc, char *argv[]) {
 #else /* __ANALYZE__ */
       //motion.read(residue_fd, residue, blocks_in_y, blocks_in_x);
       motion.read_component(residue[0][0],
-			    residue_fn,
 			    blocks_in_y, blocks_in_x,
+			    residue_fn,
 			    i,
 			    0, 0
 #if defined __INFO__
@@ -334,8 +340,8 @@ int main(int argc, char *argv[]) {
 			    );
       
       motion.read_component(residue[0][1],
-			    residue_fn,
 			    blocks_in_y, blocks_in_x,
+			    residue_fn,
 			    i,
 			    0, 1
 #if defined __INFO__
@@ -345,8 +351,8 @@ int main(int argc, char *argv[]) {
 			    );
       
       motion.read_component(residue[1][0],
-			    residue_fn, blocks_in_y,
-			    blocks_in_x,
+			    blocks_in_y, blocks_in_x,
+			    residue_fn,
 			    i,
 			    1, 0
 #if defined __INFO__
@@ -356,8 +362,8 @@ int main(int argc, char *argv[]) {
 			    );
       
       motion.read_component(residue[1][1],
-			    residue_fn,
 			    blocks_in_y, blocks_in_x,
+			    residue_fn,
 			    i,
 			    1, 1
 #if defined __INFO__
@@ -378,8 +384,8 @@ int main(int argc, char *argv[]) {
 #if defined __ANALYZE__
       //motion.write(residue_fd, residue, blocks_in_y, blocks_in_x);
       motion.write_component(residue[0][0],
-			     residue_fn,
 			     blocks_in_y, blocks_in_x,
+			     residue_fn,
 			     i,
 			     0, 0
 #if defined __INFO__
@@ -389,8 +395,8 @@ int main(int argc, char *argv[]) {
 			     );
       
       motion.write_component(residue[0][1],
-			     residue_fn,
 			     blocks_in_y, blocks_in_x,
+			     residue_fn,
 			     i,
 			     0, 1
 #if defined __INFO__
@@ -400,8 +406,8 @@ int main(int argc, char *argv[]) {
 			     );
       
       motion.write_component(residue[1][0],
-			     residue_fn,
 			     blocks_in_y, blocks_in_x,
+			     residue_fn,
 			     i,
 			     1, 0
 #if defined __INFO__
@@ -411,8 +417,8 @@ int main(int argc, char *argv[]) {
 			     );
       
       motion.write_component(residue[1][1],
-			     residue_fn,
 			     blocks_in_y, blocks_in_x,
+			     residue_fn,
 			     i,
 			     1, 1
 #if defined __INFO__
@@ -425,8 +431,8 @@ int main(int argc, char *argv[]) {
 #else /* __ANALYZE__ */
       //motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
       motion.write_component(predicted[0][0],
-			     predicted_fn,
 			     blocks_in_y, blocks_in_x,
+			     predicted_fn,
 			     i,
 			     0, 0
 #if defined __INFO__
@@ -436,8 +442,8 @@ int main(int argc, char *argv[]) {
 			     );
       
       motion.write_component(predicted[0][1],
-			     predicted_fn,
 			     blocks_in_y, blocks_in_x,
+			     predicted_fn,
 			     i,
 			     0, 1
 #if defined __INFO__
@@ -447,8 +453,8 @@ int main(int argc, char *argv[]) {
 			     );
       
       motion.write_component(predicted[1][0],
-			     predicted_fn,
 			     blocks_in_y, blocks_in_x,
+			     predicted_fn,
 			     i,
 			     1, 0
 #if defined __INFO__
@@ -458,8 +464,8 @@ int main(int argc, char *argv[]) {
 			     );
       
       motion.write_component(predicted[1][1],
-			     predicted_fn,
 			     blocks_in_y, blocks_in_x,
+			     predicted_fn,
 			     i,
 			     1, 1
 #if defined __INFO__
