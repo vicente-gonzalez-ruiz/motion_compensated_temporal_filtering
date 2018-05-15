@@ -775,7 +775,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
 			  i,
-			  0, 0
+			  0
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -787,7 +787,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
 			  i,
-			  0, 1
+			  1
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -799,7 +799,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
 			  i,
-			  1, 0
+			  2
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -811,7 +811,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  motion_in_fn,
 			  i,
-			  1, 1
+			  3
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -1041,7 +1041,7 @@ int main(int argc, char *argv[]) {
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
-			     0, 0
+			     0
 #if defined __INFO__
 			     ,
 			     argv[0]
@@ -1053,7 +1053,7 @@ int main(int argc, char *argv[]) {
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
-			     0, 1
+			     1
 #if defined __INFO__
 			     ,
 			     argv[0]
@@ -1065,7 +1065,7 @@ int main(int argc, char *argv[]) {
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
-			     1, 0
+			     2
 #if defined __INFO__
 			     ,
 			     argv[0]
@@ -1077,7 +1077,7 @@ int main(int argc, char *argv[]) {
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
-			     1, 1
+			     3
 #if defined __INFO__
 			     ,
 			     argv[0]
@@ -1126,7 +1126,7 @@ int main(int argc, char *argv[]) {
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
-			     0, 0
+			     0
 #if defined __INFO__
 			     ,
 			     argv[0]
@@ -1138,7 +1138,7 @@ int main(int argc, char *argv[]) {
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
-			     0, 1
+			     1
 #if defined __INFO__
 			     ,
 			     argv[0]
@@ -1150,7 +1150,7 @@ int main(int argc, char *argv[]) {
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
-			     1, 0
+			     2
 #if defined __INFO__
 			     ,
 			     argv[0]
@@ -1162,7 +1162,7 @@ int main(int argc, char *argv[]) {
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
 			     i,
-			     1, 1
+			     3
 #if defined __INFO__
 			     ,
 			     argv[0]

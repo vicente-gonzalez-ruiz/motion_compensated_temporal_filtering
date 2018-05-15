@@ -55,7 +55,7 @@ void decorrelate_field
  ) {
   for (int y=0; y<blocks_in_y; y++) {
     for (int x=0; x<blocks_in_x; x++) {
-#if defined ANALYZE
+#if defined __ANALYZE__
       /* Decorrelation. */
       residue[PREV][X_FIELD][y][x] = predicted[PREV][X_FIELD][y][x] - reference[PREV][X_FIELD][y][x]/2;
       residue[PREV][Y_FIELD][y][x] = predicted[PREV][Y_FIELD][y][x] - reference[PREV][Y_FIELD][y][x]/2;
@@ -67,7 +67,7 @@ void decorrelate_field
       residue[NEXT][X_FIELD][y][x] = predicted[NEXT][X_FIELD][y][x];
       residue[NEXT][Y_FIELD][y][x] = predicted[NEXT][Y_FIELD][y][x];
       */
-#else
+#else /* __ANALYZE__ */
       /* Correlation. */
       predicted[PREV][X_FIELD][y][x] = residue[PREV][X_FIELD][y][x] + reference[PREV][X_FIELD][y][x]/2;
       predicted[PREV][Y_FIELD][y][x] = residue[PREV][Y_FIELD][y][x] + reference[PREV][Y_FIELD][y][x]/2;
@@ -79,7 +79,7 @@ void decorrelate_field
       predicted[NEXT][X_FIELD][y][x] = residue[NEXT][X_FIELD][y][x];
       predicted[NEXT][Y_FIELD][y][x] = residue[NEXT][Y_FIELD][y][x];
       */
-#endif
+#endif /* __ANALYZE__ */
     }
   }
 }
@@ -233,73 +233,78 @@ int main(int argc, char *argv[]) {
   MVC_TYPE ****reference = motion.alloc(blocks_in_y, blocks_in_x);
   MVC_TYPE ****residue = motion.alloc(blocks_in_y, blocks_in_x);
   
-  for(int i=0; i<fields_in_predicted; i++) {
+  for(int i=0; i<fields_in_predicted/2; i++) {
     
-    info("%s: reading reference field %d\n",argv[0], i);
+    info("%s: reading reference field %d\n", argv[0], i);
+    // {{{ Read reference
 
     //motion.read(reference_fd, reference, blocks_in_y, blocks_in_x);
-    // {{{ reference[0][0]
+    // {{{ reference[0][0] <- reference
     motion.read_component(reference[0][0],
 			  blocks_in_y, blocks_in_x,
 			  reference_fn,
 			  i,
-			  0, 0
+			  0
 #if defined __INFO__
 			  ,
 			  argv[0]
 #endif /* __INFO__ */
 			  );
     // }}}
-    // {{{ reference[0][1]
+    // {{{ reference[0][1] <- reference
     motion.read_component(reference[0][1],
 			  blocks_in_y, blocks_in_x,
 			  reference_fn,
 			  i,
-			  0, 1
+			  1
 #if defined __INFO__
 			  ,
 			  argv[0]
 #endif /* __INFO__ */
 			  );
     // }}}
-    // {{{ reference[1][0]
+    // {{{ reference[1][0] <- reference
     motion.read_component(reference[1][0],
 			  blocks_in_y, blocks_in_x,
 			  reference_fn,
 			  i,
-			  1, 0
+			  2
 #if defined __INFO__
 			  ,
 			  argv[0]
 #endif /* __INFO__ */
 			  );
     // }}}
-    // {{{ reference[1][1]
+    // {{{ reference[1][1] <- reference
     motion.read_component(reference[1][1],
 			  blocks_in_y, blocks_in_x,
 			  reference_fn,
 			  i,
-			  1, 1
+			  3
 #if defined __INFO__
 			  ,
 			  argv[0]
 #endif /* __INFO__ */
 			  );
+    // }}}
+
     // }}}
 
     /** De/correlate two consecutive motion fields using the same
 	reference. */
     for(int p=0; p<2; p++) {
-      
+  
 #if defined __ANALYZE__
+      info("%s: reading predicted field %d\n", argv[0], 2*i+p);
+      // {{{ Read predicted
       //motion.read(predicted_fd, predicted, blocks_in_y, blocks_in_x);
-      // {{{ predicted[0][0]
+      // {{{ predicted[0][0] <- predicted
 
       motion.read_component(predicted[0][0],
 			    blocks_in_y, blocks_in_x,
 			    predicted_fn,
 			    i*2+p,
-			    0, 0
+			    0
 #if defined __INFO__
 			    ,
 			    argv[0]
@@ -307,91 +312,95 @@ int main(int argc, char *argv[]) {
 			    );
 
       // }}}
-      // {{{ predicted[0][1]
+      // {{{ predicted[0][1] <- predicted
       motion.read_component(predicted[0][1],
 			    blocks_in_y, blocks_in_x,
 			    predicted_fn,
 			    i*2+p,
-			    0, 1
+			    1
 #if defined __INFO__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
 			    );
       // }}}
-      // {{{ predicted[1][0]
+      // {{{ predicted[1][0] <- predicted
       motion.read_component(predicted[1][0],
 			    blocks_in_y, blocks_in_x,
 			    predicted_fn,
 			    i*2+p,
-			    1, 0
+			    2
 #if defined __INFO__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
 			    );
       // }}}
-      // {{{ predicted[1][1]
+      // {{{ predicted[1][1] <- predicted
       motion.read_component(predicted[1][1],
 			    blocks_in_y, blocks_in_x,
 			    predicted_fn,
 			    i*2+p,
-			    1, 1
+			    3
 #if defined __INFO__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
 			    );
       // }}}      
+      // }}}
 #else /* __ANALYZE__ */
+      info("%s: reading residue field %d\n", argv[0], 2*i+p);
+      // {{{ Read residue
       //motion.read(residue_fd, residue, blocks_in_y, blocks_in_x);
-      // {{{ residue[0][0]
+      // {{{ residue[0][0] <- residue
       motion.read_component(residue[0][0],
 			    blocks_in_y, blocks_in_x,
 			    residue_fn,
 			    i*2+1,
-			    0, 0
+			    0
 #if defined __INFO__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
 			    );
       // }}}
-      // {{{ residue[0][1]
+      // {{{ residue[0][1] <- residue
       motion.read_component(residue[0][1],
 			    blocks_in_y, blocks_in_x,
 			    residue_fn,
 			    i*2+p,
-			    0, 1
+			    1
 #if defined __INFO__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
 			    );
       // }}}
-      // {{{ residue[1][0]
+      // {{{ residue[1][0] <- residue
       motion.read_component(residue[1][0],
 			    blocks_in_y, blocks_in_x,
 			    residue_fn,
 			    i*2+p,
-			    1, 0
+			    2
 #if defined __INFO__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
 			    );
       // }}}
-      // {{{ residue[1][1]
+      // {{{ residue[1][1] <- residue
       motion.read_component(residue[1][1],
 			    blocks_in_y, blocks_in_x,
 			    residue_fn,
 			    i*2+p,
-			    1, 1
+			    3
 #if defined __INFO__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
 			    );
+      // }}}
       // }}}
 #endif /* __ANALYZE__ */
       
@@ -403,104 +412,110 @@ int main(int argc, char *argv[]) {
 	 residue);
       
 #if defined __ANALYZE__
+      info("%s: writing residue field %d\n", argv[0], 2*i+p);
+      // {{{ Write residue 
       //motion.write(residue_fd, residue, blocks_in_y, blocks_in_x);
-      // {{{ residue[0][0]
+      // {{{ residue[0][0] -> residue
       motion.write_component(residue[0][0],
 			     blocks_in_y, blocks_in_x,
 			     residue_fn,
 			     i*2+p,
-			     0, 0
+			     0
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
       // }}}
-      // {{{ residue[0][1]
+      // {{{ residue[0][1] -> residue
       motion.write_component(residue[0][1],
 			     blocks_in_y, blocks_in_x,
 			     residue_fn,
 			     i*2+p,
-			     0, 1
+			     1
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
       // }}}
-      // {{{ residue[1][0]
+      // {{{ residue[1][0] -> residue
       motion.write_component(residue[1][0],
 			     blocks_in_y, blocks_in_x,
 			     residue_fn,
 			     i*2+p,
-			     1, 0
+			     2
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
       // }}}
-      // {{{ residue[1][1]
+      // {{{ residue[1][1] -> residue
       motion.write_component(residue[1][1],
 			     blocks_in_y, blocks_in_x,
 			     residue_fn,
 			     i*2+p,
-			     1, 1
+			     3
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
       // }}}
+      // }}}
 #else /* __ANALYZE__ */
+      info("%s: writing predicted field %d\n", argv[0], 2*i+p);
+      // {{{ Write predicted
       //motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
-      // {{{ predicted[0][0]
+      // {{{ predicted[0][0] -> predicted
       motion.write_component(predicted[0][0],
 			     blocks_in_y, blocks_in_x,
 			     predicted_fn,
 			     i*2+p,
-			     0, 0
+			     0
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
       // }}}
-      // {{{ predicted[0][1]
+      // {{{ predicted[0][1] -> predicted
       motion.write_component(predicted[0][1],
 			     blocks_in_y, blocks_in_x,
 			     predicted_fn,
 			     i*2+p,
-			     0, 1
+			     1
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
       // }}}
-      // {{{ predicted[1][0]
+      // {{{ predicted[1][0] -> predicted
       motion.write_component(predicted[1][0],
 			     blocks_in_y, blocks_in_x,
 			     predicted_fn,
 			     i*2+p,
-			     1, 0
+			     2
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
       // }}}
-      // {{{ predicted[1][1]
+      // {{{ predicted[1][1] -> predicted
       motion.write_component(predicted[1][1],
 			     blocks_in_y, blocks_in_x,
 			     predicted_fn,
 			     i*2+p,
-			     1, 1
+			     3
 #if defined __INFO__
 			     ,
 			     argv[0]
 #endif /* __INFO__ */
 			     );
+      // }}}
       // }}}
 #endif /* __ANALYZE__ */
       

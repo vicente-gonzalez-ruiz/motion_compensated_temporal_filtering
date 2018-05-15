@@ -173,14 +173,14 @@ int main(int argc, char *argv[]) {
   
   for(int i=0; i<fields; i++) {
     
-    info("%s: %d\n",argv[0], i);
+    info("%s: reading field %d\n", argv[0], i);
     //motion.read(input_fd, field, blocks_in_y, blocks_in_x);
     // {{{ field[0][0] <- input
     motion.read_component(field[0][0],
 			  blocks_in_y, blocks_in_x,
 			  input_fn,
 			  i,
-			  0, 0
+			  0
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  input_fn,
 			  i,
-			  0, 1
+			  1
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  input_fn,
 			  i,
-			  1, 0
+			  2
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  input_fn,
 			  i,
-			  1, 1
+			  3
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -229,13 +229,14 @@ int main(int argc, char *argv[]) {
        blocks_in_y,
        field);
 
+    info("%s: writing field %d\n", argv[0], i);
     //motion.write(output_fd, field, blocks_in_y, blocks_in_x);
     // {{{ field[0][0] -> output
     motion.write_component(field[0][0],
 			   blocks_in_y, blocks_in_x,
 			   output_fn,
 			   i,
-			   0, 0
+			   0
 #if defined __INFO__
 			   ,
 			   argv[0]
@@ -247,10 +248,10 @@ int main(int argc, char *argv[]) {
 			   blocks_in_y, blocks_in_x,
 			   output_fn,
 			   i,
-			   0, 1
+			   1
 #if defined __INFO__
-			  ,
-			  argv[0]
+			   ,
+			   argv[0]
 #endif /* __INFO__ */
 			  );
     // }}}
@@ -259,7 +260,7 @@ int main(int argc, char *argv[]) {
 			   blocks_in_y, blocks_in_x,
 			   output_fn,
 			   i,
-			   1, 0
+			   2
 #if defined __INFO__
 			   ,
 			   argv[0]
@@ -271,7 +272,7 @@ int main(int argc, char *argv[]) {
 			   blocks_in_y, blocks_in_x,
 			   output_fn,
 			   i,
-			   1, 1
+			   3
 #if defined __INFO__
 			   ,
 			   argv[0]

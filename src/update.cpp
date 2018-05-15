@@ -540,7 +540,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  motion_fn,
 			  i,
-			  0, 0
+			  0
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -551,7 +551,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  motion_fn,
 			  i,
-			  0, 1
+			  1
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -562,7 +562,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  motion_fn,
 			  i,
-			  1, 0
+			  2
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -573,7 +573,7 @@ int main(int argc, char *argv[]) {
 			  blocks_in_y, blocks_in_x,
 			  motion_fn,
 			  i,
-			  1, 1
+			  3
 #if defined __INFO__
 			  ,
 			  argv[0]
@@ -650,9 +650,9 @@ int main(int argc, char *argv[]) {
   // {{{ Write reference[0] in low_? 
   
 #ifdef __ANALYZE__ 
-  info("%s: writing picture %d from \"%s\".\n", argv[0], i, low_fn);
+  info("%s: writing picture %d to \"%s\".\n", argv[0], i, low_fn);
 #else /* __ANALYZE__ */
-  info("%s: writing picture %d from \"%s\".\n", argv[0], i, even_fn);
+  info("%s: writing picture %d to \"%s\".\n", argv[0], i, even_fn);
 #endif /* __ANALYZE__ */
   
   image_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
@@ -666,8 +666,8 @@ int main(int argc, char *argv[]) {
 #else /* __ANALYZE__ */
 			even_fn,
 #endif /* __ANALYZE__ */
-			c,
-			i
+			i,
+			c
 #if defined __INFO__
 			,
 			argv[0]

@@ -129,24 +129,45 @@ EXE += $(MCTF_BIN)/split
 $(MCTF_BIN)/split:	merge.sh
 EXE += $(MCTF_BIN)/merge
 
-$(MCTF_BIN)/motion_estimate:	motion_estimate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
+entropy.o:	entropy.cpp entropy.h
+
+$(MCTF_BIN)/motion_estimate:	motion_estimate.cpp display.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp common.h
 EXE += $(MCTF_BIN)/motion_estimate
 
-$(MCTF_BIN)/decorrelate:	decorrelate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp entropy.o
-	$(CC) $(CFLAGS) -D __ANALYZE__ $< entropy.o -o $@ -lm
+$(MCTF_BIN)/decorrelate:	decorrelate.cpp entropy.o
+	$(CC) $(CFLAGS) -D __ANALYZE__ $^ -o $@ -lm
 EXE += $(MCTF_BIN)/decorrelate
 
-$(MCTF_BIN)/correlate:	decorrelate.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
+$(MCTF_BIN)/correlate:		decorrelate.cpp display.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp entropy.o common.h
 	$(CC) $(CFLAGS) $< -o $@ -lm
 EXE += $(MCTF_BIN)/correlate
 
-$(MCTF_BIN)/update:	update.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
+$(MCTF_BIN)/update:		update.cpp display.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp common.h
 	$(CC) $(CFLAGS) -D __ANALYZE__ $< -o $@ -lm
 EXE += $(MCTF_BIN)/update
 
-$(MCTF_BIN)/un_update:	update.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp display.cpp
+$(MCTF_BIN)/un_update:		update.cpp display.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp common.h
 	$(CC) $(CFLAGS) $< -o $@ -lm
 EXE += $(MCTF_BIN)/un_update
+
+$(MCTF_BIN)/interlevel_motion_decorrelate:	interlevel_motion_decorrelate.cpp display.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp
+	$(CC) $(CFLAGS) -D __ANALYZE__ $< -o $@ -lm
+EXE += $(MCTF_BIN)/interlevel_motion_decorrelate
+
+$(MCTF_BIN)/interlevel_motion_correlate:	interlevel_motion_decorrelate.cpp display.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp
+	$(CC) $(CFLAGS) $(DEFS) $< -o $@ -lm
+EXE += $(MCTF_BIN)/interlevel_motion_correlate
+
+$(MCTF_BIN)/bidirectional_motion_decorrelate:	bidirectional_motion_decorrelate.cpp motion.cpp display.cpp
+	$(CC) $(CFLAGS) -D __ANALYZE__ $< -o $@ -lm
+EXE += $(MCTF_BIN)/bidirectional_motion_decorrelate
+
+$(MCTF_BIN)/bidirectional_motion_correlate:	 bidirectional_motion_decorrelate.cpp motion.cpp display.cpp
+	$(CC) $(CFLAGS) $(DEFS) $< -o $@ -lm
+EXE += $(MCTF_BIN)/bidirectional_motion_correlate
+
+#$(MCTF_BIN)/motion_compress_cp:	motion_compress_cp.py
+#EXE	+= $(MCTF_BIN)/motion_compress_cp
 
 $(MCTF_BIN)/display.py:	display.py
 EXE += $(MCTF_BIN)/display.py
@@ -167,30 +188,11 @@ EXE += $(MCTF_BIN)/GOP.py
 $(MCTF_BIN)/analyze:	analyze.py
 EXE	+= $(MCTF_BIN)/analyze
 
-$(MCTF_BIN)/interlevel_motion_decorrelate:	interlevel_motion_decorrelate.cpp
-	$(CC) $(CFLAGS) -D __ANALYZE__ $^ -o $@ -lm
-EXE += $(MCTF_BIN)/interlevel_motion_decorrelate
-
-$(MCTF_BIN)/bidirectional_motion_decorrelate: bidirectional_motion_decorrelate.cpp
-	$(CC) $(CFLAGS) -D __ANALYZE__ $^ -o $@ -lm
-EXE += $(MCTF_BIN)/bidirectional_motion_decorrelate
-
-#$(MCTF_BIN)/motion_compress_cp:	motion_compress_cp.py
-#EXE	+= $(MCTF_BIN)/motion_compress_cp
-
 $(MCTF_BIN)/subband_motion_compress__j2k:	subband_motion_compress__j2k.py
 EXE	+= $(MCTF_BIN)/subband_motion_compress__j2k
 
 #$(MCTF_BIN)/motion_compress_gzip:	motion_compress_gzip.py
 #EXE	+= $(MCTF_BIN)/motion_compress_gzip
-
-$(MCTF_BIN)/interlevel_motion_correlate:	interlevel_motion_decorrelate.cpp motion.cpp
-	$(CC) $(CFLAGS) $(DEFS) $< -o $@ -lm
-EXE += $(MCTF_BIN)/interlevel_motion_correlate
-
-$(MCTF_BIN)/bidirectional_motion_correlate: bidirectional_motion_decorrelate.cpp motion.cpp
-	$(CC) $(CFLAGS) $(DEFS) $< -o $@ -lm
-EXE += $(MCTF_BIN)/bidirectional_motion_correlate
 
 $(MCTF_BIN)/motion_compress:	motion_compress.py
 EXE	+= $(MCTF_BIN)/motion_compress

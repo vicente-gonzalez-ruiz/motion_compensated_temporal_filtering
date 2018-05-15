@@ -72,8 +72,9 @@ public:
       int read = fread(data[y], x_dim, sizeof(TYPE), fd);
 #if defined __INFO__ /** Sign and magnitude */
       for(int x=0; x<x_dim; x++) {
-	info("%d ", data[y][x]);
+	info("%2d ", data[y][x]);
       }
+      info("\n");
 #endif /* __INFO__ */
     }
   }
@@ -84,6 +85,12 @@ public:
     fprintf(fd, "65535\n");
     for(int y=0; y<y_dim; y++) {
       fwrite(data[y], x_dim, sizeof(TYPE), fd);
+#if defined __INFO__ /** Sign and magnitude */
+      for(int x=0; x<x_dim; x++) {
+	info("%2d ", data[y][x]);
+      }
+      info("\n");
+#endif /* __INFO__ */
     }
   }
   
@@ -101,20 +108,19 @@ public:
     }
   }
 
-  void read_component(TYPE **component,
+  void read_component(TYPE **data,
 		      int blocks_in_y,
 		      int blocks_in_x,
 		      char *fn,
-		      int field_number,
-		      int FB,
-		      int YX
+		      int field,
+		      int component
 #if defined __INFO__
 		      ,
 		      char *msg
 #endif /* __INFO__ */
 		      ) {
     char fn_[80];
-    sprintf(fn_, "%s/%04d_%d_%d.pgm", fn, field_number, FB, YX);
+    sprintf(fn_, "%s/%04d_%d.pgm", fn, field, component);
     FILE *fd  = fopen(fn_, "r");
     if(!fd) {
 #if defined __WARNING__
@@ -122,24 +128,27 @@ public:
 #endif /* __INFO__ */
       fd = fopen("/dev/zero", "r");
     }
-    motion::read(fd, component, blocks_in_y, blocks_in_x);
+    motion::read(fd, data, blocks_in_y, blocks_in_x);
+#if defined __INFO__
+    info("%s: read %dx%d from \"%s\"\n", msg, blocks_in_y, blocks_in_x, fn_);
+#endif /* __INFO__ */
+
     fclose(fd);
   }
 
-  void write_component(TYPE **component,
+  void write_component(TYPE **data,
 		       int blocks_in_y,
 		       int blocks_in_x,
 		       char *fn,
-		       int image_number,
-		       int FB,
-		       int YX
+		       int field,
+		       int component
 #if defined __INFO__
 		       ,
 		       char *msg
 #endif /* __INFO__ */
 		       ) {
     char fn_[80];
-    sprintf(fn_, "%s/%04d_%d_%d.pgm", fn, image_number, FB, YX);
+    sprintf(fn_, "%s/%04d_%d.pgm", fn, field, component);
     FILE *fd  = fopen(fn_, "w");
 #ifdef __DEBUG__
     if(!fd) {
@@ -147,7 +156,10 @@ public:
       abort();
     }
 #endif /* __DEBUG__ */
-    motion::write(fd, component, blocks_in_y, blocks_in_x);
+    motion::write(fd, data, blocks_in_y, blocks_in_x);
+#if defined __INFO__
+    info("%s: written %dx%d to \"%s\"\n", msg, blocks_in_y, blocks_in_x, fn_);
+#endif /* __INFO__ */
     fclose(fd);
   }
 

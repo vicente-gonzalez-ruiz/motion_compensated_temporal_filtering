@@ -91,7 +91,11 @@ public:
   }
 
   /* Read an image from disk. */
-  void read(FILE *fd, CPU_TYPE **img, int y_dim, int x_dim) {
+  void read(FILE *fd,
+	    CPU_TYPE **img,
+	    int y_dim,
+	    int x_dim
+	    ) {
     char x[80];
     fgets(x, 80, fd); /* Magic number */
     fgets(x, 80, fd); /* rows and cols */
@@ -105,7 +109,11 @@ public:
   }
 
   /* Write an image to disk. */
-  void write(FILE *fd, CPU_TYPE **img, int y_dim, int x_dim) {
+  void write(FILE *fd,
+	     CPU_TYPE **img,
+	     int y_dim,
+	     int x_dim
+	     ) {
     fprintf(fd, "P5\n");
     fprintf(fd, "%d %d\n", x_dim, y_dim);
     fprintf(fd, "255\n");
@@ -138,6 +146,9 @@ public:
       fd = fopen("/dev/zero", "r");
     }
     texture::read(fd, image, pixels_in_y, pixels_in_x);
+#if defined __INFO__
+    info("%s: read %dx%d from \"%s\"\n", msg, pixels_in_y, pixels_in_x, fn_);
+#endif /* __INFO__ */
     fclose(fd);
   }
 
@@ -162,6 +173,9 @@ public:
     }
 #endif /* __DEBUG__ */
     texture::write(fd, image, pixels_in_y, pixels_in_x);
+#if defined __INFO__
+    info("%s: written %dx%d to \"%s\"\n", msg, pixels_in_y, pixels_in_x, fn_);
+#endif /* __INFO__ */
     fclose(fd);
   }
 

@@ -89,21 +89,7 @@ while [ $img -le $number_of_images ]; do
     rawtopgm $x_dim_2 $y_dim_2 < low_0/$_img.V > low_0/${_img_1}_2.pgm
     let img=img+1 
 done
-#for i in `seq 0 $number_of_images`
-#do
-#    rawtopgm $x_dim $y_dim < $i > $i.pgm
-#done
-#for i in low_0/*.U
-#do
-#    rawtopgm $x_dim_2 $y_dim_2 < $i > $i.pgm
-#done
-#for i in low_0/*.V
-#do
-#    rawtopgm $x_dim_2 $y_dim_2 < $i > $i.pgm
-#done
 
-#ffmpeg -i $video low_0/%4d.pgm
-#ln -s $video low_0
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 exit
 mctf info --GOPs=$GOPs --TRLs=$TRLs
