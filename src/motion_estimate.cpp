@@ -758,6 +758,14 @@ int main(int argc, char *argv[]) {
     info("%s: writing motion vector field %d in \"%s\".\n", argv[0], i, motion_fn);
 
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
+    motion.write_field(mv, blocks_in_y, blocks_in_x, motion_fn, i
+#if defined __INFO__
+		       ,
+		       argv[0]
+#endif /* __INFO__ */
+		       );
+		       
+#ifdef _1_
     // {{{ mv[0][0] -> motion
     motion.write_component(mv[0][0],
 			   blocks_in_y, blocks_in_x,
@@ -806,6 +814,7 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			   );
     // }}}
+#endif /* _1_ */
     /* SWAP(&reference_pic[0], &reference_pic[1]). */ {
       TC_CPU_TYPE **tmp = reference[0];
       reference[0] = reference[1];

@@ -770,6 +770,13 @@ int main(int argc, char *argv[]) {
     /* Motion fields are read. */
     info("%s: reading motion vector field %d in \"%s\".\n", argv[0], i, motion_in_fn);
     //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
+    motion.read_image(mv, blocks_in_y, blocks_in_x, motion_in_fn, i
+#if defined __INFO__
+		      ,
+		      argv[0]
+#endif /* __INFO__ */
+		      );
+#ifdef _1_
     // {{{ mv[0][0] <- motion_in
     motion.read_component(mv[0][0],
 			  blocks_in_y, blocks_in_x,
@@ -818,6 +825,7 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			  );
     // }}}
+#endif /* _1_ */
 #if defined __ANALYZE__
     float motion_entropy = 0.0; {
       static int count[256];
@@ -1036,6 +1044,12 @@ int main(int argc, char *argv[]) {
 
       /* No motion field (other than 0) associated with an image I. */
       //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
+      motion.write_field(zeroes, blocks_in_y, blocks_in_x, motion_out_fn, i
+#if defined __INFO__
+	, argv[0]
+#endif /* __INFO__ */
+	);
+#ifdef _1_
       // {{{ zeroes[0][0] -> motion_out
       motion.write_component(zeroes[0][0],
 			     blocks_in_y, blocks_in_x,
@@ -1084,6 +1098,7 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			     );
       // }}}
+#endif /* _1_ */
     } else {
 
       /* Indicated in the code-stream which is an image B. */
@@ -1121,6 +1136,12 @@ int main(int argc, char *argv[]) {
 
       /* The images I have associated motion field. */
       //motion.write(motion_out_fd, mv, blocks_in_y, blocks_in_x);
+      motion.write_field(mv, blocks_in_y, blocks_in_x, motion_out_fn, i
+#if defined __INFO__
+			 , argv[0]
+#endif /* __INFO__ */
+			 );
+#ifdef _1_
       // {{{ mv[0][0] -> motion_out
       motion.write_component(mv[0][0],
 			     blocks_in_y, blocks_in_x,
@@ -1132,8 +1153,7 @@ int main(int argc, char *argv[]) {
 			     argv[0]
 #endif /* __INFO__ */
 			     );
-      // }}}
-      // {{{ mv[0][1] -> motion_out
+      // }}} {{{ mv[0][1] -> motion_out
       motion.write_component(mv[0][1],
 			     blocks_in_y, blocks_in_x,
 			     motion_out_fn,
@@ -1169,7 +1189,7 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			     );
       // }}}
-      
+#endif /* _1_ */
     }
     
 #else /* __ANALYZE__ */

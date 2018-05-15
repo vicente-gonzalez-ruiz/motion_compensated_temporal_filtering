@@ -298,8 +298,13 @@ int main(int argc, char *argv[]) {
       info("%s: reading predicted field %d\n", argv[0], 2*i+p);
       // {{{ Read predicted
       //motion.read(predicted_fd, predicted, blocks_in_y, blocks_in_x);
+      motion.read_field(predicted, blocks_in_y, blocks_in_x, predicted_fn, i*2+p
+#if defined __INFO__
+			, argv[0]
+#endif /* __INFO__ */
+			    );
+#ifdef _1_
       // {{{ predicted[0][0] <- predicted
-
       motion.read_component(predicted[0][0],
 			    blocks_in_y, blocks_in_x,
 			    predicted_fn,
@@ -347,12 +352,20 @@ int main(int argc, char *argv[]) {
 			    argv[0]
 #endif /* __INFO__ */
 			    );
-      // }}}      
+      // }}}
+#endif /* _1_ */
       // }}}
 #else /* __ANALYZE__ */
       info("%s: reading residue field %d\n", argv[0], 2*i+p);
       // {{{ Read residue
       //motion.read(residue_fd, residue, blocks_in_y, blocks_in_x);
+      motion.read_fied(residue, blocks_in_y, blocks_in_x, residue_fn, i*2+1,
+#if defined __INFO__
+		       , argv[0]
+#endif /* __INFO__ */
+		       );
+
+#ifdef _1_
       // {{{ residue[0][0] <- residue
       motion.read_component(residue[0][0],
 			    blocks_in_y, blocks_in_x,
@@ -401,6 +414,7 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			    );
       // }}}
+#endif /* _1_ */
       // }}}
 #endif /* __ANALYZE__ */
       
@@ -415,6 +429,7 @@ int main(int argc, char *argv[]) {
       info("%s: writing residue field %d\n", argv[0], 2*i+p);
       // {{{ Write residue 
       //motion.write(residue_fd, residue, blocks_in_y, blocks_in_x);
+#ifdef _1_
       // {{{ residue[0][0] -> residue
       motion.write_component(residue[0][0],
 			     blocks_in_y, blocks_in_x,
@@ -468,6 +483,12 @@ int main(int argc, char *argv[]) {
       info("%s: writing predicted field %d\n", argv[0], 2*i+p);
       // {{{ Write predicted
       //motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
+      motion.write_field(predicted[0][0], blocks_in_y, blocks_in_x, predicted_fn,, i*2+p
+#if defined __INFO__
+			 , argv[0]
+#endif /* __INFO__ */
+			 );
+#ifdef _1_
       // {{{ predicted[0][0] -> predicted
       motion.write_component(predicted[0][0],
 			     blocks_in_y, blocks_in_x,
@@ -516,6 +537,7 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			     );
       // }}}
+#endif /* _1_ */
       // }}}
 #endif /* __ANALYZE__ */
       

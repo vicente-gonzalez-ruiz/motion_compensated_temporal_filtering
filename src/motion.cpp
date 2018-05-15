@@ -45,18 +45,19 @@ public:
 
   /* Reads from disk a BMVF */
   void read_(FILE *fd, TYPE ****data, int y_dim, int x_dim) {
-    char x[80];
-    fgets(x, 80, fd); /* Magic number */
-    fgets(x, 80, fd); /* rows and cols */
-    fgets(x, 80, fd); /* Max value */
+    //char x[80];
+    //fgets(x, 80, fd); /* Magic number */
+    //fgets(x, 80, fd); /* rows and cols */
+    //fgets(x, 80, fd); /* Max value */
     for(int i=0; i<2; i++) {
       for(int f=0; f<2; f++) {
 	for(int y=0; y<y_dim; y++) {
 	  int read = fread(data[i][f][y], x_dim, sizeof(TYPE), fd);
 #if defined __INFO__ /** Sign and magnitude */
 	  for(int x=0; x<x_dim; x++) {
-	    info("%d ", data[i][f][y][x]);
+	    info("%2d ", data[i][f][y][x]);
 	  }
+	  info("\n");
 #endif /* __INFO__ */
 	}
       }
@@ -96,13 +97,19 @@ public:
   
   /* Writes to disk a BMVF */
   void write_(FILE *fd, TYPE ****data, int y_dim, int x_dim) {
-    fprintf(fd, "P5\n");
-    fprintf(fd, "%d %d\n", x_dim, y_dim);
-    fprintf(fd, "65535\n");
+    //fprintf(fd, "P5\n");
+    //fprintf(fd, "%d %d\n", x_dim, y_dim);
+    //fprintf(fd, "65535\n");
     for(int i=0; i<2; i++) {
       for(int f=0; f<2; f++) {
 	for(int y=0; y<y_dim; y++) {
 	  fwrite(data[i][f][y], x_dim, sizeof(TYPE), fd);
+#if defined __INFO__ /** Sign and magnitude */
+	  for(int x=0; x<x_dim; x++) {
+	    info("%2d ", data[i][f][y][x]);
+	  }
+      info("\n");
+#endif /* __INFO__ */
 	}
       }
     }
@@ -157,6 +164,59 @@ public:
     }
 #endif /* __DEBUG__ */
     motion::write(fd, data, blocks_in_y, blocks_in_x);
+#if defined __INFO__
+    info("%s: written %dx%d to \"%s\"\n", msg, blocks_in_y, blocks_in_x, fn_);
+#endif /* __INFO__ */
+    fclose(fd);
+  }
+
+  void read_field(TYPE ****data,
+		  int blocks_in_y,
+		  int blocks_in_x,
+		  char *fn,
+		  int field
+#if defined __INFO__
+		      ,
+		      char *msg
+#endif /* __INFO__ */
+		      ) {
+    char fn_[80];
+    sprintf(fn_, "%s/%04d.rawl", fn, field);
+    FILE *fd  = fopen(fn_, "r");
+    if(!fd) {
+#if defined __WARNING__
+      warning("%s: using \"/dev/zero\" instead of \"%s\"\n", msg, fn_);
+#endif /* __INFO__ */
+      fd = fopen("/dev/zero", "r");
+    }
+    motion::read_(fd, data, blocks_in_y, blocks_in_x);
+#if defined __INFO__
+    info("%s: read %dx%d from \"%s\"\n", msg, blocks_in_y, blocks_in_x, fn_);
+#endif /* __INFO__ */
+
+    fclose(fd);
+  }
+
+  void write_field(TYPE **data,
+		   int blocks_in_y,
+		   int blocks_in_x,
+		   char *fn,
+		   int field
+#if defined __INFO__
+		       ,
+		       char *msg
+#endif /* __INFO__ */
+		       ) {
+    char fn_[80];
+    sprintf(fn_, "%s/%04d.rawl", fn, field);
+    FILE *fd  = fopen(fn_, "w");
+#ifdef __DEBUG__
+    if(!fd) {
+      error("%s: unable to create the file \"%s\" ... aborting!\n", msg, fn_);
+      abort();
+    }
+#endif /* __DEBUG__ */
+    motion::write_(fd, data, blocks_in_y, blocks_in_x);
 #if defined __INFO__
     info("%s: written %dx%d to \"%s\"\n", msg, blocks_in_y, blocks_in_x, fn_);
 #endif /* __INFO__ */

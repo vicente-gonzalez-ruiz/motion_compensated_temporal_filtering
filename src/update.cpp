@@ -536,6 +536,12 @@ int main(int argc, char *argv[]) {
     // {{{ Reading the motion fields
 
     //motion.read(motion_fd, mv, blocks_in_y, blocks_in_x);
+    motion.read_field(mv, blocks_in_y, blocks_in_x, motion_fn, i
+#if defined __INFO__
+		      , argv[0]
+#endif /* __INFO__ */
+		      );
+#ifdef _1_
     motion.read_component(mv[0][0],
 			  blocks_in_y, blocks_in_x,
 			  motion_fn,
@@ -546,7 +552,7 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
-
+w
     motion.read_component(mv[0][1],
 			  blocks_in_y, blocks_in_x,
 			  motion_fn,
@@ -579,7 +585,8 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
-
+#endif /* _1_ */
+    
     // }}}
 					    
     // {{{ Update

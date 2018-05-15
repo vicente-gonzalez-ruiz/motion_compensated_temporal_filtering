@@ -175,6 +175,13 @@ int main(int argc, char *argv[]) {
     
     info("%s: reading field %d\n", argv[0], i);
     //motion.read(input_fd, field, blocks_in_y, blocks_in_x);
+    motion.read_field(field, blocks_in_y, blocks_in_x, input_fn, i
+#if defined __INFO__
+		      , argv[0]
+#endif /* __INFO__ */
+		      );
+			  
+#ifdef _1_
     // {{{ field[0][0] <- input
     motion.read_component(field[0][0],
 			  blocks_in_y, blocks_in_x,
@@ -223,7 +230,8 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			  );
     // }}}
-
+#endif / _1_ */
+    
     decorrelate_field
       (blocks_in_x,
        blocks_in_y,
@@ -231,6 +239,7 @@ int main(int argc, char *argv[]) {
 
     info("%s: writing field %d\n", argv[0], i);
     //motion.write(output_fd, field, blocks_in_y, blocks_in_x);
+#ifdef _1_
     // {{{ field[0][0] -> output
     motion.write_component(field[0][0],
 			   blocks_in_y, blocks_in_x,
@@ -279,6 +288,6 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			   );
     // }}}
-
+#endif /* _1_ */
   }
 }
