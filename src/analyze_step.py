@@ -9,7 +9,7 @@
 
 import sys
 import os
-import traceback
+from shell import Shell as shell
 from arguments_parser import arguments_parser
 
 parser = arguments_parser(description="Performs a temporal analysis step.")
@@ -42,7 +42,7 @@ search_range = int(args.search_range)
 subpixel_accuracy = int(args.subpixel_accuracy)
 update_factor = float(args.update_factor)
 
-% {{{ Lazzy transform.
+# {{{ Lazzy transform.
 shell.run("mctf split"
           + " -e " + "even_" + str(subband)
           + " -l " + "low_"  + str(subband-1)
@@ -50,9 +50,9 @@ shell.run("mctf split"
           + " -i " + str(pictures)
           + " -x " + str(pixels_in_x)
           + " -y " + str(pixels_in_y))
-% }}}
+# }}}
 
-% {{{ Motion estimation.
+# {{{ Motion estimation.
 shell.run("mctf motion_estimate"
           + " --block_size="        + str(block_size)
           + " --border_size="       + str(border_size)
@@ -65,9 +65,9 @@ shell.run("mctf motion_estimate"
           + " --pixels_in_y="       + str(pixels_in_y)
           + " --search_range="      + str(search_range)
           + " --subpixel_accuracy=" + str(subpixel_accuracy))
-% }}}
+# }}}
 
-% {{{ Motion compensation.
+# {{{ Motion compensation.
 shell.run("mctf decorrelate"
           + " --block_overlaping="  + str(block_overlaping)
           + " --block_size="        + str(block_size)
@@ -83,9 +83,9 @@ shell.run("mctf decorrelate"
           + " --search_range="      + str(search_range)
           + " --subpixel_accuracy=" + str(subpixel_accuracy)
           + " --always_B="          + str(always_B))
-% }}}
+# }}}
 
-% {{{ Low-pass temporal filtering.
+# {{{ Low-pass temporal filtering.
 shell.run("mctf update"
           + " --block_size="        + str(block_size)
           + " --even_fn="           + "even_"            + str(subband)
@@ -98,4 +98,4 @@ shell.run("mctf update"
           + " --pixels_in_y="       + str(pixels_in_y)
           + " --subpixel_accuracy=" + str(subpixel_accuracy)
           + " --update_factor="     + str(update_factor))
-% }}}
+# }}}

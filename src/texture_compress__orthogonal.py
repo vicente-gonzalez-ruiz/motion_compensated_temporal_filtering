@@ -7,7 +7,7 @@
 
 # To determine the slopes which must be applied to each temporal
 # subband (the slope for each subband-layer), it must be known that
-# typically, the quality of an image/temporal-subband is reduced with
+# typically, the quality of an picture/temporal-subband is reduced with
 # an increment in the slope, linearly:
 #
 #  PSNR[dB]
@@ -87,7 +87,7 @@
 
 #to each subband depends on
 #  the "slopes" parameter, which controls the quality of each quality
-#  layer (such as a quantization factor) in each image of each
+#  layer (such as a quantization factor) in each picture of each
 #  subband. Therefore, the number of quality layers equals the
 #  number of slopes. The optimal bit-rate control should be performed
 #  in decompression time using the "extract" program (See

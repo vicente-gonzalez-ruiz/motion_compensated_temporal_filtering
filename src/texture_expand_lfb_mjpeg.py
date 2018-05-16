@@ -29,8 +29,8 @@ import getopt
 file = ""
 ## Number of quality layers to decode.
 layers = 1
-## Number of images to process.
-pictures = 33
+## Number of textures to process.
+textures = 33
 ## Number of temporal levels.
 temporal_levels = 6
 
@@ -38,7 +38,7 @@ temporal_levels = 6
 ## Documentation of usage.
 #  - -[-f]ile = file that contains the LFB data.
 #  - -[-l]layers = number of quality layers to decode.
-#  - -[-p]ictures = number of images to process.
+#  - -[-p]ictures = number of textures to process.
 #  - -[-t]emporal_levels = number of temporal levels.
 def usage():
     sys.stderr.write("+-------------------------------+\n")
@@ -52,7 +52,7 @@ def usage():
     sys.stderr.write("\n")
     sys.stderr.write("   -[-f]ile = file that contains the LFB data (\"%s\")\n" % file)
     sys.stderr.write("   -[-l]layers = number of quality layers to decode (%d)\n" % layers)
-    sys.stderr.write("   -[-p]ictures = number of images to process (%d)\n" % pictures)
+    sys.stderr.write("   -[-p]ictures = number of textures to process (%d)\n" % textures)
     sys.stderr.write("   -[-t]emporal_levels = number of temporal levels (%d)\n" % temporal_levels)
     sys.stderr.write("\n")
 
@@ -66,7 +66,7 @@ try:
                                       "f:l:p:t:h",
                                       ["file=",
                                        "layers=",
-                                       "pictures=",
+                                       "textures=",
                                        "temporal_levels=",
                                        "help"
                                        ])
@@ -83,9 +83,9 @@ for o, a in opts:
         layers = int(a)
         display.info(sys.argv[0] + ": layers=" + str(layers) + '\n')
 
-    if o in ("-p", "--pictures"):
-        pictures = int(a)
-        display.info(sys.argv[0] + ": pictures=" + str(pictures) + '\n')
+    if o in ("-p", "--textures"):
+        textures = int(a)
+        display.info(sys.argv[0] + ": textures=" + str(textures) + '\n')
 
     if o in ("-t", "--temporal_levels"):
         temporal_levels = int(a)

@@ -24,7 +24,7 @@
 #  Where i = temporal iteration, and j = GOP.\n
 #  The exact format of how information is organized in one of these
 #  files depends on the implementation of motion.cpp.\n
-#  However, many appear bidirectional motion fields such as images
+#  However, many appear bidirectional motion fields such as pictures
 #  there at that level of temporal resolution for the GOP, but
 #  dividing by 2.
 
@@ -43,7 +43,7 @@ blocks_in_y = 0
 iteration = 1
 ## Name of the file with the motion fields.
 file = ""
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 ## Temporal resolution levels.
 temporal_levels = 5
@@ -54,7 +54,7 @@ temporal_levels = 5
 #  - -[-]blocks_in_[y] = number of blocks in the Y direction.
 #  - -[-i]iteration = temporal iteration.
 #  - -[-f]ile = name of the file with the motion fields.
-#  - -[-p]ictures = number of images to process.
+#  - -[-p]ictures = number of pictures to process.
 #  - -[-t]emporal_levels = number of temporal levels.
 def usage():
     sys.stderr.write("+---------------------------+\n")
@@ -64,7 +64,7 @@ def usage():
     sys.stderr.write("   -[-]blocks_in_[y]=number of blocks in the Y direction (%d)\n" % blocks_in_y)
     sys.stderr.write("   -[-i]iteration=temporal iteration (%d)\n" % iterationi)
     sys.stderr.write("   -[-f]ile=name of the file with the motion fields (\"%s\")\n" % file)
-    sys.stderr.write("   -[-p]ictures=number of images to process (%d)\n" % pictures)
+    sys.stderr.write("   -[-p]ictures=number of pictures to process (%d)\n" % pictures)
     sys.stderr.write("   -[-t]emporal_levels=number of temporal levels (%d)\n" % temporal_levels)
 
 ifdef({{DEBUG}},
@@ -136,7 +136,7 @@ field_size_in_bytes = bidirectional_motion_vectors_in_a_field * components * byt
 ## Initializes the class GOP (Group Of Pictures).
 gop = GOP();
 
-## Extract the value of the size of a GOP, that is, the number of images.
+## Extract the value of the size of a GOP, that is, the number of pictures.
 GOP_size = gop.get_size(temporal_levels)
 ifdef({{DEBUG}},
 sys.stdout.write(sys.argv[0] + ": GOP_size=" + str(GOP_size) + '\n')

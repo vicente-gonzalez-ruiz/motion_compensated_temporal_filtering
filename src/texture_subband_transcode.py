@@ -29,19 +29,19 @@ pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 subband = int(args.subband)
 
-def Transcode(subband, component, image_number, number_of_quality_layers) :
+def Transcode(subband, component, picture_number, number_of_quality_layers) :
 
     try:
-        image_filename = subband + "_" + str(component) + "_" + str('%04d' % image_number)
+        picture_filename = subband + "_" + str(component) + "_" + str('%04d' % picture_number)
 
-        f = open(image_filename + ".j2c", "rb")
+        f = open(picture_filename + ".j2c", "rb")
         f.close()
 
         # Decode.
         try:
             check_call("trace kdu_transcode"
-                       + " -i " + image_filename + ".j2c"
-                       + " -o " + image_filename + ".j2c"
+                       + " -i " + picture_filename + ".j2c"
+                       + " -o " + picture_filename + ".j2c"
                        + " Clayers=" + number_of_quality_layers
                        , shell=True)
         except CalledProcessError :
@@ -51,7 +51,7 @@ def Transcode(subband, component, image_number, number_of_quality_layers) :
         # If there is no file textures of the current iteration, is
         # created with a neutral texture.
 
-        f = open(image_filename + ".rawl", "wb")
+        f = open(picture_filename + ".rawl", "wb")
         for a in xrange(pixels_in_x * pixels_in_y) :
             f.write('%c' % 128)  # BYTES_PER_COMPONENT = 1   # 1 byte for components used unweighted.
             #f.write('%c' % 128) # BYTES_PER_COMPONENT = 2   # 2 bytes for weighted or components that are used weighted.
@@ -59,15 +59,15 @@ def Transcode(subband, component, image_number, number_of_quality_layers) :
 
     # MUX
     try:
-        check_call("trace cat " + image_filename + ".rawl >> " + file, shell=True)
+        check_call("trace cat " + picture_filename + ".rawl >> " + file, shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
-image_number = 0
-while image_number < pictures :
+picture_number = 0
+while picture_number < pictures :
 
-    decode ('Y', image_number)
-    decode ('U', image_number)
-    decode ('V', image_number)
+    decode ('Y', picture_number)
+    decode ('U', picture_number)
+    decode ('V', picture_number)
 
-    image_number += 1
+    picture_number += 1

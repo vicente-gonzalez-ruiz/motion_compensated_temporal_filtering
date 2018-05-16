@@ -3,7 +3,7 @@
 
 ## @file searchSlope_byDistortion.py
 #  Search for the proper quantification to produce a compression of an
-#  image with a distortion indicated by the user. Such distortion is
+#  picture with a distortion indicated by the user. Such distortion is
 #  indicated for each frame of video and is given by a file.
 #
 #  @authors Jose Carmelo Maturana-Espinosa\n Vicente Gonzalez-Ruiz.
@@ -11,7 +11,7 @@
 
 ## @package texture_compress
 #  Search for the proper quantification to produce a compression of an
-#  image with a distortion indicated by the user. Such distortion is
+#  picture with a distortion indicated by the user. Such distortion is
 #  indicated for each frame of video and is given by a file.
 
 
@@ -104,7 +104,7 @@ if args.distortions:
 
 #------------------------------------------------
 ## Demux
-def demux (pic, image_number, component, jump_demux, size_component) :
+def demux (pic, picture_number, component, jump_demux, size_component) :
 
     try :
         check_call("trace demux " + str(YUV_size) + jump_demux
@@ -114,21 +114,21 @@ def demux (pic, image_number, component, jump_demux, size_component) :
     except CalledProcessError :
         sys.exit(-1)
 
-    image_filename = pic + "_" + str(component) + "_"
-    os.rename(image_filename + '%04d' % 0, image_filename + '%04d' % image_number + ".rawl")
-    image_filename = pic + "_" + str(component) + "_" + '%04d' % image_number
+    picture_filename = pic + "_" + str(component) + "_"
+    os.rename(picture_filename + '%04d' % 0, picture_filename + '%04d' % picture_number + ".rawl")
+    picture_filename = pic + "_" + str(component) + "_" + '%04d' % picture_number
     
-    return image_filename
+    return picture_filename
 
 
 #------------------------------------------------
 ## Encode j2k codec.
-def encode (quantization, image_filename, bits_per_component, sDimX, sDimY) :
+def encode (quantization, picture_filename, bits_per_component, sDimX, sDimY) :
 
     try :
         check_call("trace kdu_compress"
-                   + " -i "          + image_filename + ".rawl"
-                   + " -o "          + image_filename + ".j2c"
+                   + " -i "          + picture_filename + ".rawl"
+                   + " -o "          + picture_filename + ".j2c"
                    + " Creversible=" + "no" # "no" "yes"
                    + " -slope "      + str(quantization)
                    + " -no_weights"
@@ -145,16 +145,16 @@ def encode (quantization, image_filename, bits_per_component, sDimX, sDimY) :
 
 #------------------------------------------------
 ## Decode j2k codec.
-def decode (image_filename) :
+def decode (picture_filename) :
 
     check_call("trace kdu_expand"
-               + " -i "              + image_filename + ".j2c"
-               + " -o " + "extract/" + image_filename + ".rawl"
+               + " -i "              + picture_filename + ".j2c"
+               + " -o " + "extract/" + picture_filename + ".rawl"
                , shell=True)
 
     ## Mux
     try:
-        check_call("trace cat extract/" + image_filename + ".rawl >> extract/decoded_pic", shell=True)
+        check_call("trace cat extract/" + picture_filename + ".rawl >> extract/decoded_pic", shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
@@ -175,11 +175,11 @@ def header (file_name) :
 #  @return Codestream size (bytes).
 def size (file_name) :
     ## Size of the component 'Y' (measured in bytes, without headers).
-    Ysize  = os.path.getsize(file_name + "_Y_" + '%04d' % image_number + ".j2c") - header(file_name + "_Y_" + '%04d' % image_number + ".j2c")
+    Ysize  = os.path.getsize(file_name + "_Y_" + '%04d' % picture_number + ".j2c") - header(file_name + "_Y_" + '%04d' % picture_number + ".j2c")
     ## Size of the component 'U' (measured in bytes, without headers).
-    Usize  = os.path.getsize(file_name + "_U_" + '%04d' % image_number + ".j2c") - header(file_name + "_U_" + '%04d' % image_number + ".j2c")
+    Usize  = os.path.getsize(file_name + "_U_" + '%04d' % picture_number + ".j2c") - header(file_name + "_U_" + '%04d' % picture_number + ".j2c")
     ## Size of the component 'V' (measured in bytes, without headers).
-    Vsize  = os.path.getsize(file_name + "_V_" + '%04d' % image_number + ".j2c") - header(file_name + "_V_" + '%04d' % image_number + ".j2c")
+    Vsize  = os.path.getsize(file_name + "_V_" + '%04d' % picture_number + ".j2c") - header(file_name + "_V_" + '%04d' % picture_number + ".j2c")
 
     return Ysize, Usize, Vsize
 
@@ -213,9 +213,9 @@ path_tmp     = path_base + "/tmp"
 
 ## Initializes the class GOP (Group Of Pictures).
 gop      = GOP()
-## Extract the value of the size of a GOP, that is, the number of images.
+## Extract the value of the size of a GOP, that is, the number of pictures.
 GOP_size = gop.get_size(TRLs)
-## Number of images to process.
+## Number of pictures to process.
 pictures = GOPs * GOP_size + 1
 ## Number of bits per component.
 bits_per_component = BYTES_PER_COMPONENT * 8
@@ -258,19 +258,19 @@ out, err = p.communicate()
 
 # Binary search
 #----------------------------
-image_number = 0
-while image_number < pictures :
+picture_number = 0
+while picture_number < pictures :
 
     #######################
-    # Take required image #
+    # Take required picture #
     #######################
     try :
-        pic = "image"
+        pic = "picture"
         check_call("trace dd"
                    + " if="    + "low_0"
                    + " of="    + pic + ".tmp"
                    + " ibs="   + str(YUV_size)
-                   + " skip="  + str(image_number)
+                   + " skip="  + str(picture_number)
                    + " count=" + str(1) # Frame per frame.
                    , shell=True)
     except CalledProcessError :
@@ -279,9 +279,9 @@ while image_number < pictures :
     #########
     # Demux # in component.
     #########
-    pic_Y = demux (pic, image_number, 'Y', " " + "0"                + " " + str(Y_size), Y_size)
-    pic_U = demux (pic, image_number, 'U', " " + str(Y_size)        + " " + str(U_size), U_size)
-    pic_V = demux (pic, image_number, 'V', " " + str(Y_size+U_size) + " " + str(V_size), V_size)
+    pic_Y = demux (pic, picture_number, 'Y', " " + "0"                + " " + str(Y_size), Y_size)
+    pic_U = demux (pic, picture_number, 'U', " " + str(Y_size)        + " " + str(U_size), U_size)
+    pic_V = demux (pic, picture_number, 'V', " " + str(Y_size+U_size) + " " + str(V_size), V_size)
 
 
     #################
@@ -326,7 +326,7 @@ while image_number < pictures :
         Ysize, Usize, Vsize = size (pic)
 
         # INFO # Slope unfinded.
-        info_out = str('%04d' % image_number) + "\tslope " + str(slope) + "\tbytes " + str(Ysize + Usize + Vsize) + "\tpsnr " + str(psnr) + "\t(psnr wanted " + str(distortion) + ")\t(iteration " + str(count) + "\tstepQ " + str(stepQ) + ")\n"
+        info_out = str('%04d' % picture_number) + "\tslope " + str(slope) + "\tbytes " + str(Ysize + Usize + Vsize) + "\tpsnr " + str(psnr) + "\t(psnr wanted " + str(distortion) + ")\t(iteration " + str(count) + "\tstepQ " + str(stepQ) + ")\n"
         f_info.write("# " + info_out)
 
         # STEP JUMP
@@ -341,4 +341,4 @@ while image_number < pictures :
     # INFO # Slope finded.
     f_info.write(info_out)
 
-    image_number += 1
+    picture_number += 1

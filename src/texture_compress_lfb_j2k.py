@@ -47,7 +47,7 @@ Y_size = pixels_in_y * pixels_in_x
 U_size = V_size = Y_size / 4
 YUV_size = Y_size + U_size + V_size
 
-# Copy only the required images
+# Copy only the required pictures
 try:
     check_call("trace dd" +
                " if=" + file + 
@@ -68,24 +68,24 @@ try:
 except CalledProcessError:
     sys.exit(-1)
 
-image_number = 0
-while image_number < pictures:
+picture_number = 0
+while picture_number < pictures:
 
-    str_image_number = '%04d' % image_number
-    image_filename = file + "_Y_" + str_image_number
+    str_picture_number = '%04d' % picture_number
+    picture_filename = file + "_Y_" + str_picture_number
 
     try:
         check_call("trace rawtopgm " + str(pixels_in_x) + " " + str(pixels_in_y)
-                   + " < " + image_filename + " > "
-                   + image_filename + ".pgm",
+                   + " < " + picture_filename + " > "
+                   + picture_filename + ".pgm",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
     try:
         check_call("trace kdu_compress"
-                   + " -i " + image_filename + ".pgm"
-                   + " -o " + image_filename + ".j2c"
+                   + " -i " + picture_filename + ".pgm"
+                   + " -o " + picture_filename + ".j2c"
                    + " -slope " + quantizations
                    + " -no_weights"
                    + " Clevels=" + str(dwt_levels),
@@ -93,7 +93,7 @@ while image_number < pictures:
     except CalledProcessError:
         sys.exit(-1)
 
-    image_number += 1
+    picture_number += 1
 
 # Encode U
 try:
@@ -106,24 +106,24 @@ try:
 except CalledProcessError:
     sys.exit(-1)
 
-image_number = 0
-while image_number < pictures:
+picture_number = 0
+while picture_number < pictures:
 
-    str_image_number = '%04d' % image_number
-    image_filename = file + "_U_" + str_image_number
+    str_picture_number = '%04d' % picture_number
+    picture_filename = file + "_U_" + str_picture_number
 
     try:
         check_call("trace rawtopgm "
                    + str(pixels_in_x/2) + " " + str(pixels_in_y/2)
-                   + " < " + image_filename
-                   + " > " + image_filename + ".pgm",shell=True)
+                   + " < " + picture_filename
+                   + " > " + picture_filename + ".pgm",shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
     try:
         check_call("trace kdu_compress"
-                   + " -i " + image_filename + ".pgm"
-                   + " -o " + image_filename + ".j2c"
+                   + " -i " + picture_filename + ".pgm"
+                   + " -o " + picture_filename + ".j2c"
                    + " -slope " + quantizations
                    + " -no_weights"
                    + " Clevels=" + str(dwt_levels),
@@ -131,7 +131,7 @@ while image_number < pictures:
     except CalledProcessError:
         sys.exit(-1)
 
-    image_number += 1
+    picture_number += 1
 
 # Encode V
 try:
@@ -144,25 +144,25 @@ try:
 except CalledProcessError:
     sys.exit(-1)
 
-image_number = 0
-while image_number < pictures:
+picture_number = 0
+while picture_number < pictures:
 
-    str_image_number = '%04d' % image_number
-    image_filename = file + "_V_" + str_image_number
+    str_picture_number = '%04d' % picture_number
+    picture_filename = file + "_V_" + str_picture_number
 
     try:
         check_call("trace rawtopgm "
                    + str(pixels_in_x/2) + " " + str(pixels_in_y/2)
-                   + " < " + image_filename
-                   + " > " + image_filename + ".pgm",
+                   + " < " + picture_filename
+                   + " > " + picture_filename + ".pgm",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
     try:
         check_call("trace kdu_compress"
-                   + " -i " + image_filename + ".pgm"
-                   + " -o " + image_filename + ".j2c"
+                   + " -i " + picture_filename + ".pgm"
+                   + " -o " + picture_filename + ".j2c"
                    + " -slope " + quantizations
                    + " -no_weights"
                    + " Clevels=" + str(dwt_levels),
@@ -170,20 +170,20 @@ while image_number < pictures:
     except CalledProcessError:
         sys.exit(-1)
 
-    image_number += 1
+    picture_number += 1
 
 # Compute file sizes
 file_sizes = open (file + ".j2c", 'w')
-image_number = 0
+picture_number = 0
 total = 0
-while image_number < pictures:
+while picture_number < pictures:
 
-    str_image_number = '%04d' % image_number
-    Ysize = os.path.getsize(file + "_Y_" + str_image_number + ".j2c")
-    Usize = os.path.getsize(file + "_U_" + str_image_number + ".j2c")
-    Vsize = os.path.getsize(file + "_V_" + str_image_number + ".j2c")
+    str_picture_number = '%04d' % picture_number
+    Ysize = os.path.getsize(file + "_Y_" + str_picture_number + ".j2c")
+    Usize = os.path.getsize(file + "_U_" + str_picture_number + ".j2c")
+    Vsize = os.path.getsize(file + "_V_" + str_picture_number + ".j2c")
     size = Ysize + Usize + Vsize
     total += size
     file_sizes.write(str(total) + "\n")
 
-    image_number += 1
+    picture_number += 1

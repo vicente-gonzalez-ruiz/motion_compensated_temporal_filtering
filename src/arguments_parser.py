@@ -78,7 +78,7 @@ class arguments_parser(argparse.ArgumentParser):
     # No aquí?
     #def pictures(self):
     #    self.add_argument("--pictures",
-    #                      help="number of images to process.",
+    #                      help="number of pictures to process.",
     #                      default=Defaults.pictures)
 
     def pixels_in_x(self):

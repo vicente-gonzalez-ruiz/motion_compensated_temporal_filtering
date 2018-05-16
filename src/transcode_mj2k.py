@@ -25,7 +25,7 @@
 
 
 #  DEBUG:
-#  The option to extract images, transcode the matter, and back
+#  The option to extract pictures, transcode the matter, and back
 #  together seems not to work. Try parsing option .mj2 stream directly,
 #  letting you copy the output data that belong to quality layers,
 #  which should not be removed. In addition, this option is more
@@ -47,7 +47,7 @@ HIGH = "high"
 LOW = "low"
 ## Number of extracted quality layers.
 layers = 1
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 ## Width of the pictures.
 pixels_in_x = 352
@@ -58,7 +58,7 @@ temporal_levels = 6
 
 ## Documentation of usage.
 #  - -[-l]ayers = number of extracted quality layers.
-#  - -[-p]ictures = number of images to process.
+#  - -[-p]ictures = number of pictures to process.
 #  - -[-]pixels_in_[x] = size of the X dimension of the pictures.
 #  - -[-]pixels_in_[y] = size of the Y dimension of the pictures.
 #  - -[-t]emporal_levels = number of iterations of the temporal transform + 1.
@@ -74,7 +74,7 @@ def usage():
     sys.stderr.write("  Parameters:\n")
     sys.stderr.write("\n")
     sys.stderr.write("   -[-l]ayers=number of extracted quality layers (\"%d\")\n" % layers)
-    sys.stderr.write("   -[-p]ictures=number of images to process (%d)\n" % pictures)
+    sys.stderr.write("   -[-p]ictures=number of pictures to process (%d)\n" % pictures)
     sys.stderr.write("   -[-]pixels_in_[x]=size of the X dimension of the pictures (%d)\n" %  pixels_in_x)
     sys.stderr.write("   -[-]pixels_in_[y]=size of the Y dimension of the pictures (%d)\n" %  pixels_in_y)
     sys.stderr.write("   -[-t]emporal_levels=number of iterations of the temporal transform + 1 (%d)\n" % temporal_levels)
@@ -168,12 +168,12 @@ while subband < temporal_levels:
     os.system(command)
 
     ## Open the input file, now to find the EOC (0xFFD9) of each
-    ## image.
+    ## picture.
     f = open(entrada, "r")
 
     ## Skip the 20 bytes of header '.mj2'.
-    startImage = 20
-    f.seek(startImage, 0)
+    startPicture = 20
+    f.seek(startPicture, 0)
 
     ## Bytes extraction begins:
     byte = f.read(1)
@@ -181,32 +181,32 @@ while subband < temporal_levels:
         if byte == '\xff':
             byte = f.read(1)
             if byte == '\xd9':
-                ## Jumps to the end of the image.
-                endImage = f.tell()
+                ## Jumps to the end of the picture.
+                endPicture = f.tell()
 
-                # Extract the image.
-                command = "dd if=" + entrada + " of=image_Aux.j2c skip=" + str(startImage) + " ibs=1 count=" + str(endImage - startImage)
+                # Extract the picture.
+                command = "dd if=" + entrada + " of=picture_Aux.j2c skip=" + str(startPicture) + " ibs=1 count=" + str(endPicture - startPicture)
                 ifdef({{DEBUG}},
                 display.info(sys.argv[0] + ": " + command + "\n")
                 )
                 os.system(command)
 
                 # Extracts the first layer (s) of quality.
-                command = "kdu_transcode -i image_Aux.j2c -o image_Out.j2c Clayers=" + str(layers)
+                command = "kdu_transcode -i picture_Aux.j2c -o picture_Out.j2c Clayers=" + str(layers)
                 ifdef({{DEBUG}},
                 display.info(sys.argv[0] + ": " + command + "\n")
                 )
                 os.system(command)
 
-                # Add the generated image.
-                command = "cat image_Out.j2c >> " + salida
+                # Add the generated picture.
+                command = "cat picture_Out.j2c >> " + salida
                 ifdef({{DEBUG}},
                 display.info(sys.argv[0] + ": " + command + "\n")
                 )
                 os.system(command)
             
                 # Concatenate '0x0000179A' at the end of "exit".
-                command = "dd if=" + entrada + " of=/tmp/extract.tmp skip=" + str(endImage) + " bs=1 count=4" 
+                command = "dd if=" + entrada + " of=/tmp/extract.tmp skip=" + str(endPicture) + " bs=1 count=4" 
                 ifdef({{DEBUG}},
                 display.info(sys.argv[0] + ": " + command + "\n")
                 )
@@ -218,7 +218,7 @@ while subband < temporal_levels:
                 os.system(command)
 
                 # Skip the last 4 bytes of padding.
-                startImage = endImage + 4
+                startPicture = endPicture + 4
 
         byte = f.read(1)
 
@@ -249,12 +249,12 @@ display.info(sys.argv[0] + ": " + command + "\n")
 os.system(command)
 
 # Open the input file, now to find the EOC (0xFFD9) of each
-# image.
+# picture.
 f = open(entrada, "r")
 
 # Skip the 20 bytes of header '.mj2'.
-startImage = 20
-f.seek(startImage, 0)
+startPicture = 20
+f.seek(startPicture, 0)
 
 # Bytes extraction begins:
 byte = f.read(1)
@@ -262,31 +262,31 @@ while byte != '':
     if byte == '\xff':
         byte = f.read(1)
         if byte == '\xd9':
-            endImage = f.tell()
+            endPicture = f.tell()
 
-            # Extract the image.
-            command = "dd if=" + entrada + " of=image_Aux.j2c skip=" + str(startImage) + " ibs=1 count=" + str(endImage - startImage)
+            # Extract the picture.
+            command = "dd if=" + entrada + " of=picture_Aux.j2c skip=" + str(startPicture) + " ibs=1 count=" + str(endPicture - startPicture)
             ifdef({{DEBUG}},
             display.info(sys.argv[0] + ": " + command + "\n")
             )
             os.system(command)
 
             # Extracts the first layer (s) of quality.
-            command = "kdu_transcode -i image_Aux.j2c -o image_Out.j2c Clayers=" + str(layers)
+            command = "kdu_transcode -i picture_Aux.j2c -o picture_Out.j2c Clayers=" + str(layers)
             ifdef({{DEBUG}},
             display.info(sys.argv[0] + ": " + command + "\n")
             )
             os.system(command)
 
-            # Add the generated image.
-            command = "cat image_Out.j2c >> " + salida
+            # Add the generated picture.
+            command = "cat picture_Out.j2c >> " + salida
             ifdef({{DEBUG}},
             display.info(sys.argv[0] + ": " + command + "\n")
             )
             os.system(command)
 
             # Concatenate '0x0000179A' at the end of "exit".
-            command = "dd if=" + entrada + " of=/tmp/extract.tmp skip=" + str(endImage) + " bs=1 count=4" 
+            command = "dd if=" + entrada + " of=/tmp/extract.tmp skip=" + str(endPicture) + " bs=1 count=4" 
             ifdef({{DEBUG}},
             display.info(sys.argv[0] + ": " + command + "\n")
             )
@@ -298,7 +298,7 @@ while byte != '':
             os.system(command)
 
             # Skip the last 4 bytes of padding.
-            startImage = endImage + 4
+            startPicture = endPicture + 4
 
     byte = f.read(1)
 

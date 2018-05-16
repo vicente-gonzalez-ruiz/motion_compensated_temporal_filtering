@@ -30,7 +30,7 @@ COMPONENTS = 3
 BYTES_PER_COMPONENT = 1
 ## File that contains the HFB data.
 file = ""
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 ## Width of the pictures.
 pixels_in_x = 352
@@ -79,7 +79,7 @@ fd.write(">VIDEO<\n")
 fd.write("1.0 0\n")
 fd.write(">COLOUR<\n")
 fd.write("YCbCr\n")
-fd.write(">IMAGE<\n")
+fd.write(">PICTURE<\n")
 fd.write("unsigned char 8 little-endian\n")
 fd.write("%d " % pixels_in_x)
 fd.write("%d " % pixels_in_y)

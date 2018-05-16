@@ -127,42 +127,42 @@ while subband < TRLs:
     pictures = (pictures + 1) // 2
     print("Transcoding subband H[{}] of {} pictures".format(subband, pictures))
     
-    image_number = 0
+    picture_number = 0
     # pictures = 
-    while image_number < pictures:
+    while picture_number < pictures:
 
-        str_image_number = '%04d' % image_number
+        str_picture_number = '%04d' % picture_number
 
-        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_Y" 
+        filename = HIGH + "_" + str(subband) + "_" + str_picture_number + "_Y" 
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
-        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_U" 
+        filename = HIGH + "_" + str(subband) + "_" + str_picture_number + "_U" 
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
-        filename = HIGH + "_" + str(subband) + "_" + str_image_number + "_V" 
+        filename = HIGH + "_" + str(subband) + "_" + str_picture_number + "_V" 
         kdu_transcode(filename + ".j2c", number_of_quality_layers_in_H[subband])
 
-        image_number += 1
+        picture_number += 1
 
     subband += 1
 
 
 # Transcoding of L subband
-image_number = 0
-while image_number < pictures + 1:
+picture_number = 0
+while picture_number < pictures + 1:
 
-    str_image_number = '%04d' % image_number
+    str_picture_number = '%04d' % picture_number
 
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_Y"
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_picture_number + "_Y"
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_U"
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_picture_number + "_U"
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    filename = LOW + "_" + str(TRLs-1) + "_" + str_image_number + "_V"
+    filename = LOW + "_" + str(TRLs-1) + "_" + str_picture_number + "_V"
     kdu_transcode(filename + ".j2c", number_of_quality_layers_in_L)
 
-    image_number += 1
+    picture_number += 1
 
 # Transcoding of M "subbands"
 subband = 1

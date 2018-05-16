@@ -31,7 +31,7 @@ BYTES_PER_COMPONENT = 1
 file = ""
 ## Controls the quality level and the bit-rate of the code-stream.
 slopes = os.environ["SLOPES"]
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 ## Width of the pictures.
 pixels_in_x = 352

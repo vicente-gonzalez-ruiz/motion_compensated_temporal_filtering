@@ -29,7 +29,7 @@ COMPONENTS = 3
 BYTES_PER_COMPONENT = 1
 ## File that contains the HFB data.
 file = ""
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 ## Width of the pictures.
 pixels_in_x = 352
@@ -73,7 +73,7 @@ U_size = V_size = Y_size / 4
 ## Size of the components 'YUV' (measured in pixels).
 YUV_size = Y_size + U_size + V_size
 
-## Copy only the required images.
+## Copy only the required pictures.
 try:
     check_call("trace dd" +
                " if=" + file + 
@@ -97,25 +97,25 @@ try:
 except CalledProcessError:
     sys.exit(-1)
 
-## Current image number iteration.
-image_number = 0
-while image_number < pictures:
+## Current picture number iteration.
+picture_number = 0
+while picture_number < pictures:
 
-    ## Current image number iteration.
-    str_image_number = '%04d' % image_number
-    ## Current image name iteration.
-    image_filename = file + "_Y_" + str_image_number
+    ## Current picture number iteration.
+    str_picture_number = '%04d' % picture_number
+    ## Current picture name iteration.
+    picture_filename = file + "_Y_" + str_picture_number
 
     try:
-        check_call("trace mv " + image_filename + " " + image_filename + ".raw",
+        check_call("trace mv " + picture_filename + " " + picture_filename + ".raw",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
     try:
         check_call("trace ltw -C"
-                   + " -i " + image_filename + ".raw"
-                   + " -o " + image_filename + ".ltw"
+                   + " -i " + picture_filename + ".raw"
+                   + " -o " + picture_filename + ".ltw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-hfb.txt"
                    + " -h " + str(pixels_in_y)
                    + " -w " + str(pixels_in_x) 
@@ -127,7 +127,7 @@ while image_number < pictures:
     except CalledProcessError:
         sys.exit(-1)
 
-    image_number += 1
+    picture_number += 1
 
 
 
@@ -143,22 +143,22 @@ try:
 except CalledProcessError:
     sys.exit(-1)
 
-image_number = 0
-while image_number < pictures:
+picture_number = 0
+while picture_number < pictures:
 
-    str_image_number = '%04d' % image_number
-    image_filename = file + "_U_" + str_image_number
+    str_picture_number = '%04d' % picture_number
+    picture_filename = file + "_U_" + str_picture_number
 
     try:
-        check_call("trace mv " + image_filename + " " + image_filename + ".raw",
+        check_call("trace mv " + picture_filename + " " + picture_filename + ".raw",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
     try:
         check_call("trace ltw -C"
-                   + " -i " + image_filename + ".raw"
-                   + " -o " + image_filename + ".ltw"
+                   + " -i " + picture_filename + ".raw"
+                   + " -o " + picture_filename + ".ltw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-hfb.txt"
                    + " -h " + str(pixels_in_y/2)
                    + " -w " + str(pixels_in_x/2) 
@@ -170,7 +170,7 @@ while image_number < pictures:
     except CalledProcessError:
         sys.exit(-1)
 
-    image_number += 1
+    picture_number += 1
 
 
 
@@ -187,22 +187,22 @@ try:
 except CalledProcessError:
     sys.exit(-1)
 
-image_number = 0
-while image_number < pictures:
+picture_number = 0
+while picture_number < pictures:
 
-    str_image_number = '%04d' % image_number
-    image_filename = file + "_V_" + str_image_number
+    str_picture_number = '%04d' % picture_number
+    picture_filename = file + "_V_" + str_picture_number
 
     try:
-        check_call("trace mv " + image_filename + " " + image_filename + ".raw",
+        check_call("trace mv " + picture_filename + " " + picture_filename + ".raw",
                    shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
     try:
         check_call("trace ltw -C"
-                   + " -i " + image_filename + ".raw"
-                   + " -o " + image_filename + ".ltw"
+                   + " -i " + picture_filename + ".raw"
+                   + " -o " + picture_filename + ".ltw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-hfb.txt"
                    + " -h " + str(pixels_in_y/2)
                    + " -w " + str(pixels_in_x/2) 
@@ -214,7 +214,7 @@ while image_number < pictures:
     except CalledProcessError:
         sys.exit(-1)
 
-    image_number += 1
+    picture_number += 1
 
 
 
@@ -227,24 +227,24 @@ while image_number < pictures:
 ## File that lists the sizes of the compressed files. It is useful for
 ## calculating Kbps (see info.py).
 file_sizes = open (file + ".ltw", 'w')
-## Number of image of the current iteration.
-image_number = 0
+## Number of picture of the current iteration.
+picture_number = 0
 ## Total size of compressed files.
 total = 0
 
-while image_number < pictures:
+while picture_number < pictures:
 
-    str_image_number = '%04d' % image_number
+    str_picture_number = '%04d' % picture_number
     ## Size of the component 'Y' (measured in bytes).
-    Ysize = os.path.getsize(file + "_Y_" + str_image_number + ".ltw")
+    Ysize = os.path.getsize(file + "_Y_" + str_picture_number + ".ltw")
     ## Size of the component 'U' (measured in bytes).
-    Usize = os.path.getsize(file + "_U_" + str_image_number + ".ltw")
+    Usize = os.path.getsize(file + "_U_" + str_picture_number + ".ltw")
     ## Size of the component 'V' (measured in bytes).
-    Vsize = os.path.getsize(file + "_V_" + str_image_number + ".ltw")
+    Vsize = os.path.getsize(file + "_V_" + str_picture_number + ".ltw")
 
     ## Total size of compressed files of the current iteration.
     size = Ysize + Usize + Vsize
     total += size
     file_sizes.write(str(total) + "\n")
 
-    image_number += 1
+    picture_number += 1

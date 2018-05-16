@@ -25,44 +25,44 @@ import arguments_parser
 
 ## File that contains the LFB data.
 file = ""
-## Number of images to process.
-pictures = 33
+## Number of textures to process.
+textures = 33
 
 ## The parser module provides an interface to Python's internal parser
 ## and byte-code compiler.
 parser = arguments_parser(description="Expands the the LFB texture data using LTW.")
 parser.add_argument("--file", help="file that contains the LFB data. Default = {})".format(file))
-parser.pictures()
+parser.textures()
 
 ## A script may only parse a few of the command-line arguments,
 ## passing the remaining arguments on to another script or program.
 args = parser.parse_known_args()[0]
 if args.file:
     file = args.file
-if args.pictures:
-    pictures = int(args.pictures)
+if args.textures:
+    textures = int(args.textures)
 
 
 
 # Decode and multiplexing all components (YUV).
 #----------------------------------------------
-## Current image number iteration.
-image_number = 0
-while image_number < pictures:
+## Current texture number iteration.
+texture_number = 0
+while texture_number < textures:
 
-    ## Current image number iteration.
-    str_image_number = '%04d' % image_number
+    ## Current texture number iteration.
+    str_texture_number = '%04d' % texture_number
 
     # Y
     #---
-    ## Current image name iteration.
-    image_filename = file + "_Y_" + str_image_number
+    ## Current texture name iteration.
+    texture_filename = file + "_Y_" + str_texture_number
 
     try:
         # Decode a component.
         check_call("trace ltw -D "
-                   + " -i " + image_filename + ".ltw"
-                   + " -o " + image_filename + ".raw"
+                   + " -i " + texture_filename + ".ltw"
+                   + " -o " + texture_filename + ".raw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-lfb.txt"
                    + " -a 0"
                    + " -s 0",
@@ -72,19 +72,19 @@ while image_number < pictures:
 
 
     try:
-        check_call("trace cat " + image_filename + ".raw >> " + file, shell=True)
+        check_call("trace cat " + texture_filename + ".raw >> " + file, shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
 
     # U
     #---
-    image_filename = file + "_U_" + str_image_number
+    texture_filename = file + "_U_" + str_texture_number
 
     try:
         check_call("trace ltw -D "
-                   + " -i " + image_filename + ".ltw"
-                   + " -o " + image_filename + ".raw"
+                   + " -i " + texture_filename + ".ltw"
+                   + " -o " + texture_filename + ".raw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-lfb.txt"
                    + " -a 0"
                    + " -s 0",
@@ -93,18 +93,18 @@ while image_number < pictures:
         sys.exit(-1)
 
     try:
-        check_call("trace cat " + image_filename + ".raw >> " + file, shell=True)
+        check_call("trace cat " + texture_filename + ".raw >> " + file, shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
     # V
     #---
-    image_filename = file + "_V_" + str_image_number
+    texture_filename = file + "_V_" + str_texture_number
 
     try:
         check_call("trace ltw -D "
-                   + " -i " + image_filename + ".ltw"
-                   + " -o " + image_filename + ".raw"
+                   + " -i " + texture_filename + ".ltw"
+                   + " -o " + texture_filename + ".raw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-lfb.txt"
                    + " -a 0"
                    + " -s 0",
@@ -113,8 +113,8 @@ while image_number < pictures:
         sys.exit(-1)
 
     try:
-        check_call("trace cat " + image_filename + ".raw >> " + file, shell=True)
+        check_call("trace cat " + texture_filename + ".raw >> " + file, shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
-    image_number += 1
+    texture_number += 1

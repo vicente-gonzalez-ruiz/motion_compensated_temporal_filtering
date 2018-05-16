@@ -46,10 +46,10 @@ update_factor = float(args.update_factor)
 ## Initializes the class GOP (Group Of Pictures).
 gop=GOP()
 
-## Extract the value of the size of a GOP, that is, the number of images.
+## Extract the value of the size of a GOP, that is, the number of pictures.
 GOP_size = gop.get_size(TRLs)
 
-## Calculate the total number of video images.
+## Calculate the total number of video pictures.
 pictures = (GOPs - 1) * GOP_size + 1
 
 #import ipdb; ipdb.set_trace()

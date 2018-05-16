@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-#  Compress a sequence of texture images, using the codec J2K (color
-#  images).
+#  Compress a sequence of texture pictures, using the codec J2K (color
+#  pictures).
 
 import shutil
 import os
@@ -24,7 +24,7 @@ COMPONENTS  = 3
 #  - Use 2 bytes for weighted components or that weighted.
 BYTES_PER_COMPONENT = 1 # 2
 
-parser = arguments_parser(description="Compress a YUV image using JPEG 2000.")
+parser = arguments_parser(description="Compress a YUV picture using JPEG 2000.")
 parser.add_argument("--file",
                     help="File that contains the texture data.",
                     default="")
@@ -53,8 +53,8 @@ SRLs = int(args.SRLs)
 ## @param jump_demux Number of bytes of distance between the same component within the codestream.\n It is useful to locate all occurrences of a particular component and can demux components.
 ## @param size_component Number of bytes of a given component. It is useful for demultiplexing.
 ## @param bits_per_component Number of bits per component. It is a constant for the entire duration.
-## @param sDimX Number of samples of a particular component, to the width of the image.
-## @param sDimY Number of samples of a particular component, to the height of the image.
+## @param sDimX Number of samples of a particular component, to the width of the picture.
+## @param sDimY Number of samples of a particular component, to the height of the picture.
 
 #---------------------------------------------------------------------
 def encode (component, jump_demux, size_component, bits_per_component, sDimX, sDimY) :
@@ -70,19 +70,19 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
     except CalledProcessError :
         sys.exit(-1)
         
-    image_number = 0
-    while image_number < pictures :
+    picture_number = 0
+    while picture_number < pictures :
 
-        image_filename = file + "_" + '%04d' % image_number
+        picture_filename = file + "_" + '%04d' % picture_number
 
-        os.rename(image_filename, image_filename + ".rawl")
+        os.rename(picture_filename, picture_filename + ".rawl")
 
         try :
             check_call("trace kdu_compress"
-                       + " -i "          + image_filename + "_Y.rawl,"
-                       + image_filename + "_U.rawl,"
-                       + image_filename + "_V.raw,"
-                       + " -o "          + image_filename + ".j2c"
+                       + " -i "          + picture_filename + "_Y.rawl,"
+                       + picture_filename + "_U.rawl,"
+                       + picture_filename + "_V.raw,"
+                       + " -o "          + picture_filename + ".j2c"
                        + " Creversible=" + "no" # "no" "yes"
                        + " -slope "      + str(quantization)
                        + " -no_weights"
@@ -100,7 +100,7 @@ def encode (component, jump_demux, size_component, bits_per_component, sDimX, sD
         except CalledProcessError :
             sys.exit(-1)
 
-        image_number += 1
+        picture_number += 1
 
 ## Number of bits per component.
 bits_per_component = BYTES_PER_COMPONENT * 8
@@ -120,7 +120,7 @@ V_size     = Y_size / 4
 ## Size of the components 'YUV' (measured in pixels).
 YUV_size   = Y_size + U_size + V_size
 
-# Copy only the required images.
+# Copy only the required pictures.
 #-------------------------------
 try :
     check_call("trace dd"
@@ -154,24 +154,24 @@ def header (file_name) :
 ## File that lists the sizes of the compressed files. It is useful for
 ## calculating Kbps (see info.py).
 file_sizes   = open (file + ".j2c", 'w')
-## Number of image of the current iteration.
-image_number = 0
+## Number of picture of the current iteration.
+picture_number = 0
 ## Total size of compressed files.
 total        = 0
 
-while image_number < pictures:
+while picture_number < pictures:
 
-    ## Name of image of the current iteration.
-    str_image_number = '%04d' % image_number
+    ## Name of picture of the current iteration.
+    str_picture_number = '%04d' % picture_number
 
     ## Size of the component 'Y' (measured in bytes, without headers).
-    Ysize  = os.path.getsize(file + "_Y_" + str_image_number + ".j2c") - header(file + "_Y_" + str_image_number + ".j2c")
+    Ysize  = os.path.getsize(file + "_Y_" + str_picture_number + ".j2c") - header(file + "_Y_" + str_picture_number + ".j2c")
     ## Size of the component 'U' (measured in bytes, without headers).
-    Usize  = os.path.getsize(file + "_U_" + str_image_number + ".j2c") - header(file + "_U_" + str_image_number + ".j2c")
+    Usize  = os.path.getsize(file + "_U_" + str_picture_number + ".j2c") - header(file + "_U_" + str_picture_number + ".j2c")
     ## Size of the component 'V' (measured in bytes, without headers).
-    Vsize  = os.path.getsize(file + "_V_" + str_image_number + ".j2c") - header(file + "_V_" + str_image_number + ".j2c")
+    Vsize  = os.path.getsize(file + "_V_" + str_picture_number + ".j2c") - header(file + "_V_" + str_picture_number + ".j2c")
 
     total  = total + Ysize + Usize + Vsize
     file_sizes.write(str(total) + "\n")
 
-    image_number += 1
+    picture_number += 1

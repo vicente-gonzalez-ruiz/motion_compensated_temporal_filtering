@@ -31,7 +31,7 @@ BYTES_PER_COMPONENT = 1
 file = ""
 ## Controls the quality level and the bit-rate of the code-stream.
 slopes = "31"
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 ## Width of the pictures.
 pixels_in_x = 352
@@ -43,7 +43,7 @@ temporal_levels = 5
 
 ## Documentation of usage.
 #  - -[-f]ile = file that contains the LFB data.
-#  - -[-p]ictures = number of images to process.
+#  - -[-p]ictures = number of pictures to process.
 #  - -[-]pixels_in_[x] = size of the X dimension of the pictures.
 #  - -[-]pixels_in_[y] = size of the Y dimension of the pictures.
 #  - -[-s]lopes = distortion-length slope value for the only quality layer.
@@ -60,7 +60,7 @@ def usage():
     sys.stderr.write("  Parameters:\n")
     sys.stderr.write("\n")
     sys.stderr.write("   -[-f]ile = file that contains the LFB data (\"%s\")\n" % file)
-    sys.stderr.write("   -[-p]ictures = number of images to process (%d)\n" % pictures)
+    sys.stderr.write("   -[-p]ictures = number of pictures to process (%d)\n" % pictures)
     sys.stderr.write("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n" % pixels_in_x)
     sys.stderr.write("   -[-]pixels_in_[y] = size of the Y dimension of the pictures (%d)\n" % pixels_in_y)
     sys.stderr.write("   -[-s]lopes = distortion-length slope value for the only quality layer (%s)\n" % "", slopes)

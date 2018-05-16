@@ -3,17 +3,17 @@
 low="low_0"
 even="even_1"
 odd="odd_1"
-images=33
+pictures=33
 pixels_in_x=352
 pixels_in_y=288
 
 usage() {
     echo $0
     echo "Direct Lazzy wavelet transform over the time domain"
-    echo "  [-e even images ($even)]"
-    echo "  [-o odd images ($odd)]"
-    echo "  [-l low images ($low)]"
-    echo "  [-i images ($images)]"
+    echo "  [-e even pictures ($even)]"
+    echo "  [-o odd pictures ($odd)]"
+    echo "  [-l low pictures ($low)]"
+    echo "  [-p pictures ($pictures)]"
     echo "  [-x pixels_in_x ($pixels_in_x)]"
     echo "  [-y pixels_in_y ($pixels_in_y)]"
     echo "  [-? (help)]"
@@ -21,7 +21,7 @@ usage() {
 
 (echo $0 $@ 1>&2)
 
-while getopts "e:o:l:i:x:y:?" opt; do
+while getopts "e:o:l:p:x:y:?" opt; do
     case ${opt} in
 	e)
 	    even="${OPTARG}"
@@ -35,9 +35,9 @@ while getopts "e:o:l:i:x:y:?" opt; do
 	    low="${OPTARG}"
 	    echo $0: low=$low
 	    ;;
-	i)
-	    images="${OPTARG}"
-	    echo $0: images=$images
+	p)
+	    pictures="${OPTARG}"
+	    echo $0: pictures=$pictures
 	    ;;
 	x)
 	    pixels_in_x="${OPTARG}"
@@ -73,19 +73,19 @@ ln -s ../${low}/"0000_0.pgm" $even
 ln -s ../${low}/"0000_1.pgm" $even
 ln -s ../${low}/"0000_2.pgm" $even
 
-image=0
-images_2=`echo $images/2 | bc`
-while [ $image -le $images_2 ]
+picture=0
+pictures_2=`echo $pictures/2 | bc`
+while [ $picture -le $pictures_2 ]
 do
-    _odd=`echo $image*2+1 | bc`
-    ln -s ../$low/$(printf "%04d_0.pgm" $_odd) $odd/$(printf "%04d_0.pgm" $image)
-    ln -s ../$low/$(printf "%04d_1.pgm" $_odd) $odd/$(printf "%04d_1.pgm" $image)
-    ln -s ../$low/$(printf "%04d_2.pgm" $_odd) $odd/$(printf "%04d_2.pgm" $image)
+    _odd=`echo $picture*2+1 | bc`
+    ln -s ../$low/$(printf "%04d_0.pgm" $_odd) $odd/$(printf "%04d_0.pgm" $picture)
+    ln -s ../$low/$(printf "%04d_1.pgm" $_odd) $odd/$(printf "%04d_1.pgm" $picture)
+    ln -s ../$low/$(printf "%04d_2.pgm" $_odd) $odd/$(printf "%04d_2.pgm" $picture)
 
-    _even=`echo $image*2+2 | bc`
-    ((image++))
-    ln -s ../$low/$(printf "%04d_0.pgm" $_even) $even/$(printf "%04d_0.pgm" $image)
-    ln -s ../$low/$(printf "%04d_1.pgm" $_even) $even/$(printf "%04d_1.pgm" $image)
-    ln -s ../$low/$(printf "%04d_2.pgm" $_even) $even/$(printf "%04d_2.pgm" $image)
+    _even=`echo $picture*2+2 | bc`
+    ((picture++))
+    ln -s ../$low/$(printf "%04d_0.pgm" $_even) $even/$(printf "%04d_0.pgm" $picture)
+    ln -s ../$low/$(printf "%04d_1.pgm" $_even) $even/$(printf "%04d_1.pgm" $picture)
+    ln -s ../$low/$(printf "%04d_2.pgm" $_even) $even/$(printf "%04d_2.pgm" $picture)
 
 done

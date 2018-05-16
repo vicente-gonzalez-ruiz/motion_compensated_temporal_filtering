@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-# Compression of a sequence of images.
+# Compression of a sequence of pictures.
 
 # {{{ Importing
 
@@ -26,7 +26,7 @@ log.setLevel('INFO')
 
 from arguments_parser import arguments_parser
 
-parser = arguments_parser(description="Encodes a sequence of imagesy into a MCJ2K stream")
+parser = arguments_parser(description="Encodes a sequence of picturesy into a MCJ2K stream")
 parser.always_B()
 parser.block_overlaping()
 parser.block_size()
@@ -66,10 +66,10 @@ update_factor = float(args.update_factor)
 
 # }}}
 
-MCTF_QUANTIZER       = os.environ["MCTF_QUANTIZER"]
+MCTF_QUANTIZER = os.environ["MCTF_QUANTIZER"]
 
 if TRLs > 1:
-    # {{{ Temporal analysis of image sequence. Temporal decorrelation.
+    # {{{ Temporal analysis of picture sequence. Temporal decorrelation.
     shell.run("mctf analyze"
               + " --always_B="          + str(always_B)
               + " --block_overlaping="  + str(block_overlaping)
@@ -95,15 +95,15 @@ if TRLs > 1:
               #                   + " --motion_quantization="      + str(motion_quantization)
               #                   + " --motion_quantization_step=" + str(motion_quantization_step)
               + " --SRLs="                     + str(SRLs)
-              + " --TRLs="                     + str(TRLs)
+              + " --TRLs="                     + str(TRLs))
     # }}}
     
 # {{{ Texture compression.
-shell.run("mctf texture_compress__"         + MCTF_QUANTIZER
-          + " --GOPs="                      + str(GOPs)
-          + " --pixels_in_x="               + str(pixels_in_x)
-          + " --pixels_in_y="               + str(pixels_in_y)
-          + " --SRLs="                      + str(SRLs)
-          + " --layers="                    + str(layers)
-          + " --TRLs="                      + str(TRLs))
+shell.run("mctf texture_compress__" + MCTF_QUANTIZER
+          + " --GOPs="              + str(GOPs)
+          + " --pixels_in_x="       + str(pixels_in_x)
+          + " --pixels_in_y="       + str(pixels_in_y)
+          + " --SRLs="              + str(SRLs)
+          + " --layers="            + str(layers)
+          + " --TRLs="              + str(TRLs))
 # }}}

@@ -52,8 +52,8 @@ TRLs = int(args.TRLs)
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
-images = (GOPs - 1) * GOP_size + 1
-fields = images // 2
+pictures = (GOPs - 1) * GOP_size + 1
+fields = pictures // 2
 blocks_in_y = pixels_in_y // block_size
 blocks_in_x = pixels_in_x // block_size
 
@@ -109,7 +109,7 @@ if TRLs==2:
     shell.run("ln -s motion_filtered_1 motion_residue_1")
 
 iter = 1
-fields = images // 2
+fields = pictures // 2
 while iter < TRLs:
 
     shell.run("mctf subband_motion_compress__" + MCTF_MOTION_CODEC

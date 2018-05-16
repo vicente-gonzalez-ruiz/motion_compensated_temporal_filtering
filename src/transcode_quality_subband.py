@@ -4,7 +4,7 @@
 
 # Quality transcoding of a subband.
 #
-# Input: original subband, number of images and number of
+# Input: original subband, number of pictures and number of
 # quality-layers.
 #
 # Output: truncated subband.
@@ -40,22 +40,22 @@ parser.add_argument("--subband",
 parser.add_argument("--layers",
                     help="Number of quality layers to output",
                     default=8)
-parser.add_argument("--images",
-                    help="Number of images to transcode",
+parser.add_argument("--pictures",
+                    help="Number of pictures to transcode",
                     default=1)
 
 args = parser.parse_known_args()[0]
 subband = args.subband
 layers = int(args.layers)
-images = int(args.images)
+pictures = int(args.pictures)
 
 log.info("subband={}".format(subband))
 log.info("layers={}".format(layers))
-log.info("images={}".format(images))
+log.info("pictures={}".format(pictures))
 
 # }}}
 
-def transcode_image(filename, layers):
+def transcode_picture(filename, layers):
 # {{{
 
     print(filename, layers)
@@ -70,18 +70,18 @@ def transcode_image(filename, layers):
 
 # }}}
 
-image_number = 0
-while image_number < images:
+picture_number = 0
+while picture_number < pictures:
 
-    str_image_number = '%04d' % image_number
+    str_picture_number = '%04d' % picture_number
 
-    filename = subband + "_" + str_image_number + "_Y" 
-    transcode_image(filename + ".j2c", layers)
+    filename = subband + "_" + str_picture_number + "_Y" 
+    transcode_picture(filename + ".j2c", layers)
 
-    filename = subband + "_" + str_image_number + "_U" 
-    transcode_image(filename + ".j2c", layers)
+    filename = subband + "_" + str_picture_number + "_U" 
+    transcode_picture(filename + ".j2c", layers)
 
-    filename = subband + "_" + str_image_number + "_V" 
-    transcode_image(filename + ".j2c", layers)
+    filename = subband + "_" + str_picture_number + "_V" 
+    transcode_picture(filename + ".j2c", layers)
 
-    image_number += 1
+    picture_number += 1

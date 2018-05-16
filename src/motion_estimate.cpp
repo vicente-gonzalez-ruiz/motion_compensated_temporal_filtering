@@ -137,9 +137,9 @@ void local_me_for_block
 
 } /* local_me_for_block() */
 
-/* Estimates the motion of a block from the reference image to the
- * predicted image, use a search area of +-1. */
-void local_me_for_image
+/* Estimates the motion of a block from the reference picture to the
+ * predicted picture, use a search area of +-1. */
+void local_me_for_picture
 (
  MVC_TYPE ****mv,             /* [PREV|NEXT][Y|X][coor_y][coor_x] */
  TC_CPU_TYPE ***ref,          /* [PREV|NEXT][coor_y][coor_x] */
@@ -173,7 +173,7 @@ int desp(int x, int y) {
 
 # endif /* FAST_SEARCH */
 
-void me_for_image
+void me_for_picture
 (MVC_TYPE ****mv,               /* [PREV|NEXT][y_field|x_field][y_coor][x_coor] */
  TC_CPU_TYPE ***ref,            /* [PREV|NEXT][y_coor][x_coor] */
  TC_CPU_TYPE **pred,            /* [y_coor][x_coor] */
@@ -193,7 +193,7 @@ void me_for_image
   int dwt_levels = (int)rint(log((double)search_range)/log(2.0)) - 1;
   info("motion_estimate: dwt_levels = %d\n", dwt_levels);
 
-  /* DWT applied to images. */
+  /* DWT applied to pictures. */
   pic_dwt->analyze(ref[PREV], pixels_in_y, pixels_in_x, dwt_levels);
   pic_dwt->analyze(ref[NEXT], pixels_in_y, pixels_in_x, dwt_levels);
   pic_dwt->analyze(pred, pixels_in_y, pixels_in_x, dwt_levels);
@@ -201,7 +201,7 @@ void me_for_image
   /* Over-pixel estimation. */
   info("motion_estimate: over-pixel motion estimation level=%d\n", dwt_levels);
 
-  local_me_for_image(mv,
+  local_me_for_picture(mv,
 		     ref,
 		     pred,
 		     block_size,
@@ -215,21 +215,21 @@ void me_for_image
     int blocks_in_y_l = desp(blocks_in_y, l);
     int blocks_in_x_l = desp(blocks_in_x, l);
 
-    /* Expand images in a factor of 2. */
+    /* Expand pictures in a factor of 2. */
     pic_dwt->synthesize(ref[PREV], Y_l, X_l, 1);
     pic_dwt->synthesize(ref[NEXT], Y_l, X_l, 1);
     pic_dwt->synthesize(pred, Y_l, X_l, 1);
 
     /*  Motion fields expanded by a factor of 2. This is necessary
 	because in the next iteration the reference and predicted
-	images are twice as large. */
+	pictures are twice as large. */
     mv_dwt->synthesize(mv[PREV][Y_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
     mv_dwt->synthesize(mv[NEXT][Y_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
     mv_dwt->synthesize(mv[PREV][X_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
     mv_dwt->synthesize(mv[NEXT][X_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
     
     /* Multiply by 2 the motion vectors, because the calculated values
-       now referenced to an image twice as large in each dimension. */
+       now referenced to an picture twice as large in each dimension. */
     for(int by=0; by<blocks_in_y_l; by++) {
       for(int bx=0; bx<blocks_in_x_l; bx++) {
 
@@ -259,7 +259,7 @@ void me_for_image
       }
     }
     info("motion_estimate: over-pixel motion estimation level=%d\n",l);
-    local_me_for_image(mv,
+    local_me_for_picture(mv,
 		       ref,
 		       pred,
 		       block_size,
@@ -271,7 +271,7 @@ void me_for_image
   for(int l=1; l<=subpixel_accuracy; l++) {
     info("motion_estimate: sub-pixel motion estimation level=%d\n",l);
     
-    /* Expand images on a factor of 2. */
+    /* Expand pictures on a factor of 2. */
     pic_dwt->synthesize(ref[PREV], pixels_in_y<<l, pixels_in_x<<l, 1);
     pic_dwt->synthesize(ref[NEXT], pixels_in_y<<l, pixels_in_x<<l, 1);
     pic_dwt->synthesize(pred, pixels_in_y<<l, pixels_in_x<<l, 1);
@@ -306,7 +306,7 @@ void me_for_image
       }
     }
     
-    local_me_for_image(mv,
+    local_me_for_picture(mv,
 		       ref,
 		       pred,
 		       block_size<<l,
@@ -386,7 +386,7 @@ void me_for_image
 
 #endif /* FAST_SEARCH */
 
-} /* me_for_image */
+} /* me_for_picture */
 
 #include <getopt.h>
 
@@ -522,7 +522,7 @@ int main(int argc, char *argv[]) {
       printf("   -[-i]motion_fn = input file with the initial motion fields (\"%s\")\n", imotion_fn);
       printf("   -[-m]otion_fn = output file with the motion fields (\"%s\")\n", imotion_fn);
       printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", odd_fn);
-      printf("   -[-p]ictures = number of images to process (%d)\n", pictures);
+      printf("   -[-p]ictures = number of pictures to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x);
       printf("   -[-]pixels_in_[y] = size of the Y dimension of the pictures (%d)\n", pixels_in_y);
       printf("   -[-s]earch_range = size of the searching area of the motion estimation (%d)\n", search_range);
@@ -604,7 +604,7 @@ int main(int argc, char *argv[]) {
 
   /* Read the luma of reference[0]. */
   // {{{ reference[0] <- even
-  texture.read_image(reference[0],
+  texture.read_picture(reference[0],
 		     pixels_in_y, pixels_in_x,
 		     even_fn,
 		     0,
@@ -620,7 +620,7 @@ int main(int argc, char *argv[]) {
   /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
     fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
-  /* Fill the edge of the read image. */
+  /* Fill the edge of the read picture. */
   texture.fill_border(reference[0],
 		      pixels_in_y,
 		      pixels_in_x,
@@ -633,7 +633,7 @@ int main(int argc, char *argv[]) {
     /* Luma. */
     //texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
     // {{{ predicted <- odd
-    texture.read_image(predicted,
+    texture.read_picture(predicted,
 		       pixels_in_y, pixels_in_x,
 		       odd_fn,
 		       i,
@@ -660,7 +660,7 @@ int main(int argc, char *argv[]) {
 
     /* Read the luma of reference[1]. */
     // {{{ reference[1] <- even
-    texture.read_image(reference[1],
+    texture.read_picture(reference[1],
 		       pixels_in_y, pixels_in_x,
 		       even_fn,
 		       i,
@@ -677,7 +677,7 @@ int main(int argc, char *argv[]) {
     /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
       fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
-    /* Fill the edge of the read image. */
+    /* Fill the edge of the read picture. */
     texture.fill_border(reference[1],
 			pixels_in_y,
 			pixels_in_x,
@@ -692,7 +692,7 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    me_for_image(mv,
+    me_for_picture(mv,
 		 reference,
 		 predicted,
 		 pixels_in_y, pixels_in_x,

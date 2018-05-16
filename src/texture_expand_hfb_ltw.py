@@ -25,7 +25,7 @@ import arguments_parser
 
 ## File that contains the HFB data.
 file = ""
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 
 ## The parser module provides an interface to Python's internal parser
@@ -46,23 +46,23 @@ if args.pictures:
 
 # Decode and multiplexing all components (YUV).
 #----------------------------------------------
-## Current image number iteration.
-image_number = 0
-while image_number < pictures:
+## Current picture number iteration.
+picture_number = 0
+while picture_number < pictures:
 
-    ## Current image number iteration.
-    str_image_number = '%04d' % image_number
+    ## Current picture number iteration.
+    str_picture_number = '%04d' % picture_number
 
     # Y
     #---
-    ## Current image name iteration.
-    image_filename = file + "_Y_" + str_image_number
+    ## Current picture name iteration.
+    picture_filename = file + "_Y_" + str_picture_number
 
     # Decode a component.
     try:
         check_call("trace ltw -D "
-                   + " -i " + image_filename + ".ltw"
-                   + " -o " + image_filename + ".raw"
+                   + " -i " + picture_filename + ".ltw"
+                   + " -o " + picture_filename + ".raw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-hfb.txt"
                    + " -a 0"
                    + " -s 0",
@@ -71,20 +71,20 @@ while image_number < pictures:
         sys.exit(-1)
 
     try:
-        check_call("trace cat " + image_filename + ".raw >> " + file, shell=True)
+        check_call("trace cat " + picture_filename + ".raw >> " + file, shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
 
     # U
     #---
-    image_filename = file + "_U_" + str_image_number
+    picture_filename = file + "_U_" + str_picture_number
 
     # Decode a component.
     try:
         check_call("trace ltw -D "
-                   + " -i " + image_filename + ".ltw"
-                   + " -o " + image_filename + ".raw"
+                   + " -i " + picture_filename + ".ltw"
+                   + " -o " + picture_filename + ".raw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-hfb.txt"
                    + " -a 0"
                    + " -s 0",
@@ -93,19 +93,19 @@ while image_number < pictures:
         sys.exit(-1)
 
     try:
-        check_call("trace cat " + image_filename + ".raw >> " + file, shell=True)
+        check_call("trace cat " + picture_filename + ".raw >> " + file, shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
     # V
     #---
-    image_filename = file + "_V_" + str_image_number
+    picture_filename = file + "_V_" + str_picture_number
 
     # Decode a component.
     try:
         check_call("trace ltw -D "
-                   + " -i " + image_filename + ".ltw"
-                   + " -o " + image_filename + ".raw"
+                   + " -i " + picture_filename + ".ltw"
+                   + " -o " + picture_filename + ".raw"
                    + " -c " + os.environ["MCTF"] + "/bin/config-hfb.txt"
                    + " -a 0"
                    + " -s 0",
@@ -114,8 +114,8 @@ while image_number < pictures:
         sys.exit(-1)
 
     try:
-        check_call("trace cat " + image_filename + ".raw >> " + file, shell=True)
+        check_call("trace cat " + picture_filename + ".raw >> " + file, shell=True)
     except CalledProcessError:
         sys.exit(-1)
 
-    image_number += 1
+    picture_number += 1

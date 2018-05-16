@@ -29,7 +29,7 @@ int clip(int x, int dim) {
   return x;   
 }
 
-/* Adds even images (S_ {2i}) to the prediction error.  This should
+/* Adds even pictures (S_ {2i}) to the prediction error.  This should
  * reduce the aliasing. A value for update_factor equal to 1/4 means
  * that the high-frequency subband is 4 times less important than the
  * low-frequency subband.
@@ -55,7 +55,7 @@ void update
 	  for(int x=0; x<block_size; x++) {
 	    float aux;
 
-	      /* Updates the previous image. */
+	      /* Updates the previous picture. */
 	      aux = reference_picture[PREV][c]
 		[clip(by*block_size+y+mv[PREV][Y_FIELD][by][bx],pixels_in_y[c])]
 		[clip(bx*block_size+x+mv[PREV][X_FIELD][by][bx],pixels_in_x[c])];
@@ -80,7 +80,7 @@ void update
 		[clip(bx*block_size+x+mv[PREV][X_FIELD][by][bx],pixels_in_x[c])]
 		= aux;
 	      
-	      /* Updates the afterimage. */
+	      /* Updates the afterpicture. */
 	      aux = reference_picture[NEXT][c]
 		[clip(by*block_size+y+mv[NEXT][Y_FIELD][by][bx],pixels_in_y[c])]
 		[clip(bx*block_size+x+mv[NEXT][X_FIELD][by][bx],pixels_in_x[c])];
@@ -267,7 +267,7 @@ int main(int argc, char *argv[]) {
       printf("   -[-h]igh_fn = input file with high-subband pictures (\"%s\")\n", high_fn);
       printf("   -[-l]ow_fn = output file with low-subband pictures (\"%s\")\n", low_fn);
       printf("   -[-m]otion_fn = input file with the motion fields (\"%s\")\n", motion_fn);
-      printf("   -[-p]ictures = number of images to process (%d)\n", pictures);
+      printf("   -[-p]ictures = number of pictures to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x[0]);
       printf("   -[-]pixels_in_[y] = size of the Y dimension of the pictures (%d)\n", pixels_in_y[0]);
       printf("   -[-]subpixel_[a]ccuracy = sub-pixel accuracy of the motion estimation (%d)\n", subpixel_accuracy);
@@ -329,13 +329,13 @@ int main(int argc, char *argv[]) {
     TEXTURE_INTERPOLATION_FILTER <
       TC_CPU_TYPE
       >
-    > *image_dwt = new class dwt2d <
+    > *picture_dwt = new class dwt2d <
       TC_CPU_TYPE,
     TEXTURE_INTERPOLATION_FILTER <
       TC_CPU_TYPE
       >
     >;
-    image_dwt->set_max_line_size(PIXELS_IN_X_MAX);
+    picture_dwt->set_max_line_size(PIXELS_IN_X_MAX);
   
   class dwt2d <
     TC_CPU_TYPE,
@@ -363,7 +363,7 @@ int main(int argc, char *argv[]) {
     mv = motion.alloc(blocks_in_y, blocks_in_x);
   }
 
-  texture < TC_IO_TYPE, TC_CPU_TYPE > texture;//image;
+  texture < TC_IO_TYPE, TC_CPU_TYPE > texture;//picture;
   //texture < TC_IO_TYPE, TC_CPU_TYPE > error;
 
   TC_CPU_TYPE ***reference[2] /* In (5/3) we have 2 references */; {
@@ -398,7 +398,7 @@ int main(int argc, char *argv[]) {
   info("%s: reading picture 0 from \"%s\"\n", argv[0], low_fn);
 #endif /* __ANALYZE__ */
   for(int c=0; c<COMPONENTS; c++) {
-    texture.read_image(reference[0][c], pixels_in_y[c], pixels_in_x[c],
+    texture.read_picture(reference[0][c], pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__	       
 		       even_fn,
 #else /* __ANALYZE__ */
@@ -433,8 +433,8 @@ int main(int argc, char *argv[]) {
     }
   }
   
-  image_dwt->synthesize(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
-  image_dwt->synthesize(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
+  picture_dwt->synthesize(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
+  picture_dwt->synthesize(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
   
   // }}}
 
@@ -445,7 +445,7 @@ int main(int argc, char *argv[]) {
     info("%s: reading picture %d from \"%s\"\n", argv[0], i, high_fn);
     for(int c=0; c<COMPONENTS; c++) {
       //error.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-      texture.read_image(residue[c],
+      texture.read_picture(residue[c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 high_fn,
 			 i,
@@ -496,7 +496,7 @@ int main(int argc, char *argv[]) {
     info("%s: reading picture %d from \"%s\"\n", argv[0], i, low_fn);
 #endif /* __ANALYZE__ */
     for(int c=0; c<COMPONENTS; c++) {
-      texture.read_image(reference[1][c], pixels_in_y[c], pixels_in_x[c],
+      texture.read_picture(reference[1][c], pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__ 
 			 even_fn,
 #else /* __ANALYZE__ */
@@ -530,8 +530,8 @@ int main(int argc, char *argv[]) {
 	reference[1][2][y][x] = 0;
       }
     }
-    image_dwt->synthesize(reference[1][1], pixels_in_y[0], pixels_in_x[0], 1);
-    image_dwt->synthesize(reference[1][2], pixels_in_y[0], pixels_in_x[0], 1);
+    picture_dwt->synthesize(reference[1][1], pixels_in_y[0], pixels_in_x[0], 1);
+    picture_dwt->synthesize(reference[1][2], pixels_in_y[0], pixels_in_x[0], 1);
     
     // }}}
     
@@ -622,11 +622,11 @@ w
     info("%s: writing picture %d from \"%s\"\n", argv[0], i, even_fn);
 #endif /* __ANALYZE__ */
     
-    image_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
-    image_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
+    picture_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
+    picture_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
      
     for(int c=0; c<COMPONENTS; c++) {
-      texture.write_image(reference[1][c],
+      texture.write_picture(reference[1][c],
 			  pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
 			  low_fn,
@@ -664,11 +664,11 @@ w
   info("%s: writing picture %d to \"%s\"\n", argv[0], i, even_fn);
 #endif /* __ANALYZE__ */
   
-  image_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
-  image_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
+  picture_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
+  picture_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
   
   for(int c=0; c<COMPONENTS; c++) {
-    texture.write_image(reference[0][c],
+    texture.write_picture(reference[0][c],
 			pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
 			low_fn,

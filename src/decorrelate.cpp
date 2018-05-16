@@ -1,16 +1,16 @@
-/* De/correlate a sequence of images using the input bidirectional
+/* De/correlate a sequence of pictures using the input bidirectional
    motion vector fields. When it is used to analyze, uses information
-   about the movement to generate a prediction of the odd images
-   (predicted frames) from the pairs (reference images). Then the
-   predictions are subtracted at odd images to generate high temporal
-   frequency band (images of error). If the predicted image has a
-   lower or equal to the image entropy residue, then the predicted
-   image which becomes part of the high frequency subband. When used
+   about the movement to generate a prediction of the odd pictures
+   (predicted frames) from the pairs (reference pictures). Then the
+   predictions are subtracted at odd pictures to generate high temporal
+   frequency band (pictures of error). If the predicted picture has a
+   lower or equal to the picture entropy residue, then the predicted
+   picture which becomes part of the high frequency subband. When used
    to synthesize, the motion information used to generate a prediction
-   of the odd images from the even-numbered images. Then the
+   of the odd pictures from the even-numbered pictures. Then the
    predictions are combined with the high temporal frequency band
-   (error images) to generate the odd images. The subtraction or the
-   sum of images is performed in the image domain.
+   (error pictures) to generate the odd pictures. The subtraction or the
+   sum of pictures is performed in the picture domain.
  */
 
 #include <stdio.h>
@@ -141,7 +141,7 @@ void predict
       } /* for(blocks_in_y) */
     } /* for(blocks_in_x) */
     
-    /* The prediction image is generated.*/
+    /* The prediction picture is generated.*/
     overlap_dwt->synthesize(prediction_picture[c], pixels_in_y, pixels_in_x, levels);
    
 #ifdef _1_ 
@@ -346,7 +346,7 @@ int main(int argc, char *argv[]) {
       printf("   -[-]mo[t]ion_out_fn = output file with the motion fields (\"%s\")\n", motion_out_fn);
 #endif /* __ANALYZE__ */
       printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", odd_fn);
-      printf("   -[-p]ictures = number of images to process (%d)\n", pictures);
+      printf("   -[-p]ictures = number of pictures to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x[0]);
       printf("   -[-]pixels_in_[y] = size of the Y dimension of the pictures (%d)\n", pixels_in_y[0]);
       printf("   -[-s]earch_range = size of the searching area of the motion estimation (%d)\n", search_range);
@@ -449,13 +449,13 @@ int main(int argc, char *argv[]) {
       TC_CPU_TYPE
       >
     >
-    *image_dwt = new class dwt2d <
+    *picture_dwt = new class dwt2d <
       TC_CPU_TYPE,
     TEXTURE_INTERPOLATION_FILTER <
       TC_CPU_TYPE
       >
     >;
-  image_dwt->set_max_line_size(PIXELS_IN_X_MAX);
+  picture_dwt->set_max_line_size(PIXELS_IN_X_MAX);
 
   int blocks_in_y = pixels_in_y[0]/block_size;
   int blocks_in_x = pixels_in_x[0]/block_size;
@@ -525,11 +525,11 @@ int main(int argc, char *argv[]) {
   
   /* Decorrelation begins. */
   
-  /* Read reference [0] (the first image). */
+  /* Read reference [0] (the first picture). */
   for(int c=0; c<COMPONENTS; c++) {
-    // image.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+    // picture.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
     // {{{ reference[0] <- even
-    texture.read_image(reference[0][c],
+    texture.read_picture(reference[0][c],
 		       pixels_in_y[c], pixels_in_x[c],
 		       even_fn,
 		       0,
@@ -593,7 +593,7 @@ int main(int argc, char *argv[]) {
   }
 
   /* Interpolation. */
-  image_dwt->synthesize(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
+  picture_dwt->synthesize(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
 
   /* Chroma Cr. */
   for(int y=0; y<pixels_in_y[0]/2; y++) {
@@ -603,7 +603,7 @@ int main(int argc, char *argv[]) {
   for(int y=pixels_in_y[0]/2; y<pixels_in_y[0]; y++) {
     memset(reference[0][2][y], 0, pixels_in_x[0]*sizeof(TC_CPU_TYPE));
   }
-  image_dwt->synthesize(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1); 
+  picture_dwt->synthesize(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1); 
 
   /* At this point, referece [0] has its three components with the
      same size.  It's time to interpolate (interpolation leads to
@@ -628,7 +628,7 @@ int main(int argc, char *argv[]) {
 	       0,
 	       ( pixels_in_x[0] << s ) *sizeof(TC_CPU_TYPE) );
       }
-      image_dwt->synthesize(reference[0][c],
+      picture_dwt->synthesize(reference[0][c],
 			    pixels_in_y[0] << s,
 			    pixels_in_x[0] << s,
 			    1);
@@ -643,18 +643,18 @@ int main(int argc, char *argv[]) {
     
   }
   
-  /* The other images are processed. */
+  /* The other pictures are processed. */
   
   for(int i=0; i<pictures/2; i++) {
     
 #if defined __ANALYZE__
     info("%s: reading picture %d of \"%s\"\n", argv[0], i, odd_fn);
 
-    /* The next image (to predict) */
+    /* The next picture (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
-      //image.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      //picture.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
       // {{{ predicted <- odd
-      texture.read_image(predicted[c],
+      texture.read_picture(predicted[c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 odd_fn,
 			 i,
@@ -671,11 +671,11 @@ int main(int argc, char *argv[]) {
 
     info("%s: reading picture %d of \"%s\"\n", argv[0], i, high_fn);
     
-    /* Read residue image */
+    /* Read residue picture */
     for(int c=0; c<COMPONENTS; c++) {
-      //image.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+      //picture.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       // {{{ residue -> high
-      texture.read_image(residue[c],
+      texture.read_picture(residue[c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 high_fn,
 			 i,
@@ -699,9 +699,9 @@ int main(int argc, char *argv[]) {
     
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
-      //image.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
+      //picture.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
       // {{{ reference[1] <- even
-      texture.read_image(reference[1][c],
+      texture.read_picture(reference[1][c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 even_fn,
 			 i,
@@ -722,7 +722,7 @@ int main(int argc, char *argv[]) {
     for(int y=pixels_in_y[0]/2; y<pixels_in_y[0]; y++) {
       memset(reference[1][1][y], 0, pixels_in_x[0]*sizeof(TC_CPU_TYPE));
     }
-    image_dwt->synthesize(reference[1][1], pixels_in_y[0], pixels_in_x[0], 1);
+    picture_dwt->synthesize(reference[1][1], pixels_in_y[0], pixels_in_x[0], 1);
 
     /* Croma Cr. */
     for(int y=0; y<pixels_in_y[0]/2; y++) {
@@ -732,7 +732,7 @@ int main(int argc, char *argv[]) {
     for(int y=pixels_in_y[0]/2; y<pixels_in_y[0]; y++) {
       memset(reference[1][2][y], 0, pixels_in_x[0]*sizeof(TC_CPU_TYPE));
     }
-    image_dwt->synthesize(reference[1][2], pixels_in_y[0], pixels_in_x[0], 1);
+    picture_dwt->synthesize(reference[1][2], pixels_in_y[0], pixels_in_x[0], 1);
 
     /* Interpolate and fill edges. */
     
@@ -752,7 +752,7 @@ int main(int argc, char *argv[]) {
 		 0,
 		 ( pixels_in_x[0] << s ) *sizeof(TC_CPU_TYPE) );
 	}
-	image_dwt->synthesize(reference[1][c],
+	picture_dwt->synthesize(reference[1][c],
 			      pixels_in_y[0] << s,
 			      pixels_in_x[0] << s,
 			      1);
@@ -851,11 +851,11 @@ int main(int argc, char *argv[]) {
     }
 #endif /* __ANALYZE__ */
 
-    /** If the entropy of the predicted image is less than or equal to
-	the entropy of the "wrong image" then the predicted image
-	replaces the "wrong image". */
+    /** If the entropy of the predicted picture is less than or equal to
+	the entropy of the "wrong picture" then the predicted picture
+	replaces the "wrong picture". */
 
-    /* Write the residue image, the chroma is subsampled. */
+    /* Write the residue picture, the chroma is subsampled. */
     predict(block_overlaping << subpixel_accuracy,
 	    block_size << subpixel_accuracy,
 	    blocks_in_y,
@@ -864,7 +864,7 @@ int main(int argc, char *argv[]) {
 	    pixels_in_y[0] << subpixel_accuracy,
 	    pixels_in_x[0] << subpixel_accuracy,
 	    mv,
-	    image_dwt,
+	    picture_dwt,
 	    prediction_block,
 	    prediction,
 	    reference);
@@ -881,21 +881,21 @@ int main(int argc, char *argv[]) {
     /* Subsample the three components because the motion compensation
        is made to the original video resolution. */
     for(int c=0; c<COMPONENTS; c++) {
-      image_dwt->analyze(prediction[c],
+      picture_dwt->analyze(prediction[c],
 			 pixels_in_y[0] << subpixel_accuracy,
 			 pixels_in_x[0] << subpixel_accuracy,
 			 subpixel_accuracy);
     }
     
     /* The prediction is still on: YUV444; and we must pass it: YUV422. */
-    image_dwt->analyze(prediction[1], pixels_in_y[0], pixels_in_x[0], 1);
-    image_dwt->analyze(prediction[2], pixels_in_y[0], pixels_in_x[0], 1);
+    picture_dwt->analyze(prediction[1], pixels_in_y[0], pixels_in_x[0], 1);
+    picture_dwt->analyze(prediction[2], pixels_in_y[0], pixels_in_x[0], 1);
     
 #if defined __GET_PREDICTION__
     info("%s: writing picture %d of \"%s\"\n", argv[0], i, prediction_fn);
     for(int c=0; c<COMPONENTS; c++) {
       // {{{ prediction -> prediction
-      texture.write_image(prediction[c],
+      texture.write_picture(prediction[c],
 			  pixels_in_y[c], pixels_in_x[c],
 			  prediction_fn,
 			  i,
@@ -911,7 +911,7 @@ int main(int argc, char *argv[]) {
     
 #if defined __ANALYZE__
     
-    /* The residue image is generated. */
+    /* The residue picture is generated. */
     
     info("%s: writing picture %d of \"%s\"\n", argv[0], i, high_fn);
     
@@ -964,7 +964,7 @@ int main(int argc, char *argv[]) {
       }
     }
     
-    /* The entropy of the residual image and the predicted image is
+    /* The entropy of the residual picture and the predicted picture is
        calculated. We only use the luma. */
 
     float residue_entropy = 0.0, predicted_entropy = 1.0; {
@@ -991,11 +991,11 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /* If the entropy of the predicted image is less than or equal to
-       the entropy of the "wrong image" then the predicted image
-       replaces the "wrong image". */
+    /* If the entropy of the predicted picture is less than or equal to
+       the entropy of the "wrong picture" then the predicted picture
+       replaces the "wrong picture". */
 
-      /* Write the residue image, the chroma subsampling. */
+      /* Write the residue picture, the chroma subsampling. */
 
     int predicted_size
       = (int)(predicted_entropy * (float)pixels_in_y[0] * (float)pixels_in_x[0]);
@@ -1009,10 +1009,10 @@ int main(int argc, char *argv[]) {
     info("predicted_size=%d residue_size=%d motion_size=%d\n",
 	 predicted_size, residue_size, motion_size);
 
-    //if(predicted_entropy <= (residue_entropy + motion_entropy)) /* Image of type I. */ {
+    //if(predicted_entropy <= (residue_entropy + motion_entropy)) /* Picture of type I. */ {
     if(predicted_size <= (residue_size + motion_size)) {
 
-      /* Indicated in the code-stream which is an image I. */
+      /* Indicated in the code-stream which is an picture I. */
       putc('I', frame_types_fd);
 
       /* Copy predicted to residue. */
@@ -1027,9 +1027,9 @@ int main(int argc, char *argv[]) {
       }
       
       for(int c=0; c<COMPONENTS; c++) {
-	//image.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	//picture.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
 	// {{{ residue -> high
-	texture.write_image(residue[c],
+	texture.write_picture(residue[c],
 			    pixels_in_y[c], pixels_in_x[c],
 			    high_fn,
 			    i,
@@ -1042,7 +1042,7 @@ int main(int argc, char *argv[]) {
 	// }}}
       }
 
-      /* No motion field (other than 0) associated with an image I. */
+      /* No motion field (other than 0) associated with an picture I. */
       //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
       motion.write_field(zeroes, blocks_in_y, blocks_in_x, motion_out_fn, i
 #if defined __INFO__
@@ -1101,14 +1101,14 @@ int main(int argc, char *argv[]) {
 #endif /* _1_ */
     } else {
 
-      /* Indicated in the code-stream which is an image B. */
+      /* Indicated in the code-stream which is an picture B. */
       putc('B', frame_types_fd);
 
       /* We turn to the range [0,255] possibly with clipping and write to disk. */
 
       for(int c=0; c<COMPONENTS; c++) {
 	/* The following loop is only necessary if the dynamic range
-	   of the residue image must be stored in the range
+	   of the residue picture must be stored in the range
 	   [0,255]. */
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
@@ -1118,9 +1118,9 @@ int main(int argc, char *argv[]) {
 	    residue[c][y][x] = val;
 	  }
 	}
-	//image.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	//picture.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
 	// {{{ residue -> high
-	texture.write_image(residue[c],
+	texture.write_picture(residue[c],
 			    pixels_in_y[c], pixels_in_x[c],
 			    high_fn,
 			    i,
@@ -1134,7 +1134,7 @@ int main(int argc, char *argv[]) {
 	// }}}
       }
 
-      /* The images I have associated motion field. */
+      /* The pictures I have associated motion field. */
       //motion.write(motion_out_fd, mv, blocks_in_y, blocks_in_x);
       motion.write_field(mv, blocks_in_y, blocks_in_x, motion_out_fn, i
 #if defined __INFO__
@@ -1223,11 +1223,11 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /* Write predicted image. */
+    /* Write predicted picture. */
     for(int c=0; c<COMPONENTS; c++) {
-      //image.write(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      //picture.write(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
       // {{{ predicted -> odd
-      texture.write_image(predicted[c],
+      texture.write_picture(predicted[c],
 			  pixels_in_y[c], pixels_in_x[c],
 			  odd_fn,
 			  i,
@@ -1249,5 +1249,5 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  delete image_dwt;
+  delete picture_dwt;
 }

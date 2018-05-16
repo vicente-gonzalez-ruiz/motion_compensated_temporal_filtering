@@ -14,7 +14,7 @@ private:
 
 public:
   
-  /* Allocate a texture image */
+  /* Allocate a texture picture */
   CPU_TYPE **alloc(int y_dim, int x_dim, int border_dim) {
     CPU_TYPE **data = new CPU_TYPE * [ y_dim + border_dim*2 ];
     for(int y=0; y<(y_dim + border_dim*2); y++) {
@@ -29,7 +29,7 @@ public:
     return data;
   }
 
-  /* Extends an image, copying the value of the nearest pixel (CPU_TYPE). */
+  /* Extends a picture, copying the value of the nearest pixel (CPU_TYPE). */
   void fill_border(CPU_TYPE **data, int y_dim, int x_dim, int border_dim) {
 
     /** Region 1: Upper left corner. */
@@ -90,7 +90,7 @@ public:
 
   }
 
-  /* Read an image from disk. */
+  /* Read a picture from disk. */
   void read(FILE *fd,
 	    CPU_TYPE **img,
 	    int y_dim,
@@ -108,7 +108,7 @@ public:
     }
   }
 
-  /* Write an image to disk. */
+  /* Write a picture to disk. */
   void write(FILE *fd,
 	     CPU_TYPE **img,
 	     int y_dim,
@@ -125,11 +125,11 @@ public:
     }
   }
 
-  void read_image(CPU_TYPE **image,
+  void read_picture(CPU_TYPE **picture,
 		  int pixels_in_y,
 		  int pixels_in_x,
 		  char *fn,
-		  int image_number,
+		  int picture_number,
 		  int component
 #if defined __INFO__
 		  ,
@@ -137,7 +137,7 @@ public:
 #endif /* __INFO__ */
 		  ) {
     char fn_[80];
-    sprintf(fn_, "%s/%04d_%d.pgm", fn, image_number, component); 
+    sprintf(fn_, "%s/%04d_%d.pgm", fn, picture_number, component); 
     FILE *fd = fopen(fn_, "r");
     if(!fd) {
 #if defined __WARNING__
@@ -145,18 +145,18 @@ public:
 #endif /* __INFO__ */
       fd = fopen("/dev/zero", "r");
     }
-    texture::read(fd, image, pixels_in_y, pixels_in_x);
+    texture::read(fd, picture, pixels_in_y, pixels_in_x);
 #if defined __INFO__
     info("%s: read %dx%d from \"%s\"\n", msg, pixels_in_y, pixels_in_x, fn_);
 #endif /* __INFO__ */
     fclose(fd);
   }
 
-  void write_image(CPU_TYPE **image,
+  void write_picture(CPU_TYPE **picture,
 		   int pixels_in_y,
 		   int pixels_in_x,
 		   char *fn,
-		   int image_number,
+		   int picture_number,
 		   int component
 #if defined __INFO__
 		   ,
@@ -164,7 +164,7 @@ public:
 #endif /* __INFO__ */
 		   ) {
     char fn_[80];
-    sprintf(fn_, "%s/%04d_%d.pgm", fn, image_number, component); 
+    sprintf(fn_, "%s/%04d_%d.pgm", fn, picture_number, component); 
     FILE *fd = fopen(fn_, "w");
 #if defined __DEBUG__
     if(!fd) {
@@ -172,7 +172,7 @@ public:
       abort();
     }
 #endif /* __DEBUG__ */
-    texture::write(fd, image, pixels_in_y, pixels_in_x);
+    texture::write(fd, picture, pixels_in_y, pixels_in_x);
 #if defined __INFO__
     info("%s: written %dx%d to \"%s\"\n", msg, pixels_in_y, pixels_in_x, fn_);
 #endif /* __INFO__ */
@@ -256,7 +256,7 @@ void alloc_border(TYPE **data, int y_dim, int border_dim) {
 /** \tparam TYPE is a data type indicating that it does not use any particular template. */
 template <typename TYPE>
 
-  /** \brief Extends the image, copying the value of the nearest pixel.
+  /** \brief Extends the picture, copying the value of the nearest pixel.
    * \param data A matrix (2D) with margins (border).
    * \param y_dim Dimension 'Y' of a picture.
    * \param x_dim Dimension 'X' of a picture.

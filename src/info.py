@@ -97,7 +97,7 @@ sys.stdout.write("-------- -------\n")
 
 colors = ('Y', 'U', 'V')
 
-# GOP 0. The GOP0 is formed by the first image in low_<TRLs-1>.
+# GOP 0. The GOP0 is formed by the first picture in low_<TRLs-1>.
 length = 0
 for c in colors:
     filename = "low_" + str(TRLs - 1) + "_" + "%04d" % 0 + "_" + c + ".j2c"
@@ -213,7 +213,7 @@ for GOP_number in range(1, self.GOPs+1) :
     sys.stdout.write("%3s " % '%04d' % GOP_number)
 
 
-    # SUBBANDA L. Each new image represents a new GOP.
+    # SUBBANDA L. Each new picture represents a new GOP.
     #-------------------------------------------------
     L_next_GOP = self.find_next_EOC_texture(L_file)
     L_bytes    = L_next_GOP - L_prev_GOP
@@ -228,7 +228,7 @@ for GOP_number in range(1, self.GOPs+1) :
     sys.stdout.write("%8d " % int(L_kbps))
 
 
-    # SUBBANDAS H. Depending on the level of temporal resolution, each GOP generates a number of different images.
+    # SUBBANDAS H. Depending on the level of temporal resolution, each GOP generates a number of different pictures.
     pics_in_GOP = 1
     for subband in range(self.TRLs-1, 0, -1) :
 
@@ -243,11 +243,11 @@ for GOP_number in range(1, self.GOPs+1) :
         # Motion.
         #--------
         for i in range(0, pics_in_GOP) :
-            next_image = self.find_next_EOC_motion(M_file[subband])
-            self.bytes_frames_M[self.TRLs - subband].append(next_image - M_prev_image[subband]) # Bytes per frame
-            M_prev_image[subband] = next_image
+            next_picture = self.find_next_EOC_motion(M_file[subband])
+            self.bytes_frames_M[self.TRLs - subband].append(next_picture - M_prev_picture[subband]) # Bytes per frame
+            M_prev_picture[subband] = next_picture
 
-        M_kbps = float(next_image - M_prev_GOP[subband]) * 8.0 / GOP_time / 1000.0
+        M_kbps = float(next_picture - M_prev_GOP[subband]) * 8.0 / GOP_time / 1000.0
 
         self.kbps_M[GOP_number-1].append(M_kbps)
         self.average_M[subband]       += M_kbps
@@ -255,7 +255,7 @@ for GOP_number in range(1, self.GOPs+1) :
         sys.stdout.write("%7d " %    int(M_kbps))
 
         #import ipdb; ipdb.set_trace()
-        M_prev_image[subband] = M_prev_GOP[subband] = next_image
+        M_prev_picture[subband] = M_prev_GOP[subband] = next_picture
 
         # High frecuency.
         #----------------
@@ -263,18 +263,18 @@ for GOP_number in range(1, self.GOPs+1) :
             with io.open("high_" + str(subband) + "_" + "%04d" % g*GOP_size+i + "_U" + ".j2c", "rb" as file):
                 file.seek(0, 2)
                 self.bytes_frames_T[self.TRLs - subband].append(file.tell())
-            next_image = self.find_next_EOC_texture(H_file[subband])
-            self.bytes_frames_T[self.TRLs - subband].append(next_image - H_prev_image[subband]) # Bytes per frame
-            H_prev_image[subband] = next_image
+            next_picture = self.find_next_EOC_texture(H_file[subband])
+            self.bytes_frames_T[self.TRLs - subband].append(next_picture - H_prev_picture[subband]) # Bytes per frame
+            H_prev_picture[subband] = next_picture
 
-        H_kbps = float(next_image - H_prev_GOP[subband]) * 8.0 / GOP_time / 1000.0
+        H_kbps = float(next_picture - H_prev_GOP[subband]) * 8.0 / GOP_time / 1000.0
 
         self.kbps_H[GOP_number].append(H_kbps)
         self.average_H[subband]     += H_kbps
         total                       += H_kbps
         sys.stdout.write("%6d " %  int(H_kbps))
 
-        H_prev_image[subband] = H_prev_GOP[subband] = next_image
+        H_prev_picture[subband] = H_prev_GOP[subband] = next_picture
 
         pics_in_GOP *= 2
 
@@ -298,7 +298,7 @@ self.bytes_frames_TM_perframe = []
 # Add bytes to L frames.
 for Vpic in range(0, pictures) :
 
-    if Vpic % GOP_size == 0 : # Is a L image. Then add image 0, from L, from GOPx
+    if Vpic % GOP_size == 0 : # Is a L picture. Then add picture 0, from L, from GOPx
         self.bytes_frames_TM_perframe.append( self.bytes_frames_TM[0][Vpic/GOP_size] )
     else :
         # Add bytes Hs & Ms, to Hs frames.
@@ -315,23 +315,23 @@ bytes_frames_MCTF = []
 
 # Add bytes of subband L to all frames.
 for pic in range(0, pictures) :
-    if pic % GOP_size == 0 : # Is a L image. Then add image 0, from L, from GOPx
+    if pic % GOP_size == 0 : # Is a L picture. Then add picture 0, from L, from GOPx
         bytes_frames_MCTF.append( self.bytes_frames_TM[0][pic/GOP_size] )
 
-    else : # Is not a L image. Then add image 0 & 1, from L, from GOPx
+    else : # Is not a L picture. Then add picture 0 & 1, from L, from GOPx
 
-        ## pic is the image number 'image_number' from subband 'sub'.
-        image_number = pic / 2.0
+        ## pic is the picture number 'picture_number' from subband 'sub'.
+        picture_number = pic / 2.0
         sub          = 1
-        check_call("echo \"pic " + str(pic) + "\timage_number " + str(image_number) + "\tsub " + str(sub) + "\" >> " + "info_picIdentifier", shell=True)
-        while (image_number - int(image_number)) == 0.0 :
-            image_number /= 2.0
+        check_call("echo \"pic " + str(pic) + "\tpicture_number " + str(picture_number) + "\tsub " + str(sub) + "\" >> " + "info_picIdentifier", shell=True)
+        while (picture_number - int(picture_number)) == 0.0 :
+            picture_number /= 2.0
             sub          += 1
-            check_call("echo \"pic " + str(pic) + "\timage_number " + str(image_number) + "\tsub " + str(sub) + "\" >> " + "info_picIdentifier", shell=True)
+            check_call("echo \"pic " + str(pic) + "\tpicture_number " + str(picture_number) + "\tsub " + str(sub) + "\" >> " + "info_picIdentifier", shell=True)
         check_call("echo \"sub --> " + str(sub) + "\" >> " + "info_picIdentifier", shell=True)
 
         # Frame type = 'I'
-        if self.types_frame[self.TRLs-sub][int(image_number)] == 'I' :
+        if self.types_frame[self.TRLs-sub][int(picture_number)] == 'I' :
             bytes_frames_MCTF.append( 0 )
         # Frame type = 'B'
         else :
@@ -422,8 +422,8 @@ self.average_H.insert(0, self.average_L)      # < Jse
 print (" ")
 print ("M_prev_GOP\t"    + str(M_prev_GOP))
 print ("H_prev_GOP\t"    + str(H_prev_GOP))
-print ("M_prev_image\t"  + str(M_prev_image))
-print ("H_prev_image\t"  + str(H_prev_image))
+print ("M_prev_picture\t"  + str(M_prev_picture))
+print ("H_prev_picture\t"  + str(H_prev_picture))
 
 print (" ")
 print ("Frame_Types\n"               + str(self.types_frame))

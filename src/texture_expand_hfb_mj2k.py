@@ -30,7 +30,7 @@ import arguments_parser
 
 ## File that contains the HFB data.
 file = ""
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 
 ## The parser module provides an interface to Python's internal parser

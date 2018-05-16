@@ -28,7 +28,7 @@ import getopt
 file = ""
 ## Number of quality layers to decode.
 layers = 1
-## Number of images to process.
+## Number of pictures to process.
 pictures = 33
 ## Number of temporal levels.
 temporal_levels = 6
@@ -37,7 +37,7 @@ temporal_levels = 6
 ## Documentation of usage.
 #  - -[-f]ile = file that contains the HFB data.
 #  - -[-l]layers = number of quality layers to decode.
-#  - -[-p]ictures = number of images to process.
+#  - -[-p]ictures = number of pictures to process.
 #  - -[-t]emporal_levels = number of temporal levels.
 def usage():
     sys.stderr.write("+-------------------------------+\n")
@@ -51,7 +51,7 @@ def usage():
     sys.stderr.write("\n")
     sys.stderr.write("   -[-f]ile = file that contains the HFB data (\"%s\")\n" % file)
     sys.stderr.write("   -[-l]layers = number of quality layers to decode (%d)\n" % layers)
-    sys.stderr.write("   -[-p]ictures = number of images to process (%d)\n" % pictures)
+    sys.stderr.write("   -[-p]ictures = number of pictures to process (%d)\n" % pictures)
     sys.stderr.write("   -[-t]emporal_levels = number of temporal levels (%d)\n" % temporal_levels)
     sys.stderr.write("\n")
 

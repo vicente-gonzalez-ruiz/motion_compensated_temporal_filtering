@@ -3,24 +3,26 @@
 
 # Compressing of the motion vector fields using the codec J2K.
 
-# import os
-# import sys
-# import subprocess  as     sub
-# from   subprocess  import check_call
-# from   subprocess  import CalledProcessError
+# {{{ imports
 import logging
 from shell import Shell as shell 
 from arguments_parser import arguments_parser
-# from defaults import Defaults
+# }}}
 
+# {{{ Logging
 logging.basicConfig()
 log = logging.getLogger("subband_motion_compress__j2k")
 log.setLevel('INFO')
+# }}}
 
+# {{{ Defs
 COMPONENTS = 4
 BYTES_PER_COMPONENT = 2
 BITS_PER_COMPONENT = BYTES_PER_COMPONENT * 8
+spatial_dwt_levels = 0 # 1 # SRLs - 1
+# }}}
 
+# {{{ Arguments parsing
 parser = arguments_parser(description="Compress the motion data using JPEG 2000.")
 parser.add_argument("--blocks_in_x",
                     help="number of blocks in the X direction.",
@@ -45,8 +47,8 @@ bytes_per_field = blocks_in_x * blocks_in_y * BYTES_PER_COMPONENT
 number_of_fields = int(args.fields)
 file = args.file
 # slopes = args.slopes; log.info("slopes={}".format(slopes))
+# }}}
 
-spatial_dwt_levels = 0 # 1 # SRLs - 1
 field = 0
 while field < number_of_fields:
 
