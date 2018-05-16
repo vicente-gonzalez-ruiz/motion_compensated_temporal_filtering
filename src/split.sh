@@ -21,31 +21,31 @@ while getopts "e:o:l:i:?" opt; do
     case ${opt} in
 	e)
 	    even="${OPTARG}"
-	    echo even=$even
+	    echo $0: even=$even
 	    ;;
 	o)
 	    odd="${OPTARG}"
-	    echo odd=$odd
+	    echo $0: odd=$odd
 	    ;;
 	l)
 	    low="${OPTARG}"
-	    echo low=$low
+	    echo $0: low=$low
 	    ;;
 	i)
 	    images="${OPTARG}"
-	    echo images=$images
+	    echo $0: images=$images
 	    ;;
 	?)
             usage
             exit 0
             ;;
         \?)
-            echo "Invalid option: -${OPTARG}" >&2
+            echo $0: "Invalid option: -${OPTARG}" >&2
             usage
             exit 1
             ;;
         :)
-            echo "Option -${OPTARG} requires an argument." >&2
+            echo $0: "Option -${OPTARG} requires an argument." >&2
 	    usage
             exit 1
             ;;

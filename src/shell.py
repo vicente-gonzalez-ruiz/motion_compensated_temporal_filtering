@@ -11,9 +11,10 @@ logging.basicConfig()
 log = logging.getLogger("shell")
 log.setLevel('INFO')
 
-class shell:
+class Shell:
 
-    def run(self, command):
+    @staticmethod
+    def run(command):
         
         log.info("Running \"" + command + "\"")
 

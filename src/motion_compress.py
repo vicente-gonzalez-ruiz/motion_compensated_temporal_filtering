@@ -8,8 +8,7 @@
 import os
 import sys
 from GOP import GOP
-from subprocess import check_call
-from subprocess import CalledProcessError
+from shell import Shell as shell 
 
 # {{{ Logging 
 
@@ -64,30 +63,22 @@ iter = 1
 while iter < TRLs - 1:
 
     # Remove motion redundancy between temporal levels (iter) and (iter+1).
-    try:
-        check_call("mctf interlevel_motion_decorrelate"
-                   + " --blocks_in_x="         + str(blocks_in_x)
-                   + " --blocks_in_y="         + str(blocks_in_y)
-                   + " --fields_in_predicted=" + str(fields)
-                   + " --predicted="           + "motion_filtered_" + str(iter)
-                   + " --reference="           + "motion_filtered_" + str(iter + 1)
-                   + " --residue="             + "motion_residue_tmp_"  + str(iter)
-                   , shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
+    shell.run("mctf interlevel_motion_decorrelate"
+              + " --blocks_in_x="         + str(blocks_in_x)
+              + " --blocks_in_y="         + str(blocks_in_y)
+              + " --fields_in_predicted=" + str(fields)
+              + " --predicted="           + "motion_filtered_" + str(iter)
+              + " --reference="           + "motion_filtered_" + str(iter + 1)
+              + " --residue="             + "motion_residue_tmp_"  + str(iter))
 
     # Remove motion redundancy inside the temporal level (iter).
-    try:
-        check_call("mctf bidirectional_motion_decorrelate"
-                   + " --blocks_in_x=" + str(blocks_in_x)
-                   + " --blocks_in_y=" + str(blocks_in_y)
-                   + " --fields="      + str(fields)
-                   + " --input="       + "motion_residue_tmp_" + str(iter)
-                   + " --output="      + "motion_residue_"  + str(iter)
-                   , shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
-            
+    shell.run("mctf bidirectional_motion_decorrelate"
+              + " --blocks_in_x=" + str(blocks_in_x)
+              + " --blocks_in_y=" + str(blocks_in_y)
+              + " --fields="      + str(fields)
+              + " --input="       + "motion_residue_tmp_" + str(iter)
+              + " --output="      + "motion_residue_"  + str(iter))
+
     # Calculate the block size used in this temporal resolution level.
     block_size = block_size // 2
     if (block_size < min_block_size):
@@ -100,7 +91,7 @@ while iter < TRLs - 1:
     iter += 1
 
 # }}}
-    
+
 # {{{ Compress
 
 #slopes = []
@@ -114,21 +105,19 @@ while iter < TRLs - 1:
     
 #import ipdb; ipdb.set_trace()
 
+if TRLs==2:
+    shell.run("ln -s motion_filtered_1 motion_residue_1")
+
 iter = 1
 fields = images // 2
-while iter <= TRLs - 1:
+while iter < TRLs:
 
-    try:
-        check_call("mctf subband_motion_compress__" + MCTF_MOTION_CODEC
-                   + " --blocks_in_x="      + str(blocks_in_x)
-                   + " --blocks_in_y="      + str(blocks_in_y)
-                   + " --iteration="        + str(iter)
-                   + " --fields="           + str(fields)
-                   + " --file="             + "motion_residue_" + str(iter)
-#                   + " --slopes=\""         + str_slopes + "\""
-                   , shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
+    shell.run("mctf subband_motion_compress__" + MCTF_MOTION_CODEC
+              + " --blocks_in_x="      + str(blocks_in_x)
+              + " --blocks_in_y="      + str(blocks_in_y)
+              + " --iteration="        + str(iter)
+              + " --fields="           + str(fields)
+              + " --file="             + "motion_residue_" + str(iter))
 
     fields //= 2
     iter += 1
