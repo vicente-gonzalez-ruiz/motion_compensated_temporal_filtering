@@ -8,8 +8,7 @@
 import sys
 import os
 from GOP import GOP
-from subprocess import check_call
-from subprocess import CalledProcessError
+from shell import Shell as shell
 
 # }}}
 
@@ -70,54 +69,41 @@ update_factor = float(args.update_factor)
 MCTF_QUANTIZER       = os.environ["MCTF_QUANTIZER"]
 
 if TRLs > 1:
-    # {{{
-    try:
-        # Temporal analysis of image sequence. Temporal decorrelation.
-        check_call("mctf analyze"
-                   + " --always_B="          + str(always_B)
-                   + " --block_overlaping="  + str(block_overlaping)
-                   + " --block_size="        + str(block_size)
-                   + " --min_block_size="    + str(min_block_size)
-                   + " --border_size="       + str(border_size)
-                   + " --GOPs="              + str(GOPs)
-                   + " --pixels_in_x="       + str(pixels_in_x)
-                   + " --pixels_in_y="       + str(pixels_in_y)
-                   + " --search_range="      + str(search_range)
-                   + " --subpixel_accuracy=" + str(subpixel_accuracy)
-                   + " --TRLs="              + str(TRLs)
-                   + " --update_factor="     + str(update_factor)
-                   , shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
-
-    try:
-        # Compress motion
-        check_call("mctf motion_compress"
-                   + " --block_size="               + str(block_size)
-                   + " --GOPs="                     + str(GOPs)
-                   + " --min_block_size="           + str(min_block_size)
-                   + " --pixels_in_x="              + str(pixels_in_x)
-                   + " --pixels_in_y="              + str(pixels_in_y)
-#                   + " --motion_layers="            + str(motion_layers)
-#                   + " --motion_quantization="      + str(motion_quantization)
-#                   + " --motion_quantization_step=" + str(motion_quantization_step)
-                   + " --SRLs="                     + str(SRLs)
-                   + " --TRLs="                     + str(TRLs)
-                   , shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
-
-    # }}} if TRLS > 1
+    # {{{ Temporal analysis of image sequence. Temporal decorrelation.
+    shell.run("mctf analyze"
+              + " --always_B="          + str(always_B)
+              + " --block_overlaping="  + str(block_overlaping)
+              + " --block_size="        + str(block_size)
+              + " --min_block_size="    + str(min_block_size)
+              + " --border_size="       + str(border_size)
+              + " --GOPs="              + str(GOPs)
+              + " --pixels_in_x="       + str(pixels_in_x)
+              + " --pixels_in_y="       + str(pixels_in_y)
+              + " --search_range="      + str(search_range)
+              + " --subpixel_accuracy=" + str(subpixel_accuracy)
+              + " --TRLs="              + str(TRLs)
+              + " --update_factor="     + str(update_factor))
+    # }}}
+    # {{{ Motion data compression.
+    shell.run("mctf motion_compress"
+              + " --block_size="               + str(block_size)
+              + " --GOPs="                     + str(GOPs)
+              + " --min_block_size="           + str(min_block_size)
+              + " --pixels_in_x="              + str(pixels_in_x)
+              + " --pixels_in_y="              + str(pixels_in_y)
+              #                   + " --motion_layers="            + str(motion_layers)
+              #                   + " --motion_quantization="      + str(motion_quantization)
+              #                   + " --motion_quantization_step=" + str(motion_quantization_step)
+              + " --SRLs="                     + str(SRLs)
+              + " --TRLs="                     + str(TRLs)
+    # }}}
     
-try:
-    # Compress texture
-    check_call("mctf texture_compress__"         + MCTF_QUANTIZER
-               + " --GOPs="                      + str(GOPs)
-               + " --pixels_in_x="               + str(pixels_in_x)
-               + " --pixels_in_y="               + str(pixels_in_y)
-               + " --SRLs="                      + str(SRLs)
-               + " --layers="                    + str(layers)
-               + " --TRLs="                      + str(TRLs)
-               , shell=True)
-except CalledProcessError:
-    sys.exit(-1)
+# {{{ Texture compression.
+shell.run("mctf texture_compress__"         + MCTF_QUANTIZER
+          + " --GOPs="                      + str(GOPs)
+          + " --pixels_in_x="               + str(pixels_in_x)
+          + " --pixels_in_y="               + str(pixels_in_y)
+          + " --SRLs="                      + str(SRLs)
+          + " --layers="                    + str(layers)
+          + " --TRLs="                      + str(TRLs))
+# }}}

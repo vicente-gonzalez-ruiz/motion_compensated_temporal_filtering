@@ -10,8 +10,6 @@
 import sys
 import os
 import traceback
-from subprocess import check_call
-from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
 
 parser = arguments_parser(description="Performs a temporal analysis step.")
@@ -44,73 +42,60 @@ search_range = int(args.search_range)
 subpixel_accuracy = int(args.subpixel_accuracy)
 update_factor = float(args.update_factor)
 
-try :
-    # Lazzy transform.
-    check_call("mctf split"
-               + " -e "     + "even_" + str(subband)
-               + " -l "      + "low_"  + str(subband-1)
-               + " -o "      + "odd_"  + str(subband)
-               + " -i "    + str(pictures)
-#               + " --pixels_in_x=" + str(pixels_in_x)
-#               + " --pixels_in_y=" + str(pixels_in_y)
-               , shell=True)
-except CalledProcessError :
-    sys.exit(-1)
+% {{{ Lazzy transform.
+shell.run("mctf split"
+          + " -e " + "even_" + str(subband)
+          + " -l " + "low_"  + str(subband-1)
+          + " -o " + "odd_"  + str(subband)
+          + " -i " + str(pictures)
+          + " -x " + str(pixels_in_x)
+          + " -y " + str(pixels_in_y))
+% }}}
 
-try :
-    # Motion estimation.
-    check_call("mctf motion_estimate"
-               + " --block_size="        + str(block_size)
-               + " --border_size="       + str(border_size)
-               + " --even_fn="           + "even_"    + str(subband)
-               + " --imotion_fn="        + "imotion_" + str(subband)
-               + " --motion_fn="         + "motion_"  + str(subband)
-               + " --odd_fn="            + "odd_"     + str(subband)
-               + " --pictures="          + str(pictures)
-               + " --pixels_in_x="       + str(pixels_in_x)
-               + " --pixels_in_y="       + str(pixels_in_y)
-               + " --search_range="      + str(search_range)
-               + " --subpixel_accuracy=" + str(subpixel_accuracy)
-               , shell=True)
-except Exception:
-    print("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
-    sys.exit(-1)
+% {{{ Motion estimation.
+shell.run("mctf motion_estimate"
+          + " --block_size="        + str(block_size)
+          + " --border_size="       + str(border_size)
+          + " --even_fn="           + "even_"    + str(subband)
+          + " --imotion_fn="        + "imotion_" + str(subband)
+          + " --motion_fn="         + "motion_"  + str(subband)
+          + " --odd_fn="            + "odd_"     + str(subband)
+          + " --pictures="          + str(pictures)
+          + " --pixels_in_x="       + str(pixels_in_x)
+          + " --pixels_in_y="       + str(pixels_in_y)
+          + " --search_range="      + str(search_range)
+          + " --subpixel_accuracy=" + str(subpixel_accuracy))
+% }}}
 
-try :
-    # Motion Compensation.
-    check_call("mctf decorrelate"
-               + " --block_overlaping="  + str(block_overlaping)
-               + " --block_size="        + str(block_size)
-               + " --even_fn="           + "even_"            + str(subband)
-               + " --frame_types_fn="    + "frame_types_"     + str(subband)
-               + " --high_fn="           + "high_"            + str(subband)
-               + " --motion_in_fn="      + "motion_"          + str(subband)
-               + " --motion_out_fn="     + "motion_filtered_" + str(subband)
-               + " --odd_fn="            + "odd_"             + str(subband)
-               + " --pictures="          + str(pictures)
-               + " --pixels_in_x="       + str(pixels_in_x)
-               + " --pixels_in_y="       + str(pixels_in_y)
-               + " --search_range="      + str(search_range)
-               + " --subpixel_accuracy=" + str(subpixel_accuracy)
-               + " --always_B="          + str(always_B)
-               , shell=True)
-except CalledProcessError :
-    sys.exit(-1)
+% {{{ Motion compensation.
+shell.run("mctf decorrelate"
+          + " --block_overlaping="  + str(block_overlaping)
+          + " --block_size="        + str(block_size)
+          + " --even_fn="           + "even_"            + str(subband)
+          + " --frame_types_fn="    + "frame_types_"     + str(subband)
+          + " --high_fn="           + "high_"            + str(subband)
+          + " --motion_in_fn="      + "motion_"          + str(subband)
+          + " --motion_out_fn="     + "motion_filtered_" + str(subband)
+          + " --odd_fn="            + "odd_"             + str(subband)
+          + " --pictures="          + str(pictures)
+          + " --pixels_in_x="       + str(pixels_in_x)
+          + " --pixels_in_y="       + str(pixels_in_y)
+          + " --search_range="      + str(search_range)
+          + " --subpixel_accuracy=" + str(subpixel_accuracy)
+          + " --always_B="          + str(always_B))
+% }}}
 
-try :
-    # Eliminate the temporal aliasing (smoothing).
-    check_call("mctf update"
-               + " --block_size="        + str(block_size)
-               + " --even_fn="           + "even_"            + str(subband)
-               + " --frame_types_fn="    + "frame_types_"     + str(subband)
-               + " --high_fn="           + "high_"            + str(subband)
-               + " --low_fn="            + "low_"             + str(subband)
-               + " --motion_fn="         + "motion_filtered_" + str(subband)
-               + " --pictures="          + str(pictures)
-               + " --pixels_in_x="       + str(pixels_in_x)
-               + " --pixels_in_y="       + str(pixels_in_y)
-               + " --subpixel_accuracy=" + str(subpixel_accuracy)
-               + " --update_factor="     + str(update_factor)
-               , shell=True)
-except CalledProcessError :
-    sys.exit(-1)
+% {{{ Low-pass temporal filtering.
+shell.run("mctf update"
+          + " --block_size="        + str(block_size)
+          + " --even_fn="           + "even_"            + str(subband)
+          + " --frame_types_fn="    + "frame_types_"     + str(subband)
+          + " --high_fn="           + "high_"            + str(subband)
+          + " --low_fn="            + "low_"             + str(subband)
+          + " --motion_fn="         + "motion_filtered_" + str(subband)
+          + " --pictures="          + str(pictures)
+          + " --pixels_in_x="       + str(pixels_in_x)
+          + " --pixels_in_y="       + str(pixels_in_y)
+          + " --subpixel_accuracy=" + str(subpixel_accuracy)
+          + " --update_factor="     + str(update_factor))
+% }}}

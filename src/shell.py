@@ -11,6 +11,8 @@ logging.basicConfig()
 log = logging.getLogger("shell")
 log.setLevel('INFO')
 
+import traceback
+
 class Shell:
 
     @staticmethod
@@ -21,4 +23,5 @@ class Shell:
         try:
             check_call(command, shell=True)
         except CalledProcessError:
+            log.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
             exit(-1)

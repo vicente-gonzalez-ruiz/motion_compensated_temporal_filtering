@@ -10,9 +10,8 @@
 import os
 import sys
 from GOP import GOP
-from subprocess import check_call
-from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+from shell import Shell as shell
 
 MAX_SEARCH_RANGE = 128
 
@@ -68,22 +67,18 @@ if block_size < min_block_size:
 
 while temporal_subband < TRLs:
 
-    try:
-        check_call("mctf analyze_step"
-                   + " --always_B="          + str(always_B)
-                   + " --block_overlaping="  + str(block_overlaping)
-                   + " --block_size="        + str(block_size)
-                   + " --border_size="       + str(border_size)
-                   + " --pictures="          + str(pictures)
-                   + " --pixels_in_x="       + str(pixels_in_x)
-                   + " --pixels_in_y="       + str(pixels_in_y)
-                   + " --search_range="      + str(search_range)
-                   + " --subpixel_accuracy=" + str(subpixel_accuracy)
-                   + " --temporal_subband="  + str(temporal_subband)
-                   + " --update_factor="     + str(update_factor)
-                   , shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
+    shell.run("mctf analyze_step"
+              + " --always_B="          + str(always_B)
+              + " --block_overlaping="  + str(block_overlaping)
+              + " --block_size="        + str(block_size)
+              + " --border_size="       + str(border_size)
+              + " --pictures="          + str(pictures)
+              + " --pixels_in_x="       + str(pixels_in_x)
+              + " --pixels_in_y="       + str(pixels_in_y)
+              + " --search_range="      + str(search_range)
+              + " --subpixel_accuracy=" + str(subpixel_accuracy)
+              + " --temporal_subband="  + str(temporal_subband)
+              + " --update_factor="     + str(update_factor))
 
     pictures = (pictures + 1) // 2
 
@@ -97,4 +92,3 @@ while temporal_subband < TRLs:
         block_size = min_block_size
 
     temporal_subband += 1
-
