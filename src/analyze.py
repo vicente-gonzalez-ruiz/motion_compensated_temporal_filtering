@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-# The MCTF project has been supported by the Junta de Andalucía through
-# the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
-# sobre Internet" (P10-TIC-6548).
-
-# Performs the temporal analysis of a picture sequence. Generates a series of files that will later be encoded.
+# Performs the temporal analysis of a picture sequence. Generates a
+# series of files that will later be encoded.
 
 import os
 import sys

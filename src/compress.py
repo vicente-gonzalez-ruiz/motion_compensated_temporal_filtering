@@ -9,11 +9,6 @@ import sys
 import os
 from GOP import GOP
 from shell import Shell as shell
-
-# }}}
-
-# {{{ Logging
-
 from colorlog import log
 
 # }}}
@@ -42,23 +37,51 @@ parser.TRLs()
 parser.update_factor()
 
 args = parser.parse_known_args()[0]
+
 always_B = int(args.always_B)
+log.info("always_B={}".format(always_B))
+
 block_overlaping = int(args.block_overlaping)
+log.info("block_overlaping={}".format(block_overlaping))
+
 block_size = int(args.block_size)
+log.info("block_size={}".format(block_size))
+
 min_block_size = int(args.min_block_size)
+log.info("min_block_size={}".format(min_block_size));
+
 border_size = int(args.border_size)
+log.info("border_size={}".format(border_size))
+
 GOPs = int(args.GOPs)
+log.info("GOPs={}".format(GOPs))
+
 #motion_layers = str(args.motion_layers); log.debug("motion_layers={}".format(motion_layers))
 #motion_quantization = str(args.motion_quantization); log.debug("motion_quantization={}".format(motion_quantization))
 #motion_quantization_step = str(args.motion_quantization_step); log.debug("motion_quantization_step={}".format(motion_quantization_step))
 pixels_in_x = int(args.pixels_in_x)
+log.info("pixels_in_x={}".format(pixels_in_x))
+
 pixels_in_y = int(args.pixels_in_y)
+log.info("pixels_in_y={}".format(pixels_in_y))
+
 layers = str(args.layers)
+log.info("layers={}".format(layers))
+
 search_range = int(args.search_range)
+log.info("search_range={}".format(search_range))
+
 subpixel_accuracy = int(args.subpixel_accuracy)
+log.info("subpixel_accuracy={}".format(subpixel_accuracy))
+
 TRLs = int(args.TRLs)
+log.info("TRLs={}".format(TRLs))
+
 SRLs = int(args.SRLs)
+log.info("SRLs={}".format(SRLs))
+
 update_factor = float(args.update_factor)
+log.info("update_fact={}".format(update_factor))
 
 # }}}
 
