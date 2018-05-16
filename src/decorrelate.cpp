@@ -357,7 +357,7 @@ int main(int argc, char *argv[]) {
       break;
       
     default:
-      error("%s: Unrecognized argument.\n", argv[0]);
+      error("%s: Unrecognized argument\n", argv[0]);
     }
   }
 
@@ -605,10 +605,10 @@ int main(int argc, char *argv[]) {
   }
   image_dwt->synthesize(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1); 
 
-  /** At this point, referece [0] has its three components with the
-      same size.  It's time to interpolate (interpolation leads to
-      errors).\n And fill edges, if you are using sub-pixel estimation
-      movement. */
+  /* At this point, referece [0] has its three components with the
+     same size.  It's time to interpolate (interpolation leads to
+     errors). And fill edges, if you are using sub-pixel estimation
+     movement. */
 
   /* Interpolate and fill edges. */
   for(int c = 0; c < COMPONENTS; c++) {
@@ -648,7 +648,7 @@ int main(int argc, char *argv[]) {
   for(int i=0; i<pictures/2; i++) {
     
 #if defined __ANALYZE__
-    info("%s: reading picture %d of \"%s\".\n", argv[0], i, odd_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, odd_fn);
 
     /* The next image (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
@@ -669,7 +669,7 @@ int main(int argc, char *argv[]) {
 
 #else /* __ANALYZE__ */
 
-    info("%s: reading picture %d of \"%s\".\n", argv[0], i, high_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, high_fn);
     
     /* Read residue image */
     for(int c=0; c<COMPONENTS; c++) {
@@ -695,7 +695,7 @@ int main(int argc, char *argv[]) {
 
 #endif /* __ANALYZE__ */
     
-    info("%s: reading picture %d of \"%s\".\n", argv[0], i, even_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, even_fn);
     
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
@@ -768,7 +768,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Motion fields are read. */
-    info("%s: reading motion vector field %d in \"%s\".\n", argv[0], i, motion_in_fn);
+    info("%s: reading motion vector field %d in \"%s\"\n", argv[0], i, motion_in_fn);
     //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
     motion.read_field(mv, blocks_in_y, blocks_in_x, motion_in_fn, i
 #if defined __INFO__
@@ -892,7 +892,7 @@ int main(int argc, char *argv[]) {
     image_dwt->analyze(prediction[2], pixels_in_y[0], pixels_in_x[0], 1);
     
 #if defined __GET_PREDICTION__
-    info("%s: writing picture %d of \"%s\".\n", argv[0], i, prediction_fn);
+    info("%s: writing picture %d of \"%s\"\n", argv[0], i, prediction_fn);
     for(int c=0; c<COMPONENTS; c++) {
       // {{{ prediction -> prediction
       texture.write_image(prediction[c],
@@ -913,7 +913,7 @@ int main(int argc, char *argv[]) {
     
     /* The residue image is generated. */
     
-    info("%s: writing picture %d of \"%s\".\n", argv[0], i, high_fn);
+    info("%s: writing picture %d of \"%s\"\n", argv[0], i, high_fn);
     
     /*
       A subtraction at high resolution and a reduction,
@@ -1194,7 +1194,7 @@ int main(int argc, char *argv[]) {
     
 #else /* __ANALYZE__ */
 
-    info("%s: writing picture %d of \"%s\".\n", argv[0], i, odd_fn);
+    info("%s: writing picture %d of \"%s\"\n", argv[0], i, odd_fn);
 
     /** Decorrelation. */
 

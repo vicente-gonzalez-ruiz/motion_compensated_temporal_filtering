@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
 #if defined __ANALYZE__
       printf("  Interlevel decorrelation of the motion information\n");
 #else /* __ANALYZE__ */
-      printf("  Interlevel correlation of the motion information\n");
+      printf("  Interlevel correlation of the motion information.\n");
 #endif /* __ANALYZE__ */
       printf("\n");
       printf("  Parameters:\n");
@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
       break;
       
     default:
-      error("%s: Unrecognized argument.\n", argv[0]);
+      error("%s: Unrecognized argument\n", argv[0]);
       abort();
     }
   }
@@ -239,6 +239,12 @@ int main(int argc, char *argv[]) {
     // {{{ Read reference
 
     //motion.read(reference_fd, reference, blocks_in_y, blocks_in_x);
+    motion.read_field(reference, blocks_in_y, blocks_in_x, reference_fn, i
+#if defined __INFO__
+		      ,	argv[0]
+#endif /* __INFO__ */
+		      );
+#ifdef _1_
     // {{{ reference[0][0] <- reference
     motion.read_component(reference[0][0],
 			  blocks_in_y, blocks_in_x,
@@ -287,7 +293,7 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			  );
     // }}}
-
+#endif /* _1_ */
     // }}}
 
     /** De/correlate two consecutive motion fields using the same
@@ -302,7 +308,7 @@ int main(int argc, char *argv[]) {
 #if defined __INFO__
 			, argv[0]
 #endif /* __INFO__ */
-			    );
+			);
 #ifdef _1_
       // {{{ predicted[0][0] <- predicted
       motion.read_component(predicted[0][0],
@@ -429,6 +435,11 @@ int main(int argc, char *argv[]) {
       info("%s: writing residue field %d\n", argv[0], 2*i+p);
       // {{{ Write residue 
       //motion.write(residue_fd, residue, blocks_in_y, blocks_in_x);
+      motion.write_field(residue, blocks_in_y, blocks_in_x, residue_fn, i*2+p
+#if defined __INFO__
+			 , argv[0]
+#endif /* __INFO__ */
+			 );
 #ifdef _1_
       // {{{ residue[0][0] -> residue
       motion.write_component(residue[0][0],

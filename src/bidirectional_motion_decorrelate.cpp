@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
       break;
 
     default:
-      error("%s: Unrecognized argument.\n", argv[0]);
+      error("%s: Unrecognized argument\n", argv[0]);
       abort();
     }
   }

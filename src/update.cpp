@@ -187,57 +187,59 @@ int main(int argc, char *argv[]) {
 
     case 'b':
       block_size = atoi(optarg);
-      info("block_size=%d\n", block_size);
+      info("%s: block_size=%d\n", argv[0], block_size);
       break;
       
     case 'e':
       even_fn = optarg;
-      info("even_fn=%s\n", even_fn);
+      info("%s: even_fn=%s\n", argv[0], even_fn);
       break;
 
     case 'f':
       frame_types_fn = optarg;
-      info("frame_types_fn=%s\n", frame_types_fn);
+      info("%s: frame_types_fn=%s\n", argv[0], frame_types_fn);
       break;
 
     case 'h':
       high_fn = optarg;
-      info("high_fn=%s\n", high_fn);
+      info("%s: high_fn=%s\n", argv[0], high_fn);
       break;
 
     case 'l':
       low_fn = optarg;
-      info("low_fn=%s\n", low_fn);
+      info("%s: low_fn=%s\n", argv[0], low_fn);
       break;
 
     case 'm':
       motion_fn = optarg;
-      info("motion_fn=%s\n", motion_fn);
+      info("%s: motion_fn=%s\n", argv[0], motion_fn);
       break;
 
     case 'p':
       pictures = atoi(optarg);
-      info("pictures=%d\n", pictures);
+      info("%s: pictures=%d\n", argv[0], pictures);
       break;
       
     case 'x':
       pixels_in_x[0] = atoi(optarg);
       pixels_in_x[1] = pixels_in_x[2] = pixels_in_x[0]/2;
-      info("pixels_in_x=%d\n", pixels_in_x[0]);
+      info("%s: pixels_in_x=%d\n", argv[0], pixels_in_x[0]);
       break;
       
     case 'y':
       pixels_in_y[0] = atoi(optarg);
       pixels_in_y[1] = pixels_in_y[2] = pixels_in_y[0]/2;
-      info("pixels_in_y=%d\n", pixels_in_y[0]);
+      info("%s: pixels_in_y=%d\n", argv[0], pixels_in_y[0]);
       break;
 
     case 'a':
       subpixel_accuracy = atoi(optarg);
+      info("%s: subpixel_accuracy=%d\n", argv[0], subpixel_accuracy);
       break;
       
     case 'u':
       update_factor = atof(optarg);
+      info("%s: update_factor=%d\n", argv[0], update_factor);
       break;
       
     case '?':
@@ -275,7 +277,7 @@ int main(int argc, char *argv[]) {
       break;
 
     default:
-      error("%s: Unrecognized argument.\n", argv[0]);
+      error("%s: Unrecognized argument\n", argv[0]);
     }
   }
 
@@ -391,9 +393,9 @@ int main(int argc, char *argv[]) {
   // {{{ Read reference[0] from even_? 
 
 #if defined __ANALYZE__
-  info("%s: reading picture 0 from \"%s\".\n", argv[0], even_fn);
+  info("%s: reading picture 0 from \"%s\"\n", argv[0], even_fn);
 #else /* __ANALYZE__ */
-  info("%s: reading picture 0 from \"%s\".\n", argv[0], low_fn);
+  info("%s: reading picture 0 from \"%s\"\n", argv[0], low_fn);
 #endif /* __ANALYZE__ */
   for(int c=0; c<COMPONENTS; c++) {
     texture.read_image(reference[0][c], pixels_in_y[c], pixels_in_x[c],
@@ -440,7 +442,7 @@ int main(int argc, char *argv[]) {
   for(i; i<pictures/2; i++) {
 
     // {{{ Read residue de high_? 
-    info("%s: reading picture %d from \"%s\".\n", argv[0], i, high_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i, high_fn);
     for(int c=0; c<COMPONENTS; c++) {
       //error.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       texture.read_image(residue[c],
@@ -489,9 +491,9 @@ int main(int argc, char *argv[]) {
     // {{{ Read reference[1] de even_? 
     
 #ifdef __ANALYZE__ 
-    info("%s: reading picture %d from \"%s\".\n", argv[0], i, even_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i, even_fn);
 #else /* __ANALYZE__ */
-    info("%s: reading picture %d from \"%s\".\n", argv[0], i, low_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i, low_fn);
 #endif /* __ANALYZE__ */
     for(int c=0; c<COMPONENTS; c++) {
       texture.read_image(reference[1][c], pixels_in_y[c], pixels_in_x[c],
@@ -615,9 +617,9 @@ w
     // {{{ Write reference[0] en low_? 
 
 #ifdef __ANALYZE__ 
-    info("%s: writing picture %d from \"%s\".\n", argv[0], i, low_fn);
+    info("%s: writing picture %d from \"%s\"\n", argv[0], i, low_fn);
 #else /* __ANALYZE__ */
-    info("%s: writing picture %d from \"%s\".\n", argv[0], i, even_fn);
+    info("%s: writing picture %d from \"%s\"\n", argv[0], i, even_fn);
 #endif /* __ANALYZE__ */
     
     image_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
@@ -657,9 +659,9 @@ w
   // {{{ Write reference[0] in low_? 
   
 #ifdef __ANALYZE__ 
-  info("%s: writing picture %d to \"%s\".\n", argv[0], i, low_fn);
+  info("%s: writing picture %d to \"%s\"\n", argv[0], i, low_fn);
 #else /* __ANALYZE__ */
-  info("%s: writing picture %d to \"%s\".\n", argv[0], i, even_fn);
+  info("%s: writing picture %d to \"%s\"\n", argv[0], i, even_fn);
 #endif /* __ANALYZE__ */
   
   image_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);

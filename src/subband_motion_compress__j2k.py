@@ -49,29 +49,30 @@ spatial_dwt_levels = 0 # 1 # SRLs - 1
 field = 0
 while field < number_of_fields:
 
-    for c in range(COMPONENTS):
+    fn = file + "/" + str('%04d' % field)
+    log.info("Compressing {}".format(fn))
+    try:
+        # Compress.
+        check_call("trace kdu_compress"
+                   + " -i "          + fn + ".rawl"
+                   + " -o "          + fn + ".j2c"
+                   + " -no_weights"
+                   + " -slope 0"
+                   + " Nprecision="  + str(BITS_PER_COMPONENT)
+                   + " Nsigned="     + "yes"
+                   + " Sdims='{'"    + str(blocks_in_y) + "," + str(blocks_in_x) + "'}'"
+                   + " Creversible=yes"
+                   + " Clevels="     + str(spatial_dwt_levels)
+                   + " Cuse_sop="    + "no"
+                   , shell=True)
+        # + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"
+        # An alternative to compress the motion vectors:
+        # kdu_compress -i mini_motion_4.rawl -o mini_motion_4.j2c
+        # -no_weights Sprecision=16 Ssigned=yes Sdims='{'4,4'}'
+        # Clevels=1 Catk=2 Kextension:I2=CON Kreversible:I2=yes
+        # Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5
         
-        fn = file + "/" + str('%04d' % field) +  "_" + str(c)
-        log.info("Compressing {}".format(fn))
-        try:
-            # Compress.
-            check_call("trace kdu_compress"
-                       + " -i "          + fn + ".pgm"
-                       + " -o "          + fn + ".j2c"
-                       + " -no_weights"
-                       + " -slope 0"
-                       + " Creversible=yes"
-                       + " Clevels="     + str(spatial_dwt_levels)
-                       + " Cuse_sop="    + "no"
-                       , shell=True)
-            # + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"
-            # An alternative to compress the motion vectors:
-            # kdu_compress -i mini_motion_4.rawl -o mini_motion_4.j2c
-            # -no_weights Sprecision=16 Ssigned=yes Sdims='{'4,4'}'
-            # Clevels=1 Catk=2 Kextension:I2=CON Kreversible:I2=yes
-            # Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5
-            
-        except CalledProcessError:
-            sys.exit(-1)
+    except CalledProcessError:
+        sys.exit(-1)
 
     field += 1

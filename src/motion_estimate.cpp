@@ -532,7 +532,7 @@ int main(int argc, char *argv[]) {
       break;
       
     default:
-      error("%s: Unrecognized argument.\n", argv[0]);
+      error("%s: Unrecognized argument\n", argv[0]);
       abort();
     }
   }
@@ -628,7 +628,7 @@ int main(int argc, char *argv[]) {
 
   for(int i=0; i<pictures/2; i++) {
 
-    info("%s: reading picture %d of \"%s\".\n", argv[0], i, odd_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, odd_fn);
 
     /* Luma. */
     //texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
@@ -649,7 +649,7 @@ int main(int argc, char *argv[]) {
     /*fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
       fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
-    info("%s: reading picture %d of \"%s\".\n", argv[0], i, even_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, even_fn);
 
     /* This initialization seems to do nothing. */
     for(int y=0; y<pixels_in_y << subpixel_accuracy; y++) {
@@ -683,7 +683,7 @@ int main(int argc, char *argv[]) {
 			pixels_in_x,
 			picture_border_size);
 
-    info("%s: reading initial motion vectors.\n", argv[0]);
+    info("%s: reading initial motion vectors\n", argv[0]);
     //motion.read(imotion_fd, mv, blocks_in_y, blocks_in_x);
     //This does nothing (leave the above).
     for(int by=0; by<blocks_in_y; by++) {
@@ -755,7 +755,7 @@ int main(int argc, char *argv[]) {
     }
 #endif /* __GNUPLOT__ */
 
-    info("%s: writing motion vector field %d in \"%s\".\n", argv[0], i, motion_fn);
+    info("%s: writing motion vector field %d in \"%s\"\n", argv[0], i, motion_fn);
 
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
     motion.write_field(mv, blocks_in_y, blocks_in_x, motion_fn, i
