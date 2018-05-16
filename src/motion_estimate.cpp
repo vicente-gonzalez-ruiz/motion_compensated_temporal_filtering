@@ -760,8 +760,7 @@ int main(int argc, char *argv[]) {
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
     motion.write_field(mv, blocks_in_y, blocks_in_x, motion_fn, i
 #if defined __INFO__
-		       ,
-		       argv[0]
+		       , argv[0]
 #endif /* __INFO__ */
 		       );
 		       

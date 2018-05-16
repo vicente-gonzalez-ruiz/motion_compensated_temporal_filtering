@@ -359,7 +359,7 @@ int main(int argc, char *argv[]) {
       info("%s: reading residue field %d\n", argv[0], 2*i+p);
       // {{{ Read residue
       //motion.read(residue_fd, residue, blocks_in_y, blocks_in_x);
-      motion.read_fied(residue, blocks_in_y, blocks_in_x, residue_fn, i*2+1,
+      motion.read_field(residue, blocks_in_y, blocks_in_x, residue_fn, i*2+1
 #if defined __INFO__
 		       , argv[0]
 #endif /* __INFO__ */
@@ -478,12 +478,13 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			     );
       // }}}
+#endif /* _1_ */
       // }}}
 #else /* __ANALYZE__ */
       info("%s: writing predicted field %d\n", argv[0], 2*i+p);
       // {{{ Write predicted
       //motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
-      motion.write_field(predicted[0][0], blocks_in_y, blocks_in_x, predicted_fn,, i*2+p
+      motion.write_field(predicted, blocks_in_y, blocks_in_x, predicted_fn, i*2+p
 #if defined __INFO__
 			 , argv[0]
 #endif /* __INFO__ */

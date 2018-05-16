@@ -197,7 +197,7 @@ public:
     fclose(fd);
   }
 
-  void write_field(TYPE **data,
+  void write_field(TYPE ****data,
 		   int blocks_in_y,
 		   int blocks_in_x,
 		   char *fn,

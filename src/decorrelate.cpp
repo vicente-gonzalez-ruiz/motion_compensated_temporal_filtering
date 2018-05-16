@@ -770,7 +770,7 @@ int main(int argc, char *argv[]) {
     /* Motion fields are read. */
     info("%s: reading motion vector field %d in \"%s\".\n", argv[0], i, motion_in_fn);
     //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
-    motion.read_image(mv, blocks_in_y, blocks_in_x, motion_in_fn, i
+    motion.read_field(mv, blocks_in_y, blocks_in_x, motion_in_fn, i
 #if defined __INFO__
 		      ,
 		      argv[0]
