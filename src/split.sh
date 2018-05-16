@@ -74,7 +74,7 @@ ln -s ../${low}/"0000_1.pgm" $even
 ln -s ../${low}/"0000_2.pgm" $even
 
 picture=0
-pictures_2=`echo $pictures/2 | bc`
+pictures_2=`echo $pictures/2-1 | bc`
 while [ $picture -le $pictures_2 ]
 do
     _odd=`echo $picture*2+1 | bc`

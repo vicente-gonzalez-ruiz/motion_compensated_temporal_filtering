@@ -60,24 +60,24 @@ blocks_in_x = pixels_in_x // block_size
 # {{{ Decorrelate
 
 iter = 1
-while iter < TRLs - 1:
+while iter < TRLs:
 
     # Remove motion redundancy between temporal levels (iter) and (iter+1).
     shell.run("mctf interlevel_motion_decorrelate"
-              + " --blocks_in_x="         + str(blocks_in_x)
-              + " --blocks_in_y="         + str(blocks_in_y)
+              + " --blocks_in_x=" + str(blocks_in_x)
+              + " --blocks_in_y="  + str(blocks_in_y)
               + " --fields_in_predicted=" + str(fields)
-              + " --predicted="           + "motion_filtered_" + str(iter)
-              + " --reference="           + "motion_filtered_" + str(iter + 1)
-              + " --residue="             + "motion_residue_tmp_"  + str(iter))
+              + " --predicted=" + "motion_filtered_" + str(iter)
+              + " --reference=" + "motion_filtered_" + str(iter + 1)
+              + " --residue=" + "motion_residue_tmp_"  + str(iter))
 
     # Remove motion redundancy inside the temporal level (iter).
     shell.run("mctf bidirectional_motion_decorrelate"
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --blocks_in_y=" + str(blocks_in_y)
-              + " --fields="      + str(fields)
-              + " --input="       + "motion_residue_tmp_" + str(iter)
-              + " --output="      + "motion_residue_"  + str(iter))
+              + " --fields=" + str(fields)
+              + " --input=" + "motion_residue_tmp_" + str(iter)
+              + " --output=" + "motion_residue_"  + str(iter))
 
     # Calculate the block size used in this temporal resolution level.
     block_size = block_size // 2
@@ -113,11 +113,11 @@ fields = pictures // 2
 while iter < TRLs:
 
     shell.run("mctf subband_motion_compress__" + MCTF_MOTION_CODEC
-              + " --blocks_in_x="      + str(blocks_in_x)
-              + " --blocks_in_y="      + str(blocks_in_y)
-              + " --iteration="        + str(iter)
-              + " --fields="           + str(fields)
-              + " --file="             + "motion_residue_" + str(iter))
+              + " --blocks_in_x=" + str(blocks_in_x)
+              + " --blocks_in_y=" + str(blocks_in_y)
+              + " --iteration=" + str(iter)
+              + " --fields=" + str(fields)
+              + " --file="  + "motion_residue_" + str(iter))
 
     fields //= 2
     iter += 1

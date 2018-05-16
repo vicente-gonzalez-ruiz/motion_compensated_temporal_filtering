@@ -47,7 +47,7 @@ shell.run("mctf split"
           + " -e " + "even_" + str(subband)
           + " -l " + "low_"  + str(subband-1)
           + " -o " + "odd_"  + str(subband)
-          + " -i " + str(pictures)
+          + " -p " + str(pictures)
           + " -x " + str(pixels_in_x)
           + " -y " + str(pixels_in_y))
 # }}}

@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-from subprocess  import check_call
-from subprocess  import CalledProcessError
-from sys         import exit
-
-import logging
-
-logging.basicConfig()
-log = logging.getLogger("shell")
-log.setLevel('INFO')
+from subprocess import check_call
+from subprocess import CalledProcessError
+from sys import exit
+from colorlog import log
 
 import traceback
 

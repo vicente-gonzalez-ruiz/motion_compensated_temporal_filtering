@@ -14,11 +14,7 @@ from shell import Shell as shell
 
 # {{{ Logging
 
-import logging
-
-logging.basicConfig()
-log = logging.getLogger("compress")
-log.setLevel('INFO')
+from colorlog import log
 
 # }}}
 

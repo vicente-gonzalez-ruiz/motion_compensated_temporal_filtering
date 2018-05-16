@@ -189,6 +189,10 @@ $(MCTF_BIN)/shell.py:	shell.py
 	cp $^ $@
 EXE += $(MCTF_BIN)/shell.py
 
+$(MCTF_BIN)/colorlog.py:	colorlog.py
+	cp $^ $@
+EXE += $(MCTF_BIN)/colorlog.py
+
 $(MCTF_BIN)/analyze:	analyze.py
 EXE	+= $(MCTF_BIN)/analyze
 

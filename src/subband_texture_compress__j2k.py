@@ -71,6 +71,6 @@ while picture < number_of_pictures:
               + " Clayers=" + str(layers)
               + " Clevels=" + str(Clevels)
               + " Cuse_sop=" + "no"
-              + " | awk '/thresholds/{getline; print}' > " + fn + ".txt")
+              + " | tee /dev/tty | awk '/thresholds/{getline; print}' > " + fn + ".txt")
 
     picture += 1
