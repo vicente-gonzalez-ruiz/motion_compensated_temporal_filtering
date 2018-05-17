@@ -141,9 +141,9 @@ public:
     FILE *fd = fopen(fn_, "r");
     if(!fd) {
 #if defined __WARNING__
-      warning("%s: using \"/dev/zero\" instead of \"%s\"\n", msg, fn_);
+      warning("%s: using \"zero.pgm\" instead of \"%s\"\n", msg, fn_);
 #endif /* __INFO__ */
-      fd = fopen("/dev/zero", "r");
+      fd = fopen("zero.pgm", "r");
     }
     texture::read(fd, picture, pixels_in_y, pixels_in_x);
 #if defined __INFO__
