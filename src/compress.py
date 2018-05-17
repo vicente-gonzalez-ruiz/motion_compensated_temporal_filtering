@@ -10,14 +10,13 @@ import os
 from GOP import GOP
 from shell import Shell as shell
 from colorlog import log
+from arguments_parser import arguments_parser
 
 # }}}
 
 # {{{ Arguments parsing
 
-from arguments_parser import arguments_parser
-
-parser = arguments_parser(description="Encodes a sequence of picturesy into a MCJ2K stream")
+parser = arguments_parser(description="Encodes a sequence of pictures into a MCJ2K stream")
 parser.always_B()
 parser.block_overlaping()
 parser.block_size()
@@ -47,14 +46,14 @@ log.info("block_overlaping={}".format(block_overlaping))
 block_size = int(args.block_size)
 log.info("block_size={}".format(block_size))
 
-min_block_size = int(args.min_block_size)
-log.info("min_block_size={}".format(min_block_size));
-
 border_size = int(args.border_size)
 log.info("border_size={}".format(border_size))
 
 GOPs = int(args.GOPs)
 log.info("GOPs={}".format(GOPs))
+
+min_block_size = int(args.min_block_size)
+log.info("min_block_size={}".format(min_block_size));
 
 #motion_layers = str(args.motion_layers); log.debug("motion_layers={}".format(motion_layers))
 #motion_quantization = str(args.motion_quantization); log.debug("motion_quantization={}".format(motion_quantization))
@@ -71,14 +70,14 @@ log.info("layers={}".format(layers))
 search_range = int(args.search_range)
 log.info("search_range={}".format(search_range))
 
+SRLs = int(args.SRLs)
+log.info("SRLs={}".format(SRLs))
+
 subpixel_accuracy = int(args.subpixel_accuracy)
 log.info("subpixel_accuracy={}".format(subpixel_accuracy))
 
 TRLs = int(args.TRLs)
 log.info("TRLs={}".format(TRLs))
-
-SRLs = int(args.SRLs)
-log.info("SRLs={}".format(SRLs))
 
 update_factor = float(args.update_factor)
 log.info("update_fact={}".format(update_factor))

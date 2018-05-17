@@ -9,8 +9,6 @@
 #  If there is no file textures of the current iteration, is created
 #  with a neutral texture.
 
-import shutil
-import subprocess as sub
 import sys
 import math
 import struct
@@ -39,41 +37,6 @@ pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 
-def decode_old (component, picture_number) :
-
-    try:
-        picture_filename = file + "_" + str('%04d' % picture_number) + "_" + str(component)
-
-        f = open(picture_filename + ".j2c", "rb")
-        f.close()
-
-        # Decode.
-        try:
-            check_call("trace kdu_expand"
-                       + " -i " + picture_filename + ".j2c"
-                       + " -o " + picture_filename + ".rawl"
-                       , shell=True)
-        except CalledProcessError :
-            sys.exit(-1)
-
-    except:
-        # If there is no file textures of the current iteration, is
-        # created with a neutral texture.
-
-        print("Generating empty {}".format(picture_filename))
-        f = open(picture_filename + ".rawl", "wb")
-        for a in range(pixels_in_x * pixels_in_y) :
-            f.write(struct.pack('B', 128))  # BYTES_PER_COMPONENT = 1   # 1 byte for components used unweighted.
-            #f.write('%c' % 128) # BYTES_PER_COMPONENT = 2   # 2 bytes for weighted or components that are used weighted.
-        f.close()
-        print("Done")
-
-    # MUX
-    try:
-        check_call("trace cat " + picture_filename + ".rawl >> " + file, shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
-
 def decode (component, picture_number) :
 
     picture_filename = file + "_" + str('%04d' % picture_number) + "_" + str(component)
@@ -94,11 +57,11 @@ for a in range(pixels_in_x * pixels_in_y) :
     f.write(struct.pack('B', 128))  # BYTES_PER_COMPONENT = 1   # 1 byte for components used unweighted.
 f.close()
         
-picture_number = 0
-while picture_number < pictures :
+p = 0
+while p < pictures:
 
     decode ('Y', picture_number)
     decode ('U', picture_number)
     decode ('V', picture_number)
 
-    picture_number += 1
+    p += 1
