@@ -91,8 +91,8 @@ while [ $img -le $number_of_images ]; do
 done
 
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
-exit
 mctf info --GOPs=$GOPs --TRLs=$TRLs
+exit
 mkdir tmp
 cd tmp
 cp ../*.j2c .

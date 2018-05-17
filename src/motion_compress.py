@@ -62,14 +62,17 @@ blocks_in_x = pixels_in_x // block_size
 iter = 1
 while iter < TRLs:
 
-    # Remove motion redundancy between temporal levels (iter) and (iter+1).
-    shell.run("mctf interlevel_motion_decorrelate"
-              + " --blocks_in_x=" + str(blocks_in_x)
-              + " --blocks_in_y="  + str(blocks_in_y)
-              + " --fields_in_predicted=" + str(fields)
-              + " --predicted=" + "motion_filtered_" + str(iter)
-              + " --reference=" + "motion_filtered_" + str(iter + 1)
-              + " --residue=" + "motion_residue_tmp_"  + str(iter))
+    if fields > 1:
+        # Remove motion redundancy between temporal levels (iter) and (iter+1).
+        shell.run("mctf interlevel_motion_decorrelate"
+                  + " --blocks_in_x=" + str(blocks_in_x)
+                  + " --blocks_in_y="  + str(blocks_in_y)
+                  + " --fields_in_predicted=" + str(fields)
+                  + " --predicted=" + "motion_filtered_" + str(iter)
+                  + " --reference=" + "motion_filtered_" + str(iter + 1)
+                  + " --residue=" + "motion_residue_tmp_"  + str(iter))
+    else:
+        shell.run("trace cp -r motion_filtered_" + str(iter) + " motion_residue_tmp_" + str(iter))
 
     # Remove motion redundancy inside the temporal level (iter).
     shell.run("mctf bidirectional_motion_decorrelate"

@@ -10,20 +10,11 @@
 #   1   3   5   7   H_1
 
 import sys
-import getopt
-import os
-import array
-import display
-import string
 import io
 from GOP import GOP
-from subprocess import check_call
-from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger("info")
+from colorlog import log 
+import traceback
 
 parser = arguments_parser(description="Show information.")
 parser.add_argument("--FPS",
@@ -37,17 +28,17 @@ FPS = int(args.FPS)
 GOPs = int(args.GOPs)
 TRLs = int(args.TRLs)
 
-gop=GOP()
-GOP_size            = gop.get_size(TRLs) # number_of_GOPs = int(math.ceil((self.pictures * 1.0)/ GOP_size))
-pictures            = GOP_size * (GOPs-1) + 1
+gop = GOP()
+GOP_size = gop.get_size(TRLs)
+pictures = GOP_size*(GOPs-1)+1
 # Weighting value, to be applied between the GOP0, and the rest.
-average_ponderation = (pictures - 1.0) / pictures
-GOP0_time           = 1.0              / FPS
-GOP_time            = float(GOP_size)  / FPS
+average_ponderation = (pictures-1.0)/pictures
+GOP0_time = 1.0/FPS
+GOP_time = float(GOP_size)/FPS
 
-sys.stdout.write("\n"                + sys.argv[0] + ":\n\n")
-sys.stdout.write("TRLs           = " + str(TRLs)+ " temporal resolution levels\n")
-sys.stdout.write("Pictures       = " + str(pictures)  + " pictures\n")
+sys.stdout.write("\n" + sys.argv[0] + ":\n\n")
+sys.stdout.write("TRLs           = " + str(TRLs) + " temporal resolution levels\n")
+sys.stdout.write("Pictures       = " + str(pictures) + " pictures\n")
 sys.stdout.write("FPS            = " + str(FPS) + " frames/second\n")
 sys.stdout.write("GOP size       = " + str(GOP_size) + " pictures\n")
 sys.stdout.write("Number of GOPs = " + str(GOPs) + " groups of pictures\n")
@@ -57,14 +48,14 @@ sys.stdout.write("Total time     = " + str(pictures/FPS) + " seconds\n")
 sys.stdout.write("\nAll the values are given in thousands (1000) of bits per second (Kbps).\n")
 
 # Frame types
-F_file  = [None]
+F_file = [None]
 for subband in range(1, TRLs):
     F_file.append(io.open("frame_types_" + str(subband)))
 
 # Table header.
 
 # First line. (TRL4 TRL3 TRL2 TRL1 TRL0).
-sys.stdout.write("\n     ");
+sys.stdout.write("\n     ")
 sys.stdout.write("    TRL" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
@@ -76,7 +67,7 @@ sys.stdout.write("\n")
 
 # Second line. (GOP low_4 motion_4+high_4 motion_3+hight_3 motion_2+high2 motion_1+high_1 Total Average).
 sys.stdout.write("GOP#")
-sys.stdout.write("    low_" +  str(TRLs-1))
+sys.stdout.write("    low_" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
     for j in range(0, 2**(TRLs-1-i)):
@@ -95,26 +86,23 @@ sys.stdout.write("-------- -------\n")
 
 # Computations
 
-colors = ('Y', 'U', 'V')
-
 # GOP 0. The GOP0 is formed by the first picture in low_<TRLs-1>.
 length = 0
-for c in colors:
-    filename = "low_" + str(TRLs - 1) + "_" + "%04d" % 0 + "_" + c + ".j2c"
-    try:
-        with io.open(filename, "rb") as file:
-            file.seek(0, 2)
-            length += file.tell()
-    except:
-        pass
+filename = "low_" + str(TRLs - 1) + "/" + "%04d" % 0 + ".jp2"
+try:
+    with io.open(filename, "rb") as file:
+        file.seek(0, 2)
+        length += file.tell()
+except:
+    pass
 
-kbps_total = 0
-kbps_total_pro = 0
+Kbps_total = 0
+Kbps_total_pro = 0
 
-kbps = float(length) * 8.0 / GOP0_time / 1000.0
-sys.stdout.write("0000 %8d " % kbps)
-kbps_total += kbps
-kbps_L0 = kbps_total
+Kbps = float(length) * 8.0 / GOP0_time / 1000.0
+sys.stdout.write("0000 %8d " % Kbps)
+Kbps_total += Kbps
+Kbps_L0 = Kbps_total
 
 for subband in range(TRLs-1, 0, -1):
     for j in range(0, 2**(TRLs-1-subband)) :
@@ -122,30 +110,30 @@ for subband in range(TRLs-1, 0, -1):
     sys.stdout.write("%7d " % 0)
     sys.stdout.write("%6d " % 0)
 
-sys.stdout.write("%8d" % kbps_total)
-sys.stdout.write("%8d\n" % kbps_L0)
+sys.stdout.write("%8d" % Kbps_total)
+sys.stdout.write("%8d\n" % Kbps_L0)
 
 # Rest of GOPs
 for GOP_number in range(GOPs-1):
     
-    kbps_total = 0
+    Kbps_total = 0
 
     sys.stdout.write("%3s " % '%04d' % (GOP_number+1))
 
     # L
     length = 0
-    for c in colors:
-        filename = "low_" + str(TRLs - 1) + "_" + "%04d" % GOP_number + "_" + c + ".j2c"
-        try:
-            with io.open(filename, "rb") as file:
-                file.seek(0, 2)
-                length += file.tell()
-        except:
-            pass
+    filename = "low_" + str(TRLs - 1) + "/" + "%04d" % GOP_number + ".jp2"
+    try:
+        with io.open(filename, "rb") as file:
+            file.seek(0, 2)
+            length += file.tell()
+    except:
+        log.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
+        exit(1)
 
-    kbps = float(length) * 8.0 / GOP_time / 1000.0
-    sys.stdout.write("%8d " % int(round(kbps)))
-    kbps_total += kbps
+    Kbps = float(length) * 8.0 / GOP_time / 1000.0
+    sys.stdout.write("%8d " % int(round(Kbps)))
+    Kbps_total += Kbps
 
     # Rest of subbands
     pics_in_subband = 1
@@ -163,45 +151,45 @@ for GOP_number in range(GOPs-1):
         # Motion
         length = 0
         for i in range(pics_in_subband):
-            for c in range(4):
-                filename = "motion_residue_" + str(subband) + "_" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "_" + str(c) + ".j2c"
-                try:
-                    with io.open(filename, "rb") as file:
-                        file.seek(0, 2)
-                        length += file.tell()
-                except:
-                    pass
+            filename = "motion_residue_" + str(subband) + "/" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + ".j2c"
+            try:
+                with io.open(filename, "rb") as file:
+                    file.seek(0, 2)
+                    length += file.tell()
+            except:
+                log.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
+                exit(1)
 
-        kbps = float(length) * 8.0 / GOP_time / 1000.0
-        sys.stdout.write("%7d " % int(round(kbps)))
-        kbps_total += kbps
+        Kbps = float(length) * 8.0 / GOP_time / 1000.0
+        sys.stdout.write("%7d " % int(round(Kbps)))
+        Kbps_total += Kbps
 
         # Texture
         for i in range(pics_in_subband):
-            for c in colors:
-                filename = "high_" + str(subband) + "_" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "_" + c + ".j2c"
-                try:
-                    with io.open(filename, "rb") as file:
-                        file.seek(0, 2)
-                        length += file.tell()
-                except:
-                    pass
+            filename = "high_" + str(subband) + "/" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + ".jp2"
+            try:
+                with io.open(filename, "rb") as file:
+                    file.seek(0, 2)
+                    length += file.tell()
+            except:
+                log.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
+                exit(1)
                 
-        kbps = float(length) * 8.0 / GOP_time / 1000.0
-        sys.stdout.write("%6d " % int(round(kbps)))
-        kbps_total += kbps
+        Kbps = float(length) * 8.0 / GOP_time / 1000.0
+        sys.stdout.write("%6d " % int(round(Kbps)))
+        Kbps_total += Kbps
 
         pics_in_subband *= 2
 
-    kbps_total_pro += kbps_total
-    kbps_average = kbps_total_pro/(GOP_number+1)+(kbps_L0/(GOP_size*(GOP_number+1)))
+    Kbps_total_pro += Kbps_total
+    Kbps_average = Kbps_total_pro/(GOP_number+1)+(Kbps_L0/(GOP_size*(GOP_number+1)))
     
 
-    sys.stdout.write("%8d" % kbps_total)
-    sys.stdout.write("%8d" % kbps_average)
+    sys.stdout.write("%8d" % Kbps_total)
+    sys.stdout.write("%8d" % Kbps_average)
     sys.stdout.write("\n")
 
-sys.stdout.write("\nAverage bit-rate (kbps) = {}\n".format(kbps_average))
+sys.stdout.write("\nAverage bit-rate (Kbps) = {}\n".format(Kbps_average))
 '''
 
 
@@ -220,12 +208,12 @@ for GOP_number in range(1, self.GOPs+1) :
     self.bytes_frames_T[0].append(L_bytes) # Bytes per frame
 
     L_prev_GOP                   = L_next_GOP
-    L_kbps                       = float(L_bytes) * 8.0 / GOP_time / 1000.0
-    self.kbps_H[GOP_number].append(L_kbps)
-    self.average_L              += L_kbps
-    total                       += L_kbps
+    L_Kbps                       = float(L_bytes) * 8.0 / GOP_time / 1000.0
+    self.Kbps_H[GOP_number].append(L_Kbps)
+    self.average_L              += L_Kbps
+    total                       += L_Kbps
 
-    sys.stdout.write("%8d " % int(L_kbps))
+    sys.stdout.write("%8d " % int(L_Kbps))
 
 
     # SUBBANDAS H. Depending on the level of temporal resolution, each GOP generates a number of different pictures.
@@ -247,12 +235,12 @@ for GOP_number in range(1, self.GOPs+1) :
             self.bytes_frames_M[self.TRLs - subband].append(next_picture - M_prev_picture[subband]) # Bytes per frame
             M_prev_picture[subband] = next_picture
 
-        M_kbps = float(next_picture - M_prev_GOP[subband]) * 8.0 / GOP_time / 1000.0
+        M_Kbps = float(next_picture - M_prev_GOP[subband]) * 8.0 / GOP_time / 1000.0
 
-        self.kbps_M[GOP_number-1].append(M_kbps)
-        self.average_M[subband]       += M_kbps
-        total                         += M_kbps
-        sys.stdout.write("%7d " %    int(M_kbps))
+        self.Kbps_M[GOP_number-1].append(M_Kbps)
+        self.average_M[subband]       += M_Kbps
+        total                         += M_Kbps
+        sys.stdout.write("%7d " %    int(M_Kbps))
 
         #import ipdb; ipdb.set_trace()
         M_prev_picture[subband] = M_prev_GOP[subband] = next_picture
@@ -267,12 +255,12 @@ for GOP_number in range(1, self.GOPs+1) :
             self.bytes_frames_T[self.TRLs - subband].append(next_picture - H_prev_picture[subband]) # Bytes per frame
             H_prev_picture[subband] = next_picture
 
-        H_kbps = float(next_picture - H_prev_GOP[subband]) * 8.0 / GOP_time / 1000.0
+        H_Kbps = float(next_picture - H_prev_GOP[subband]) * 8.0 / GOP_time / 1000.0
 
-        self.kbps_H[GOP_number].append(H_kbps)
-        self.average_H[subband]     += H_kbps
-        total                       += H_kbps
-        sys.stdout.write("%6d " %  int(H_kbps))
+        self.Kbps_H[GOP_number].append(H_Kbps)
+        self.average_H[subband]     += H_Kbps
+        total                       += H_Kbps
+        sys.stdout.write("%6d " %  int(H_Kbps))
 
         H_prev_picture[subband] = H_prev_GOP[subband] = next_picture
 
@@ -280,7 +268,7 @@ for GOP_number in range(1, self.GOPs+1) :
 
     sys.stdout.write("%8d\n" % total)
     self.average_total      += total
-    self.kbps_HM_total.append (total) # < Jse
+    self.Kbps_HM_total.append (total) # < Jse
 
 quit()
 
@@ -389,7 +377,7 @@ sys.stdout.write("Average")
 
 # Average L.
 #-----------
-self.average_L = (L_kbps_GOP0 * (1 - average_ponderation)) + ((self.average_L / GOPs) * average_ponderation) # MEDIA SEMI PONDERADA
+self.average_L = (L_Kbps_GOP0 * (1 - average_ponderation)) + ((self.average_L / GOPs) * average_ponderation) # MEDIA SEMI PONDERADA
 sys.stdout.write("%6d " % int(self.average_L))
 
 for subband in range(self.TRLs-1, 0, -1) :
@@ -406,7 +394,7 @@ for subband in range(self.TRLs-1, 0, -1) :
 # Total average.
 #---------------
 self.average_total /= self.GOPs
-self.average_total = (L_kbps_GOP0 * (1 - average_ponderation)) + (self.average_total * average_ponderation) # MEDIA SEMI PONDERADA
+self.average_total = (L_Kbps_GOP0 * (1 - average_ponderation)) + (self.average_total * average_ponderation) # MEDIA SEMI PONDERADA
 sys.stdout.write("%8d\n" % int(self.average_total))
 
 quit()
@@ -440,11 +428,11 @@ print ("Bytes_frames_MCTF\n"         + str(bytes_frames_MCTF))
 print (" ")
 print ("Bytes_frames_MCTF_average\n" + str(bytes_frames_MCTF_average))
 print (" ")
-print ("kbps_M\n"                    + str(self.kbps_M))
+print ("Kbps_M\n"                    + str(self.Kbps_M))
 print (" ")
-print ("kbps_H\n"                    + str(self.kbps_H))
+print ("Kbps_H\n"                    + str(self.Kbps_H))
 print (" ")
-print ("kbps_HM_total\n"             + str(self.kbps_HM_total))
+print ("Kbps_HM_total\n"             + str(self.Kbps_HM_total))
 print (" ")
 print ("average_M\n"                 + str(self.average_M))
 print (" ")
@@ -460,15 +448,15 @@ print (" ")
 #  - Motion, 
 #  - Textures and 
 #  - Both together.
-def kbps(self):
-    return self.kbps_M,    self.kbps_H,    self.kbps_HM_total
+def Kbps(self):
+    return self.Kbps_M,    self.Kbps_H,    self.Kbps_HM_total
 
 ## Returns mean values of the instance.
 #  @param self Refers to object.
-#  @returns Average kbps of:
+#  @returns Average Kbps of:
 #  - Motion, 
 #  - Textures and 
 #  - Both together.
-def kbps_average(self):
+def Kbps_average(self):
     return self.average_M, self.average_H, self.average_total
 '''
