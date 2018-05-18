@@ -141,9 +141,14 @@ public:
     FILE *fd = fopen(fn_, "r");
     if(!fd) {
 #if defined __WARNING__
-      warning("%s: using \"zero.pgm\" instead of \"%s\"\n", msg, fn_);
+      warning("%s: using \"empty.pgm\" instead of \"%s\"\n", msg, fn_);
 #endif /* __INFO__ */
-      fd = fopen("zero.pgm", "r");
+      fd = fopen("empty.pgm", "r");
+#if defined __DEBUG__
+      if(!fd) {
+	error("%s: \"empty.pgm\" is missing. Aborting ...\n", msg);
+      }
+#endif /* __DEBUG__ */
     }
     texture::read(fd, picture, pixels_in_y, pixels_in_x);
 #if defined __INFO__
