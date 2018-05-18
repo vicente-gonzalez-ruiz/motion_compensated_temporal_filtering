@@ -3,17 +3,20 @@
 
 # Decompress a temporal subband of texture.
 
+# {{{ Imports
 import sys
 import os
 from GOP import GOP
 from shell import Shell as shell
 from arguments_parser import arguments_parser
 from colorlog import log
+# }}}
 
 MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
 LOW = "low"
 HIGH = "high"
 
+# {{{ Arguments parsing
 parser = arguments_parser(description="Expands the texture.")
 parser.GOPs()
 parser.pixels_in_x()
@@ -33,10 +36,12 @@ pixels_in_y = str(args.pixels_in_y)
 log.info("pixels_in_y={}".format(pixels_in_y))
 
 SRLs = int(args.SRLs)
-log.info("TRLs={}".format(TRLs))
+log.info("SRLs={}".format(SRLs))
 
 TRLs = int(args.TRLs)
 log.info("TRLs={}".format(TRLs))
+
+# }}}
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)

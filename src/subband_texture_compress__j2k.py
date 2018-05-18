@@ -1,20 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-#  Compress texture subbands, using the J2K codec.
-
+# {{{ Imports
 from shell import Shell as shell
 from arguments_parser import arguments_parser
 # from defaults import Defaults
-
-# {{{ Logging
-
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger("subband_texture_compress__j2k")
-log.setLevel('INFO')
-
+from colorlog import log
 # }}}
 
 # {{{ Arguments parsing

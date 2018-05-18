@@ -626,7 +626,7 @@ w
     picture_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
      
     for(int c=0; c<COMPONENTS; c++) {
-      texture.write_picture(reference[1][c],
+      texture.write_picture(reference[0][c],
 			  pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
 			  low_fn,

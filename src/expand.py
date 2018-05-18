@@ -1,29 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-## Decodes a sequence of pictures.
-#  Decoding consists of two major steps:
-#  - Decompression textures and movement data.
-#  - Synthesizes the video.
-#
-#  Examples:
-#  - Show default parameters.
-#  mcj2k expand --help
-#
-#  - Expands using the default parameters.\n
-#  mcj2k expand
-#
-#  - Example of use.
-#  expand --update_factor=0 --GOPs=1 --TRLs=5 --SRLs=5 --block_size=32
-#    --min_block_size=32 --search_range=4 --pixels_in_x=352
-#    --pixels_in_y=288 --subpixel_accuracy=0
-
+# {{{ Imports
 import sys
 from GOP import GOP
 from shell import Shell as shell
 from arguments_parser import arguments_parser
 from colorlog import log
+# }}}
 
+# {{{ Arguments parsing
 parser = arguments_parser(description="Decodes a MCJ2K stream into a sequence of pictures.")
 parser.block_size()
 parser.block_overlaping()
@@ -68,7 +54,7 @@ search_range = int(args.search_range)
 log.info("search_range={}".format(search_range))
 
 SRLs = int(args.SRLs)
-log.info("TRLs={}".format(TRLs))
+log.info("TRLs={}".format(SRLs))
 
 subpixel_accuracy = str(args.subpixel_accuracy)
 log.info("subpixel_accuracy={}".format(subpixel_accuracy))
@@ -79,6 +65,8 @@ log.info("TRLs={}".format(TRLs))
 #subband_layers = int(args.subband_layers)
 update_factor = float(args.update_factor)
 log.info("update_fact={}".format(update_factor))
+
+# }}}
 
 # Time
 # /usr/bin/time -f "# Real-User-System\n%e\t%U\t%S" -a -o "info_time" date

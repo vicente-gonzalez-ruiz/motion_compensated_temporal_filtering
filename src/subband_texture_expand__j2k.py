@@ -3,18 +3,17 @@
 
 # Decodes a subband of texture.
 
+# {{{ Imports
 import sys
 import math
 import struct
 import os
-from subprocess import check_call
-from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
-import logging
+from shel import Shell as shell
+from colorsys import log 
+% }}}
 
-logging.basicConfig()
-log = logging.getLogger("subband_texture_expand__j2k")
-
+# {{{ Arguments parsing
 parser = arguments_parser(description="Decodes a subband of texture.")
 parser.add_argument("--file",
                     help="File that contains the LFB or HFB data.",
@@ -26,24 +25,30 @@ parser.pixels_in_x()
 parser.pixels_in_y()
 
 args = parser.parse_known_args()[0]
+
 file = args.file
+log.info("file={}".format(file))
+
 pictures = int(args.pictures)
+log.info("pictures={}".format(pictures))
+
 pixels_in_x = int(args.pixels_in_x)
+log.info("pixels_in_x={}".format(pixels_in_x))
+
 pixels_in_y = int(args.pixels_in_y)
-
-def decode (component, picture_number) :
-
-    fn = file + "_" + str('%04d' % picture_number) + "_" + str(component)
-
-    shell.run("trace kdu_expand"
-              + " -i " + fn + ".jp2"
-              + " -o " + fn + ".rawl")
+log.info("pixels_in_y={}".format(pixels_in_y))
+# }}}
 
 p = 0
 while p < pictures:
 
-    decode ('0', picture_number)
-    decode ('1', picture_number)
-    decode ('2', picture_number)
+    pic_number = str('%04d' % p)
+    
+    shell.run("trace kdu_expand"
+              + " -i " + file + "/" + pic_number + ".jp2"
+              + " -o "
+              + file + "/" + pic_number + "_0.pgm"
+              + file + "/" + pic_number + "_1.pgm"
+              + file + "/" + pic_number + "_2.pgm")
 
     p += 1

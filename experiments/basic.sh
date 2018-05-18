@@ -92,13 +92,11 @@ done
 
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
-exit
 mkdir tmp
+cp -r * tmp
 cd tmp
-cp ../*.j2c .
-cp ../*type* .
-cp ../*.txt .
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
+exit
 mctf show
 mkdir transcode_quality
 mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers
