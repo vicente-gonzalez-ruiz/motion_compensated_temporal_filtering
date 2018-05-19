@@ -1,52 +1,48 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-#  Decompressing data movement, using the codec J2K.
-#  The decompression consists of two major steps:\n
-#  - Decode components (lossless compression).
-#  - Multiplexing components.
-#
-#  If there is no vector file, a file is created with linear
-#  movement. That is, a file of zeros.
-
-import os
-import sys
-import struct
-from subprocess import check_call
-from subprocess import CalledProcessError
+# {{{ Imports
+from shell import Shell as shell
 from arguments_parser import arguments_parser
-import logging
+from colorlog import log
+# }}}
 
-logging.basicConfig()
-log = logging.getLogger("subband_motion_expand__j2k")
+# {{{ Arguments parsing
+parser = arguments_parser(description="Expands the motion data using JPEG 2000.")
+parser.add_argument("--blocks_in_x",
+                    help="number of blocks in the X direction.",
+                    default=11)
+parser.add_argument("--blocks_in_y",
+                    help="number of blocks in the Y direction.",
+                    default=9)
+parser.add_argument("--fields",
+                    help="number of fields in to expand.",
+                    default=2)
+parser.add_argument("--file",
+                    help="name of the file with the motion fields.",
+                    default="")
 
+args = parser.parse_known_args()[0]
+
+blocks_in_x = int(args.blocks_in_x)
+log.info("blocks_in_x={}".format(blocks_in_x))
+
+blocks_in_y = int(args.blocks_in_y)
+log.info("blocks_in_x={}".format(blocks_in_x))
+
+fields = int(args.fields)
+log.info("fields={}".format(fields))
+
+file = args.file
+log.info("file={}".format(file))
+# }}}
 
 ## Number of components.
-COMPONENTS      = 4
+COMPONENTS = 4
 ## Number of bytes of each component.
 BYTES_COMPONENT = 2
 ## Number of bits of each component.
-BITS_COMPONENT  = BYTES_COMPONENT * 8
-
-parser = arguments_parser(description="Expands the motion data using JPEG 2000.")
-parser.add_argument("--blocks_in_x",
-                        help="number of blocks in the X direction.",
-                        default=11)
-parser.add_argument("--blocks_in_y",
-                        help="number of blocks in the Y direction.",
-                        default=9)
-parser.add_argument("--fields",
-                        help="number of fields in to expand.",
-                        default=2)
-parser.add_argument("--file",
-                        help="name of the file with the motion fields.",
-                        default="")
-
-args = parser.parse_known_args()[0]
-blocks_in_x = int(args.blocks_in_x)
-blocks_in_y = int(args.blocks_in_y)
-fields = int(args.fields)
-file = args.file
+BITS_COMPONENT = BYTES_COMPONENT * 8
 
 # Expand each field.
 #-------------------

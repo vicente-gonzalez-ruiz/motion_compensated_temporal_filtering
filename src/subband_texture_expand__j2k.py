@@ -9,9 +9,9 @@ import math
 import struct
 import os
 from arguments_parser import arguments_parser
-from shel import Shell as shell
-from colorsys import log 
-% }}}
+from shell import Shell as shell
+from colorlog import log 
+# }}}
 
 # {{{ Arguments parsing
 parser = arguments_parser(description="Decodes a subband of texture.")
@@ -47,8 +47,8 @@ while p < pictures:
     shell.run("trace kdu_expand"
               + " -i " + file + "/" + pic_number + ".jp2"
               + " -o "
-              + file + "/" + pic_number + "_0.pgm"
-              + file + "/" + pic_number + "_1.pgm"
+              + file + "/" + pic_number + "_0.pgm,"
+              + file + "/" + pic_number + "_1.pgm,"
               + file + "/" + pic_number + "_2.pgm")
 
     p += 1

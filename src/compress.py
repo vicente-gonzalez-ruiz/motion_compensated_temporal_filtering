@@ -5,11 +5,11 @@
 
 # {{{ Importing
 
-import sys
 import os
-from GOP import GOP
 from shell import Shell as shell
 from colorlog import log
+#import logging
+#import colorlog
 from arguments_parser import arguments_parser
 
 # }}}

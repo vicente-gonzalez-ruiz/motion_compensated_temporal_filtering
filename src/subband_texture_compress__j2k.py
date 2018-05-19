@@ -30,12 +30,12 @@ pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 SRLs = int(args.SRLs)
 
-log.info("file = {}".format(file))
-log.info("layers = {}".format(layers))
-log.info("pictures = {}".format(number_of_pictures))
-log.info("pixels_in_x = {}".format(pixels_in_x))
-log.info("pixels_in_y = {}".format(pixels_in_y))
-log.info("SRLs = {}".format(SRLs))
+log.info("file={}".format(file))
+log.info("layers={}".format(layers))
+log.info("pictures={}".format(number_of_pictures))
+log.info("pixels_in_x={}".format(pixels_in_x))
+log.info("pixels_in_y={}".format(pixels_in_y))
+log.info("SRLs={}".format(SRLs))
 
 # }}}
 
