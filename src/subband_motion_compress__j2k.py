@@ -4,25 +4,24 @@
 # Compressing of the motion vector fields using the codec J2K.
 
 # {{{ imports
-import logging
+
 from shell import Shell as shell 
 from arguments_parser import arguments_parser
-# }}}
+from colorlog import log
 
-# {{{ Logging
-logging.basicConfig()
-log = logging.getLogger("subband_motion_compress__j2k")
-log.setLevel('INFO')
 # }}}
 
 # {{{ Defs
+
 COMPONENTS = 4
 BYTES_PER_COMPONENT = 2
 BITS_PER_COMPONENT = BYTES_PER_COMPONENT * 8
 spatial_dwt_levels = 0 # 1 # SRLs - 1
+
 # }}}
 
 # {{{ Arguments parsing
+
 parser = arguments_parser(description="Compress the motion data using JPEG 2000.")
 parser.add_argument("--blocks_in_x",
                     help="number of blocks in the X direction.",
@@ -41,16 +40,27 @@ parser.add_argument("--file",
 #                    default=Defaults.motion_slopes)
 
 args = parser.parse_known_args()[0]
+
 blocks_in_x = int(args.blocks_in_x)
+log.info("blocks_in_x={}".format(blocks_in_x))
+
 blocks_in_y = int(args.blocks_in_y)
+log.info("blocks_in_x={}".format(blocks_in_x))
+
 bytes_per_field = blocks_in_x * blocks_in_y * BYTES_PER_COMPONENT
-number_of_fields = int(args.fields)
+
+fields = int(args.fields)
+log.info("fields={}".format(fields))
+
 file = args.file
+log.info("file={}".format(file))
+
 # slopes = args.slopes; log.info("slopes={}".format(slopes))
+
 # }}}
 
 field = 0
-while field < number_of_fields:
+while field < fields:
 
     fn = file + "/" + str('%04d' % field)
     shell.run("trace kdu_compress"

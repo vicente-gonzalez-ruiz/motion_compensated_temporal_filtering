@@ -9,7 +9,17 @@ from colorlog import log
 
 # }}}
 
+# {{{ Defs
+
+COMPONENTS = 4
+BYTES_PER_COMPONENT = 2
+BITS_PER_COMPONENT = BYTES_PER_COMPONENT * 8
+spatial_dwt_levels = 0 # 1 # SRLs - 1
+
+# }}}
+
 # {{{ Arguments parsing
+
 parser = arguments_parser(description="Expands the motion data using JPEG 2000.")
 
 parser.add_argument("--blocks_in_x",
@@ -33,19 +43,15 @@ log.info("blocks_in_x={}".format(blocks_in_x))
 blocks_in_y = int(args.blocks_in_y)
 log.info("blocks_in_x={}".format(blocks_in_x))
 
+bytes_per_field = blocks_in_x * blocks_in_y * BYTES_PER_COMPONENT
+
 fields = int(args.fields)
 log.info("fields={}".format(fields))
 
 file = args.file
 log.info("file={}".format(file))
-# }}}
 
-## Number of components.
-COMPONENTS = 4
-## Number of bytes of each component.
-BYTES_COMPONENT = 2
-## Number of bits of each component.
-BITS_COMPONENT = BYTES_COMPONENT * 8
+# }}}
 
 # Expand each field.
 #-------------------
