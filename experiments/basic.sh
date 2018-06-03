@@ -90,6 +90,7 @@ while [ $img -le $number_of_images ]; do
     let img=img+1 
 done
 
+mctf create_zero_texture
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mkdir tmp

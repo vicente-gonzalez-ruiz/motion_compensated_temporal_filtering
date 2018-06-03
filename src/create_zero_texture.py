@@ -5,11 +5,13 @@
 
 import sys
 from arguments_parser import arguments_parser
+from colorlog import log
+import struct
 
 parser = arguments_parser(description="Creates a \"empty\" (unsigned char = 128) texture image file.")
 parser.add_argument("--file",
                     help="File that contains the texture.",
-                    default="")
+                    default="empty.pgm")
 parser.pixels_in_x()
 parser.pixels_in_y()
 
@@ -23,10 +25,10 @@ log.info("pixels_in_x={}".format(pixels_in_x))
 pixels_in_y = int(args.pixels_in_y)
 log.info("pixels_in_y={}".format(pixels_in_y))
 
-f = open("empty.pgm", "wb")
-f.write("P5\n")
-f.write("{} {}\n".format(pixels_in_x, pixels_in_y))
-f.write("255\n")
+f = open(file, "wb")
+f.write(b"P5\n")
+f.write(bytes(str.encode("{} {}\n".format(pixels_in_x, pixels_in_y))))
+f.write(b"255\n")
 for a in range(pixels_in_x * pixels_in_y) :
     f.write(struct.pack('B', 128))
 f.close()

@@ -185,6 +185,9 @@ $(MCTF_BIN)/GOP.py:	GOP.py
 	cp $^ $@
 EXE += $(MCTF_BIN)/GOP.py
 
+$(MCTF_BIN)/create_zero_texture:	create_zero_texture.py
+EXE += $(MCTF_BIN)/create_zero_texture
+
 $(MCTF_BIN)/shell.py:	shell.py
 	cp $^ $@
 EXE += $(MCTF_BIN)/shell.py

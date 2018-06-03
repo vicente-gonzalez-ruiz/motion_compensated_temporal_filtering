@@ -13,7 +13,7 @@ import sys
 import io
 from GOP import GOP
 from arguments_parser import arguments_parser
-from colorlog import log 
+from colorlog import log
 import traceback
 
 parser = arguments_parser(description="Show information.")
