@@ -2,13 +2,16 @@
 # -*- coding: iso-8859-15 -*-
 
 # {{{ Imports
+
 from shell import Shell as shell
 from arguments_parser import arguments_parser
 from colorlog import log
+
 # }}}
 
 # {{{ Arguments parsing
 parser = arguments_parser(description="Expands the motion data using JPEG 2000.")
+
 parser.add_argument("--blocks_in_x",
                     help="number of blocks in the X direction.",
                     default=11)

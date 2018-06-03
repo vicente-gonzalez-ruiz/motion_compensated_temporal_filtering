@@ -73,6 +73,8 @@ done
 
 set -x
 
+MCTF_QUANTIZER=automatic
+
 rm -rf low_0
 mkdir low_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
@@ -93,6 +95,7 @@ done
 mctf create_zero_texture
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
+exit
 mkdir tmp
 cp -r * tmp
 cd tmp
