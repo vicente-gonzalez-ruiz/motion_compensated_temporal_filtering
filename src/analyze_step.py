@@ -7,8 +7,6 @@
 
 #  Iteration of the temporal transform.
 
-import sys
-import os
 from shell import Shell as shell
 from arguments_parser import arguments_parser
 

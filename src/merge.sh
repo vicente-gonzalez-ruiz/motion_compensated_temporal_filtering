@@ -4,6 +4,8 @@ low="low_0/"
 even="even_1/"
 odd="odd_1/"
 pictures=33
+pixels_in_x=352
+pixels_in_y=288
 
 usage() {
     echo $0
@@ -12,12 +14,14 @@ usage() {
     echo "  [-o odd pictures ($odd)]"
     echo "  [-l low pictures ($low)]"
     echo "  [-p pictures ($pictures)]"
+    echo "  [-x pixels_in_x ($pixels_in_x)]"
+    echo "  [-y pixels_in_y ($pixels_in_y)]"
     echo "  [-? (help)]"
 }
 
 (echo $0 $@ 1>&2)
 
-while getopts "e:o:l:p:?" opt; do
+while getopts "e:o:l:p:x:y:?" opt; do
     case ${opt} in
 	e)
 	    even="${OPTARG}"
@@ -34,6 +38,14 @@ while getopts "e:o:l:p:?" opt; do
 	p)
 	    pictures="${OPTARG}"
 	    echo pictures=$pictures
+	    ;;
+	x)
+	    pixels_in_x="${OPTARG}"
+	    echo $0: pixels_in_x=$pixels_in_x
+	    ;;
+	y)
+	    pixels_in_y="${OPTARG}"
+	    echo $0: pixels_in_y=$pixels_in_y
 	    ;;
 	?)
             usage

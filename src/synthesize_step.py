@@ -3,11 +3,7 @@
 
 # Iterates temporal inverse transform.
 
-import os
-import sys
-from GOP import GOP
-from subprocess import check_call
-from subprocess import CalledProcessError
+from shell import Shell as shell
 from arguments_parser import arguments_parser
 
 parser = arguments_parser(description="Performs a step of the temporal synthesis.")
@@ -36,49 +32,37 @@ subpixel_accuracy = int(args.subpixel_accuracy)
 subband = int(args.temporal_subband)
 update_factor = float(args.update_factor)
 
-try:
-    check_call("mctf un_update"
-               + " --block_size="        + str(block_size)
-               + " --even_fn="           + "even_"        + str(subband)
-               + " --frame_types_fn="    + "frame_types_" + str(subband)
-               + " --high_fn="           + "high_"        + str(subband)
-               + " --low_fn="            + "low_"         + str(subband)
-               + " --motion_fn="         + "motion_"      + str(subband)
-               + " --pictures="          + str(pictures)
-               + " --pixels_in_x="       + str(pixels_in_x)
-               + " --pixels_in_y="       + str(pixels_in_y)
-               + " --subpixel_accuracy=" + str(subpixel_accuracy)
-               + " --update_factor="     + str(update_factor)
-               , shell=True)
-except CalledProcessError:
-            sys.exit(-1)
+shell.run("mctf un_update"
+          + " --block_size="        + str(block_size)
+          + " --even_fn="           + "even_"        + str(subband)
+          + " --frame_types_fn="    + "frame_types_" + str(subband)
+          + " --high_fn="           + "high_"        + str(subband)
+          + " --low_fn="            + "low_"         + str(subband)
+          + " --motion_fn="         + "motion_"      + str(subband)
+          + " --pictures="          + str(pictures)
+          + " --pixels_in_x="       + str(pixels_in_x)
+          + " --pixels_in_y="       + str(pixels_in_y)
+          + " --subpixel_accuracy=" + str(subpixel_accuracy)
+          + " --update_factor="     + str(update_factor))
 
-try:
-    check_call("mctf correlate"
-               + " --block_overlaping="  + str(block_overlaping)
-               + " --block_size="        + str(block_size)
-               + " --even_fn="           + "even_"        + str(subband)
-               + " --frame_types_fn="    + "frame_types_" + str(subband)
-               + " --high_fn="           + "high_"        + str(subband)
-               + " --motion_in_fn="      + "motion_"      + str(subband)
-               + " --odd_fn="            + "odd_"         + str(subband)
-               + " --pictures="          + str(pictures)
-               + " --pixels_in_x="       + str(pixels_in_x)
-               + " --pixels_in_y="       + str(pixels_in_y)
-               + " --search_range="      + str(search_range)
-               + " --subpixel_accuracy=" + str(subpixel_accuracy)
-               , shell=True)
-except CalledProcessError:
-            sys.exit(-1)
+shell.run("mctf correlate"
+          + " --block_overlaping="  + str(block_overlaping)
+          + " --block_size="        + str(block_size)
+          + " --even_fn="           + "even_"        + str(subband)
+          + " --frame_types_fn="    + "frame_types_" + str(subband)
+          + " --high_fn="           + "high_"        + str(subband)
+          + " --motion_in_fn="      + "motion_"      + str(subband)
+          + " --odd_fn="            + "odd_"         + str(subband)
+          + " --pictures="          + str(pictures)
+          + " --pixels_in_x="       + str(pixels_in_x)
+          + " --pixels_in_y="       + str(pixels_in_y)
+          + " --search_range="      + str(search_range)
+          + " --subpixel_accuracy=" + str(subpixel_accuracy))
 
-try:
-    check_call("mctf merge"
-               + " --even="        + "even_" + str(subband)
-               + " --low="         + "low_"  + str(subband-1)
-               + " --odd="         + "odd_"  + str(subband)
-               + " --pictures="    + str(pictures)
-               + " --pixels_in_x=" + str(pixels_in_x)
-               + " --pixels_in_y=" + str(pixels_in_y)
-               , shell=True)
-except CalledProcessError:
-            sys.exit(-1)
+shell.run("mctf merge"
+          + " -e " + "even_" + str(subband)
+          + " -l " + "low_"  + str(subband-1)
+          + " -o " + "odd_"  + str(subband)
+          + " -p " + str(pictures)
+          + " -x " + str(pixels_in_x)
+          + " -y " + str(pixels_in_y))
