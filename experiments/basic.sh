@@ -95,7 +95,6 @@ done
 mctf create_zero_texture
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
-exit
 mkdir tmp
 cp -r * tmp
 cd tmp

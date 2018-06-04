@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
+# Decompression of the motin vector fields using J2K.
+
 # {{{ Imports
 
 from shell import Shell as shell
@@ -53,76 +55,15 @@ log.info("file={}".format(file))
 
 # }}}
 
-# Expand each field.
-#-------------------
-for comp_number in range (0, COMPONENTS) :
+field = 0
+while field < fields:
 
-    # Decode components.
-    #-------------------
-    for campoMov_number in range (0, fields) :
+    fn = file + "/" + str('%04d' % field)
+    for c in range(COMPONENTS):
+        shell.run("trace kdu_expand"
+                  + " -i " + fn + ".j2c"
+                  + " -o /tmp/1.rawl"
+                  + " -skip_components " + str(c))
+        shell.run("cat /tmp/1.rawl >> " + fn + ".rawl")
 
-        ## Refers to a particular component from a field of movement.
-        campoMov_name = file + "_" + str('%04d' % campoMov_number) + "_" + str(comp_number)
-
-        try:
-            ## File compressed motion vectors. If there is no vector
-            #  file, a file is created with linear movement. That is,
-            #  a file of zeros.
-            f = open(campoMov_name + ".j2c", "rb")
-            f.close()
-
-            try:
-                check_call("trace kdu_expand"
-                           + " -i " + str(campoMov_name) + ".j2c"
-                           + " -o " + str(campoMov_name) + ".rawl"
-                           , shell=True)
-            except CalledProcessError:
-                sys.exit(-1)
-
-        except: 
-            # If there is no vector file, a file is created with
-            # linear movement. That is, a file of zeros.
-            # check_call("echo Motion interpolation..", shell=True)
-            # raw_input("")
-            
-            f = open(campoMov_name + ".rawl", "wb")
-            for a in range(BYTES_COMPONENT * blocks_in_y * blocks_in_x) :
-                f.write(struct.pack('h', 0))
-            f.close()
-
-# Multiplexing.
-#--------------
-for campoMov_number in range (0, fields) :
-
-    try:
-        ## Component 1.
-        f0 = open(file + "_" + str('%04d' % campoMov_number) + "_0" + ".rawl", "rb")
-        ## Component 2.
-        f1 = open(file + "_" + str('%04d' % campoMov_number) + "_1" + ".rawl", "rb")
-        ## Component 3.
-        f2 = open(file + "_" + str('%04d' % campoMov_number) + "_2" + ".rawl", "rb")
-        ## Component 4.
-        f3 = open(file + "_" + str('%04d' % campoMov_number) + "_3"  + ".rawl", "rb")
-        # Component 1, Component 2, Component 3 y Component 4.
-        f  = open(file + "_" + str('%04d' % campoMov_number) + ".join", "wb")
-
-        while 1 : # 792 -> 198 -> 49.5
-            ## Multiplexing all components.
-            comps = f0.read(BYTES_COMPONENT) + f1.read(BYTES_COMPONENT) + f2.read(BYTES_COMPONENT) + f3.read(BYTES_COMPONENT)
-            if len(comps) == (BYTES_COMPONENT * COMPONENTS) :
-                f.write(comps)
-            else :
-                break
-
-        f0.close()
-        f1.close()
-        f2.close()
-        f3.close()
-        f.close()
-
-    except CalledProcessError :
-        sys.exit(-1)
-
-# cat file_????.join > file
-check_call("trace cat " + file + "_????.join > " + file, shell=True)
-
+        field += 1

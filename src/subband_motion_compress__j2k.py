@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
-# Compressing of the motion vector fields using the codec J2K.
+# Compression of the motion vector fields using J2K.
 
 # {{{ imports
 
