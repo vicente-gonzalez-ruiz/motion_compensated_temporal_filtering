@@ -10,6 +10,7 @@ from arguments_parser import arguments_parser
 from colorlog import log
 import traceback
 from shell import Shell as shell
+import os
 
 parser = arguments_parser(description="Copy MCTF structure.")
 parser.GOPs()
@@ -27,6 +28,8 @@ gop = GOP()
 GOP_size = gop.get_size(TRLs)
 pictures = GOP_size*(GOPs-1)+1
 
+IMG_EXT = os.environ["MCTF_IMG_EXT"]
+
 sys.stdout.write("\n" + sys.argv[0] + ":\n\n")
 sys.stdout.write("TRLs           = " + str(TRLs) + " temporal resolution levels\n")
 sys.stdout.write("Pictures       = " + str(pictures) + " pictures\n")
@@ -37,15 +40,59 @@ sys.stdout.write("Number of GOPs = " + str(GOPs) + " groups of pictures\n")
 shell.run("cp frame_types_* " + destination) 
 
 # low_<TRLs-1>
-shell.run("mkdir " + destination + "/low_" +  str(TRLs - 1))
-shell.run("cp low_" + str(TRLs - 1) + "/" + "*.jp2 " + destination + "/low_" +  str(TRLs - 1))
-shell.run("cp low_" + str(TRLs - 1) + "/" + "*.txt " + destination + "/low_" +  str(TRLs - 1))
+shell.run("mkdir "
+          + destination
+          + "/low_"
+          + str(TRLs - 1))
+shell.run("cp low_"
+          + str(TRLs - 1)
+          + "/"
+          + "*."
+          + IMG_EXT
+          + " "
+          + destination
+          + "/low_"
+          +  str(TRLs - 1))
+shell.run("cp low_"
+          + str(TRLs - 1)
+          + "/"
+          + "*.txt "
+          + destination
+          + "/low_"
+          + str(TRLs - 1))
 
 for subband in range(TRLs-1, 0, -1):
+    
     # motion_residue_<subband>
-    shell.run("mkdir " + destination + "/motion_residue_" + str(subband))
-    shell.run("cp motion_residue_" + str(subband) + "/*.j2c " + destination + "/motion_residue_" + str(subband))
+    shell.run("mkdir "
+              + destination
+              + "/motion_residue_"
+              + str(subband))
+    shell.run("cp motion_residue_"
+              + str(subband)
+              + "/*."
+              + IMG_EXT
+              + " "
+              + destination
+              + "/motion_residue_"
+              + str(subband))
+
     # high_<subband>
-    shell.run("mkdir " + destination + "/high_" + str(subband))
-    shell.run("cp high_" + str(subband) + "/*.jp2 " + destination + "/high_" + str(subband))
-    shell.run("cp high_" + str(subband) + "/*.txt " + destination + "/high_" + str(subband))
+    shell.run("mkdir "
+              + destination
+              + "/high_"
+              + str(subband))
+    shell.run("cp high_"
+              + str(subband)
+              + "/*."
+              + IMG_EXT
+              + " "
+              + destination
+              + "/high_"
+              + str(subband))
+    shell.run("cp high_"
+              + str(subband)
+              + "/*.txt "
+              + destination
+              + "/high_"
+              + str(subband))

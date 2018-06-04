@@ -19,6 +19,7 @@ import operator
 import math
 from shell import Shell as shell
 from colorlog import log
+import os
 
 # }}}
 
@@ -44,6 +45,8 @@ log.info("subband={}".format(subband))
 log.info("layers={}".format(layers))
 log.info("pictures={}".format(pictures))
 
+IMG_EXT = os.environ["MCTF_IMG_EXT"]
+
 # }}}
 
 def transcode_picture(filename, layers):
@@ -62,13 +65,7 @@ while picture_number < pictures:
 
     str_picture_number = '%04d' % picture_number
 
-    filename = subband + "/" + str_picture_number + "_0" 
-    transcode_picture(filename + ".jp2", layers)
-
-    filename = subband + "/" + str_picture_number + "_1" 
-    transcode_picture(filename + ".jp2", layers)
-
-    filename = subband + "/" + str_picture_number + "_2" 
-    transcode_picture(filename + ".jp2", layers)
+    filename = subband + "/" + str_picture_number
+    transcode_picture(filename + "." + IMG_EXT, layers)
 
     picture_number += 1

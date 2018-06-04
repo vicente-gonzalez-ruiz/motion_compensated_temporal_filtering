@@ -2,10 +2,13 @@
 # -*- coding: iso-8859-15 -*-
 
 # {{{ Imports
+
 from shell import Shell as shell
 from arguments_parser import arguments_parser
 # from defaults import Defaults
 from colorlog import log
+import os
+
 # }}}
 
 # {{{ Arguments parsing
@@ -41,6 +44,8 @@ log.info("SRLs={}".format(SRLs))
 
 BYTES_PER_COMPONENT = 1 # 2
 
+IMG_EXT = os.environ["MCTF_IMG_EXT"]
+
 Clevels = SRLs - 1
 if Clevels < 0:
     Clevels = 0
@@ -54,7 +59,7 @@ while picture < number_of_pictures:
               + fn + "_0.pgm,"
               + fn + "_1.pgm,"
               + fn + "_2.pgm"
-              + " -o " + fn + ".jp2"
+              + " -o " + fn + "." + IMG_EXT
               + " -jp2_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}"
               + " -no_weights"
               + " -slope 42000"

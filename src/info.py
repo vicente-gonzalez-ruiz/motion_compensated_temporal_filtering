@@ -15,6 +15,7 @@ from GOP import GOP
 from arguments_parser import arguments_parser
 from colorlog import log
 import traceback
+import os
 
 parser = arguments_parser(description="Show information.")
 parser.add_argument("--FPS",
@@ -35,6 +36,8 @@ pictures = GOP_size*(GOPs-1)+1
 average_ponderation = (pictures-1.0)/pictures
 GOP0_time = 1.0/FPS
 GOP_time = float(GOP_size)/FPS
+
+IMG_EXT = os.environ["MCTF_IMG_EXT"]
 
 sys.stdout.write("\n" + sys.argv[0] + ":\n\n")
 sys.stdout.write("TRLs           = " + str(TRLs) + " temporal resolution levels\n")
@@ -88,7 +91,7 @@ sys.stdout.write("-------- -------\n")
 
 # GOP 0. The GOP0 is formed by the first picture in low_<TRLs-1>.
 length = 0
-filename = "low_" + str(TRLs - 1) + "/" + "%04d" % 0 + ".jp2"
+filename = "low_" + str(TRLs - 1) + "/" + "%04d" % 0 + "." + IMG_EXT
 try:
     with io.open(filename, "rb") as file:
         file.seek(0, 2)
@@ -122,7 +125,7 @@ for GOP_number in range(GOPs-1):
 
     # L
     length = 0
-    filename = "low_" + str(TRLs - 1) + "/" + "%04d" % GOP_number + ".jp2"
+    filename = "low_" + str(TRLs - 1) + "/" + "%04d" % GOP_number + "." + IMG_EXT
     try:
         with io.open(filename, "rb") as file:
             file.seek(0, 2)
@@ -166,7 +169,7 @@ for GOP_number in range(GOPs-1):
 
         # Texture
         for i in range(pics_in_subband):
-            filename = "high_" + str(subband) + "/" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + ".jp2"
+            filename = "high_" + str(subband) + "/" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "." + IMG_EXT
             try:
                 with io.open(filename, "rb") as file:
                     file.seek(0, 2)
