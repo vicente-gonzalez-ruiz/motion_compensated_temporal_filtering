@@ -71,8 +71,6 @@ while getopts "v:p:x:y:f:t:g:k:?" opt; do
     esac
 done
 
-set -x
-
 MCTF_QUANTIZER=automatic
 
 rm -rf low_0
@@ -100,7 +98,6 @@ mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
-exit
 
 img=1
 while [ $img -le $number_of_images ]; do

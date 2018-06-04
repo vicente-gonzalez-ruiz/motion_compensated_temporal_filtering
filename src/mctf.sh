@@ -26,7 +26,7 @@ if [ -z "$*" ]; then
 fi
 
 echo "$MCTF/bin/$@" >> trace
-set -x
+#set -x
 "$MCTF/bin/$@"
 #set +x
 exit $?

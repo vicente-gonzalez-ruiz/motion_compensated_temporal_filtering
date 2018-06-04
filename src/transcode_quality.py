@@ -111,9 +111,11 @@ import operator
 import math
 from shell import Shell as shell
 from colorlog import ColorLog
+import logging
 
 log = ColorLog(logging.getLogger("transcode_quality"))
 log.setLevel('INFO')
+shell.setLogger(log)
 
 # }}}
 

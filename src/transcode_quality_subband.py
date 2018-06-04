@@ -24,6 +24,7 @@ import os
 
 log = ColorLog(logging.getLogger("transcode_quality_subband"))
 log.setLevel('INFO')
+shell.setLogger(log)
 
 # }}}
 
