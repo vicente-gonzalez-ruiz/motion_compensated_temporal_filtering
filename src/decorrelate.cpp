@@ -343,7 +343,7 @@ int main(int argc, char *argv[]) {
       printf("   -[-h]igh_fn = input file with high-subband pictures (\"%s\")\n", high_fn);
       printf("   -[-]motion_[i]n_fn = input file with the motion fields (\"%s\")\n", motion_in_fn);
 #if defined __ANALYZE__
-      printf("   -[-]mo[t]ion_out_fn = output file with the motion fields (\"%s\")\n", motion_out_fn);
+      printf("   -[-]mo[t]ion_out_fn = output file with the motion fields, after considering decorrelation effectiviness (\"%s\")\n", motion_out_fn);
 #endif /* __ANALYZE__ */
       printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", odd_fn);
       printf("   -[-p]ictures = number of pictures to process (%d)\n", pictures);
@@ -385,9 +385,8 @@ int main(int argc, char *argv[]) {
 #endif /* __ANALYZE__ */
   }
 
-#ifdef _1_
   {
-#if defined __ANALYZE__
+#if not defined __ANALYZE__
     int err = mkdir(odd_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
@@ -397,7 +396,6 @@ int main(int argc, char *argv[]) {
 #endif /* __DEBUG__ */
 #endif /* __ANALYZE__ */
   }
-#endif
   
   {
 #if defined __ANALYZE__
