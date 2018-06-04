@@ -60,7 +60,7 @@ while picture < number_of_pictures:
               + fn + "_1.pgm,"
               + fn + "_2.pgm"
               + " -o " + fn + "." + IMG_EXT
-              + " -jp2_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}"
+              + " -jpx_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}"
               + " -no_weights"
               + " -slope 42000"
               + " Creversible=" + "no"

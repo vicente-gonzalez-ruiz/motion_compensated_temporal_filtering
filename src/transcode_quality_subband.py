@@ -55,6 +55,7 @@ def transcode_picture(filename, layers):
     print(filename, layers)
     shell.run("trace kdu_transcode"
               + " -i " + filename
+              + " -jpx_layers sYCC,0,1,2"
               + " -o " + "transcode_quality/" + filename
               + " Clayers=" + str(layers))
 

@@ -65,34 +65,14 @@ for subband in range(TRLs-1, 0, -1):
     
     # motion_residue_<subband>
     shell.run("mkdir "
-              + destination
-              + "/motion_residue_"
-              + str(subband))
-    shell.run("cp motion_residue_"
-              + str(subband)
-              + "/*."
-              + IMG_EXT
-              + " "
-              + destination
-              + "/motion_residue_"
-              + str(subband))
+              + destination + "/motion_residue_" + str(subband))
+    shell.run("cp motion_residue_" + str(subband) + "/*.j2c "
+              + destination + "/motion_residue_" + str(subband))
 
     # high_<subband>
     shell.run("mkdir "
-              + destination
-              + "/high_"
-              + str(subband))
-    shell.run("cp high_"
-              + str(subband)
-              + "/*."
-              + IMG_EXT
-              + " "
-              + destination
-              + "/high_"
-              + str(subband))
-    shell.run("cp high_"
-              + str(subband)
-              + "/*.txt "
-              + destination
-              + "/high_"
-              + str(subband))
+              + destination + "/high_" + str(subband))
+    shell.run("cp high_" + str(subband) + "/*." + IMG_EXT + " "
+              + destination + "/high_" + str(subband))
+    shell.run("cp high_" + str(subband) + "/*.txt "
+              + destination + "/high_" + str(subband))
