@@ -51,23 +51,30 @@ log.info("TRLs = {}".format(TRLs))
 # }}}
 
 # {{{ Some defs
+
 MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
 HIGH = "high"
 LOW = "low"
+
 # }}}
 
 # {{{ GOP_size
+
 gop = GOP()
 GOP_size = gop.get_size(TRLs)
 log.info("GOP_size = {}".format(GOP_size))
+
 # }}}
 
 # {{{ pictures
+
 pictures = (GOPs - 1) * GOP_size + 1
 log.info("pictures = {}".format(pictures))
+
 # }}}
 
 # {{{ Compression of HIGH frequency temporal subbands.
+
 subband = 1
 while subband < TRLs:
     pictures = (pictures + 1) // 2
@@ -81,9 +88,11 @@ while subband < TRLs:
               + " --SRLs="              + str(SRLs))
 
     subband += 1
+
 # }}}
     
 # {{{ Compression of the LOW frequency temporal subband.
+
 shell.run("mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC
           + " --file="              + LOW + "_" + str(TRLs - 1)
           + " --pictures="          + str(pictures)
@@ -91,4 +100,5 @@ shell.run("mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC
           + " --pixels_in_y="       + str(pixels_in_y)
           + " --layers="            + str(layers)
           + " --SRLs="              + str(SRLs))
+
 # }}}

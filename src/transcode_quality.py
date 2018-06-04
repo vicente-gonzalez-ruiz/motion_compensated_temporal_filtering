@@ -203,7 +203,7 @@ while subband < TRLs:
     log.info("high_{}: {}".format(subband, average))
 
     with io.open("high_{}.txt".format(subband), 'w') as file:
-        for i in average:           
+        for i in average:
             file.write("{} ".format(i))
 
     subband += 1
@@ -214,7 +214,7 @@ for picture in range(GOPs):
     fname = "low_{}_{:04d}_Y.txt".format(TRLs-1, picture)
     with io.open(fname, 'r') as file:
         slopes = file.read().replace(' ','').replace('\n','').split(',')
-    log.info("{}: {}".format(fname, slopes))        
+    log.info("{}: {}".format(fname, slopes))
     for i in range(layers):
         average[i] += int(slopes[i])
 

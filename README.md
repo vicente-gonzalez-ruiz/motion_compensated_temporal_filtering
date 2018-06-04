@@ -166,7 +166,13 @@ mplayer low_0 -demuxer rawvideo -rawvideo cif -loop 0
    mcjpg info
    mcjpg expand
    ```
-   
+
+	```
+	+-------+
+	| split |
+	+-------+
+	```
+
 ## Limitations:
 
 The current version of MCTF has the following limitations:
