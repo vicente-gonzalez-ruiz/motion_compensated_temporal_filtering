@@ -115,10 +115,9 @@ ffmpeg -y -s {$x_dim}x{$y_dim} -pix_fmt yuv420p -i low_0/%4d.Y /tmp/out.yuv
 mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS
 
 mkdir transcode_quality
+mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
 mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers
 cd transcode_quality
-#cp ../motion*.j2c .
-cp ../*type* .
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
-mctf show
+#mctf show

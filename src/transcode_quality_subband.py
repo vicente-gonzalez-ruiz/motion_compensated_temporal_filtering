@@ -11,23 +11,14 @@
 
 # {{{ Importing
 
-import logging
 import sys
-from   GOP              import GOP
-from   subprocess       import check_call
-from   subprocess       import CalledProcessError
-from   arguments_parser import arguments_parser
+from GOP import GOP
+from arguments_parser import arguments_parser
 import io
 import operator
 import math
-
-# }}}
-
-# {{{ Logging
-
-logging.basicConfig()
-log = logging.getLogger("transcode_quality_subband")
-log.setLevel('INFO')
+from shell import Shell as shell
+from colorlog import log
 
 # }}}
 
@@ -59,14 +50,10 @@ def transcode_picture(filename, layers):
 # {{{
 
     print(filename, layers)
-    try:
-        check_call("trace kdu_transcode"
-                   + " -i " + filename
-                   + " -o " + "transcode_quality/" + filename
-                   + " Clayers=" + str(layers), 
-                   shell=True)
-    except CalledProcessError:
-        sys.exit(-1)
+    shell.run("trace kdu_transcode"
+              + " -i " + filename
+              + " -o " + "transcode_quality/" + filename
+              + " Clayers=" + str(layers))
 
 # }}}
 
@@ -75,13 +62,13 @@ while picture_number < pictures:
 
     str_picture_number = '%04d' % picture_number
 
-    filename = subband + "_" + str_picture_number + "_Y" 
-    transcode_picture(filename + ".j2c", layers)
+    filename = subband + "/" + str_picture_number + "_0" 
+    transcode_picture(filename + ".jp2", layers)
 
-    filename = subband + "_" + str_picture_number + "_U" 
-    transcode_picture(filename + ".j2c", layers)
+    filename = subband + "/" + str_picture_number + "_1" 
+    transcode_picture(filename + ".jp2", layers)
 
-    filename = subband + "_" + str_picture_number + "_V" 
-    transcode_picture(filename + ".j2c", layers)
+    filename = subband + "/" + str_picture_number + "_2" 
+    transcode_picture(filename + ".jp2", layers)
 
     picture_number += 1

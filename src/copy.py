@@ -39,6 +39,7 @@ shell.run("cp frame_types_* " + destination)
 # low_<TRLs-1>
 shell.run("mkdir " + destination + "/low_" +  str(TRLs - 1))
 shell.run("cp low_" + str(TRLs - 1) + "/" + "*.jp2 " + destination + "/low_" +  str(TRLs - 1))
+shell.run("cp low_" + str(TRLs - 1) + "/" + "*.txt " + destination + "/low_" +  str(TRLs - 1))
 
 for subband in range(TRLs-1, 0, -1):
     # motion_residue_<subband>
@@ -47,3 +48,4 @@ for subband in range(TRLs-1, 0, -1):
     # high_<subband>
     shell.run("mkdir " + destination + "/high_" + str(subband))
     shell.run("cp high_" + str(subband) + "/*.jp2 " + destination + "/high_" + str(subband))
+    shell.run("cp high_" + str(subband) + "/*.txt " + destination + "/high_" + str(subband))

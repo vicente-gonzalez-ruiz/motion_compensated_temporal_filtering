@@ -103,23 +103,14 @@
 
 # {{{ Importing
 
-import logging
 import sys
-from   GOP              import GOP
-from   subprocess       import check_call
-from   subprocess       import CalledProcessError
-from   arguments_parser import arguments_parser
+from GOP import GOP
+from arguments_parser import arguments_parser
 import io
 import operator
 import math
-
-# }}}
-
-# {{{ Logging
-
-logging.basicConfig()
-log = logging.getLogger("transcode_quality")
-log.setLevel('INFO')
+from shell import Shell as shell
+from colorlog import log
 
 # }}}
 
@@ -190,7 +181,7 @@ while subband < TRLs:
     average = [0]*layers
 
     for picture in range(pictures-1):    
-        fname = "high_{}_{:04d}_Y.txt".format(subband, picture)
+        fname = "high_{}/{:04d}.txt".format(subband, picture)
         with io.open(fname, 'r') as file:
             slopes = file.read().replace(' ','').replace('\n','').split(',')
         log.info("{}: {}".format(fname, slopes))
@@ -211,7 +202,7 @@ while subband < TRLs:
 # L subband
 average = [0]*layers
 for picture in range(GOPs):
-    fname = "low_{}_{:04d}_Y.txt".format(TRLs-1, picture)
+    fname = "low_{}/{:04d}.txt".format(TRLs-1, picture)
     with io.open(fname, 'r') as file:
         slopes = file.read().replace(' ','').replace('\n','').split(',')
     log.info("{}: {}".format(fname, slopes))
@@ -300,32 +291,24 @@ while subband < TRLs:
     if slayers_per_subband[('H', subband)] > 0:
         log.info("Transcoding subband H[{}] with {} pictures".format(subband, pictures - 1))
 
-        try:
-            check_call("mctf transcode_quality_subband"
-                       + " --subband " + HIGH + "_" + str(subband)
-                       + " --layers " + str(slayers_per_subband[('H', subband)])
-                       + " --pictures " + str(pictures - 1),
-                       shell=True)
-        except CalledProcessError:
-            sys.exit(-1)
+        shell.run("mctf transcode_quality_subband"
+                  + " --subband " + HIGH + "_" + str(subband)
+                  + " --layers " + str(slayers_per_subband[('H', subband)])
+                  + " --pictures " + str(pictures - 1))
 
-        try:
-            check_call("trace cp motion_residue_" + str(subband) + "*.j2c transcode_quality",
-	               shell=True)
-        except CalledProcessError:
-            sys.exit(-1)
+        shell.run("trace cp motion_residue_"
+                  + str(subband)
+                  + "/*.j2c transcode_quality/"
+                  + "motion_residue_"
+                  + str(subband))
 
     subband += 1
 
 # Transcoding of L subband
 log.info("Transcoding subband L[{}] with {} pictures".format(subband, TRLs - 1))
-try:
-    check_call("mctf transcode_quality_subband"
-               + " --subband " + LOW + "_" + str(TRLs - 1)
-               + " --layers " + str(slayers_per_subband[('L', TRLs - 1)])
-               + " --pictures " + str(GOPs),
-               shell=True)
-except CalledProcessError:
-    sys.exit(-1)
+shell.run("mctf transcode_quality_subband"
+          + " --subband " + LOW + "_" + str(TRLs - 1)
+          + " --layers " + str(slayers_per_subband[('L', TRLs - 1)])
+          + " --pictures " + str(GOPs))
 
 # }}}
