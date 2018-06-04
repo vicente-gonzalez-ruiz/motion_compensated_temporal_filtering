@@ -88,8 +88,8 @@ EXE	+= $(BIN)/mctf
 #$(MCTF_BIN)/clean:	clean.sh
 #EXE	+= $(MCTF_BIN)/clean
 
-$(MCTF_BIN)/copy:	copy.sh
-EXE	+= $(MCTF_BIN)/copy
+#$(MCTF_BIN)/copy:	copy.sh
+#EXE	+= $(MCTF_BIN)/copy
 
 $(MCTF_BIN)/mcj2k:	mcj2k.sh
 EXE	+= $(MCTF_BIN)/mcj2k
@@ -316,24 +316,27 @@ EXE	+= $(MCTF_BIN)/expand
 $(MCTF_BIN)/info:	info.py
 EXE	+= $(MCTF_BIN)/info
 
-$(MCTF_BIN)/info_j2k:	$(MCTF_BIN)/info.py info_j2k.py
-EXE	+= $(MCTF_BIN)/info_j2k
+$(MCTF_BIN)/copy:	copy.py
+EXE	+= $(MCTF_BIN)/copy
+
+#$(MCTF_BIN)/info_j2k:	$(MCTF_BIN)/info.py info_j2k.py
+#EXE	+= $(MCTF_BIN)/info_j2k
 
 #$(MCTF_BIN)/info_j2k.py:	$(MCTF_BIN)/info_j2k
 #			ln -s $(MCTF_BIN)/info_j2k $(MCTF_BIN)/info_j2k.py
 #EXE	+= $(MCTF_BIN)/info_j2k.py
 
-$(MCTF_BIN)/info_mj2k:	$(MCTF_BIN)/info.py info_mj2k.py
-EXE	+= $(MCTF_BIN)/info_mj2k
+#$(MCTF_BIN)/info_mj2k:	$(MCTF_BIN)/info.py info_mj2k.py
+#EXE	+= $(MCTF_BIN)/info_mj2k
 
-$(MCTF_BIN)/info_mjpeg:	$(MCTF_BIN)/info.py info_mjpeg.py
-EXE	+= $(MCTF_BIN)/info_mjpeg
+#$(MCTF_BIN)/info_mjpeg:	$(MCTF_BIN)/info.py info_mjpeg.py
+#EXE	+= $(MCTF_BIN)/info_mjpeg
 
-$(MCTF_BIN)/info_ltw:	$(MCTF_BIN)/info.py info_ltw.py
-EXE	+= $(MCTF_BIN)/info_ltw
+#$(MCTF_BIN)/info_ltw:	$(MCTF_BIN)/info.py info_ltw.py
+#EXE	+= $(MCTF_BIN)/info_ltw
 
-$(MCTF_BIN)/info_cp:	$(MCTF_BIN)/info.py info_cp.py
-EXE	+= $(MCTF_BIN)/info_cp
+#$(MCTF_BIN)/info_cp:	$(MCTF_BIN)/info.py info_cp.py
+#EXE	+= $(MCTF_BIN)/info_cp
 
 $(MCTF_BIN)/psnr:	psnr.py
 EXE	+= $(MCTF_BIN)/psnr

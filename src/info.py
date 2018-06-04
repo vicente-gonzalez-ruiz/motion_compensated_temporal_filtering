@@ -128,7 +128,7 @@ for GOP_number in range(GOPs-1):
             file.seek(0, 2)
             length += file.tell()
     except:
-        log.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
+        log.error("Exception {}".format(traceback.format_exc()))
         sys.exit(-1)
 
     Kbps = float(length) * 8.0 / GOP_time / 1000.0
@@ -157,7 +157,7 @@ for GOP_number in range(GOPs-1):
                     file.seek(0, 2)
                     length += file.tell()
             except:
-                log.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
+                log.error("Exception {}".format(traceback.format_exc()))
                 sys.exit(-1)
 
         Kbps = float(length) * 8.0 / GOP_time / 1000.0
@@ -172,7 +172,7 @@ for GOP_number in range(GOPs-1):
                     file.seek(0, 2)
                     length += file.tell()
             except:
-                log.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
+                log.error("Exception {}".format(traceback.format_exc()))
                 sys.exit(-1)
                 
         Kbps = float(length) * 8.0 / GOP_time / 1000.0

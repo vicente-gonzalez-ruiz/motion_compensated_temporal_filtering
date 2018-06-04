@@ -86,7 +86,7 @@ do
     cd transcode_quality
     rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
     echo -n $rate >> ../DRcurve.dat
-    echo -ne '\t'  >> ../DRcurve.dat
+    echo -ne '\t' >> ../DRcurve.dat
     mctf expand --GOPs=$GOPs --TRLs=$TRLs
     RMSE=`snr --file_A=../low_0 --file_B=low_0 2> /dev/null | grep RMSE | cut -f 3`
     echo -n $RMSE >> ../DRcurve.dat
