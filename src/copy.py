@@ -34,7 +34,7 @@ sys.stdout.write("GOP size       = " + str(GOP_size) + " pictures\n")
 sys.stdout.write("Number of GOPs = " + str(GOPs) + " groups of pictures\n")
 
 # Frame types
-shell.run("cp frame_type_* " + destination) 
+shell.run("cp frame_types_* " + destination) 
 
 # low_<TRLs-1>
 shell.run("mkdir " + destination + "/low_" +  str(TRLs - 1))
