@@ -59,6 +59,7 @@ field = 0
 while field < fields:
 
     fn = file + "/" + str('%04d' % field)
+    shell.run("rm " + fn + ".rawl")
     for c in range(COMPONENTS):
         shell.run("trace kdu_expand"
                   + " -i " + fn + ".j2c"
