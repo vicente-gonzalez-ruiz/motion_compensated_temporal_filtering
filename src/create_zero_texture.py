@@ -5,8 +5,13 @@
 
 import sys
 from arguments_parser import arguments_parser
-from colorlog import log
+from colorlog import ColorLog
+import logging
+#import colorlog
 import struct
+
+log = ColorLog(logging.getLogger("create_zero_texture"))
+log.setLevel('INFO')
 
 parser = arguments_parser(description="Creates a \"empty\" (unsigned char = 128) texture image file.")
 parser.add_argument("--file",

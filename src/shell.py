@@ -10,6 +10,9 @@ import traceback
 
 class Shell:
 
+    def Shell(script_name):
+        log = ColorLog(logging.getLogger(script_name))
+    
     @staticmethod
     def run(command):
         

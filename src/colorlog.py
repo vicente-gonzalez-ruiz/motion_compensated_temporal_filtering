@@ -22,15 +22,15 @@ class ColorLog(object):
 
         return getattr(self._log, name)
 
-logging.basicConfig()
+logging.basicConfig(format='%(name)s:%(levelname)s:%(message)s')
 #log = logging.getLogger("shell")
 #log.setLevel('INFO')
-log = ColorLog(logging.getLogger(__name__))
+#log = ColorLog(logging.getLogger(__name__))
 #log = ColorLog(logging.getLogger('joer'))
 
 #logging.basicConfig()
 #log = logging.getLogger(__name__)
-log.setLevel('INFO')
+#log.setLevel('INFO')
 #stdout = logging.StreamHandler()
 #stdout.setLevel(logging.INFO)
 #log.addHandler(stdout)
