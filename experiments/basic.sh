@@ -93,7 +93,6 @@ while [ $img -le $number_of_images ]; do
 done
 
 mctf create_zero_texture
-exit
 mctf compress --GOPs=$GOPs --TRLs=$TRLs
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mkdir tmp
@@ -101,6 +100,7 @@ mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
+exit
 
 img=1
 while [ $img -le $number_of_images ]; do

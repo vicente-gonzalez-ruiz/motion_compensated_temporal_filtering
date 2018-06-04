@@ -5,10 +5,15 @@
 
 import os
 import sys
+from shell import Shell as shell
 from GOP import GOP
-from subprocess import check_call
-from subprocess import CalledProcessError
 from arguments_parser import arguments_parser
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("synthesize"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 MAX_SEARCH_RANGE = 128
 
@@ -59,20 +64,16 @@ if TRLs > 1 :
 
 
     while temporal_subband > 0 :
-        try :
-            check_call("mctf synthesize_step"
-                       + " --block_overlaping="  + str(block_overlaping)
-                       + " --block_size="        + str(block_size)
-                       + " --pictures="          + str(pictures)
-                       + " --pixels_in_x="       + str(pixels_in_x)
-                       + " --pixels_in_y="       + str(pixels_in_y)
-                       + " --search_range="      + str(search_range)
-                       + " --subpixel_accuracy=" + str(subpixel_accuracy)
-                       + " --temporal_subband="  + str(temporal_subband)
-                       + " --update_factor="     + str(update_factor)
-                       , shell=True)
-        except CalledProcessError :
-            sys.exit(-1)
+        shell.run("mctf synthesize_step"
+                  + " --block_overlaping="  + str(block_overlaping)
+                  + " --block_size="        + str(block_size)
+                  + " --pictures="          + str(pictures)
+                  + " --pixels_in_x="       + str(pixels_in_x)
+                  + " --pixels_in_y="       + str(pixels_in_y)
+                  + " --search_range="      + str(search_range)
+                  + " --subpixel_accuracy=" + str(subpixel_accuracy)
+                  + " --temporal_subband="  + str(temporal_subband)
+                  + " --update_factor="     + str(update_factor))
 
         pictures = _pictures
         search_range = _search_range

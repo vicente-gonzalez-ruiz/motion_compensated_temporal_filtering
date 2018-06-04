@@ -4,22 +4,25 @@
 from subprocess import check_call
 from subprocess import CalledProcessError
 from sys import exit
-from colorlog import log
-
+from colorlog import ColorLog
+import logging
 import traceback
+
+logger = None
 
 class Shell:
 
-    def Shell(script_name):
-        log = ColorLog(logging.getLogger(script_name))
-    
+    def setLogger(_logger_):
+        global logger
+        logger = _logger_
+        
     @staticmethod
     def run(command):
         
-        log.info("Running \"" + command + "\"")
+        logger.info("Running \"" + command + "\"")
 
         try:
             check_call(command, shell=True)
         except CalledProcessError:
-            log.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
+            logger.error("Exception {} when calling mctf motion_estimate".format(traceback.format_exc()))
             exit(-1)

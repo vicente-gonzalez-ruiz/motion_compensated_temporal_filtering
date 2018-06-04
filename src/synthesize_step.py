@@ -5,6 +5,12 @@
 
 from shell import Shell as shell
 from arguments_parser import arguments_parser
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("synthesize_step"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 parser = arguments_parser(description="Performs a step of the temporal synthesis.")
 parser.block_overlaping()

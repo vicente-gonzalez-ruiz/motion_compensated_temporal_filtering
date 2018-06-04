@@ -9,6 +9,12 @@
 
 from shell import Shell as shell
 from arguments_parser import arguments_parser
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("analyze_step"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 parser = arguments_parser(description="Performs a temporal analysis step.")
 parser.add_argument("--pictures",

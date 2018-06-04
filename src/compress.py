@@ -7,10 +7,13 @@
 
 import os
 from shell import Shell as shell
-from colorlog import log
-#import logging
-#import colorlog
 from arguments_parser import arguments_parser
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("compress"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 # }}}
 

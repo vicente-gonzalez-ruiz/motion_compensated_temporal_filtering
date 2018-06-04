@@ -8,7 +8,13 @@
 import os
 import sys
 from GOP import GOP
-from shell import Shell as shell 
+from shell import Shell as shell
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("motion_compress"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 # {{{ Logging 
 

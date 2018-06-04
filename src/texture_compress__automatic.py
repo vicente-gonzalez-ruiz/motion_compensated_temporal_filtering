@@ -4,15 +4,22 @@
 # Texture compression. Kakadu decides the slopes, automatically.
 
 # {{{ Imports
+
 import os
 import sys
 import display
 import math
 from GOP import GOP
 from arguments_parser import arguments_parser
-import logging
 import io
 from shell import Shell as shell
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("texture_compress__automatic"))
+log.setLevel('INFO')
+shell.setLogger(log)
+
 # }}}
 
 # {{{ Logging

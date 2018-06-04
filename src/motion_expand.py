@@ -2,11 +2,18 @@
 # -*- coding: iso-8859-15 -*-
 
 # {{{ Importing
+
 import os
 from GOP import GOP
 from shell import Shell as shell
 from arguments_parser import arguments_parser
-from colorlog import log
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("motion_expand"))
+log.setLevel('INFO')
+shell.setLogger(log)
+
 # }}}
 
 # {{{ Arguments parsing

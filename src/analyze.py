@@ -9,6 +9,12 @@ import sys
 from GOP import GOP
 from arguments_parser import arguments_parser
 from shell import Shell as shell
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("analyze"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 MAX_SEARCH_RANGE = 128
 

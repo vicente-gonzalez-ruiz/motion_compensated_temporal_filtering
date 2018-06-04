@@ -7,7 +7,12 @@
 
 from shell import Shell as shell
 from arguments_parser import arguments_parser
-from colorlog import log
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("subband_motion_expand__j2k"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 # }}}
 

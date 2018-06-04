@@ -11,8 +11,12 @@ import struct
 import os
 from arguments_parser import arguments_parser
 from shell import Shell as shell
-from colorlog import log
-import os
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("subband_texture_expand__j2k"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 # }}}
 

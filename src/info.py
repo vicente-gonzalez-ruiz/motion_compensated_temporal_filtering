@@ -13,9 +13,13 @@ import sys
 import io
 from GOP import GOP
 from arguments_parser import arguments_parser
-from colorlog import log
 import traceback
 import os
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("info"))
+log.setLevel('INFO')
 
 parser = arguments_parser(description="Show information.")
 parser.add_argument("--FPS",

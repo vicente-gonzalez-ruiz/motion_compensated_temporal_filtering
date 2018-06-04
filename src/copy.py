@@ -7,10 +7,15 @@ import sys
 import io
 from GOP import GOP
 from arguments_parser import arguments_parser
-from colorlog import log
 import traceback
 from shell import Shell as shell
 import os
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("copy"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 parser = arguments_parser(description="Copy MCTF structure.")
 parser.GOPs()

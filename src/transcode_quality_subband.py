@@ -18,8 +18,12 @@ import io
 import operator
 import math
 from shell import Shell as shell
-from colorlog import log
+from colorlog import ColorLog
+import logging
 import os
+
+log = ColorLog(logging.getLogger("transcode_quality_subband"))
+log.setLevel('INFO')
 
 # }}}
 

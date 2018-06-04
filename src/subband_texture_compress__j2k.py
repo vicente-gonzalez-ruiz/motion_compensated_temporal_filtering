@@ -6,8 +6,13 @@
 from shell import Shell as shell
 from arguments_parser import arguments_parser
 # from defaults import Defaults
-from colorlog import log
 import os
+from colorlog import ColorLog
+import logging
+
+log = ColorLog(logging.getLogger("subband_texture_compress__j2k"))
+log.setLevel('INFO')
+shell.setLogger(log)
 
 # }}}
 
