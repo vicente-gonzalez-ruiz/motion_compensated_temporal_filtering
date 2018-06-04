@@ -68,23 +68,23 @@ set -x
 
 mkdir $low
 
-ln -s ../${even}"0000_Y" $low
-ln -s ../${even}"0000_U" $low
-ln -s ../${even}"0000_V" $low
+ln -s ../${even}/"0000_0.pgm" $low
+ln -s ../${even}/"0000_1.pgm" $low
+ln -s ../${even}/"0000_2.pgm" $low
 
 picture=0
-pictures_2=`echo $pictures/2 | bc`
+pictures_2=`echo $pictures/2-1 | bc`
 while [ $picture -le $pictures_2 ]
 do
     _odd=`echo $picture*2+1 | bc`
-    ln -s ../$odd$(printf "%04d.Y.pgm" $picture) $low/$(printf "%04d.Y.pgm" $_odd)
-    ln -s ../$odd$(printf "%04d.U.pgm" $picture) $low/$(printf "%04d.U.pgm" $_odd)
-    ln -s ../$odd$(printf "%04d.V.pgm" $picture) $low/$(printf "%04d.V.pgm" $_odd)
+    ln -s ../$odd/$(printf "%04d_0.pgm" $picture) $low/$(printf "%04d_0.pgm" $_odd)
+    ln -s ../$odd/$(printf "%04d_1.pgm" $picture) $low/$(printf "%04d_1.pgm" $_odd)
+    ln -s ../$odd/$(printf "%04d_2.pgm" $picture) $low/$(printf "%04d_2.pgm" $_odd)
 
     _even=`echo $picture*2+2 | bc`
-    ln -s ../$even$(printf "%04d.Y.pgm" $picture) $low/$(printf "%04d.Y.pgm" $_even)
-    ln -s ../$even$(printf "%04d.U.pgm" $picture) $low/$(printf "%04d.U.pgm" $_even)
-    ln -s ../$even$(printf "%04d.V.pgm" $picture) $low/$(printf "%04d.V.pgm" $_even)
-
     ((picture++))
+    ln -s ../$even/$(printf "%04d_0.pgm" $picture) $low/$(printf "%04d_0.pgm" $_even)
+    ln -s ../$even/$(printf "%04d_1.pgm" $picture) $low/$(printf "%04d_1.pgm" $_even)
+    ln -s ../$even/$(printf "%04d_2.pgm" $picture) $low/$(printf "%04d_2.pgm" $_even)
+
 done
