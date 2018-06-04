@@ -120,4 +120,17 @@ mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers
 cd transcode_quality
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
-#mctf show
+
+img=1
+while [ $img -le $number_of_images ]; do
+    _img=$(printf "%04d" $img)
+    let img_1=img-1
+    _img_1=$(printf "%04d" $img_1)
+    cp low_0/${_img_1}_0.pgm low_0/$_img.Y
+    cp low_0/${_img_1}_1.pgm low_0/$_img.U
+    cp low_0/${_img_1}_2.pgm low_0/$_img.V
+    let img=img+1 
+done
+ffmpeg -y -s {$x_dim}x{$y_dim} -pix_fmt yuv420p -i low_0/%4d.Y /tmp/out.yuv
+mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS
+

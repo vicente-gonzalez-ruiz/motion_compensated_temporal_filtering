@@ -165,10 +165,10 @@ else :
 
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
-log.info("GOP_size = {}".format(GOP_size))
+log.info("GOP_size={}".format(GOP_size))
 
 pictures = (GOPs - 1) * GOP_size + 1
-log.info("pictures = {}".format(pictures))
+log.info("pictures={}".format(pictures))
 
 # }}}
 
@@ -198,7 +198,7 @@ while subband < TRLs:
             file.write("{} ".format(i))
 
     subband += 1
-    
+
 # L subband
 average = [0]*layers
 for picture in range(GOPs):
@@ -282,6 +282,9 @@ with io.open("layers.txt", 'w') as file:
 
 LOW = "low"
 HIGH = "high"
+
+pictures = (GOPs - 1) * GOP_size + 1
+log.info("pictures={}".format(pictures))
 
 # Transcoding of H subbands
 subband = 1
