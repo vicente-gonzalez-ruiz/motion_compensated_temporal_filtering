@@ -177,51 +177,50 @@ log.info("pictures={}".format(pictures))
 
 # }}}
 
-# {{{ Compute slope averages
+# {{{ Compute slope averages, for each GOP
 
 # H subbands
 subband = 1
+average = [0]*layers
 while subband < TRLs:
     pictures = (pictures + 1) // 2
-    average = [0]*layers
 
-    for picture in range(pictures-1):    
+    for picture in range(pictures-1):
         fname = "high_{}/{:04d}.txt".format(subband, picture)
         with io.open(fname, 'r') as file:
             slopes = file.read().replace(' ','').replace('\n','').split(',')
-        log.info("{}: {}".format(fname, slopes))
+            log.info("{}: {}".format(fname, slopes))
         for i in range(layers):
             average[i] += int(slopes[i])
 
-    for l in range(layers):
-        average[l] //= (pictures-1)
+        pictures_per_GOP_in_subband = 1 << (TRLs - subband - 1)
+        if ((picture+1) % pictures_per_GOP_in_subband) == 0:
+            for l in range(layers):
+                average[l] //= pictures_per_GOP_in_subband
 
-    log.info("high_{}: {}".format(subband, average))
+            log.info("high_{}: {}".format(subband, average))
 
-    with io.open("high_{}.txt".format(subband), 'w') as file:
-        for i in average:
-            file.write("{} ".format(i))
+            with io.open("high_{}.txt".format(subband), 'a') as file:
+                for i in range(len(average)-1):
+                    file.write("{} ".format(average[i]))
+                file.write("{}\n".format(average[len(average)-1]))
+            for i in range(layers):
+                average[i] = 0
 
     subband += 1
 
 # L subband
-average = [0]*layers
 for picture in range(GOPs):
     fname = "low_{}/{:04d}.txt".format(TRLs-1, picture)
     with io.open(fname, 'r') as file:
         slopes = file.read().replace(' ','').replace('\n','').split(',')
     log.info("{}: {}".format(fname, slopes))
-    for i in range(layers):
-        average[i] += int(slopes[i])
+    with io.open("low_{}.txt".format(TRLs-1), 'a') as file:
+        for i in range(len(slopes)-1):
+            file.write("{} ".format(slopes[i]))
+        file.write("{}\n".format(slopes[len(slopes)-1]))
+    log.info("low_{}: {}".format(subband, slopes))
 
-for l in range(layers):
-    average[l] //= GOPs
-
-log.info("low_{}: {}".format(subband, average))
-    
-with io.open("low_{}.txt".format(TRLs-1), 'w') as file:
-    for i in average:
-        file.write("{} ".format(i))
 
 # }}}
 

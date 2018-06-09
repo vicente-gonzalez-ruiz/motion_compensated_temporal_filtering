@@ -2,7 +2,7 @@
 
 video=~/Videos/mobile_352x288x30x420x300.avi
 #GOPs=9
-GOPs=2
+GOPs=5
 #TRLs=6
 TRLs=3
 y_dim=288
@@ -115,6 +115,7 @@ mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps 
 mkdir transcode_quality
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
 mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers
+exit
 cd transcode_quality
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
