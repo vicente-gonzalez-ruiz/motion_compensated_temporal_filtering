@@ -142,6 +142,18 @@ log.info("layers = {}".format(layers))
 
 # }}}
 
+def transcode_picture(filename, layers):
+# {{{
+
+    print(filename, layers)
+    shell.run("trace kdu_transcode"
+              + " -i " + filename
+              + " -jpx_layers sYCC,0,1,2"
+              + " -o " + "transcode_quality/" + filename
+              + " Clayers=" + str(layers))
+
+# }}}
+
 # {{{ Set attenuations among temporal subbands
 
 if   TRLs == 1 :
@@ -176,6 +188,160 @@ pictures = (GOPs - 1) * GOP_size + 1
 log.info("pictures={}".format(pictures))
 
 # }}}
+
+# {{{ L
+
+for gop in range(1:GOPs): # GOP_0 later
+    
+    subband_layers = []
+    
+    # L
+    fname "low_{}/{:04d}.txt".format(TRLs-1, gop)
+    with io.open(fname, 'r') as file:
+        slopes = file.read().replace(' ','').replace('\n','').split(',')
+    log.info("{}: {}".format(fname, slopes))
+    with io.open("low_{}.txt".format(TRLs-1), 'a') as file:
+        for i in range(len(slopes)-1):
+            file.write("{} ".format(slopes[i]))
+            subband_layers.append('L', TRLs-1, layers-i-1, slopes[i])
+        file.write("{}\n".format(slopes[len(slopes)-1]))
+        subband_layers.append('L', TRLs-1, 0, slopes[len(slopes)-1])
+    log.info("low_{}: {}".format(subband, slopes))
+        
+    # H's
+    for subband in range(TRLs - 1 : 1):
+        pics_per_GOP = 1 << (TRLs - subband - 1)
+        first_pic = pics_per_GOP * gop
+        average = [0]*layers
+        for pic in range(first_pic : first_pic + pics_per_GOP):
+            fname "high_{}/{:04d}.txt".format(subband, pic)
+            with io.open(fname, 'r') as file:
+                slopes = file.read().replace(' ','').replace('\n','').split(',')
+            log.info("{}: {}".format(fname, slopes))
+            for i in range(layers):
+                average[i] += int(slopes[i])
+        for l in range(layers):
+            average[l] //= pics_per_GOP
+        with io.open("high_{}.txt".format(subband), 'a') as file:
+            for i in range(len(slopes)-1):
+                file.write("{} ".format(slopes[i]))
+                subband_layers.append('H', subband, layers-i-1, slopes[i])
+            file.write("{}\n".format(slopes[len(slopes)-1]))
+            subband_layers.append('H', subband, 0, slopes[len(slopes)-1])
+        log.info("high_{}: {}".format(subband, slopes))
+
+    # Sort the subband-layers by their relative slope
+    subband_layers.sort(key=operator.itemgetter(3), reverse=True)
+    log.info("(after sorting) subband_layers={}".format(subband_layers))
+
+    # Truncate the list
+    del subband_layers[keep_layers:]
+    log.info("(after truncating) subband_layers={}".format(subband_layers))
+
+
+    # {{{ Count the number of subband-layers per subband
+
+    slayers_per_subband = {}
+    slayers_per_subband[('L', TRLs-1)] = 0
+    for i in range(TRLs-1,0,-1):
+        slayers_per_subband[('H', i)] = 0
+
+    for i in subband_layers:
+        slayers_per_subband[(i[0], i[1])] += 1
+
+    with io.open("layers.txt", 'a') as file:
+        log.info("{}:{}".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
+        file.write("{}:{} ".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
+        for i in range(TRLs-1,0,-1):
+            log.info("{}:{}".format(('H', i), slayers_per_subband[('H', i)]))
+            file.write("{}:{} ".format(('H', i), slayers_per_subband[('H', i)]))
+        file.write("\n")
+
+    # }}}
+
+    # {{{ Transcode
+
+    LOW = "low"
+    HIGH = "high"
+
+    pictures = (GOPs - 1) * GOP_size + 1
+    log.info("pictures={}".format(pictures))
+
+    # Transcoding of H subbands
+    subband = 1
+    while subband < TRLs:
+
+        pictures = (pictures + 1) // 2
+        if slayers_per_subband[('H', subband)] > 0:
+            log.info("Transcoding subband H[{}] with {} pictures".format(subband, pictures - 1))
+
+            shell.run("mctf transcode_quality_subband"
+                      + " --subband " + HIGH + "_" + str(subband)
+                      + " --layers " + str(slayers_per_subband[('H', subband)])
+                      + " --pictures " + str(pictures - 1))
+
+            shell.run("trace cp motion_residue_"
+                      + str(subband)
+                      + "/*.j2c transcode_quality/"
+                      + "motion_residue_"
+                      + str(subband))
+
+        subband += 1
+
+    # Transcoding of L subband
+    log.info("Transcoding subband L[{}] with {} pictures".format(subband, TRLs - 1))
+    shell.run("mctf transcode_quality_subband"
+              + " --subband " + LOW + "_" + str(TRLs - 1)
+              + " --layers " + str(slayers_per_subband[('L', TRLs - 1)])
+              + " --pictures " + str(GOPs))
+
+    # }}}
+
+    
+    # {{{ Get slopes from .txt files
+    fname = "low_{}/{:04d}.txt".format(TRLs-1, picture)
+    with io.open(fname, 'r') as file:
+        slopes = file.read().replace(' ','').replace('\n','').split(',')
+    log.info("{}: {}".format(fname, slopes))
+    with io.open("low_{}.txt".format(TRLs-1), 'a') as file:
+        for i in range(len(slopes)-1):
+            file.write("{} ".format(slopes[i]))
+        file.write("{}\n".format(slopes[len(slopes)-1]))
+    log.info("low_{}: {}".format(subband, slopes))
+
+    # }}}
+
+    # {{{ Define subband layers
+
+    with io.open("low_{}.txt".format(TRLs-1), 'r') as file:
+        slopes = file.read().split()
+    range_of_slopes = int(slopes[0]) - int(slopes[layers-1])
+    for index, slope in enumerate(slopes):
+        subband_layers.append(('L', TRLs-1, layers-index-1, int(slope)-42000))
+
+    # }}}
+
+    # {{{ Sort and truncate the list of subband-layers
+
+    subband_layers.sort(key=operator.itemgetter(3), reverse=True)
+    log.info("(after sorting) subband_layers={}".format(subband_layers))
+
+    # }}}
+
+    # {{{ Truncate the list
+
+    del subband_layers[keep_layers:]
+    log.info("(after truncating) subband_layers={}".format(subband_layers))
+
+    # }}}
+
+
+    
+    # }}}
+    
+# }}}
+
+
 
 # {{{ Compute slope averages, for each GOP
 
@@ -221,10 +387,10 @@ for picture in range(GOPs):
         file.write("{}\n".format(slopes[len(slopes)-1]))
     log.info("low_{}: {}".format(subband, slopes))
 
-
 # }}}
 
 #import pdb; pdb.set_trace()
+
 # {{{ Define subband_layers: a list of tuples ('L'|'H', subband, layer, slope)
 
 subband_layers = []
