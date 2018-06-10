@@ -198,6 +198,7 @@ log.info("pictures={}".format(pictures))
 # {{{ L
 
 for gop in range(1, GOPs):  # GOP_0 later
+    log.info("GOP={}".format(gop))
     subband_layers = []
     # L
     fname = "L_{}/{:04d}.txt".format(TRLs-1, gop)
@@ -213,7 +214,7 @@ for gop in range(1, GOPs):  # GOP_0 later
     log.info("L_{}: {}".format(subband_layers, slopes))
 
     # H's
-    for subband in range(TRLs - 1, 1):
+    for subband in range(TRLs - 1, 0, -1):
         pics_per_GOP = 1 << (TRLs - subband - 1)
         first_pic = pics_per_GOP * gop
         average = [0]*layers
@@ -260,7 +261,7 @@ for gop in range(1, GOPs):  # GOP_0 later
     with io.open("layers.txt", 'a') as file:
         log.info("{}:{}".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
         file.write("{}:{} ".format(('L', TRLs-1), slayers_per_subband[('L', TRLs-1)]))
-        for i in range(TRLs-1,0,-1):
+        for i in range(TRLs-1, 0, -1):
             log.info("{}:{}".format(('H', i), slayers_per_subband[('H', i)]))
             file.write("{}:{} ".format(('H', i), slayers_per_subband[('H', i)]))
         file.write("\n")
@@ -269,9 +270,12 @@ for gop in range(1, GOPs):  # GOP_0 later
 
     # {{{ Transcode the images
 
-    for i in subband_layers:
-        fname = i[0]+str(i[1])
-        transcode_picture(fname, i[3]) # ???
+    for key, value in slayers_per_subband:
+        print(key, value)
+        for p in range(gop*GOP_size + (1 << (TRLs-key[1]-1))):
+            fname = key[0] + '_' + str(key[1]) + '/'
+            + "{:04d}".format(p) + ".jpx"
+            transcode_picture(fname, value)
     
     # }}}
 
