@@ -191,7 +191,7 @@ log.info("pictures={}".format(pictures))
 
 # {{{ L
 
-for gop in range(1:GOPs): # GOP_0 later
+for gop in range(1: GOPs): # GOP_0 later
     
     subband_layers = []
     
@@ -203,9 +203,9 @@ for gop in range(1:GOPs): # GOP_0 later
     with io.open("L_{}.txt".format(TRLs-1), 'a') as file:
         for i in range(len(slopes)-1):
             file.write("{} ".format(slopes[i]))
-            subband_layers.append('L', TRLs-1, layers-i-1, slopes[i])
+            subband_layers.append(('L', TRLs-1, layers-i-1, slopes[i]))
         file.write("{}\n".format(slopes[len(slopes)-1]))
-        subband_layers.append('L', TRLs-1, 0, slopes[len(slopes)-1])
+        subband_layers.append(('L', TRLs-1, 0, slopes[len(slopes)-1]))
     log.info("L_{}: {}".format(subband, slopes))
         
     # H's
@@ -225,27 +225,31 @@ for gop in range(1:GOPs): # GOP_0 later
         with io.open("H_{}.txt".format(subband), 'a') as file:
             for i in range(len(slopes)-1):
                 file.write("{} ".format(slopes[i]))
-                subband_layers.append('H', subband, layers-i-1, slopes[i])
+                subband_layers.append(('H', subband, layers-i-1, slopes[i]))
             file.write("{}\n".format(slopes[len(slopes)-1]))
-            subband_layers.append('H', subband, 0, slopes[len(slopes)-1])
+            subband_layers.append(('H', subband, 0, slopes[len(slopes)-1]))
         log.info("H_{}: {}".format(subband, slopes))
 
-    # Sort the subband-layers by their relative slope
+    # {{{ Sort the subband-layers by their relative slope
+    
     subband_layers.sort(key=operator.itemgetter(3), reverse=True)
     log.info("(after sorting) subband_layers={}".format(subband_layers))
-
-    # Truncate the list
+    
+    # }}}
+    
+    # {{{ Truncate the list
+    
     del subband_layers[keep_layers:]
     log.info("(after truncating) subband_layers={}".format(subband_layers))
-
-
+    
+    # }}}
+    
     # {{{ Count the number of subband-layers per subband
 
     slayers_per_subband = {}
     slayers_per_subband[('L', TRLs-1)] = 0
     for i in range(TRLs-1,0,-1):
         slayers_per_subband[('H', i)] = 0
-
     for i in subband_layers:
         slayers_per_subband[(i[0], i[1])] += 1
 
@@ -262,9 +266,12 @@ for gop in range(1:GOPs): # GOP_0 later
     # {{{ Transcode the images
 
     for i in subband_layers:
-        
+        fname = i[0]+str(i[1])
+        transcode_picture(fname, i[3]) # ???
     
     # }}}
+
+    sys.exit()
     
     # {{{ Transcode
 

@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
 #if defined __ANALYZE__
   char *motion_out_fn = (char *)"motion_out";
 #endif /* __ANALYZE__ */
-  char *O_fn = (char *)"O";
+  char *odd_fn = (char *)"O";
   int pictures = 33;
   int pixels_in_x[COMPONENTS] = {PIXELS_IN_X, PIXELS_IN_X/2, PIXELS_IN_X/2};
   int pixels_in_y[COMPONENTS] = {PIXELS_IN_Y, PIXELS_IN_Y/2, PIXELS_IN_Y/2};
@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
 #if defined __ANALYZE__
       {"motion_out_fn", required_argument, 0, 't'},
 #endif /* __ANALYZE__ */
-      {"O_fn", required_argument, 0, 'o'},
+      {"odd_fn", required_argument, 0, 'o'},
       {"pictures", required_argument, 0, 'p'},
       {"pixels_in_x", required_argument, 0, 'x'},
       {"pixels_in_y", required_argument, 0, 'y'},
@@ -281,8 +281,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     case 'o':
-      O_fn = optarg;
-      info("%s: O_fn=%s\n", argv[0], O_fn);
+      odd_fn = optarg;
+      info("%s: odd_fn=%s\n", argv[0], odd_fn);
       break;
 
     case 'p':
@@ -345,7 +345,7 @@ int main(int argc, char *argv[]) {
 #if defined __ANALYZE__
       printf("   -[-]mo[t]ion_out_fn = output file with the motion fields, after considering decorrelation effectiviness (\"%s\")\n", motion_out_fn);
 #endif /* __ANALYZE__ */
-      printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", O_fn);
+      printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", odd_fn);
       printf("   -[-p]ictures = number of pictures to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x[0]);
       printf("   -[-]pixels_in_[y] = size of the Y dimension of the pictures (%d)\n", pixels_in_y[0]);
@@ -387,10 +387,10 @@ int main(int argc, char *argv[]) {
 
   {
 #if not defined __ANALYZE__
-    int err = mkdir(O_fn, 0700);
+    int err = mkdir(odd_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
-      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], O_fn);
+      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
       abort();
     }
 #endif /* __DEBUG__ */
@@ -646,7 +646,7 @@ int main(int argc, char *argv[]) {
   for(int i=0; i<pictures/2; i++) {
     
 #if defined __ANALYZE__
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, O_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, odd_fn);
 
     /* The next picture (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
@@ -654,7 +654,7 @@ int main(int argc, char *argv[]) {
       // {{{ predicted <- O
       texture.read_picture(predicted[c],
 			 pixels_in_y[c], pixels_in_x[c],
-			 O_fn,
+			 odd_fn,
 			 i,
 			 c
 #if defined __INFO__
@@ -1192,7 +1192,7 @@ int main(int argc, char *argv[]) {
     
 #else /* __ANALYZE__ */
 
-    info("%s: writing picture %d of \"%s\"\n", argv[0], i, O_fn);
+    info("%s: writing picture %d of \"%s\"\n", argv[0], i, odd_fn);
 
     /** Decorrelation. */
 
@@ -1227,7 +1227,7 @@ int main(int argc, char *argv[]) {
       // {{{ predicted -> O
       texture.write_picture(predicted[c],
 			  pixels_in_y[c], pixels_in_x[c],
-			  O_fn,
+			  odd_fn,
 			  i,
 			  c
 #if defined __INFO__

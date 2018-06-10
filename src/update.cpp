@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
   char *even_fn = (char *)"E";
   char *frame_types_fn = (char *)"frame_types";
   char *high_fn = (char *)"H";
-  char *L_fn = (char *)"L";
+  char *low_fn = (char *)"L";
   char *motion_fn = (char *)"motion";
   int pictures = 33;
   int pixels_in_x[COMPONENTS] = {PIXELS_IN_X, PIXELS_IN_X/2, PIXELS_IN_X/2};
@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
       {"even_fn", required_argument, 0, 'e'},
       {"frame_types_fn", required_argument, 0, 'f'},
       {"high_fn", required_argument, 0, 'h'},
-      {"L_fn", required_argument, 0, 'l'},
+      {"low_fn", required_argument, 0, 'l'},
       {"motion_fn", required_argument, 0, 'm'},
       {"pictures", required_argument, 0, 'p'},
       {"pixels_in_x", required_argument, 0, 'x'},
@@ -206,8 +206,8 @@ int main(int argc, char *argv[]) {
       break;
 
     case 'l':
-      L_fn = optarg;
-      info("%s: L_fn=%s\n", argv[0], L_fn);
+      low_fn = optarg;
+      info("%s: low_fn=%s\n", argv[0], low_fn);
       break;
 
     case 'm':
@@ -265,7 +265,7 @@ int main(int argc, char *argv[]) {
       printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", even_fn);
       printf("   -[-f]rame_types_fn = output file with the frame types (\"%s\")\n", frame_types_fn);
       printf("   -[-h]igh_fn = input file with H-subband pictures (\"%s\")\n", high_fn);
-      printf("   -[-l]ow_fn = output file with L-subband pictures (\"%s\")\n", L_fn);
+      printf("   -[-l]ow_fn = output file with L-subband pictures (\"%s\")\n", low_fn);
       printf("   -[-m]otion_fn = input file with the motion fields (\"%s\")\n", motion_fn);
       printf("   -[-p]ictures = number of pictures to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x[0]);
@@ -300,10 +300,10 @@ int main(int argc, char *argv[]) {
   // {{{
   
 #if defined __ANALYZE__
-  int err = mkdir(L_fn, 0700);
+  int err = mkdir(low_fn, 0700);
 #ifdef __DEBUG__
   if(err) {
-    error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], L_fn);
+    error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], low_fn);
     abort();
   }
 #endif /* __DEBUG__ */
@@ -395,14 +395,14 @@ int main(int argc, char *argv[]) {
 #if defined __ANALYZE__
   info("%s: reading picture 0 from \"%s\"\n", argv[0], even_fn);
 #else /* __ANALYZE__ */
-  info("%s: reading picture 0 from \"%s\"\n", argv[0], L_fn);
+  info("%s: reading picture 0 from \"%s\"\n", argv[0], low_fn);
 #endif /* __ANALYZE__ */
   for(int c=0; c<COMPONENTS; c++) {
     texture.read_picture(reference[0][c], pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__	       
 		       even_fn,
 #else /* __ANALYZE__ */
-		       L_fn,
+		       low_fn,
 #endif /* __ANALYZE__ */
 		       0, c
 #if defined __INFO__
@@ -493,14 +493,14 @@ int main(int argc, char *argv[]) {
 #ifdef __ANALYZE__ 
     info("%s: reading picture %d from \"%s\"\n", argv[0], i, even_fn);
 #else /* __ANALYZE__ */
-    info("%s: reading picture %d from \"%s\"\n", argv[0], i, L_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i, low_fn);
 #endif /* __ANALYZE__ */
     for(int c=0; c<COMPONENTS; c++) {
       texture.read_picture(reference[1][c], pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__ 
 			 even_fn,
 #else /* __ANALYZE__ */
-			 L_fn,
+			 low_fn,
 #endif /* __ANALYZE__ */
 			 i, c
 #if defined __INFO__
@@ -617,7 +617,7 @@ w
     // {{{ Write reference[0] en L_? 
 
 #ifdef __ANALYZE__ 
-    info("%s: writing picture %d from \"%s\"\n", argv[0], i, L_fn);
+    info("%s: writing picture %d from \"%s\"\n", argv[0], i, low_fn);
 #else /* __ANALYZE__ */
     info("%s: writing picture %d from \"%s\"\n", argv[0], i, even_fn);
 #endif /* __ANALYZE__ */
@@ -629,7 +629,7 @@ w
       texture.write_picture(reference[0][c],
 			  pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
-			  L_fn,
+			  low_fn,
 #else /* __ANALYZE__ */
 			  even_fn,
 #endif /* __ANALYZE__ */
@@ -659,7 +659,7 @@ w
   // {{{ Write reference[0] in L_? 
   
 #ifdef __ANALYZE__ 
-  info("%s: writing picture %d to \"%s\"\n", argv[0], i, L_fn);
+  info("%s: writing picture %d to \"%s\"\n", argv[0], i, low_fn);
 #else /* __ANALYZE__ */
   info("%s: writing picture %d to \"%s\"\n", argv[0], i, even_fn);
 #endif /* __ANALYZE__ */
@@ -671,7 +671,7 @@ w
     texture.write_picture(reference[0][c],
 			pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
-			L_fn,
+			low_fn,
 #else /* __ANALYZE__ */
 			even_fn,
 #endif /* __ANALYZE__ */
