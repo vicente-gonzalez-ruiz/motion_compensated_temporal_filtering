@@ -32,7 +32,7 @@ shell.setLogger(log)
 
 parser = arguments_parser(description="Transcodes in quality a subband.")
 parser.add_argument("--subband",
-                    help="Subband prefix (for example, \"low_3\")",
+                    help="Subband prefix (for example, \"L_3\")",
                     default="")
 parser.add_argument("--layers",
                     help="Number of quality layers to output",
