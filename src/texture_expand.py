@@ -20,8 +20,8 @@ shell.setLogger(log)
 # }}}
 
 MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
-LOW = "low"
-HIGH = "high"
+LOW = "L"
+HIGH = "H"
 
 # {{{ Arguments parsing
 parser = arguments_parser(description="Expands the texture.")

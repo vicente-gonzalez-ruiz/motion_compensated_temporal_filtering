@@ -196,25 +196,25 @@ for gop in range(1:GOPs): # GOP_0 later
     subband_layers = []
     
     # L
-    fname "low_{}/{:04d}.txt".format(TRLs-1, gop)
+    fname "L_{}/{:04d}.txt".format(TRLs-1, gop)
     with io.open(fname, 'r') as file:
         slopes = file.read().replace(' ','').replace('\n','').split(',')
     log.info("{}: {}".format(fname, slopes))
-    with io.open("low_{}.txt".format(TRLs-1), 'a') as file:
+    with io.open("L_{}.txt".format(TRLs-1), 'a') as file:
         for i in range(len(slopes)-1):
             file.write("{} ".format(slopes[i]))
             subband_layers.append('L', TRLs-1, layers-i-1, slopes[i])
         file.write("{}\n".format(slopes[len(slopes)-1]))
         subband_layers.append('L', TRLs-1, 0, slopes[len(slopes)-1])
-    log.info("low_{}: {}".format(subband, slopes))
+    log.info("L_{}: {}".format(subband, slopes))
         
     # H's
-    for subband in range(TRLs - 1 : 1):
+    for subband in range(TRLs - 1: 1):
         pics_per_GOP = 1 << (TRLs - subband - 1)
         first_pic = pics_per_GOP * gop
         average = [0]*layers
-        for pic in range(first_pic : first_pic + pics_per_GOP):
-            fname "high_{}/{:04d}.txt".format(subband, pic)
+        for pic in range(first_pic: first_pic + pics_per_GOP):
+            fname "H_{}/{:04d}.txt".format(subband, pic)
             with io.open(fname, 'r') as file:
                 slopes = file.read().replace(' ','').replace('\n','').split(',')
             log.info("{}: {}".format(fname, slopes))
@@ -222,13 +222,13 @@ for gop in range(1:GOPs): # GOP_0 later
                 average[i] += int(slopes[i])
         for l in range(layers):
             average[l] //= pics_per_GOP
-        with io.open("high_{}.txt".format(subband), 'a') as file:
+        with io.open("H_{}.txt".format(subband), 'a') as file:
             for i in range(len(slopes)-1):
                 file.write("{} ".format(slopes[i]))
                 subband_layers.append('H', subband, layers-i-1, slopes[i])
             file.write("{}\n".format(slopes[len(slopes)-1]))
             subband_layers.append('H', subband, 0, slopes[len(slopes)-1])
-        log.info("high_{}: {}".format(subband, slopes))
+        log.info("H_{}: {}".format(subband, slopes))
 
     # Sort the subband-layers by their relative slope
     subband_layers.sort(key=operator.itemgetter(3), reverse=True)
@@ -259,10 +259,17 @@ for gop in range(1:GOPs): # GOP_0 later
 
     # }}}
 
+    # {{{ Transcode the images
+
+    for i in subband_layers:
+        
+    
+    # }}}
+    
     # {{{ Transcode
 
-    LOW = "low"
-    HIGH = "high"
+    LOW = "L"
+    HIGH = "H"
 
     pictures = (GOPs - 1) * GOP_size + 1
     log.info("pictures={}".format(pictures))
@@ -299,21 +306,21 @@ for gop in range(1:GOPs): # GOP_0 later
 
     
     # {{{ Get slopes from .txt files
-    fname = "low_{}/{:04d}.txt".format(TRLs-1, picture)
+    fname = "L_{}/{:04d}.txt".format(TRLs-1, picture)
     with io.open(fname, 'r') as file:
         slopes = file.read().replace(' ','').replace('\n','').split(',')
     log.info("{}: {}".format(fname, slopes))
-    with io.open("low_{}.txt".format(TRLs-1), 'a') as file:
+    with io.open("L_{}.txt".format(TRLs-1), 'a') as file:
         for i in range(len(slopes)-1):
             file.write("{} ".format(slopes[i]))
         file.write("{}\n".format(slopes[len(slopes)-1]))
-    log.info("low_{}: {}".format(subband, slopes))
+    log.info("L_{}: {}".format(subband, slopes))
 
     # }}}
 
     # {{{ Define subband layers
 
-    with io.open("low_{}.txt".format(TRLs-1), 'r') as file:
+    with io.open("L_{}.txt".format(TRLs-1), 'r') as file:
         slopes = file.read().split()
     range_of_slopes = int(slopes[0]) - int(slopes[layers-1])
     for index, slope in enumerate(slopes):
@@ -352,7 +359,7 @@ while subband < TRLs:
     pictures = (pictures + 1) // 2
 
     for picture in range(pictures-1):
-        fname = "high_{}/{:04d}.txt".format(subband, picture)
+        fname = "H_{}/{:04d}.txt".format(subband, picture)
         with io.open(fname, 'r') as file:
             slopes = file.read().replace(' ','').replace('\n','').split(',')
             log.info("{}: {}".format(fname, slopes))
@@ -364,9 +371,9 @@ while subband < TRLs:
             for l in range(layers):
                 average[l] //= pictures_per_GOP_in_subband
 
-            log.info("high_{}: {}".format(subband, average))
+            log.info("H_{}: {}".format(subband, average))
 
-            with io.open("high_{}.txt".format(subband), 'a') as file:
+            with io.open("H_{}.txt".format(subband), 'a') as file:
                 for i in range(len(average)-1):
                     file.write("{} ".format(average[i]))
                 file.write("{}\n".format(average[len(average)-1]))
@@ -377,15 +384,15 @@ while subband < TRLs:
 
 # L subband
 for picture in range(GOPs):
-    fname = "low_{}/{:04d}.txt".format(TRLs-1, picture)
+    fname = "L_{}/{:04d}.txt".format(TRLs-1, picture)
     with io.open(fname, 'r') as file:
         slopes = file.read().replace(' ','').replace('\n','').split(',')
     log.info("{}: {}".format(fname, slopes))
-    with io.open("low_{}.txt".format(TRLs-1), 'a') as file:
+    with io.open("L_{}.txt".format(TRLs-1), 'a') as file:
         for i in range(len(slopes)-1):
             file.write("{} ".format(slopes[i]))
         file.write("{}\n".format(slopes[len(slopes)-1]))
-    log.info("low_{}: {}".format(subband, slopes))
+    log.info("L_{}: {}".format(subband, slopes))
 
 # }}}
 
@@ -396,7 +403,7 @@ for picture in range(GOPs):
 subband_layers = []
     
 # L
-with io.open("low_{}.txt".format(TRLs-1), 'r') as file:
+with io.open("L_{}.txt".format(TRLs-1), 'r') as file:
     slopes = file.read().split()
 range_of_slopes = int(slopes[0]) - int(slopes[layers-1])
 for index, slope in enumerate(slopes):
@@ -404,7 +411,7 @@ for index, slope in enumerate(slopes):
 
 # H's
 for subband in range(1,TRLs):
-    with io.open("high_{}.txt".format(subband)) as file:
+    with io.open("H_{}.txt".format(subband)) as file:
         slopes = file.read().split()
     for index, slope in enumerate(slopes):
         #subband_layers.append(('H', TRLs-subband, layers-index-1, int(float(slope)//gain[subband])))
@@ -450,8 +457,8 @@ with io.open("layers.txt", 'w') as file:
 
 # {{{ Transcoding
 
-LOW = "low"
-HIGH = "high"
+LOW = "L"
+HIGH = "H"
 
 pictures = (GOPs - 1) * GOP_size + 1
 log.info("pictures={}".format(pictures))
