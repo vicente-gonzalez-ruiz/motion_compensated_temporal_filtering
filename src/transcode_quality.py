@@ -270,13 +270,12 @@ for gop in range(1, GOPs):  # GOP_0 later
 
     # {{{ Transcode the images
 
-    for key, value in slayers_per_subband:
-        print(key, value)
-        for p in range(gop*GOP_size + (1 << (TRLs-key[1]-1))):
-            fname = key[0] + '_' + str(key[1]) + '/'
-            + "{:04d}".format(p) + ".jpx"
+    for key, value in slayers_per_subband.items():
+        pics_per_subband = (1 << (TRLs-key[1]-1))
+        for p in range(pics_per_subband * gop, pics_per_subband * gop + pics_per_subband):
+            fname = key[0] + '_' + str(key[1]) + '/' + str('%04d' % p) + ".jpx"
             transcode_picture(fname, value)
-    
+
     # }}}
 
     sys.exit()
