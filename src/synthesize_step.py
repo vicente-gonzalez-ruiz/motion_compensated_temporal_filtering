@@ -42,8 +42,8 @@ shell.run("mctf un_update"
           + " --block_size="        + str(block_size)
           + " --even_fn="           + "even_"        + str(subband)
           + " --frame_types_fn="    + "frame_types_" + str(subband)
-          + " --high_fn="           + "high_"        + str(subband)
-          + " --low_fn="            + "low_"         + str(subband)
+          + " --H_fn="           + "H_"        + str(subband)
+          + " --L_fn="            + "L_"         + str(subband)
           + " --motion_fn="         + "motion_"      + str(subband)
           + " --pictures="          + str(pictures)
           + " --pixels_in_x="       + str(pixels_in_x)
@@ -56,7 +56,7 @@ shell.run("mctf correlate"
           + " --block_size="        + str(block_size)
           + " --even_fn="           + "even_"        + str(subband)
           + " --frame_types_fn="    + "frame_types_" + str(subband)
-          + " --high_fn="           + "high_"        + str(subband)
+          + " --H_fn="           + "H_"        + str(subband)
           + " --motion_in_fn="      + "motion_"      + str(subband)
           + " --odd_fn="            + "odd_"         + str(subband)
           + " --pictures="          + str(pictures)
@@ -67,7 +67,7 @@ shell.run("mctf correlate"
 
 shell.run("mctf merge"
           + " -e " + "even_" + str(subband)
-          + " -l " + "low_"  + str(subband-1)
+          + " -l " + "L_"  + str(subband-1)
           + " -o " + "odd_"  + str(subband)
           + " -p " + str(pictures)
           + " -x " + str(pixels_in_x)

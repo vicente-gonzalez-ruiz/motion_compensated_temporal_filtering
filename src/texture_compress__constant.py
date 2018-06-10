@@ -46,9 +46,9 @@ SRLs = int(args.SRLs)
 TRLs = int(args.TRLs)
 # }}}
 
-MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
-HIGH                 = "high"
-LOW                  = "low"
+MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
+HIGH = "H"
+LOW = "L"
 
 # Typical range of useful slopes in Kakadu
 #MAX_SLOPE = 50000 # Min quality

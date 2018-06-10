@@ -60,8 +60,8 @@ log.info("TRLs = {}".format(TRLs))
 # {{{ Some defs
 
 MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
-HIGH = "high"
-LOW = "low"
+HIGH = "H"
+LOW = "L"
 
 # }}}
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-low="low_0"
+low="L_0"
 even="even_1"
 odd="odd_1"
 pictures=33

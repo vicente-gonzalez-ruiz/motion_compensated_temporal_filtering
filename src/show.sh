@@ -2,7 +2,7 @@
 
 fps=30
 height=288
-video="low_0"
+video="L_0"
 width=352
 
 usage() {
