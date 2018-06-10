@@ -1,8 +1,8 @@
 #!/bin/bash
 
 low="L_0"
-even="even_1"
-odd="odd_1"
+even="E_1"
+odd="O_1"
 pictures=33
 pixels_in_x=352
 pixels_in_y=288

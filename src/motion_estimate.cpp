@@ -402,10 +402,10 @@ int main(int argc, char *argv[]) {
 
   int block_size = 32;
   int border_size = 0;
-  char *even_fn = (char *)"even";
+  char *E_fn = (char *)"E";
   char *imotion_fn = (char *)"imotion";
   char *motion_fn = (char *)"motion";
-  char *odd_fn = (char *)"odd";
+  char *O_fn = (char *)"O";
   int pictures = 9;
   int pixels_in_x = 352;
   int pixels_in_y = 288;
@@ -419,10 +419,10 @@ int main(int argc, char *argv[]) {
     static struct option long_options[] = {
       {"block_size", required_argument, 0, 'b'},
       {"border_size", required_argument, 0, 'd'},
-      {"even_fn", required_argument, 0, 'e'},
+      {"E_fn", required_argument, 0, 'e'},
       {"imotion_fn", required_argument, 0, 'i'},
       {"motion_fn", required_argument, 0, 'm'},
-      {"odd_fn", required_argument, 0, 'o'},
+      {"O_fn", required_argument, 0, 'o'},
       {"pictures", required_argument, 0, 'p'},
       {"pixels_in_x", required_argument, 0, 'x'},
       {"pixels_in_y", required_argument, 0, 'y'},
@@ -458,8 +458,8 @@ int main(int argc, char *argv[]) {
       break;
       
     case 'e':
-      even_fn = optarg;
-      info("%s: even_fn=\"%s\"\n", argv[0], even_fn);
+      E_fn = optarg;
+      info("%s: E_fn=\"%s\"\n", argv[0], E_fn);
       break;
 
     case 'i':
@@ -473,8 +473,8 @@ int main(int argc, char *argv[]) {
       break;
 
     case 'o':
-      odd_fn = optarg;
-      info("%s: odd_fn=\"%s\"\n", argv[0], odd_fn);
+      O_fn = optarg;
+      info("%s: O_fn=\"%s\"\n", argv[0], O_fn);
       break;
 
     case 'd':
@@ -518,10 +518,10 @@ int main(int argc, char *argv[]) {
       printf("\n");
       printf("   -[-b]lock_size = size of the blocks in the motion estimation process (%d)\n", block_size);
       printf("   -[-]bor[d]der_size = size of the border of the blocks in the motion estimation process (%d)\n", border_size);
-      printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", even_fn);
+      printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", E_fn);
       printf("   -[-i]motion_fn = input file with the initial motion fields (\"%s\")\n", imotion_fn);
       printf("   -[-m]otion_fn = output file with the motion fields (\"%s\")\n", imotion_fn);
-      printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", odd_fn);
+      printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", O_fn);
       printf("   -[-p]ictures = number of pictures to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x);
       printf("   -[-]pixels_in_[y] = size of the Y dimension of the pictures (%d)\n", pixels_in_y);
@@ -603,10 +603,10 @@ int main(int argc, char *argv[]) {
   motion_dwt->set_max_line_size(PIXELS_IN_X_MAX);
 
   /* Read the luma of reference[0]. */
-  // {{{ reference[0] <- even
+  // {{{ reference[0] <- E
   texture.read_picture(reference[0],
 		     pixels_in_y, pixels_in_x,
-		     even_fn,
+		     E_fn,
 		     0,
 		     LUMA
 #if defined __INFO__
@@ -617,8 +617,8 @@ int main(int argc, char *argv[]) {
   // }}}
 
   /* Skip to the chroma. */
-  /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
-    fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
+  /*fseek(E_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+    fseek(E_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
   /* Fill the edge of the read picture. */
   texture.fill_border(reference[0],
@@ -628,14 +628,14 @@ int main(int argc, char *argv[]) {
 
   for(int i=0; i<pictures/2; i++) {
 
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, odd_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, O_fn);
 
     /* Luma. */
-    //texture.read(odd_fd, predicted, pixels_in_y, pixels_in_x);
-    // {{{ predicted <- odd
+    //texture.read(O_fd, predicted, pixels_in_y, pixels_in_x);
+    // {{{ predicted <- O
     texture.read_picture(predicted,
 		       pixels_in_y, pixels_in_x,
-		       odd_fn,
+		       O_fn,
 		       i,
 		       LUMA
 #if defined __INFO__
@@ -646,10 +646,10 @@ int main(int argc, char *argv[]) {
     // }}}
 
     /* Chroma. */
-    /*fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
-      fseek(odd_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
+    /*fseek(O_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+      fseek(O_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, even_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, E_fn);
 
     /* This initialization seems to do nothing. */
     for(int y=0; y<pixels_in_y << subpixel_accuracy; y++) {
@@ -659,10 +659,10 @@ int main(int argc, char *argv[]) {
     }
 
     /* Read the luma of reference[1]. */
-    // {{{ reference[1] <- even
+    // {{{ reference[1] <- E
     texture.read_picture(reference[1],
 		       pixels_in_y, pixels_in_x,
-		       even_fn,
+		       E_fn,
 		       i,
 		       LUMA
 #if defined __INFO__
@@ -671,11 +671,11 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 		       );
     // }}}
-    //texture.read(even_fd, reference[1], pixels_in_y, pixels_in_x);
+    //texture.read(E_fd, reference[1], pixels_in_y, pixels_in_x);
 
     /* Cromas. */
-    /*fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
-      fseek(even_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
+    /*fseek(E_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);
+      fseek(E_fd, (pixels_in_y/2) * (pixels_in_x/2) * sizeof(unsigned char), SEEK_CUR);*/
 
     /* Fill the edge of the read picture. */
     texture.fill_border(reference[1],

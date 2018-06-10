@@ -15,10 +15,10 @@ log = logging.getLogger("psnr")
 parser = arguments_parser(description="PSNR computation between 2 sequences")
 parser.add_argument("--file_A",
                     help="First sequence",
-                    default="../low_0")
+                    default="../L_0")
 parser.add_argument("--file_B",
                     help="Second sequence",
-                    default="low_0")
+                    default="L_0")
 parser.pixels_in_x()
 parser.pixels_in_y()
 

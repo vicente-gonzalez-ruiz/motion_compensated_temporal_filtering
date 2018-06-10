@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
   int block_size = 16;
   int components = COMPONENTS;
-  char *even_fn = (char *)"even";
+  char *E_fn = (char *)"E";
   char *frame_types_fn = (char *)"frame_types";
   char *H_fn = (char *)"H";
   char *L_fn = (char *)"L";
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
     /* http://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Option-Example.html */
     static struct option long_options[] = {
       {"block_size", required_argument, 0, 'b'},
-      {"even_fn", required_argument, 0, 'e'},
+      {"E_fn", required_argument, 0, 'e'},
       {"frame_types_fn", required_argument, 0, 'f'},
       {"H_fn", required_argument, 0, 'h'},
       {"L_fn", required_argument, 0, 'l'},
@@ -191,8 +191,8 @@ int main(int argc, char *argv[]) {
       break;
       
     case 'e':
-      even_fn = optarg;
-      info("%s: even_fn=%s\n", argv[0], even_fn);
+      E_fn = optarg;
+      info("%s: E_fn=%s\n", argv[0], E_fn);
       break;
 
     case 'f':
@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
       printf("  Parameters:\n");
       printf("\n");
       printf("   -[-b]lock_size = size of the blocks in the motion estimation process (%d)\n", block_size);
-      printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", even_fn);
+      printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", E_fn);
       printf("   -[-f]rame_types_fn = output file with the frame types (\"%s\")\n", frame_types_fn);
       printf("   -[-h]igh_fn = input file with H-subband pictures (\"%s\")\n", H_fn);
       printf("   -[-l]ow_fn = output file with L-subband pictures (\"%s\")\n", L_fn);
@@ -286,10 +286,10 @@ int main(int argc, char *argv[]) {
   // {{{
   
 #if not defined __ANALYZE__
-  int err = mkdir(even_fn, 0700);
+  int err = mkdir(E_fn, 0700);
 #ifdef __DEBUG__
   if(err) {
-    error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
+    error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], E_fn);
     abort();
   }
 #endif /* __DEBUG__ */
@@ -390,17 +390,17 @@ int main(int argc, char *argv[]) {
   piy[0] = piy[1] = piy[2] = pixels_in_y[0];
   pix[0] = pix[1] = pix[2] = pixels_in_x[0];
 
-  // {{{ Read reference[0] from even_? 
+  // {{{ Read reference[0] from E_? 
 
 #if defined __ANALYZE__
-  info("%s: reading picture 0 from \"%s\"\n", argv[0], even_fn);
+  info("%s: reading picture 0 from \"%s\"\n", argv[0], E_fn);
 #else /* __ANALYZE__ */
   info("%s: reading picture 0 from \"%s\"\n", argv[0], L_fn);
 #endif /* __ANALYZE__ */
   for(int c=0; c<COMPONENTS; c++) {
     texture.read_picture(reference[0][c], pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__	       
-		       even_fn,
+		       E_fn,
 #else /* __ANALYZE__ */
 		       L_fn,
 #endif /* __ANALYZE__ */
@@ -488,17 +488,17 @@ int main(int argc, char *argv[]) {
     
     // }}}
     
-    // {{{ Read reference[1] de even_? 
+    // {{{ Read reference[1] de E_? 
     
 #ifdef __ANALYZE__ 
-    info("%s: reading picture %d from \"%s\"\n", argv[0], i, even_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i, E_fn);
 #else /* __ANALYZE__ */
     info("%s: reading picture %d from \"%s\"\n", argv[0], i, L_fn);
 #endif /* __ANALYZE__ */
     for(int c=0; c<COMPONENTS; c++) {
       texture.read_picture(reference[1][c], pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__ 
-			 even_fn,
+			 E_fn,
 #else /* __ANALYZE__ */
 			 L_fn,
 #endif /* __ANALYZE__ */
@@ -619,7 +619,7 @@ w
 #ifdef __ANALYZE__ 
     info("%s: writing picture %d from \"%s\"\n", argv[0], i, L_fn);
 #else /* __ANALYZE__ */
-    info("%s: writing picture %d from \"%s\"\n", argv[0], i, even_fn);
+    info("%s: writing picture %d from \"%s\"\n", argv[0], i, E_fn);
 #endif /* __ANALYZE__ */
     
     picture_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
@@ -631,7 +631,7 @@ w
 #ifdef __ANALYZE__
 			  L_fn,
 #else /* __ANALYZE__ */
-			  even_fn,
+			  E_fn,
 #endif /* __ANALYZE__ */
 			  i,
 			  c
@@ -661,7 +661,7 @@ w
 #ifdef __ANALYZE__ 
   info("%s: writing picture %d to \"%s\"\n", argv[0], i, L_fn);
 #else /* __ANALYZE__ */
-  info("%s: writing picture %d to \"%s\"\n", argv[0], i, even_fn);
+  info("%s: writing picture %d to \"%s\"\n", argv[0], i, E_fn);
 #endif /* __ANALYZE__ */
   
   picture_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
@@ -673,7 +673,7 @@ w
 #ifdef __ANALYZE__
 			L_fn,
 #else /* __ANALYZE__ */
-			even_fn,
+			E_fn,
 #endif /* __ANALYZE__ */
 			i,
 			c
