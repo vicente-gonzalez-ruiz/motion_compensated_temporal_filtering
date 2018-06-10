@@ -72,14 +72,14 @@ for i in range(TRLs-1, 0, -1):
     sys.stdout.write("TRL" + str(i-1))
 sys.stdout.write("\n")
 
-# Second line. (GOP low_4 motion_4+high_4 motion_3+hight_3 motion_2+high2 motion_1+high_1 Total Average).
+# Second line. (GOP L_4 motion_4+H_4 motion_3+Ht_3 motion_2+H2 motion_1+H_1 Total Average).
 sys.stdout.write("GOP#")
-sys.stdout.write("    low_" + str(TRLs-1))
+sys.stdout.write("      L_" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
     for j in range(0, 2**(TRLs-1-i)):
         sys.stdout.write(" ")
-    sys.stdout.write("motion_" + str(i) + " high_" + str(i))
+    sys.stdout.write("motion_" + str(i) + " H_" + str(i))
 sys.stdout.write("    Total Average\n")
 
 # Third line. (--------------------------------------)
@@ -93,9 +93,9 @@ sys.stdout.write("-------- -------\n")
 
 # Computations
 
-# GOP 0. The GOP0 is formed by the first picture in low_<TRLs-1>.
+# GOP 0. The GOP0 is formed by the first picture in L_<TRLs-1>.
 length = 0
-filename = "low_" + str(TRLs - 1) + "/" + "%04d" % 0 + "." + IMG_EXT
+filename = "L_" + str(TRLs - 1) + "/" + "%04d" % 0 + "." + IMG_EXT
 try:
     with io.open(filename, "rb") as file:
         file.seek(0, 2)
@@ -129,7 +129,7 @@ for GOP_number in range(GOPs-1):
 
     # L
     length = 0
-    filename = "low_" + str(TRLs - 1) + "/" + "%04d" % GOP_number + "." + IMG_EXT
+    filename = "L_" + str(TRLs - 1) + "/" + "%04d" % GOP_number + "." + IMG_EXT
     try:
         with io.open(filename, "rb") as file:
             file.seek(0, 2)
@@ -173,7 +173,7 @@ for GOP_number in range(GOPs-1):
 
         # Texture
         for i in range(pics_in_subband):
-            filename = "high_" + str(subband) + "/" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "." + IMG_EXT
+            filename = "H_" + str(subband) + "/" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "." + IMG_EXT
             try:
                 with io.open(filename, "rb") as file:
                     file.seek(0, 2)
@@ -255,7 +255,7 @@ for GOP_number in range(1, self.GOPs+1) :
         # High frecuency.
         #----------------
         for i in range(0, pics_in_GOP):
-            with io.open("high_" + str(subband) + "_" + "%04d" % g*GOP_size+i + "_U" + ".j2c", "rb" as file):
+            with io.open("H_" + str(subband) + "_" + "%04d" % g*GOP_size+i + "_U" + ".j2c", "rb" as file):
                 file.seek(0, 2)
                 self.bytes_frames_T[self.TRLs - subband].append(file.tell())
             next_picture = self.find_next_EOC_texture(H_file[subband])
