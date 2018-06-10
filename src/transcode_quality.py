@@ -11,7 +11,7 @@
 #  type files must be copied.
 #
 # Output:
-# 
+#
 #  transcoded MJ2K texture sequence.
 #
 # Examples:
@@ -72,7 +72,7 @@
 #
 #  If TRLs=3, we have the following subband attenuations: 1.0,
 #  1.2500103877, 1.8652117304. For 4 quality-layers, we have:
-# 
+#
 #  slope(L2.l3)=1,
 #  slope(L2.l2)=1/sqrt(2)=0.71,
 #  slope(L2.l1)=1/sqrt(2)^2=0.5,
@@ -85,7 +85,7 @@
 #  slope(H1.l2)=1/1.86/sqrt(2)=0.38,
 #  slope(H1.l1)=1/1.86/sqrt(2)^2=0.26,
 #  slope(H1.l0)=1/1.86/sqrt(2)^3=0.19.
-# 
+#
 #  So the ordering is:
 #
 #   1. L2.l3 (1),
@@ -108,7 +108,6 @@ from GOP import GOP
 from arguments_parser import arguments_parser
 import io
 import operator
-import math
 from shell import Shell as shell
 from colorlog import ColorLog
 import logging
@@ -121,7 +120,8 @@ shell.setLogger(log)
 
 # {{{ Arguments parsing
 
-parser = arguments_parser(description="Transcodes in quality a MCJ2K sequence.")
+parser = arguments_parser(
+    description="Transcodes in quality a MCJ2K sequence.")
 parser.GOPs()
 parser.add_argument("--keep_layers",
                     help="Number of quality layers to output",
@@ -142,8 +142,9 @@ log.info("layers = {}".format(layers))
 
 # }}}
 
+
 def transcode_picture(filename, layers):
-# {{{
+    # {{{
 
     print(filename, layers)
     shell.run("trace kdu_transcode"
@@ -152,35 +153,40 @@ def transcode_picture(filename, layers):
               + " -o " + "transcode_quality/" + filename
               + " Clayers=" + str(layers))
 
-# }}}
+    # }}}
 
 # {{{ Set attenuations among temporal subbands
 
-if   TRLs == 1 :
+
+if TRLs == 1:
     pass
-elif TRLs == 2 :
-    gain = [1.0, 1.2460784922] # [L1/H1]
-elif TRLs == 3 :
-    gain = [1.0, 1.2500103877, 1.8652117304] # [L2/H2, L2/H1]
-elif TRLs == 4 :
+elif TRLs == 2:
+    gain = [1.0, 1.2460784922]  # [L1/H1]
+elif TRLs == 3:
+    gain = [1.0, 1.2500103877, 1.8652117304]  # [L2/H2, L2/H1]
+elif TRLs == 4:
     gain = [1.0, 1.1598810146, 2.1224082769, 3.1669663339]
-elif TRLs == 5 :
+elif TRLs == 5:
     gain = [1.0, 1.0877939347, 2.1250255455, 3.8884779989, 5.8022196044]
-elif TRLs == 6 :
-    gain = [1.0, 1.0456562538, 2.0788785438, 4.0611276369, 7.4312544148, 11.0885981772]
-elif TRLs == 7 :
-    gain = [1.0, 1.0232370223, 2.0434169985, 4.0625355976, 7.9362383342, 14.5221257323, 21.6692913386]
-elif TRLs == 8 :
-    gain = [1.0, 1.0117165706, 2.0226778348, 4.0393126714, 8.0305936232, 15.6879129862, 28.7065276104, 42.8346456693]
-else :
-    sys.stderr.write("Gains are not available for " + str(TRLs) + " TRLs. Enter them in transcode_quality.py")
-    exit (0)
+elif TRLs == 6:
+    gain = [1.0, 1.0456562538, 2.0788785438, 4.0611276369, 7.4312544148,
+            11.0885981772]
+elif TRLs == 7:
+    gain = [1.0, 1.0232370223, 2.0434169985, 4.0625355976, 7.9362383342,
+            14.5221257323, 21.6692913386]
+elif TRLs == 8:
+    gain = [1.0, 1.0117165706, 2.0226778348, 4.0393126714, 8.0305936232,
+            15.6879129862, 28.7065276104, 42.8346456693]
+else:
+    sys.stderr.write("Gains are not available for " + str(TRLs) +
+                     " TRLs. Enter them in transcode_quality.py")
+    exit(0)
 
 # }}}
 
 # {{{ GOPs and pictures
 
-gop=GOP()
+gop = GOP()
 GOP_size = gop.get_size(TRLs)
 log.info("GOP_size={}".format(GOP_size))
 
@@ -191,14 +197,12 @@ log.info("pictures={}".format(pictures))
 
 # {{{ L
 
-for gop in range(1: GOPs): # GOP_0 later
-    
+for gop in range(1, GOPs):  # GOP_0 later
     subband_layers = []
-    
     # L
-    fname "L_{}/{:04d}.txt".format(TRLs-1, gop)
+    fname = "L_{}/{:04d}.txt".format(TRLs-1, gop)
     with io.open(fname, 'r') as file:
-        slopes = file.read().replace(' ','').replace('\n','').split(',')
+        slopes = file.read().replace(' ', '').replace('\n', '').split(',')
     log.info("{}: {}".format(fname, slopes))
     with io.open("L_{}.txt".format(TRLs-1), 'a') as file:
         for i in range(len(slopes)-1):
@@ -206,17 +210,17 @@ for gop in range(1: GOPs): # GOP_0 later
             subband_layers.append(('L', TRLs-1, layers-i-1, slopes[i]))
         file.write("{}\n".format(slopes[len(slopes)-1]))
         subband_layers.append(('L', TRLs-1, 0, slopes[len(slopes)-1]))
-    log.info("L_{}: {}".format(subband, slopes))
-        
+    log.info("L_{}: {}".format(subband_layers, slopes))
+
     # H's
-    for subband in range(TRLs - 1: 1):
+    for subband in range(TRLs - 1, 1):
         pics_per_GOP = 1 << (TRLs - subband - 1)
         first_pic = pics_per_GOP * gop
         average = [0]*layers
-        for pic in range(first_pic: first_pic + pics_per_GOP):
-            fname "H_{}/{:04d}.txt".format(subband, pic)
+        for pic in range(first_pic, first_pic + pics_per_GOP):
+            fname = "H_{}/{:04d}.txt".format(subband, pic)
             with io.open(fname, 'r') as file:
-                slopes = file.read().replace(' ','').replace('\n','').split(',')
+                slopes = file.read().replace(' ', '').replace('\n', '').split(',')
             log.info("{}: {}".format(fname, slopes))
             for i in range(layers):
                 average[i] += int(slopes[i])
@@ -231,19 +235,19 @@ for gop in range(1: GOPs): # GOP_0 later
         log.info("H_{}: {}".format(subband, slopes))
 
     # {{{ Sort the subband-layers by their relative slope
-    
+
     subband_layers.sort(key=operator.itemgetter(3), reverse=True)
     log.info("(after sorting) subband_layers={}".format(subband_layers))
-    
+
     # }}}
-    
+
     # {{{ Truncate the list
-    
+
     del subband_layers[keep_layers:]
     log.info("(after truncating) subband_layers={}".format(subband_layers))
-    
+
     # }}}
-    
+
     # {{{ Count the number of subband-layers per subband
 
     slayers_per_subband = {}
