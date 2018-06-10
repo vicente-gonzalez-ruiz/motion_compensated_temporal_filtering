@@ -129,8 +129,8 @@ TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
 
 MCTF_TEXTURE_CODEC = os.environ["MCTF_TEXTURE_CODEC"]
-HIGH               = "high"            # High frequency subbands.
-LOW                = "low"             # Low frequency subbands.
+HIGH = "H" # High frequency subbands.
+LOW = "L" # Low frequency subbands.
 
 '''
 def kdu_transcode(filename, slope):

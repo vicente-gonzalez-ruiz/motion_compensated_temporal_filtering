@@ -106,8 +106,8 @@ logging.basicConfig()
 log = logging.getLogger("texture_compress")
 
 MCTF_TEXTURE_CODEC   = os.environ["MCTF_TEXTURE_CODEC"]
-HIGH                 = "high"            # High frequency subbands.
-LOW                  = "low"             # Low frequency subbands.
+HIGH                 = "H"            # High frequency subbands.
+LOW                  = "L"             # Low frequency subbands.
 range_quantization   = 46000.0 - 42000.0 # Useful range of quantification
 
 parser = arguments_parser(description="Compress the texture.")
@@ -134,8 +134,8 @@ quality = float(args.qstep)
 TRLs = int(args.TRLs)
 SRLs = int(args.SRLs)
 
-LOW = "low"
-HIGH = "high"
+LOW = "L"
+HIGH = "H"
 MOTION = "motion_residue"
 
 def kdu_transcode(filename, slope):
