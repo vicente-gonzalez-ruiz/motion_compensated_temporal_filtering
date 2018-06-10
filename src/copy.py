@@ -44,26 +44,26 @@ sys.stdout.write("Number of GOPs = " + str(GOPs) + " groups of pictures\n")
 # Frame types
 shell.run("cp frame_types_* " + destination) 
 
-# low_<TRLs-1>
+# L_<TRLs-1>
 shell.run("mkdir "
           + destination
-          + "/low_"
+          + "/L_"
           + str(TRLs - 1))
-shell.run("cp low_"
+shell.run("cp L_"
           + str(TRLs - 1)
           + "/"
           + "*."
           + IMG_EXT
           + " "
           + destination
-          + "/low_"
+          + "/L_"
           +  str(TRLs - 1))
-shell.run("cp low_"
+shell.run("cp L_"
           + str(TRLs - 1)
           + "/"
           + "*.txt "
           + destination
-          + "/low_"
+          + "/L_"
           + str(TRLs - 1))
 
 for subband in range(TRLs-1, 0, -1):
@@ -74,10 +74,10 @@ for subband in range(TRLs-1, 0, -1):
     shell.run("cp motion_residue_" + str(subband) + "/*.j2c "
               + destination + "/motion_residue_" + str(subband))
 
-    # high_<subband>
+    # H_<subband>
     shell.run("mkdir "
-              + destination + "/high_" + str(subband))
-    shell.run("cp high_" + str(subband) + "/*." + IMG_EXT + " "
-              + destination + "/high_" + str(subband))
-    shell.run("cp high_" + str(subband) + "/*.txt "
-              + destination + "/high_" + str(subband))
+              + destination + "/H_" + str(subband))
+    shell.run("cp H_" + str(subband) + "/*." + IMG_EXT + " "
+              + destination + "/H_" + str(subband))
+    shell.run("cp H_" + str(subband) + "/*.txt "
+              + destination + "/H_" + str(subband))
