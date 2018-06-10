@@ -177,14 +177,14 @@ int main(int argc, char *argv[]) {
   int block_overlaping = 0;
   int block_size = 16;
   int components = COMPONENTS;
-  char *even_fn = (char *)"even";
+  char *E_fn = (char *)"E";
   char *frame_types_fn = (char *)"frame_types";
-  char *high_fn = (char *)"high";
+  char *H_fn = (char *)"H";
   char *motion_in_fn = (char *)"motion_in";
 #if defined __ANALYZE__
   char *motion_out_fn = (char *)"motion_out";
 #endif /* __ANALYZE__ */
-  char *odd_fn = (char *)"odd";
+  char *O_fn = (char *)"O";
   int pictures = 33;
   int pixels_in_x[COMPONENTS] = {PIXELS_IN_X, PIXELS_IN_X/2, PIXELS_IN_X/2};
   int pixels_in_y[COMPONENTS] = {PIXELS_IN_Y, PIXELS_IN_Y/2, PIXELS_IN_Y/2};
@@ -199,14 +199,14 @@ int main(int argc, char *argv[]) {
     static struct option long_options[] = {
       {"block_overlaping", required_argument, 0, 'v'},
       {"block_size", required_argument, 0, 'b'},
-      {"even_fn", required_argument, 0, 'e'},
+      {"E_fn", required_argument, 0, 'e'},
       {"frame_types_fn", required_argument, 0, 'f'},
-      {"high_fn", required_argument, 0, 'h'},
+      {"H_fn", required_argument, 0, 'h'},
       {"motion_in_fn", required_argument, 0, 'i'},
 #if defined __ANALYZE__
       {"motion_out_fn", required_argument, 0, 't'},
 #endif /* __ANALYZE__ */
-      {"odd_fn", required_argument, 0, 'o'},
+      {"O_fn", required_argument, 0, 'o'},
       {"pictures", required_argument, 0, 'p'},
       {"pixels_in_x", required_argument, 0, 'x'},
       {"pixels_in_y", required_argument, 0, 'y'},
@@ -254,8 +254,8 @@ int main(int argc, char *argv[]) {
       break;
       
     case 'e':
-      even_fn = optarg;
-      info("%s: even_fn=%s\n", argv[0], even_fn);
+      E_fn = optarg;
+      info("%s: E_fn=%s\n", argv[0], E_fn);
       break;
 
     case 'f':
@@ -264,8 +264,8 @@ int main(int argc, char *argv[]) {
       break;
 
     case 'h':
-      high_fn = optarg;
-      info("%s: high_fn=%s\n", argv[0], high_fn);
+      H_fn = optarg;
+      info("%s: H_fn=%s\n", argv[0], H_fn);
       break;
 
     case 'i':
@@ -281,8 +281,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     case 'o':
-      odd_fn = optarg;
-      info("%s: odd_fn=%s\n", argv[0], odd_fn);
+      O_fn = optarg;
+      info("%s: O_fn=%s\n", argv[0], O_fn);
       break;
 
     case 'p':
@@ -338,14 +338,14 @@ int main(int argc, char *argv[]) {
       printf("\n");
       printf("   -[-]block_o[v]erlaping = number of overlaped pixels between the blocks in the motion compensation (%d)\n", block_overlaping);
       printf("   -[-b]lock_size = size of the blocks in the motion estimation process (%d)\n", block_size);
-      printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", even_fn);
+      printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", E_fn);
       printf("   -[-f]rame_types_fn = output file with the frame types (\"%s\")\n", frame_types_fn);
-      printf("   -[-h]igh_fn = input file with high-subband pictures (\"%s\")\n", high_fn);
+      printf("   -[-h]igh_fn = input file with high-subband pictures (\"%s\")\n", H_fn);
       printf("   -[-]motion_[i]n_fn = input file with the motion fields (\"%s\")\n", motion_in_fn);
 #if defined __ANALYZE__
       printf("   -[-]mo[t]ion_out_fn = output file with the motion fields, after considering decorrelation effectiviness (\"%s\")\n", motion_out_fn);
 #endif /* __ANALYZE__ */
-      printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", odd_fn);
+      printf("   -[-o]dd_fn = input file with odd pictures (\"%s\")\n", O_fn);
       printf("   -[-p]ictures = number of pictures to process (%d)\n", pictures);
       printf("   -[-]pixels_in_[x] = size of the X dimension of the pictures (%d)\n", pixels_in_x[0]);
       printf("   -[-]pixels_in_[y] = size of the Y dimension of the pictures (%d)\n", pixels_in_y[0]);
@@ -363,10 +363,10 @@ int main(int argc, char *argv[]) {
 
 #ifdef _1_
   {
-    int err = mkdir(even_fn, 0700);
+    int err = mkdir(E_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
-      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
+      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], E_fn);
       abort();
     }
 #endif /* __DEBUG__ */
@@ -387,10 +387,10 @@ int main(int argc, char *argv[]) {
 
   {
 #if not defined __ANALYZE__
-    int err = mkdir(odd_fn, 0700);
+    int err = mkdir(O_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
-      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], odd_fn);
+      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], O_fn);
       abort();
     }
 #endif /* __DEBUG__ */
@@ -399,10 +399,10 @@ int main(int argc, char *argv[]) {
   
   {
 #if defined __ANALYZE__
-    int err = mkdir(high_fn, 0700);
+    int err = mkdir(H_fn, 0700);
 #ifdef __DEBUG__
     if(err) {
-      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], high_fn);
+      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], H_fn);
       abort();
     }
 #endif /* __DEBUG__ */
@@ -411,7 +411,7 @@ int main(int argc, char *argv[]) {
   
 #if defined __GET_PREDICTION__
   char prediction_fn[80];
-  sprintf(prediction_fn, "prediction_%s", even_fn);
+  sprintf(prediction_fn, "prediction_%s", E_fn);
   {
     int err = mkdir(prediction_fn, 0700);
 #ifdef __DEBUG__
@@ -525,11 +525,11 @@ int main(int argc, char *argv[]) {
   
   /* Read reference [0] (the first picture). */
   for(int c=0; c<COMPONENTS; c++) {
-    // picture.read(even_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
-    // {{{ reference[0] <- even
+    // picture.read(E_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
+    // {{{ reference[0] <- E
     texture.read_picture(reference[0][c],
 		       pixels_in_y[c], pixels_in_x[c],
-		       even_fn,
+		       E_fn,
 		       0,
 		       c
 #if defined __INFO__
@@ -646,15 +646,15 @@ int main(int argc, char *argv[]) {
   for(int i=0; i<pictures/2; i++) {
     
 #if defined __ANALYZE__
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, odd_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, O_fn);
 
     /* The next picture (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
-      //picture.read(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
-      // {{{ predicted <- odd
+      //picture.read(O_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      // {{{ predicted <- O
       texture.read_picture(predicted[c],
 			 pixels_in_y[c], pixels_in_x[c],
-			 odd_fn,
+			 O_fn,
 			 i,
 			 c
 #if defined __INFO__
@@ -667,15 +667,15 @@ int main(int argc, char *argv[]) {
 
 #else /* __ANALYZE__ */
 
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, high_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, H_fn);
     
     /* Read residue picture */
     for(int c=0; c<COMPONENTS; c++) {
-      //picture.read(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-      // {{{ residue -> high
+      //picture.read(H_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+      // {{{ residue -> H
       texture.read_picture(residue[c],
 			 pixels_in_y[c], pixels_in_x[c],
-			 high_fn,
+			 H_fn,
 			 i,
 			 c
 #if defined __INFO__
@@ -693,15 +693,15 @@ int main(int argc, char *argv[]) {
 
 #endif /* __ANALYZE__ */
     
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, even_fn);
+    info("%s: reading picture %d of \"%s\"\n", argv[0], i, E_fn);
     
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
-      //picture.read(even_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
-      // {{{ reference[1] <- even
+      //picture.read(E_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
+      // {{{ reference[1] <- E
       texture.read_picture(reference[1][c],
 			 pixels_in_y[c], pixels_in_x[c],
-			 even_fn,
+			 E_fn,
 			 i,
 			 c
 #if defined __INFO__
@@ -911,10 +911,10 @@ int main(int argc, char *argv[]) {
     
     /* The residue picture is generated. */
     
-    info("%s: writing picture %d of \"%s\"\n", argv[0], i, high_fn);
+    info("%s: writing picture %d of \"%s\"\n", argv[0], i, H_fn);
     
     /*
-      A subtraction at high resolution and a reduction,
+      A subtraction at H resolution and a reduction,
       vs, 
       Two reductions and a subtraction at low resolution.
       
@@ -1025,11 +1025,11 @@ int main(int argc, char *argv[]) {
       }
       
       for(int c=0; c<COMPONENTS; c++) {
-	//picture.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-	// {{{ residue -> high
+	//picture.write(H_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	// {{{ residue -> H
 	texture.write_picture(residue[c],
 			    pixels_in_y[c], pixels_in_x[c],
-			    high_fn,
+			    H_fn,
 			    i,
 			    c
 #if defined __INFO__
@@ -1116,11 +1116,11 @@ int main(int argc, char *argv[]) {
 	    residue[c][y][x] = val;
 	  }
 	}
-	//picture.write(high_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-	// {{{ residue -> high
+	//picture.write(H_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
+	// {{{ residue -> H
 	texture.write_picture(residue[c],
 			    pixels_in_y[c], pixels_in_x[c],
-			    high_fn,
+			    H_fn,
 			    i,
 			    c
 #if defined __INFO__
@@ -1192,7 +1192,7 @@ int main(int argc, char *argv[]) {
     
 #else /* __ANALYZE__ */
 
-    info("%s: writing picture %d of \"%s\"\n", argv[0], i, odd_fn);
+    info("%s: writing picture %d of \"%s\"\n", argv[0], i, O_fn);
 
     /** Decorrelation. */
 
@@ -1223,11 +1223,11 @@ int main(int argc, char *argv[]) {
 
     /* Write predicted picture. */
     for(int c=0; c<COMPONENTS; c++) {
-      //picture.write(odd_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
-      // {{{ predicted -> odd
+      //picture.write(O_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
+      // {{{ predicted -> O
       texture.write_picture(predicted[c],
 			  pixels_in_y[c], pixels_in_x[c],
-			  odd_fn,
+			  O_fn,
 			  i,
 			  c
 #if defined __INFO__
