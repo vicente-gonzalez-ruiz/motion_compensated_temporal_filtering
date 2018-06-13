@@ -4,7 +4,7 @@ video=~/Videos/mobile_352x288x30x420x300.avi
 #GOPs=9
 GOPs=5
 #TRLs=6
-TRLs=5
+TRLs=2
 y_dim=288
 x_dim=352
 FPS=30
@@ -82,11 +82,11 @@ y_dim_2=`echo $y_dim/2 | bc`
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    let img_2=img-2
-    _img_2=$(printf "%04d" $img_2)
-    rawtopgm   $x_dim   $y_dim < L_0/$_img.Y > L_0/${_img_2}_0.pgm
-    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.U > L_0/${_img_2}_1.pgm
-    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_2}_2.pgm
+    let img_1=img-1
+    _img_1=$(printf "%04d" $img_1)
+    rawtopgm   $x_dim   $y_dim < L_0/$_img.Y > L_0/${_img_1}_0.pgm
+    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.U > L_0/${_img_1}_1.pgm
+    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
     let img=img+1 
 done
 
@@ -104,18 +104,17 @@ while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
     let img_1=img-1
     _img_1=$(printf "%04d" $img_1)
-    cp L_0/${_img_1}_0.pgm L_0/$_img.Y
-    cp L_0/${_img_1}_1.pgm L_0/$_img.U
-    cp L_0/${_img_1}_2.pgm L_0/$_img.V
+    convert L_0/${_img_1}_0.pgm /tmp/1.gray; mv /tmp/1.gray L_0/$_img.Y
+    convert L_0/${_img_1}_1.pgm /tmp/1.gray; mv /tmp/1.gray L_0/$_img.U
+    convert L_0/${_img_1}_2.pgm /tmp/1.gray; mv /tmp/1.gray L_0/$_img.V
     let img=img+1 
 done
-ffmpeg -y -s {$x_dim}x{$y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv
+ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv
 mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS
-
+exit
 mkdir transcode_quality
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
 mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers
-exit
 cd transcode_quality
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
