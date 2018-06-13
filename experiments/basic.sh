@@ -4,7 +4,7 @@ video=~/Videos/mobile_352x288x30x420x300.avi
 #GOPs=9
 GOPs=5
 #TRLs=6
-TRLs=3
+TRLs=5
 y_dim=288
 x_dim=352
 FPS=30
@@ -82,11 +82,11 @@ y_dim_2=`echo $y_dim/2 | bc`
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    let img_1=img-1
-    _img_1=$(printf "%04d" $img_1)
-    rawtopgm   $x_dim   $y_dim < L_0/$_img.Y > L_0/${_img_1}_0.pgm
-    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.U > L_0/${_img_1}_1.pgm
-    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
+    let img_2=img-2
+    _img_2=$(printf "%04d" $img_2)
+    rawtopgm   $x_dim   $y_dim < L_0/$_img.Y > L_0/${_img_2}_0.pgm
+    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.U > L_0/${_img_2}_1.pgm
+    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_2}_2.pgm
     let img=img+1 
 done
 

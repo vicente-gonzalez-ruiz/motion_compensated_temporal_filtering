@@ -438,8 +438,8 @@ int main(int argc, char *argv[]) {
   
   // }}}
 
-  int i=0;
-  for(i; i<pictures/2; i++) {
+  int i;
+  for(i=0; i<pictures/2; i++) {
 
     // {{{ Read residue de H_? 
     info("%s: reading picture %d from \"%s\"\n", argv[0], i, high_fn);
