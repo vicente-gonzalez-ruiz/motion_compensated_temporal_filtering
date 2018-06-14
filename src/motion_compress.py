@@ -114,8 +114,8 @@ while iter < TRLs:
     
 #import ipdb; ipdb.set_trace()
 
-if TRLs==2:
-    shell.run("ln -s motion_filtered_1 motion_residue_1")
+#if TRLs==2:
+#    shell.run("ln -s motion_filtered_1 motion_residue_1")
 
 iter = 1
 fields = pictures // 2

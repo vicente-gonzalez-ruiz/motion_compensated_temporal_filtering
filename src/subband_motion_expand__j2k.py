@@ -72,4 +72,4 @@ while field < fields:
                   + " -skip_components " + str(c))
         shell.run("cat /tmp/1.rawl >> " + fn + ".rawl")
 
-        field += 1
+    field += 1

@@ -98,7 +98,6 @@ mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
-
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)

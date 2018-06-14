@@ -393,9 +393,9 @@ int main(int argc, char *argv[]) {
   // {{{ Read reference[0] from E_? 
 
 #if defined __ANALYZE__
-  info("%s: reading picture 0 from \"%s\"\n", argv[0], even_fn);
+  info("%s: reading picture 0 (first) from \"%s\"\n", argv[0], even_fn);
 #else /* __ANALYZE__ */
-  info("%s: reading picture 0 from \"%s\"\n", argv[0], low_fn);
+  info("%s: reading picture 0 (first) from \"%s\"\n", argv[0], low_fn);
 #endif /* __ANALYZE__ */
   for(int c=0; c<COMPONENTS; c++) {
     texture.read_picture(reference[0][c], pixels_in_y[c], pixels_in_x[c],
@@ -488,12 +488,12 @@ int main(int argc, char *argv[]) {
     
     // }}}
     
-    // {{{ Read reference[1] de E_? 
+    // {{{ Read reference[1] from E_? 
     
 #ifdef __ANALYZE__ 
-    info("%s: reading picture %d from \"%s\"\n", argv[0], i, even_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i+1, even_fn);
 #else /* __ANALYZE__ */
-    info("%s: reading picture %d from \"%s\"\n", argv[0], i, low_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i+1, low_fn);
 #endif /* __ANALYZE__ */
     for(int c=0; c<COMPONENTS; c++) {
       texture.read_picture(reference[1][c], pixels_in_y[c], pixels_in_x[c],
@@ -502,7 +502,7 @@ int main(int argc, char *argv[]) {
 #else /* __ANALYZE__ */
 			 low_fn,
 #endif /* __ANALYZE__ */
-			 i, c
+			 i+1, c
 #if defined __INFO__
 			 ,
 			 argv[0]
@@ -617,9 +617,9 @@ w
     // {{{ Write reference[0] en L_? 
 
 #ifdef __ANALYZE__ 
-    info("%s: writing picture %d from \"%s\"\n", argv[0], i, low_fn);
+    info("%s: writing picture %d to \"%s\"\n", argv[0], i, low_fn);
 #else /* __ANALYZE__ */
-    info("%s: writing picture %d from \"%s\"\n", argv[0], i, even_fn);
+    info("%s: writing picture %d to \"%s\"\n", argv[0], i, even_fn);
 #endif /* __ANALYZE__ */
     
     picture_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);

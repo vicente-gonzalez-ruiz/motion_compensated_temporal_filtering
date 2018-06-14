@@ -62,8 +62,8 @@ while i < TRLs:
               + " --file=" + "\"" + "motion_residue_" + str(i) + "\""
               + " --blocks_in_y=" + str(blocks_in_y)
               + " --blocks_in_x=" + str(blocks_in_x)
-              + " --fields=" + str(fields)
-              + " --pictures=" + str(pictures))
+              + " --fields=" + str(fields))
+#              + " --pictures=" + str(pictures))
 
     fields //= 2
     i += 1
