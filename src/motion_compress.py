@@ -59,7 +59,7 @@ TRLs = int(args.TRLs)
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
 pictures = (GOPs - 1) * GOP_size + 1
-fields_in_reference = pictures // 8 # First reference is M_2
+fields_in_reference = pictures // 4 # First reference is M_2
 blocks_in_y = pixels_in_y // block_size
 blocks_in_x = pixels_in_x // block_size
 
@@ -120,7 +120,7 @@ shell.run("mctf bidirectional_motion_decorrelate"
 
 level = 1
 fields = pictures // 2
-while level < TRLs - 1:
+while level < TRLs:
 
     shell.run("mctf subband_motion_compress__" + MCTF_MOTION_CODEC
               + " --blocks_in_x=" + str(blocks_in_x)

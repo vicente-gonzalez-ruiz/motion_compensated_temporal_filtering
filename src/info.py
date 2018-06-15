@@ -72,14 +72,14 @@ for i in range(TRLs-1, 0, -1):
     sys.stdout.write("TRL" + str(i-1))
 sys.stdout.write("\n")
 
-# Second line. (GOP L_4 motion_4+H_4 motion_3+Ht_3 motion_2+H2 motion_1+H_1 Total Average).
+# Second line. (GOP L_4 R_4+H_4 R_3+Ht_3 R_2+H2 R_1+H_1 Total Average).
 sys.stdout.write("GOP#")
 sys.stdout.write("      L_" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
     for j in range(0, 2**(TRLs-1-i)):
         sys.stdout.write(" ")
-    sys.stdout.write("motion_" + str(i) + " H_" + str(i))
+    sys.stdout.write("R_" + str(i) + "     H_" + str(i))
 sys.stdout.write("    Total Average\n")
 
 # Third line. (--------------------------------------)
@@ -93,7 +93,8 @@ sys.stdout.write("-------- -------\n")
 
 # Computations
 
-# GOP 0. The GOP0 is formed by the first picture in L_<TRLs-1>.
+# {{{ GOP 0. The GOP0 is formed by the first picture in L_<TRLs-1>.
+
 length = 0
 filename = "L_" + str(TRLs - 1) + "/" + "%04d" % 0 + "." + IMG_EXT
 try:
@@ -120,14 +121,17 @@ for subband in range(TRLs-1, 0, -1):
 sys.stdout.write("%8d" % Kbps_total)
 sys.stdout.write("%8d\n" % Kbps_L0)
 
-# Rest of GOPs
-for GOP_number in range(GOPs-1):
+# }}}
+
+# {{{ Rest of GOPs
+
+Kbps_total = 0
+for GOP_number in range(1, GOPs):
+
+    sys.stdout.write("%3s " % '%04d' % (GOP_number))
+
+    # {{{ L
     
-    Kbps_total = 0
-
-    sys.stdout.write("%3s " % '%04d' % (GOP_number+1))
-
-    # L
     length = 0
     filename = "L_" + str(TRLs - 1) + "/" + "%04d" % GOP_number + "." + IMG_EXT
     try:
@@ -142,7 +146,10 @@ for GOP_number in range(GOPs-1):
     sys.stdout.write("%8d " % int(round(Kbps)))
     Kbps_total += Kbps
 
-    # Rest of subbands
+    # }}}
+    
+    # {{{ Rest of subbands
+    
     pics_in_subband = 1
     for subband in range(TRLs-1, 0, -1):
 
@@ -158,7 +165,8 @@ for GOP_number in range(GOPs-1):
         # Motion
         length = 0
         for i in range(pics_in_subband):
-            filename = "motion_residue_" + str(subband) + "/" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + ".j2c"
+            filename = "R_" + str(subband) + "/" + \
+                "%04d" % ((GOP_number-1)*(pics_in_subband-1)+i) + ".j2c"
             try:
                 with io.open(filename, "rb") as file:
                     file.seek(0, 2)
@@ -173,7 +181,8 @@ for GOP_number in range(GOPs-1):
 
         # Texture
         for i in range(pics_in_subband):
-            filename = "H_" + str(subband) + "/" + "%04d" % (GOP_number*(pics_in_subband-1)+i) + "." + IMG_EXT
+            filename = "H_" + str(subband) + "/" \
+                + "%04d" % ((GOP_number-1)*(pics_in_subband-1)+i) + "." + IMG_EXT
             try:
                 with io.open(filename, "rb") as file:
                     file.seek(0, 2)
@@ -189,9 +198,9 @@ for GOP_number in range(GOPs-1):
         pics_in_subband *= 2
 
     Kbps_total_pro += Kbps_total
-    Kbps_average = Kbps_total_pro/(GOP_number+1)+(Kbps_L0/(GOP_size*(GOP_number+1)))
+    Kbps_average = Kbps_total_pro/(GOP_number) + \
+        (Kbps_L0/(GOP_size*(GOP_number+1)))
     
-
     sys.stdout.write("%8d" % Kbps_total)
     sys.stdout.write("%8d" % Kbps_average)
     sys.stdout.write("\n")

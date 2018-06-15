@@ -60,10 +60,10 @@ pictures = (GOPs - 1) * GOP_size + 1
 ## Initializes the value of search factor.
 search_factor = 2
 
-## Initializes the variable, temporal subband a '1'. Which refers to
+## Initializes the variable, temporal subband to '1'. Which refers to
 #  the first high-frequency subband. The goal is to apply the
 #  algorithm analysis to all high frequency subbands.
-temporal_subband = 0
+temporal_subband = 1
 
 if block_size < min_block_size:
     min_block_size = block_size
@@ -80,7 +80,7 @@ while temporal_subband < TRLs:
               + " --pixels_in_y=" + str(pixels_in_y)
               + " --search_range=" + str(search_range)
               + " --subpixel_accuracy=" + str(subpixel_accuracy)
-              + " --temporal_subband=" + str(temporal_subband+1)
+              + " --temporal_subband=" + str(temporal_subband)
               + " --update_factor=" + str(update_factor))
 
     pictures = (pictures + 1) // 2
