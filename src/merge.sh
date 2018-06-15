@@ -7,6 +7,8 @@ pictures=33
 pixels_in_x=352
 pixels_in_y=288
 
+__debug__=0
+
 usage() {
     echo $0
     echo "Forward Lazzy wavelet transform over the time domain"
@@ -19,33 +21,47 @@ usage() {
     echo "  [-? (help)]"
 }
 
-(echo $0 $@ 1>&2)
-
+if [ $__debug__ = 1 ]; then
+    (echo $0 $@ 1>&2)
+fi
+    
 while getopts "e:o:l:p:x:y:?" opt; do
     case ${opt} in
 	e)
 	    even="${OPTARG}"
-	    echo even=$even
+	    if [ $__debug__ = 1 ]; then
+		echo even=$even
+		fi
 	    ;;
 	o)
 	    odd="${OPTARG}"
-	    echo odd=$odd
+	    if [ $__debug__ = 1 ]; then
+		echo odd=$odd
+	    fi
 	    ;;
 	l)
 	    low="${OPTARG}"
-	    echo low=$low
+	    if [ $__debug__ = 1 ]; then
+		echo low=$low
+	    fi
 	    ;;
 	p)
 	    pictures="${OPTARG}"
-	    echo pictures=$pictures
+	    if [ $__debug__ = 1 ]; then
+		echo pictures=$pictures
+	    fi
 	    ;;
 	x)
 	    pixels_in_x="${OPTARG}"
-	    echo $0: pixels_in_x=$pixels_in_x
+	    if [ $__debug__ = 1 ]; then
+		echo $0: pixels_in_x=$pixels_in_x
+	    fi
 	    ;;
 	y)
 	    pixels_in_y="${OPTARG}"
-	    echo $0: pixels_in_y=$pixels_in_y
+	    if [ $__debug__ = 1 ]; then
+		echo $0: pixels_in_y=$pixels_in_y
+	    fi
 	    ;;
 	?)
             usage
@@ -64,8 +80,10 @@ while getopts "e:o:l:p:x:y:?" opt; do
     esac
 done
 
-set -x
-
+if [ $__debug__ = 1 ]; then
+    set -x
+fi
+    
 mkdir $low
 
 ln -s ../${even}/"0000_0.pgm" $low

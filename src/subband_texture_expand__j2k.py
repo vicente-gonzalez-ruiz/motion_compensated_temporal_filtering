@@ -1,3 +1,5 @@
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
@@ -15,7 +17,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("subband_texture_expand__j2k"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # }}}
@@ -54,12 +56,17 @@ p = 0
 while p < pictures:
 
     pic_number = str('%04d' % p)
-    
-    shell.run("trace kdu_expand"
-              + " -i " + file + "/" + pic_number + "." + IMG_EXT
-              + " -o "
-              + file + "/" + pic_number + "_0.pgm,"
-              + file + "/" + pic_number + "_1.pgm,"
-              + file + "/" + pic_number + "_2.pgm")
+
+    command = "trace kdu_expand" \
+              + " -i " + file + "/" + pic_number + "." + IMG_EXT \
+              + " -o " \
+              + file + "/" + pic_number + "_0.pgm," \
+              + file + "/" + pic_number + "_1.pgm," \
+              + file + "/" + pic_number + "_2.pgm"
+
+    if not __debug__:
+        command += " > /dev/null"
+
+    shell.run(command)
 
     p += 1

@@ -11,7 +11,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("expand"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # }}}
@@ -61,7 +61,7 @@ search_range = int(args.search_range)
 log.info("search_range={}".format(search_range))
 
 SRLs = int(args.SRLs)
-log.info("TRLs={}".format(SRLs))
+log.info("SRLs={}".format(SRLs))
 
 subpixel_accuracy = str(args.subpixel_accuracy)
 log.info("subpixel_accuracy={}".format(subpixel_accuracy))

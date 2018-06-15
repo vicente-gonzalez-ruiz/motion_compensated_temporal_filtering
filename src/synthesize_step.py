@@ -9,7 +9,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("synthesize_step"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 parser = arguments_parser(description="Performs a step of the temporal synthesis.")
@@ -44,7 +44,7 @@ shell.run("mctf un_update"
           + " --frame_types_fn=" + "frame_types_" + str(subband)
           + " --high_fn=" + "H_" + str(subband)
           + " --low_fn=" + "L_" + str(subband)
-          + " --motion_fn=" + "motion_" + str(subband)
+          + " --motion_fn=" + "M_" + str(subband)
           + " --pictures=" + str(pictures)
           + " --pixels_in_x=" + str(pixels_in_x)
           + " --pixels_in_y=" + str(pixels_in_y)
@@ -57,7 +57,7 @@ shell.run("mctf correlate"
           + " --even_fn=" + "E_" + str(subband)
           + " --frame_types_fn=" + "frame_types_" + str(subband)
           + " --high_fn=" + "H_" + str(subband)
-          + " --motion_in_fn=" + "motion_" + str(subband)
+          + " --motion_in_fn=" + "M_" + str(subband)
           + " --odd_fn=" + "O_" + str(subband)
           + " --pictures=" + str(pictures)
           + " --pixels_in_x=" + str(pixels_in_x)

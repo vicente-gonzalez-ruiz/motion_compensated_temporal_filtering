@@ -8,12 +8,12 @@
 
 default:	all
 
-#M4 := $(shell which m4)
+M4 := $(shell which m4)
 
-#ifeq ($(M4),)
-#$(warning No m4 found!)
-#false
-#endif
+ifeq ($(M4),)
+$(warning No m4 found!)
+false
+endif
 
 ifeq ($(shell which g++),)
 $(warning No c++ found :-/)
@@ -212,6 +212,7 @@ EXE	+= $(MCTF_BIN)/motion_compress
 #EXE	+= $(MCTF_BIN)/texture_compress_lfb_j2k
 
 $(MCTF_BIN)/subband_texture_compress__j2k:		subband_texture_compress__j2k.py
+#	(echo "changequote({{,}})dnl"; cat $<) | m4 > $@; chmod +x $@
 EXE	+= $(MCTF_BIN)/subband_texture_compress__j2k
 
 #$(BIN)/texture_compress_lfb_mj2k:	texture_compress_lfb_mj2k.py

@@ -206,7 +206,8 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
-  
+
+#ifdef _1_
 #if not defined __ANALYZE__
   {
     int err = mkdir(predicted_fn, 0700);
@@ -218,7 +219,9 @@ int main(int argc, char *argv[]) {
 #endif /* __DEBUG__ */
   }
 #endif /* __ANALYZE__ */
-  
+#endif /* _1_ */
+
+#ifdef _1_
 #if defined __ANALYZE__
   {
     int err = mkdir(residue_fn, 0700);
@@ -230,6 +233,7 @@ int main(int argc, char *argv[]) {
 #endif /* __DEBUG__ */
   }
 #endif /* __ANALYZE__ */
+#endif /* _1_ */
 
   motion < MVC_TYPE > motion;
   MVC_TYPE ****predicted = motion.alloc(blocks_in_y, blocks_in_x);

@@ -13,7 +13,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("motion_compress"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # {{{ Logging 
@@ -68,13 +68,13 @@ blocks_in_x = pixels_in_x // block_size
 #if fields_in_reference > 0:
 reference_level = 2
 while reference_level < TRLs:
-    shell.run("mctf interlevel_motion_decorrelate"
+    shell.run("#mctf interlevel_motion_decorrelate"
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --blocks_in_y="  + str(blocks_in_y)
               + " --fields_in_reference=" + str(fields_in_reference)
               + " --predicted=" + "M_" + str(reference_level - 1)
               + " --reference=" + "M_" + str(reference_level)
-              + " --residue=" + "R_"  + str(reference_level - 1))
+              + " --residue=" + "M_"  + str(reference_level - 1))
 #    else:
 #        shell.run("trace cp -r motion_" + str(iter) + " motion_residue_tmp_" + str(iter))
 
@@ -91,12 +91,12 @@ while reference_level < TRLs:
 
 # {{{ Remove bidirectional motion redundancy inside the highest temporal level.
 
-shell.run("mctf bidirectional_motion_decorrelate"
+shell.run("#mctf bidirectional_motion_decorrelate"
           + " --blocks_in_x=" + str(blocks_in_x)
           + " --blocks_in_y=" + str(blocks_in_y)
           + " --fields=" + str(GOPs - 1)
           + " --input=" + "M_" + str(TRLs - 1)
-          + " --output=" + "R_"  + str(TRLs - 1))
+          + " --output=" + "M_"  + str(TRLs - 1))
 
 # }}}
 
@@ -126,7 +126,7 @@ while level < TRLs:
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --blocks_in_y=" + str(blocks_in_y)
               + " --fields=" + str(fields)
-              + " --file="  + "R_" + str(level))
+              + " --file=" + "M_" + str(level))
 
     fields //= 2
     level += 1

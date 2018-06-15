@@ -11,7 +11,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("motion_expand"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # }}}
@@ -58,7 +58,7 @@ fields = pictures // 2
 while i < TRLs:
 
     shell.run("mctf subband_motion_expand__" + MCTF_MOTION_CODEC
-              + " --file=" + "\"" + "motion_residue_" + str(i) + "\""
+              + " --file=" + "\"" + "M_" + str(i) + "\""
               + " --blocks_in_y=" + str(blocks_in_y)
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --fields=" + str(fields))
@@ -68,24 +68,25 @@ while i < TRLs:
     i += 1
     
 # First (decode) temporal level.
-shell.run("mctf bidirectional_motion_correlate"
+shell.run("#mctf bidirectional_motion_correlate"
           + " --blocks_in_y=" + str(blocks_in_y)
           + " --blocks_in_x=" + str(blocks_in_x)
-          + " --fields=" + str(GOPs)
-          + " --input=" + "\"" + "motion_residue_" + str(TRLs - 1) + "\""
-          + " --output=" + "\"" + "motion_" + str(TRLs - 1) + "\"")
+          + " --fields=" + str(GOPs - 1)
+          + " --input=" + "\"" + "M_" + str(TRLs - 1) + "\""
+          + " --output=" + "\"" + "M_" + str(TRLs - 1) + "\"")
 
 # Now, the rest of resolutions.
 i = TRLs - 1
 while i > 1:
 
-    i -= 1
     fields = pictures // (2**i)
 
-    shell.run("mctf interlevel_motion_correlate"
+    shell.run("#mctf interlevel_motion_correlate"
               + " --blocks_in_y=" + str(blocks_in_y)
               + " --blocks_in_x=" + str(blocks_in_x)
-              + " --fields_in_predicted=" + str(fields)
-              + " --reference=" + "\"" + "motion_" + str(i + 1) + "\""
-              + " --predicted=" + "\"" + "motion_" + str(i) + "\""
-              + " --residue=" + "\"" + "motion_residue_" + str(i) + "\"")
+              + " --fields_in_reference=" + str(fields)
+              + " --reference=" + "\"" + "M_" + str(i) + "\""
+              + " --predicted=" + "\"" + "M_" + str(i - 1) + "\""
+              + " --residue=" + "\"" + "M_" + str(i - 1) + "\"")
+
+    i -= 1

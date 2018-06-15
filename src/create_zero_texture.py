@@ -11,7 +11,7 @@ import logging
 import struct
 
 log = ColorLog(logging.getLogger("create_zero_texture"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 
 parser = arguments_parser(description="Creates a \"empty\" (unsigned char = 128) texture image file.")
 parser.add_argument("--file",

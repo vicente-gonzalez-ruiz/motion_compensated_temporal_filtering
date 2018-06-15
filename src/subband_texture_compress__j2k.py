@@ -1,3 +1,5 @@
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
@@ -11,7 +13,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("subband_texture_compress__j2k"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # }}}
@@ -59,19 +61,28 @@ picture = 0
 while picture < number_of_pictures:
 
     fn = file + "/" + str('%04d' % picture)
-    shell.run("trace kdu_compress"
-              + " -i "
-              + fn + "_0.pgm,"
-              + fn + "_1.pgm,"
-              + fn + "_2.pgm"
-              + " -o " + fn + "." + IMG_EXT
-              + " -jpx_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}"
-              + " -no_weights"
-              + " -slope 42000"
-              + " Creversible=" + "no"
-              + " Clayers=" + str(layers)
-              + " Clevels=" + str(Clevels)
+
+    command = "trace kdu_compress" \
+              + " -i " \
+              + fn + "_0.pgm," \
+              + fn + "_1.pgm," \
+              + fn + "_2.pgm" \
+              + " -o " + fn + "." + IMG_EXT \
+              + " -jpx_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}" \
+              + " -no_weights" \
+              + " -slope 42000" \
+              + " Creversible=" + "no" \
+              + " Clayers=" + str(layers) \
+              + " Clevels=" + str(Clevels) \
               + " Cuse_sop=" + "no"
-              + " | tee /dev/tty | awk '/thresholds/{getline; print}' > " + fn + ".txt")
+    
+    if __debug__:
+        command += " | tee /dev/tty | awk '/thresholds/{getline; print}' > "
+    else:
+        command += " | awk '/thresholds/{getline; print}' > "
+
+    command += (fn + ".txt")
+    
+    shell.run(command)
 
     picture += 1

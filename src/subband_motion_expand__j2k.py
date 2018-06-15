@@ -1,3 +1,5 @@
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
@@ -11,7 +13,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("subband_motion_expand__j2k"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # }}}
@@ -64,12 +66,16 @@ field = 0
 while field < fields:
 
     fn = file + "/" + str('%04d' % field)
-    shell.run("rm -f " + fn + ".rawl")
+    shell.run("trace rm -f " + fn + ".rawl")
+    
     for c in range(COMPONENTS):
-        shell.run("trace kdu_expand"
-                  + " -i " + fn + ".j2c"
-                  + " -o /tmp/1.rawl"
-                  + " -skip_components " + str(c))
-        shell.run("cat /tmp/1.rawl >> " + fn + ".rawl")
+        command = "trace kdu_expand" \
+                  + " -i " + fn + ".j2c" \
+                  + " -o /tmp/1.rawl" \
+                  + " -skip_components " + str(c)
+        if not __debug__:
+            command += " > /dev/null"
+        shell.run(command)
+        shell.run("trace cat /tmp/1.rawl >> " + fn + ".rawl")
 
     field += 1

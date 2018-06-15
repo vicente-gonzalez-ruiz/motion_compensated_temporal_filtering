@@ -12,7 +12,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("synthesize"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 MAX_SEARCH_RANGE = 128

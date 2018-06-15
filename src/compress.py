@@ -12,7 +12,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("compress"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # }}}

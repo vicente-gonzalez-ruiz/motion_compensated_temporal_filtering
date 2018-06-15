@@ -158,6 +158,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
+#ifdef _1_
   {
     int err = mkdir(output_fn, 0700);
 #ifdef __DEBUG__
@@ -167,7 +168,8 @@ int main(int argc, char *argv[]) {
     }
 #endif /* __DEBUG__ */
   }
-  
+#endif
+
   motion < MVC_TYPE > motion;
   MVC_TYPE ****field = motion.alloc(blocks_in_y, blocks_in_x);
   

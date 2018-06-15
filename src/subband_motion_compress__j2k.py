@@ -1,3 +1,5 @@
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
@@ -11,7 +13,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("subband_motion_compress__j2k"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # }}}
@@ -68,17 +70,24 @@ field = 0
 while field < fields:
 
     fn = file + "/" + str('%04d' % field)
-    shell.run("trace kdu_compress"
-              + " -i " + fn + ".rawl" + "*" + str(COMPONENTS) + "@" + str(bytes_per_field)
-              + " -o " + fn + ".j2c"
-              + " -no_weights"
-              + " -slope 0"
-              + " Nprecision=" + str(BITS_PER_COMPONENT)
-              + " Nsigned=" + "yes"
-              + " Sdims='{'" + str(blocks_in_y) + "," + str(blocks_in_x) + "'}'"
-              + " Creversible=yes"
-              + " Clevels=" + str(spatial_dwt_levels)
-              + " Cuse_sop=" + "no")
+
+    command = "trace kdu_compress" \
+        + " -i " + fn + ".rawl" \
+        + "*" + str(COMPONENTS) + "@" + str(bytes_per_field) \
+        + " -o " + fn + ".j2c" \
+        + " -no_weights" \
+        + " -slope 0" \
+        + " Nprecision=" + str(BITS_PER_COMPONENT) \
+        + " Nsigned=" + "yes" \
+        + " Sdims='{'" + str(blocks_in_y) + "," + str(blocks_in_x) + "'}'" \
+        + " Creversible=yes" \
+        + " Clevels=" + str(spatial_dwt_levels) \
+        + " Cuse_sop=" + "no"
+
+    if not __debug__:
+        command += " > /dev/null"
+    
+    shell.run(command)
 
     # + " Catk=2 Kextension:I2=CON Kreversible:I2=yes Ksteps:I2=\{1,0,0,0\},\{1,0,1,1\} Kcoeffs:I2=-1.0,0.5"
     # An alternative to compress the motion vectors:

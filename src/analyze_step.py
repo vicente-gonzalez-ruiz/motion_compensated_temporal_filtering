@@ -13,7 +13,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("analyze_step"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 parser = arguments_parser(description="Performs a temporal analysis step.")

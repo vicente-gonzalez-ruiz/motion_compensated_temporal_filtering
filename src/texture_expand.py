@@ -14,7 +14,7 @@ from colorlog import ColorLog
 import logging
 
 log = ColorLog(logging.getLogger("texture_expand"))
-log.setLevel('INFO')
+log.setLevel('ERROR')
 shell.setLogger(log)
 
 # }}}

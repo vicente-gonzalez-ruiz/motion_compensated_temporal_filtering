@@ -1,10 +1,11 @@
 #!/bin/bash
 
-video=~/Videos/mobile_352x288x30x420x300.avi
+#video=~/Videos/mobile_352x288x30x420x300.avi
+video=~/Videos/container_352x288x30x420x300.avi
 #GOPs=9
 GOPs=3
 #TRLs=6
-TRLs=4
+TRLs=3
 y_dim=288
 x_dim=352
 FPS=30
