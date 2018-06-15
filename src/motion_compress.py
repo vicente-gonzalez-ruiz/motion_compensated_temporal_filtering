@@ -59,34 +59,24 @@ TRLs = int(args.TRLs)
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
 pictures = (GOPs - 1) * GOP_size + 1
-fields = pictures // 2
+fields_in_reference = pictures // 8 # First reference is M_2
 blocks_in_y = pixels_in_y // block_size
 blocks_in_x = pixels_in_x // block_size
 
-# {{{ Decorrelate
+# {{{ Decorrelate betweem temporal levels, starting at the bottom level
 
-iter = 1
-while iter < TRLs:
-
-    if fields > 1:
-        # Remove motion redundancy between temporal levels (iter) and (iter+1).
-        shell.run("mctf interlevel_motion_decorrelate"
-                  + " --blocks_in_x=" + str(blocks_in_x)
-                  + " --blocks_in_y="  + str(blocks_in_y)
-                  + " --fields_in_predicted=" + str(fields)
-                  + " --predicted=" + "motion_filtered_" + str(iter)
-                  + " --reference=" + "motion_filtered_" + str(iter + 1)
-                  + " --residue=" + "motion_residue_tmp_"  + str(iter))
-    else:
-        shell.run("trace cp -r motion_filtered_" + str(iter) + " motion_residue_tmp_" + str(iter))
-
-    # Remove motion redundancy inside the temporal level (iter).
-    shell.run("mctf bidirectional_motion_decorrelate"
+#if fields_in_reference > 0:
+reference_level = 2
+while reference_level < TRLs:
+    shell.run("mctf interlevel_motion_decorrelate"
               + " --blocks_in_x=" + str(blocks_in_x)
-              + " --blocks_in_y=" + str(blocks_in_y)
-              + " --fields=" + str(fields)
-              + " --input=" + "motion_residue_tmp_" + str(iter)
-              + " --output=" + "motion_residue_"  + str(iter))
+              + " --blocks_in_y="  + str(blocks_in_y)
+              + " --fields_in_reference=" + str(fields_in_reference)
+              + " --predicted=" + "M_" + str(reference_level - 1)
+              + " --reference=" + "M_" + str(reference_level)
+              + " --residue=" + "R_"  + str(reference_level - 1))
+#    else:
+#        shell.run("trace cp -r motion_" + str(iter) + " motion_residue_tmp_" + str(iter))
 
     # Calculate the block size used in this temporal resolution level.
     block_size = block_size // 2
@@ -96,8 +86,19 @@ while iter < TRLs:
         blocks_in_y = pixels_in_y // block_size
         blocks_in_x = pixels_in_x // block_size
 
-    fields //= 2
-    iter += 1
+    fields_in_reference //= 2
+    reference_level += 1
+
+# {{{ Remove bidirectional motion redundancy inside the highest temporal level.
+
+shell.run("mctf bidirectional_motion_decorrelate"
+          + " --blocks_in_x=" + str(blocks_in_x)
+          + " --blocks_in_y=" + str(blocks_in_y)
+          + " --fields=" + str(GOPs - 1)
+          + " --input=" + "M_" + str(TRLs - 1)
+          + " --output=" + "R_"  + str(TRLs - 1))
+
+# }}}
 
 # }}}
 
@@ -117,18 +118,17 @@ while iter < TRLs:
 #if TRLs==2:
 #    shell.run("ln -s motion_filtered_1 motion_residue_1")
 
-iter = 1
+level = 1
 fields = pictures // 2
-while iter < TRLs:
+while level < TRLs - 1:
 
     shell.run("mctf subband_motion_compress__" + MCTF_MOTION_CODEC
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --blocks_in_y=" + str(blocks_in_y)
-              + " --iteration=" + str(iter)
               + " --fields=" + str(fields)
-              + " --file="  + "motion_residue_" + str(iter))
+              + " --file="  + "R_" + str(level))
 
     fields //= 2
-    iter += 1
+    level += 1
 
 # }}}

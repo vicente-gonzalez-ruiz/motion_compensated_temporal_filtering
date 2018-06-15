@@ -373,6 +373,7 @@ int main(int argc, char *argv[]) {
   }
 #endif
 
+#ifdef _1_
   {
 #if defined __ANALYZE__
     int err = mkdir(motion_out_fn, 0700);
@@ -384,7 +385,8 @@ int main(int argc, char *argv[]) {
 #endif /* __DEBUG__ */
 #endif /* __ANALYZE__ */
   }
-
+#endif /* _1_ */
+  
   {
 #if not defined __ANALYZE__
     int err = mkdir(odd_fn, 0700);
@@ -524,6 +526,7 @@ int main(int argc, char *argv[]) {
   /* Decorrelation begins. */
   
   /* Read reference [0] (the first picture). */
+  info("%s: reading picture %d (first) from \"%s\"\n", argv[0], 0, even_fn);
   for(int c=0; c<COMPONENTS; c++) {
     // picture.read(E_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
     // {{{ reference[0] <- E
@@ -646,7 +649,7 @@ int main(int argc, char *argv[]) {
   for(int i=0; i<pictures/2; i++) {
     
 #if defined __ANALYZE__
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, odd_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i, odd_fn);
 
     /* The next picture (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
@@ -667,7 +670,7 @@ int main(int argc, char *argv[]) {
 
 #else /* __ANALYZE__ */
 
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, high_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i, high_fn);
     
     /* Read residue picture */
     for(int c=0; c<COMPONENTS; c++) {
@@ -693,7 +696,7 @@ int main(int argc, char *argv[]) {
 
 #endif /* __ANALYZE__ */
     
-    info("%s: reading picture %d of \"%s\"\n", argv[0], i, even_fn);
+    info("%s: reading picture %d from \"%s\"\n", argv[0], i+1, even_fn);
     
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
@@ -702,7 +705,7 @@ int main(int argc, char *argv[]) {
       texture.read_picture(reference[1][c],
 			 pixels_in_y[c], pixels_in_x[c],
 			 even_fn,
-			 i,
+			 i+1,
 			 c
 #if defined __INFO__
 			 ,

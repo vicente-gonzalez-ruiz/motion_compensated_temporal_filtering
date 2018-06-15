@@ -115,7 +115,7 @@ if TRLs > 1:
               #                   + " --motion_layers="            + str(motion_layers)
               #                   + " --motion_quantization="      + str(motion_quantization)
               #                   + " --motion_quantization_step=" + str(motion_quantization_step)
-              + " --SRLs="                     + str(SRLs)
+#              + " --SRLs="                     + str(SRLs)
               + " --TRLs="                     + str(TRLs))
     # }}}
     

@@ -63,7 +63,7 @@ search_factor = 2
 ## Initializes the variable, temporal subband a '1'. Which refers to
 #  the first high-frequency subband. The goal is to apply the
 #  algorithm analysis to all high frequency subbands.
-temporal_subband = 1
+temporal_subband = 0
 
 if block_size < min_block_size:
     min_block_size = block_size
@@ -71,23 +71,23 @@ if block_size < min_block_size:
 while temporal_subband < TRLs:
 
     shell.run("mctf analyze_step"
-              + " --always_B="          + str(always_B)
-              + " --block_overlaping="  + str(block_overlaping)
-              + " --block_size="        + str(block_size)
-              + " --border_size="       + str(border_size)
-              + " --pictures="          + str(pictures)
-              + " --pixels_in_x="       + str(pixels_in_x)
-              + " --pixels_in_y="       + str(pixels_in_y)
-              + " --search_range="      + str(search_range)
+              + " --always_B=" + str(always_B)
+              + " --block_overlaping=" + str(block_overlaping)
+              + " --block_size=" + str(block_size)
+              + " --border_size=" + str(border_size)
+              + " --pictures="  + str(pictures)
+              + " --pixels_in_x=" + str(pixels_in_x)
+              + " --pixels_in_y=" + str(pixels_in_y)
+              + " --search_range=" + str(search_range)
               + " --subpixel_accuracy=" + str(subpixel_accuracy)
-              + " --temporal_subband="  + str(temporal_subband)
-              + " --update_factor="     + str(update_factor))
+              + " --temporal_subband=" + str(temporal_subband+1)
+              + " --update_factor=" + str(update_factor))
 
     pictures = (pictures + 1) // 2
 
     search_range = search_range * search_factor
-    if ( search_range > MAX_SEARCH_RANGE ):
-        sys.stdout.write(sys.argv[0] + ": " + str(MAX_SEARCH_RANGE) + " reached!\n")
+    if search_range > MAX_SEARCH_RANGE:
+        log.info("Maximum search range ({}) reached!".format(MAX_SEARCH_RANGE))
         search_range = MAX_SEARCH_RANGE
 
     block_size = block_size // 2

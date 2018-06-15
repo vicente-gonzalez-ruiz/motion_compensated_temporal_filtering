@@ -1,6 +1,6 @@
 /* Removes interlevel redundancy between motion subbands. If in the
    subband S a motion vector is V, in the subband S+1 the motion
-   vector should be X/2.
+   vector should be V/2.
 
        PREV
    +----------+
@@ -45,6 +45,10 @@
 #include "texture.cpp"
 #include "motion.cpp"
 
+/*
+  Inputs: a predicted field, a reference field.
+  Outputs: a residue field.
+*/
 void decorrelate_field
 (
  int blocks_in_x,
@@ -98,12 +102,11 @@ int main(int argc, char *argv[]) {
 
   int blocks_in_x = 11;
   int blocks_in_y = 9;
-  int fields_in_predicted = 1;
+  int fields_in_reference = 1;
   char *predicted_fn = (char *)"/dev/zero";
   char *reference_fn = (char *)"/dev/zero";
   char *residue_fn = (char *)"/dev/zero";
 
-  
   int c;
   while(1) {
   
@@ -111,7 +114,7 @@ int main(int argc, char *argv[]) {
     static struct option long_options[] = {
       {"blocks_in_x", required_argument, 0, 'x'},
       {"blocks_in_y", required_argument, 0, 'y'},
-      {"fields_in_predicted", required_argument, 0, 'f'},
+      {"fields_in_reference", required_argument, 0, 'f'},
       {"predicted_fn", required_argument, 0, 'p'},
       {"reference_fn", required_argument, 0, 'r'},
       {"residue_fn", required_argument, 0, 'e'},
@@ -150,8 +153,8 @@ int main(int argc, char *argv[]) {
       break;
 
     case 'f':
-      fields_in_predicted = atoi(optarg);
-      info("%s: fields_in_predicted=%d\n", argv[0], fields_in_predicted);
+      fields_in_reference = atoi(optarg);
+      info("%s: fields_in_reference=%d\n", argv[0], fields_in_reference);
       break;
 
     case 'p':
@@ -190,7 +193,7 @@ int main(int argc, char *argv[]) {
       printf("\n");
       printf("   -[-]blocks_in_[x]=number of blocks in the X direction (%d)\n", blocks_in_x);
       printf("   -[-]blocks_in_[y]=number of blocks in the Y direction (%d)\n", blocks_in_y);
-      printf("   -[-f]ields_in_predicted=number of motion fields in the	predicted sequence of motion fields(%d)\n", fields_in_predicted);
+      printf("   -[-f]ields_in_reference=number of motion fields in the reference sequence of motion fields(%d)\n", fields_in_reference);
       printf("   -[-p]redicted=name of the file with the predicted fields(\"%s\")\n", predicted_fn);
       printf("   -[-r]eference=name of the file with the reference fields\"%s\"\n", reference_fn);
       printf("   -[-]r[e]sidue=name of the file with the residues(\"%s\")\n", residue_fn);
@@ -233,7 +236,7 @@ int main(int argc, char *argv[]) {
   MVC_TYPE ****reference = motion.alloc(blocks_in_y, blocks_in_x);
   MVC_TYPE ****residue = motion.alloc(blocks_in_y, blocks_in_x);
   
-  for(int i=0; i<fields_in_predicted/2; i++) {
+  for(int i=0; i<fields_in_reference; i++) {
     
     info("%s: reading reference field %d\n", argv[0], i);
     // {{{ Read reference
@@ -299,12 +302,12 @@ int main(int argc, char *argv[]) {
     /** De/correlate two consecutive motion fields using the same
 	reference. */
     for(int p=0; p<2; p++) {
-  
+      
 #if defined __ANALYZE__
       info("%s: reading predicted field %d\n", argv[0], 2*i+p);
       // {{{ Read predicted
       //motion.read(predicted_fd, predicted, blocks_in_y, blocks_in_x);
-      motion.read_field(predicted, blocks_in_y, blocks_in_x, predicted_fn, i*2+p
+      motion.read_field(predicted, blocks_in_y, blocks_in_x, predicted_fn, 2*i+p
 #if defined __INFO__
 			, argv[0]
 #endif /* __INFO__ */
@@ -360,6 +363,7 @@ int main(int argc, char *argv[]) {
 			    );
       // }}}
 #endif /* _1_ */
+
       // }}}
 #else /* __ANALYZE__ */
       info("%s: reading residue field %d\n", argv[0], 2*i+p);
@@ -423,7 +427,7 @@ int main(int argc, char *argv[]) {
 #endif /* _1_ */
       // }}}
 #endif /* __ANALYZE__ */
-      
+
       decorrelate_field
 	(blocks_in_x,
 	 blocks_in_y,
@@ -435,7 +439,7 @@ int main(int argc, char *argv[]) {
       info("%s: writing residue field %d\n", argv[0], 2*i+p);
       // {{{ Write residue 
       //motion.write(residue_fd, residue, blocks_in_y, blocks_in_x);
-      motion.write_field(residue, blocks_in_y, blocks_in_x, residue_fn, i*2+p
+      motion.write_field(residue, blocks_in_y, blocks_in_x, residue_fn, 2*i+p
 #if defined __INFO__
 			 , argv[0]
 #endif /* __INFO__ */
@@ -490,12 +494,13 @@ int main(int argc, char *argv[]) {
 			     );
       // }}}
 #endif /* _1_ */
+
       // }}}
 #else /* __ANALYZE__ */
       info("%s: writing predicted field %d\n", argv[0], 2*i+p);
       // {{{ Write predicted
       //motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
-      motion.write_field(predicted, blocks_in_y, blocks_in_x, predicted_fn, i*2+p
+      motion.write_field(predicted, blocks_in_y, blocks_in_x, predicted_fn, 2*i+p
 #if defined __INFO__
 			 , argv[0]
 #endif /* __INFO__ */
@@ -550,6 +555,7 @@ int main(int argc, char *argv[]) {
 			     );
       // }}}
 #endif /* _1_ */
+
       // }}}
 #endif /* __ANALYZE__ */
       

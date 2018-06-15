@@ -116,12 +116,12 @@ int main(int argc, char *argv[]) {
       
     case 'i':
       input_fn = optarg;
-      info("%s: input = \"%s\"\n", argv[0], input_fn);
+      info("%s: input=\"%s\"\n", argv[0], input_fn);
       break;
 
     case 'o':
       output_fn = optarg;
-      info("%s: output = \"%s\"\n", argv[0], output_fn);
+      info("%s: output=\"%s\"\n", argv[0], output_fn);
      break;
 
     case '?':

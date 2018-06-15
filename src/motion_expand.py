@@ -50,7 +50,6 @@ MCTF_MOTION_CODEC = os.environ["MCTF_MOTION_CODEC"]
 gop = GOP()
 GOP_size = gop.get_size(TRLs)
 pictures = (GOPs - 1) * GOP_size + 1
-
 blocks_in_x = pixels_in_x // block_size
 blocks_in_y = pixels_in_y // block_size
 
