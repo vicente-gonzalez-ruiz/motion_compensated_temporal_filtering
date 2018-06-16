@@ -58,22 +58,22 @@ fields = pictures // 2
 while i < TRLs:
 
     shell.run("mctf subband_motion_expand__" + MCTF_MOTION_CODEC
-              + " --file=" + "\"" + "M_" + str(i) + "\""
+              + " --file=" + "\"" + "R_" + str(i) + "\""
               + " --blocks_in_y=" + str(blocks_in_y)
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --fields=" + str(fields))
-#              + " --pictures=" + str(pictures))
 
     fields //= 2
     i += 1
-    
+
 # First (decode) temporal level.
-shell.run("#mctf bidirectional_motion_correlate"
+shell.run("trace mkdir M_" +  str(TRLs - 1))
+shell.run("mctf bidirectional_motion_correlate"
           + " --blocks_in_y=" + str(blocks_in_y)
           + " --blocks_in_x=" + str(blocks_in_x)
           + " --fields=" + str(GOPs - 1)
-          + " --input=" + "\"" + "M_" + str(TRLs - 1) + "\""
-          + " --output=" + "\"" + "M_" + str(TRLs - 1) + "\"")
+          + " --input=" + "R_" + str(TRLs - 1)
+          + " --output=" + "M_" + str(TRLs - 1))
 
 # Now, the rest of resolutions.
 i = TRLs - 1
@@ -81,12 +81,21 @@ while i > 1:
 
     fields = pictures // (2**i)
 
-    shell.run("#mctf interlevel_motion_correlate"
+    shell.run("trace mkdir M_" + str(i - 1))
+    shell.run("mctf interlevel_motion_correlate"
               + " --blocks_in_y=" + str(blocks_in_y)
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --fields_in_reference=" + str(fields)
               + " --reference=" + "\"" + "M_" + str(i) + "\""
               + " --predicted=" + "\"" + "M_" + str(i - 1) + "\""
               + " --residue=" + "\"" + "M_" + str(i - 1) + "\"")
+
+    # Calculate the block size used in this temporal resolution level.
+    #block_size = block_size // 2
+    #if (block_size < min_block_size):
+    #    block_size = min_block_size
+    #else:
+    #    blocks_in_y = pixels_in_y // block_size
+    #    blocks_in_x = pixels_in_x // block_size
 
     i -= 1

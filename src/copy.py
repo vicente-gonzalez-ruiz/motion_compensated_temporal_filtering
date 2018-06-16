@@ -70,9 +70,9 @@ for subband in range(TRLs-1, 0, -1):
     
     # motion_residue_<subband>
     shell.run("mkdir "
-              + destination + "/M_" + str(subband))
-    shell.run("cp M_" + str(subband) + "/*.j2c "
-              + destination + "/M_" + str(subband))
+              + destination + "/R_" + str(subband))
+    shell.run("cp R_" + str(subband) + "/*.j2c "
+              + destination + "/R_" + str(subband))
 
     # H_<subband>
     shell.run("mkdir "

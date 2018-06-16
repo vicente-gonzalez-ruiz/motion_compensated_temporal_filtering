@@ -71,11 +71,11 @@ while field < fields:
     for c in range(COMPONENTS):
         command = "trace kdu_expand" \
                   + " -i " + fn + ".j2c" \
-                  + " -o /tmp/1.rawl" \
+                  + " -o /tmp/" + str(c) + ".rawl" \
                   + " -skip_components " + str(c)
         if not __debug__:
             command += " > /dev/null"
         shell.run(command)
-        shell.run("trace cat /tmp/1.rawl >> " + fn + ".rawl")
+        shell.run("trace cat /tmp/" + str(c) + ".rawl >> " + fn + ".rawl")
 
     field += 1

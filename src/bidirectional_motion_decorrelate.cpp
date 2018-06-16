@@ -18,7 +18,7 @@
 #include "display.cpp"
 #include "motion.cpp"
 
-void decorrelate_field
+void process_field
 (
  int blocks_in_x,
  int blocks_in_y,
@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
     // }}}
 #endif /* _1_ */
     
-    decorrelate_field
+    process_field
       (blocks_in_x,
        blocks_in_y,
        field);

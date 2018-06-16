@@ -68,55 +68,42 @@ blocks_in_x = pixels_in_x // block_size
 #if fields_in_reference > 0:
 reference_level = 2
 while reference_level < TRLs:
-    shell.run("#mctf interlevel_motion_decorrelate"
+    shell.run("trace mkdir R_" + str(reference_level - 1))
+    shell.run("mctf interlevel_motion_decorrelate"
               + " --blocks_in_x=" + str(blocks_in_x)
-              + " --blocks_in_y="  + str(blocks_in_y)
+              + " --blocks_in_y=" + str(blocks_in_y)
               + " --fields_in_reference=" + str(fields_in_reference)
               + " --predicted=" + "M_" + str(reference_level - 1)
               + " --reference=" + "M_" + str(reference_level)
-              + " --residue=" + "M_"  + str(reference_level - 1))
+              + " --residue=" + "R_" + str(reference_level - 1))
 #    else:
 #        shell.run("trace cp -r motion_" + str(iter) + " motion_residue_tmp_" + str(iter))
 
     # Calculate the block size used in this temporal resolution level.
-    block_size = block_size // 2
-    if (block_size < min_block_size):
-        block_size = min_block_size
-    else:
-        blocks_in_y = pixels_in_y // block_size
-        blocks_in_x = pixels_in_x // block_size
+    #block_size = block_size // 2
+    #if (block_size < min_block_size):
+    #    block_size = min_block_size
+    #else:
+    #    blocks_in_y = pixels_in_y // block_size
+    #    blocks_in_x = pixels_in_x // block_size
 
     fields_in_reference //= 2
     reference_level += 1
 
 # {{{ Remove bidirectional motion redundancy inside the highest temporal level.
-
-shell.run("#mctf bidirectional_motion_decorrelate"
+shell.run("trace mkdir R_" + str(TRLs - 1))
+shell.run("mctf bidirectional_motion_decorrelate"
           + " --blocks_in_x=" + str(blocks_in_x)
           + " --blocks_in_y=" + str(blocks_in_y)
           + " --fields=" + str(GOPs - 1)
           + " --input=" + "M_" + str(TRLs - 1)
-          + " --output=" + "M_"  + str(TRLs - 1))
+          + " --output=" + "R_"  + str(TRLs - 1))
 
 # }}}
 
 # }}}
 
 # {{{ Compress
-
-#slopes = []
-#for i in range(layers):
-#    slopes.append(quantization + i * quantization_step)
-
-#if len(slopes) == 1:
-#    str_slopes = str(slopes[0])
-#else:
-#    str_slopes = ', '.join(str(i) for i in slopes)
-    
-#import ipdb; ipdb.set_trace()
-
-#if TRLs==2:
-#    shell.run("ln -s motion_filtered_1 motion_residue_1")
 
 level = 1
 fields = pictures // 2
@@ -126,7 +113,7 @@ while level < TRLs:
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --blocks_in_y=" + str(blocks_in_y)
               + " --fields=" + str(fields)
-              + " --file=" + "M_" + str(level))
+              + " --file=" + "R_" + str(level))
 
     fields //= 2
     level += 1

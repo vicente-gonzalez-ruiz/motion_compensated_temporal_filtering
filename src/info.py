@@ -72,14 +72,14 @@ for i in range(TRLs-1, 0, -1):
     sys.stdout.write("TRL" + str(i-1))
 sys.stdout.write("\n")
 
-# Second line. (GOP L_4 M_4+H_4 M_3+H_3 M_2+H_2 M_1+H_1 Total Average).
+# Second line. (GOP L_4 R_4+H_4 R_3+H_3 R_2+H_2 R_1+H_1 Total Average).
 sys.stdout.write("GOP#")
 sys.stdout.write("      L_" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
     for j in range(0, 2**(TRLs-1-i)):
         sys.stdout.write(" ")
-    sys.stdout.write("M_" + str(i) + "     H_" + str(i))
+    sys.stdout.write("R_" + str(i) + "     H_" + str(i))
 sys.stdout.write("    Total Average\n")
 
 # Third line. (--------------------------------------)
@@ -165,7 +165,7 @@ for GOP_number in range(1, GOPs):
         # Motion
         length = 0
         for i in range(pics_in_subband):
-            filename = "M_" + str(subband) + "/" + \
+            filename = "R_" + str(subband) + "/" + \
                 "%04d" % ((GOP_number-1)*(pics_in_subband-1)+i) + ".j2c"
             try:
                 with io.open(filename, "rb") as file:
