@@ -73,3 +73,5 @@ class Defaults():
 
     # Weight of the update step.
     update_factor = 0 # 1.0/4 # 0 -> No updating.
+
+    slope = 42000

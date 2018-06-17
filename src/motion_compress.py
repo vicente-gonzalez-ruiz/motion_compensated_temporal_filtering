@@ -22,7 +22,7 @@ import logging
 
 logging.basicConfig()
 log = logging.getLogger("motion_compress")
-log.setLevel('INFO')
+log.setLevel('ERROR')
 
 # }}}
 

@@ -16,7 +16,7 @@ from shell import Shell as shell
 from colorlog import ColorLog
 import logging
 
-log = ColorLog(logging.getLogger("texture_compress__automatic"))
+log = ColorLog(logging.getLogger("texture_compress__automatic"))  # remove __automatic (some day)
 log.setLevel('INFO')
 shell.setLogger(log)
 
@@ -24,9 +24,9 @@ shell.setLogger(log)
 
 # {{{ Logging
 
-logging.basicConfig()
-log = logging.getLogger("texture_compress__automatic") # remove __automatic (some day)
-log.setLevel('INFO')
+#logging.basicConfig()
+#log = logging.getLogger("texture_compress__automatic")
+#log.setLevel('INFO')
 
 # }}}
 
@@ -39,6 +39,7 @@ parser.pixels_in_x()
 parser.pixels_in_y()
 parser.SRLs()
 parser.TRLs()
+parser.slope()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
@@ -47,13 +48,15 @@ pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 SRLs = int(args.SRLs)
 TRLs = int(args.TRLs)
+slope = int(args.slope)
 
-log.info("GOPs = {}".format(GOPs))
-log.info("layers = {}".format(layers))
-log.info("pixels_in_x = {}".format(pixels_in_x))
-log.info("pixels_in_y = {}".format(pixels_in_y))
-log.info("SRLs = {}".format(SRLs))
-log.info("TRLs = {}".format(TRLs))
+log.info("GOPs={}".format(GOPs))
+log.info("layers={}".format(layers))
+log.info("pixels_in_x={}".format(pixels_in_x))
+log.info("pixels_in_y={}".format(pixels_in_y))
+log.info("SRLs={}".format(SRLs))
+log.info("TRLs={}".format(TRLs))
+log.info("(minimum) slope={}".format(slope))
 
 # }}}
 
@@ -87,12 +90,13 @@ while subband < TRLs:
     pictures = (pictures + 1) // 2
 
     shell.run("mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC
-              + " --file="              + HIGH + "_" + str(subband)
-              + " --pictures="          + str(pictures - 1)
-              + " --pixels_in_x="       + str(pixels_in_x)
-              + " --pixels_in_y="       + str(pixels_in_y)
-              + " --layers="            + str(layers)
-              + " --SRLs="              + str(SRLs))
+              + " --file=" + HIGH + "_" + str(subband)
+              + " --pictures=" + str(pictures - 1)
+              + " --pixels_in_x=" + str(pixels_in_x)
+              + " --pixels_in_y=" + str(pixels_in_y)
+              + " --layers=" + str(layers)
+              + " --SRLs=" + str(SRLs)
+              + " --slope=" + str(slope))
 
     subband += 1
 
@@ -101,11 +105,12 @@ while subband < TRLs:
 # {{{ Compression of the LOW frequency temporal subband.
 
 shell.run("mctf subband_texture_compress__" + MCTF_TEXTURE_CODEC
-          + " --file="              + LOW + "_" + str(TRLs - 1)
-          + " --pictures="          + str(pictures)
-          + " --pixels_in_x="       + str(pixels_in_x)
-          + " --pixels_in_y="       + str(pixels_in_y)
-          + " --layers="            + str(layers)
-          + " --SRLs="              + str(SRLs))
+          + " --file=" + LOW + "_" + str(TRLs - 1)
+          + " --pictures=" + str(pictures)
+          + " --pixels_in_x=" + str(pixels_in_x)
+          + " --pixels_in_y=" + str(pixels_in_y)
+          + " --layers=" + str(layers)
+          + " --SRLs=" + str(SRLs)
+          + " --slope=" + str(slope))
 
 # }}}

@@ -31,6 +31,7 @@ parser.pixels_in_x()
 parser.pixels_in_y()
 parser.layers()
 parser.SRLs()
+parser.slope()
 
 args = parser.parse_known_args()[0]
 file = args.file
@@ -39,6 +40,7 @@ number_of_pictures = int(args.pictures)
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
 SRLs = int(args.SRLs)
+slope = int(args.slope)
 
 log.info("file={}".format(file))
 log.info("layers={}".format(layers))
@@ -46,6 +48,7 @@ log.info("pictures={}".format(number_of_pictures))
 log.info("pixels_in_x={}".format(pixels_in_x))
 log.info("pixels_in_y={}".format(pixels_in_y))
 log.info("SRLs={}".format(SRLs))
+log.info("slope={}".format(slope))
 
 # }}}
 
@@ -70,7 +73,7 @@ while picture < number_of_pictures:
               + " -o " + fn + "." + IMG_EXT \
               + " -jpx_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}" \
               + " -no_weights" \
-              + " -slope 42000" \
+              + " -slope " + str(slope) \
               + " Creversible=" + "no" \
               + " Clayers=" + str(layers) \
               + " Clevels=" + str(Clevels) \

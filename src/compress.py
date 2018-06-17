@@ -32,6 +32,7 @@ parser.min_block_size()
 parser.pixels_in_x()
 parser.pixels_in_y()
 parser.search_range()
+parser.slope()
 parser.subpixel_accuracy()
 parser.layers()
 parser.SRLs()
@@ -75,6 +76,9 @@ log.info("search_range={}".format(search_range))
 
 SRLs = int(args.SRLs)
 log.info("SRLs={}".format(SRLs))
+
+slope = int(args.slope)
+log.info("(minimum) slope={}".format(slope))
 
 subpixel_accuracy = int(args.subpixel_accuracy)
 log.info("subpixel_accuracy={}".format(subpixel_accuracy))
@@ -121,10 +125,11 @@ if TRLs > 1:
     
 # {{{ Texture compression.
 shell.run("mctf texture_compress__" + MCTF_QUANTIZER
-          + " --GOPs="              + str(GOPs)
-          + " --pixels_in_x="       + str(pixels_in_x)
-          + " --pixels_in_y="       + str(pixels_in_y)
-          + " --SRLs="              + str(SRLs)
-          + " --layers="            + str(layers)
-          + " --TRLs="              + str(TRLs))
+          + " --GOPs=" + str(GOPs)
+          + " --pixels_in_x=" + str(pixels_in_x)
+          + " --pixels_in_y=" + str(pixels_in_y)
+          + " --SRLs=" + str(SRLs)
+          + " --layers=" + str(layers)
+          + " --TRLs="  + str(TRLs)
+          + " --slope=" + str(slope))
 # }}}

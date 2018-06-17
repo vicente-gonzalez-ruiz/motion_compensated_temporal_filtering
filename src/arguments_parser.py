@@ -148,6 +148,10 @@ class arguments_parser(argparse.ArgumentParser):
         self.add_argument("--update_factor",
                           help="Weight of the update step of MCTF",
                           default=Defaults.update_factor)
+    def slope(self):
+        self.add_argument("--slope",
+                          help="Minimum slope (all texture subbands)",
+                          default=Defaults.slope)
 
     #def using_gains(self):
     #    self.add_argument("--using_gains",
