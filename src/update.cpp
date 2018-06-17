@@ -55,11 +55,12 @@ void update
 	  for(int x=0; x<block_size; x++) {
 	    float aux;
 
-	      /* Updates the previous picture. */
+	      /* Update the previous picture. ******************************/
 	      aux = reference_picture[PREV][c]
-		[clip(by*block_size+y+mv[PREV][Y_FIELD][by][bx],pixels_in_y[c])]
-		[clip(bx*block_size+x+mv[PREV][X_FIELD][by][bx],pixels_in_x[c])];
-
+		[clip(by*block_size + y + mv[PREV][Y_FIELD][by][bx],
+		      pixels_in_y[c])]
+		[clip(bx*block_size + x + mv[PREV][X_FIELD][by][bx],
+		      pixels_in_x[c])];
 	      //aux *= update_factor /* 1<<iteration */;
 
 	      aux
@@ -68,7 +69,11 @@ void update
 #else /* __ANALYZE__ */
 		-=
 #endif /* __ANALYZE__ */
-		residue_picture[c][by*block_size+y][bx*block_size+x] * update_factor;
+		residue_picture
+		[c]
+		[by*block_size+y]
+		[bx*block_size+x]
+		* update_factor;
 
 	      //aux /= update_factor;
 
@@ -76,17 +81,22 @@ void update
 	      else if(aux < MIN_TC_VAL) aux = MIN_TC_VAL;
 
 	      reference_picture[PREV][c]
-		[clip(by*block_size+y+mv[PREV][Y_FIELD][by][bx],pixels_in_y[c])]
-		[clip(bx*block_size+x+mv[PREV][X_FIELD][by][bx],pixels_in_x[c])]
+		[clip(by*block_size + y + mv[PREV][Y_FIELD][by][bx],
+		      pixels_in_y[c])]
+		[clip(bx*block_size + x + mv[PREV][X_FIELD][by][bx],
+		      pixels_in_x[c])]
 		= aux;
 	      
-	      /* Updates the afterpicture. */
+	      /* Update the next picture. **********************************/
 	      aux = reference_picture[NEXT][c]
-		[clip(by*block_size+y+mv[NEXT][Y_FIELD][by][bx],pixels_in_y[c])]
-		[clip(bx*block_size+x+mv[NEXT][X_FIELD][by][bx],pixels_in_x[c])];
+		[clip(by*block_size + y + mv[NEXT][Y_FIELD][by][bx],
+		      pixels_in_y[c])]
+		[clip(bx*block_size + x + mv[NEXT][X_FIELD][by][bx],
+		      pixels_in_x[c])];
 	      
 	      //aux *= update_factor;
 
+	      //fprintf(stderr,"(first) aux=%f\n", aux);
 	      aux
 #ifdef __ANALYZE__
 		+= 
@@ -99,6 +109,7 @@ void update
 	      
 	      if(aux > MAX_TC_VAL) aux = MAX_TC_VAL;
 	      else if(aux < MIN_TC_VAL) aux = MIN_TC_VAL;
+	      //fprintf(stderr,"(after) aux=%f\n", aux);
 
 	      reference_picture[NEXT][c]
 		[clip(by*block_size+y+mv[NEXT][Y_FIELD][by][bx],pixels_in_y[c])]
@@ -446,15 +457,15 @@ int main(int argc, char *argv[]) {
     for(int c=0; c<COMPONENTS; c++) {
       //error.read(H_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       texture.read_picture(residue[c],
-			 pixels_in_y[c], pixels_in_x[c],
-			 high_fn,
-			 i,
-			 c
+			   pixels_in_y[c], pixels_in_x[c],
+			   high_fn,
+			   i,
+			   c
 #if defined __INFO__
-			 ,
-			 argv[0]
+			   ,
+			   argv[0]
 #endif /* __INFO__ */
-			 );
+			   );
       // We recover the original dynamic range of the residue.
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
@@ -498,18 +509,18 @@ int main(int argc, char *argv[]) {
     for(int c=0; c<COMPONENTS; c++) {
       texture.read_picture(reference[1][c], pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__ 
-			 even_fn,
+			   even_fn,
 #else /* __ANALYZE__ */
-			 low_fn,
+			   low_fn,
 #endif /* __ANALYZE__ */
-			 i+1, c
+			   i+1, c
 #if defined __INFO__
-			 ,
-			 argv[0]
+			   ,
+			   argv[0]
 #endif /* __INFO__ */
-			 );
+			   );
     }
-
+    
     //fprintf(stderr, "(read_1) reference[0][0][0][0]=%d reference[1][0][0][0]=%d\n", reference[0][0][0][0], reference[1][0][0][0]);
 
     for(int y=0; y<pixels_in_y[0]/2; y++) {
@@ -554,7 +565,7 @@ int main(int argc, char *argv[]) {
 			  argv[0]
 #endif /* __INFO__ */
 			  );
-w
+    w
     motion.read_component(mv[0][1],
 			  blocks_in_y, blocks_in_x,
 			  motion_fn,
@@ -565,7 +576,7 @@ w
 			  argv[0]
 #endif /* __INFO__ */
 			  );
-
+    
     motion.read_component(mv[1][0],
 			  blocks_in_y, blocks_in_x,
 			  motion_fn,
@@ -592,9 +603,9 @@ w
     // }}}
 					    
     // {{{ Update
-
+    
     if(fgetc(frame_types_fd) == 'B') {
-
+      
       //fprintf(stderr, "(before) reference[0][0][0][0]=%d reference[1][0][0][0]=%d\n", reference[0][0][0][0], reference[1][0][0][0]);
       
       update(block_size,
@@ -607,9 +618,9 @@ w
 	     reference,
 	     residue,
 	     update_factor);
-
+      
       //fprintf(stderr,"(after) reference[0][0][0][0]=%d reference[1][0][0][0]=%d\n", reference[0][0][0][0], reference[1][0][0][0]);
-
+      
     }
     
     // }}}
@@ -624,25 +635,25 @@ w
     
     picture_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
     picture_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
-     
+    
     for(int c=0; c<COMPONENTS; c++) {
       texture.write_picture(reference[0][c],
-			  pixels_in_y[c], pixels_in_x[c],
+			    pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
-			  low_fn,
+			    low_fn,
 #else /* __ANALYZE__ */
-			  even_fn,
+			    even_fn,
 #endif /* __ANALYZE__ */
-			  i,
-			  c
+			    i,
+			    c
 #if defined __INFO__
-			  ,
-			  argv[0]
+			    ,
+			    argv[0]
 #endif /* __INFO__ */
-			  );
-
+			    );
+      
     }
-
+    
     // }}}
 
     // {{{ SWAP(&reference_picture[0], &reference_picture[1])
@@ -669,21 +680,21 @@ w
   
   for(int c=0; c<COMPONENTS; c++) {
     texture.write_picture(reference[0][c],
-			pixels_in_y[c], pixels_in_x[c],
+			  pixels_in_y[c], pixels_in_x[c],
 #ifdef __ANALYZE__
-			low_fn,
+			  low_fn,
 #else /* __ANALYZE__ */
-			even_fn,
+			  even_fn,
 #endif /* __ANALYZE__ */
-			i,
-			c
+			  i,
+			  c
 #if defined __INFO__
-			,
-			argv[0]
+			  ,
+			  argv[0]
 #endif /* __INFO__ */
-			);
+			  );
   }
-
+  
   // }}}
   
   // }}}

@@ -11,6 +11,7 @@ x_dim=352
 FPS=30
 keep_layers=8
 slope=0
+#slope=44000
 
 usage() {
     echo $0
@@ -93,7 +94,7 @@ while [ $img -le $number_of_images ]; do
 done
 
 mctf create_zero_texture
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=0
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
