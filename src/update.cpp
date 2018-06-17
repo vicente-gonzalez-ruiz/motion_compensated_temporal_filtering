@@ -46,6 +46,10 @@ void update
  TC_CPU_TYPE ****reference_picture,
  TC_CPU_TYPE ***residue_picture,
  float update_factor
+#if defined __WARNING__
+ ,
+ char *name
+#endif
 ) {
   // {{{
   for(int c=0; c<components; c++) {
@@ -77,15 +81,25 @@ void update
 
 	      //aux /= update_factor;
 
-	      if(aux > MAX_TC_VAL) aux = MAX_TC_VAL;
-	      else if(aux < MIN_TC_VAL) aux = MIN_TC_VAL;
+	      if(aux > MAX_TC_VAL) {
+#if defined __WARNING__
+		info("%s: MAX_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MAX_TC_VAL);
+#endif
+		aux = MAX_TC_VAL;
+	      }
+	      else if(aux < MIN_TC_VAL) {
+#if defined __WARNING__
+		info("%s: MIN_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MIN_TC_VAL);
+#endif
+		aux = MIN_TC_VAL;
+	      }
 
 	      reference_picture[PREV][c]
 		[clip(by*block_size + y + mv[PREV][Y_FIELD][by][bx],
 		      pixels_in_y[c])]
 		[clip(bx*block_size + x + mv[PREV][X_FIELD][by][bx],
 		      pixels_in_x[c])]
-		= aux;
+		= (TC_CPU_TYPE)round(aux);
 	      
 	      /* Update the next picture. **********************************/
 	      aux = reference_picture[NEXT][c]
@@ -114,7 +128,7 @@ void update
 	      reference_picture[NEXT][c]
 		[clip(by*block_size+y+mv[NEXT][Y_FIELD][by][bx],pixels_in_y[c])]
 		[clip(bx*block_size+x+mv[NEXT][X_FIELD][by][bx],pixels_in_x[c])]
-		= aux;
+		= (TC_CPU_TYPE)round(aux);
 
 	  }	    
 	}
@@ -617,7 +631,12 @@ int main(int argc, char *argv[]) {
 	     pix,
 	     reference,
 	     residue,
-	     update_factor);
+	     update_factor
+#if defined __WARNING__
+	     ,
+	     argv[0]
+#endif
+	     );
       
       //fprintf(stderr,"(after) reference[0][0][0][0]=%d reference[1][0][0][0]=%d\n", reference[0][0][0][0], reference[1][0][0][0]);
       

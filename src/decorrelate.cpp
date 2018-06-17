@@ -23,7 +23,7 @@
 
 //#define __INFO__
 //#define __DEBUG__
-//#define __WARNING__
+#define __WARNING__
 
 #include "display.cpp"
 //#include "Haar.cpp"
@@ -535,7 +535,7 @@ int main(int argc, char *argv[]) {
 		       even_fn,
 		       0,
 		       c
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 		       ,
 		       argv[0]
 #endif /* __INFO__ */
@@ -660,7 +660,7 @@ int main(int argc, char *argv[]) {
 			 odd_fn,
 			 i,
 			 c
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 			 ,
 			 argv[0]
 #endif /* __INFO__ */
@@ -681,7 +681,7 @@ int main(int argc, char *argv[]) {
 			 high_fn,
 			 i,
 			 c
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 			 ,
 			 argv[0]
 #endif /* __INFO__ */
@@ -707,7 +707,7 @@ int main(int argc, char *argv[]) {
 			 even_fn,
 			 i+1,
 			 c
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 			 ,
 			 argv[0]
 #endif /* __INFO__ */
@@ -772,7 +772,7 @@ int main(int argc, char *argv[]) {
     info("%s: reading motion vector field %d in \"%s\"\n", argv[0], i, motion_in_fn);
     //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
     motion.read_field(mv, blocks_in_y, blocks_in_x, motion_in_fn, i
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 		      ,
 		      argv[0]
 #endif /* __INFO__ */
@@ -901,7 +901,7 @@ int main(int argc, char *argv[]) {
 			  prediction_fn,
 			  i,
 			  c
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 			  ,
 			  argv[0]
 #endif /* __INFO__ */
@@ -958,8 +958,19 @@ int main(int argc, char *argv[]) {
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  int val = predicted[c][y][x] - prediction[c][y][x];
-	  if(val < -128) val = -128;
-	  else if(val > 127) val = 127;
+	  if(val < -128) {
+#if defined __WARNING__
+	    info("%s: clipping (%d -> -128)\n", argv[0], val);
+#endif
+	    val = -128;
+	    
+	  }
+	  else if(val > 127) {
+#if defined __WARNING__
+	    info("%s: clipping (%d -> 127)\n", argv[0], val);
+#endif
+	    val = 127;
+	  }
 	  residue[c][y][x] = val;
 	}
       }
@@ -1035,7 +1046,7 @@ int main(int argc, char *argv[]) {
 			    high_fn,
 			    i,
 			    c
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */

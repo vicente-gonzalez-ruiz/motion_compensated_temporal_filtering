@@ -131,7 +131,7 @@ public:
 		  char *fn,
 		  int picture_number,
 		  int component
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__
 		  ,
 		  char *msg
 #endif /* __INFO__ */
@@ -163,7 +163,7 @@ public:
 		   char *fn,
 		   int picture_number,
 		   int component
-#if defined __INFO__
+#if defined __INFO__  || defined __WARNING__
 		   ,
 		   char *msg
 #endif /* __INFO__ */

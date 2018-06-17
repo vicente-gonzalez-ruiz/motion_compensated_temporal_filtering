@@ -121,7 +121,7 @@ public:
 		      char *fn,
 		      int field,
 		      int component
-#if defined __INFO__
+#if defined __WARNING__ || defined __INFO__
 		      ,
 		      char *msg
 #endif /* __INFO__ */
@@ -149,7 +149,7 @@ public:
 		       char *fn,
 		       int field,
 		       int component
-#if defined __INFO__
+#if defined __DEBUG__ || defined __INFO__
 		       ,
 		       char *msg
 #endif /* __INFO__ */
@@ -175,7 +175,7 @@ public:
 		  int blocks_in_x,
 		  char *fn,
 		  int field
-#if defined __INFO__
+#if defined __WARNING__ || defined __INFO__
 		      ,
 		      char *msg
 #endif /* __INFO__ */
@@ -202,7 +202,7 @@ public:
 		   int blocks_in_x,
 		   char *fn,
 		   int field
-#if defined __INFO__
+#if defined __DEBUG__ || defined __INFO__
 		       ,
 		       char *msg
 #endif /* __INFO__ */
