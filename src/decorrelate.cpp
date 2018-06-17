@@ -1057,7 +1057,7 @@ int main(int argc, char *argv[]) {
       /* No motion field (other than 0) associated with an picture I. */
       //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
       motion.write_field(zeroes, blocks_in_y, blocks_in_x, motion_out_fn, i
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 	, argv[0]
 #endif /* __INFO__ */
 	);
@@ -1137,7 +1137,7 @@ int main(int argc, char *argv[]) {
 			    high_fn,
 			    i,
 			    c
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
@@ -1149,7 +1149,7 @@ int main(int argc, char *argv[]) {
       /* The pictures I have associated motion field. */
       //motion.write(motion_out_fd, mv, blocks_in_y, blocks_in_x);
       motion.write_field(mv, blocks_in_y, blocks_in_x, motion_out_fn, i
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 			 , argv[0]
 #endif /* __INFO__ */
 			 );
@@ -1244,7 +1244,7 @@ int main(int argc, char *argv[]) {
 			  odd_fn,
 			  i,
 			  c
-#if defined __INFO__
+#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
 			  ,
 			  argv[0]
 #endif /* __INFO__ */

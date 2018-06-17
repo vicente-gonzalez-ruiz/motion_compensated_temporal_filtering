@@ -203,10 +203,10 @@ public:
 		   char *fn,
 		   int field
 #if defined __DEBUG__ || defined __INFO__
-		       ,
-		       char *msg
+		   ,
+		   char *msg
 #endif /* __INFO__ */
-		       ) {
+		   ) {
     char fn_[80];
     sprintf(fn_, "%s/%04d.rawl", fn, field);
     FILE *fd  = fopen(fn_, "w");
