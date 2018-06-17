@@ -86,9 +86,9 @@ while i > 1:
               + " --blocks_in_y=" + str(blocks_in_y)
               + " --blocks_in_x=" + str(blocks_in_x)
               + " --fields_in_reference=" + str(fields)
-              + " --reference=" + "\"" + "M_" + str(i) + "\""
-              + " --predicted=" + "\"" + "M_" + str(i - 1) + "\""
-              + " --residue=" + "\"" + "M_" + str(i - 1) + "\"")
+              + " --reference=" + "M_" + str(i)
+              + " --predicted=" + "M_" + str(i - 1)
+              + " --residue=" + "R_" + str(i - 1))
 
     # Calculate the block size used in this temporal resolution level.
     #block_size = block_size // 2
