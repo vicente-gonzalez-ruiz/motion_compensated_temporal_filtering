@@ -7,7 +7,7 @@ pictures=33
 pixels_in_x=352
 pixels_in_y=288
 
-__debug__=0
+__debug__=1
 
 usage() {
     echo $0
@@ -21,7 +21,7 @@ usage() {
     echo "  [-? (help)]"
 }
 
-if [ $__debug__ = 1 ]; then
+if [ $__debug__ -eq 1 ]; then
     (echo $0 $@ 1>&2)
 fi
 

@@ -21,7 +21,7 @@ usage() {
     echo "  [-? (help)]"
 }
 
-if [ $__debug__ = 1 ]; then
+if [ $__debug__ -eq 1 ]; then
     (echo $0 $@ 1>&2)
 fi
     

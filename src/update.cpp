@@ -80,7 +80,6 @@ void update
 		* update_factor;
 
 	      //aux /= update_factor;
-#ifdef _1_
 	      if(aux > MAX_TC_VAL) {
 #if defined __WARNING__
 		warning("%s: MAX_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MAX_TC_VAL);
@@ -93,7 +92,7 @@ void update
 #endif
 		aux = MIN_TC_VAL;
 	      }
-#endif
+
 	      reference_picture[PREV][c]
 		[clip(by*block_size + y + mv[PREV][Y_FIELD][by][bx],
 		      pixels_in_y[c])]
@@ -120,7 +119,6 @@ void update
 		residue_picture[c][by*block_size+y][bx*block_size+x] * update_factor;
 
 	      //aux /= update_factor;
-#ifdef _1_	      
 	      if(aux > MAX_TC_VAL) {
 #if defined __WARNING__
 		warning("%s: MAX_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MAX_TC_VAL);
@@ -134,7 +132,6 @@ void update
 		aux = MIN_TC_VAL;
 	      }
 	      //fprintf(stderr,"(after) aux=%f\n", aux);
-#endif
 	      reference_picture[NEXT][c]
 		[clip(by*block_size+y+mv[NEXT][Y_FIELD][by][bx],pixels_in_y[c])]
 		[clip(bx*block_size+x+mv[NEXT][X_FIELD][by][bx],pixels_in_x[c])]
@@ -493,7 +490,7 @@ int main(int argc, char *argv[]) {
       // We recover the original dynamic range of the residue.
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
-	  residue[c][y][x] -= 128;
+	  residue[c][y][x] -= INTENSITY_OFFSET;
 	}
       }
     }

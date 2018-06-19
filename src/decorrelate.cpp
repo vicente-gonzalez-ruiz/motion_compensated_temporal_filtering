@@ -21,8 +21,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-//#define __INFO__
-//#define __DEBUG__
+#define __INFO__
+#define __DEBUG__
 #define __WARNING__
 
 #include "display.cpp"
@@ -544,6 +544,13 @@ int main(int argc, char *argv[]) {
     // }}}
   }
 
+#if defined (__DEBUG__)
+    printf("%s\n", even_fn);
+    for(int i=0; i<10; i++) {
+      printf("%d ", reference[0][0][0][i]);
+    }
+#endif
+    
   /* Interpolate the chroma of reference [0], to have the same size as
       the luma.  This is necessary because the fields of motion apply
       to chroma with the same precision as the luma. */
@@ -654,7 +661,6 @@ int main(int argc, char *argv[]) {
 
     /* The next picture (to predict) */
     for(int c=0; c<COMPONENTS; c++) {
-      //picture.read(O_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
       // {{{ predicted <- O
       texture.read_picture(predicted[c],
 			 pixels_in_y[c], pixels_in_x[c],
@@ -669,6 +675,13 @@ int main(int argc, char *argv[]) {
       // }}}
     }
 
+#if defined (__DEBUG__)
+    printf("%s\n", odd_fn);
+    for(int i=0; i<10; i++) {
+      printf("%d ", predicted[0][0][i]);
+    }
+#endif
+    
 #else /* __ANALYZE__ */
 
     info("%s: reading picture %d from \"%s\"\n", argv[0], i, high_fn);
@@ -690,7 +703,7 @@ int main(int argc, char *argv[]) {
       // }}}
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
-	  residue[c][y][x] -= 128; // OJO
+	  residue[c][y][x] -= INTENSITY_OFFSET; // OJO
 	}
       }
     }
@@ -965,22 +978,25 @@ int main(int argc, char *argv[]) {
     for(int c=0; c<COMPONENTS; c++) {
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
-	  int val = predicted[c][y][x] - prediction[c][y][x];
+	  //int val = predicted[c][y][x] - prediction[c][y][x] + INTENSITY_OFFSET;
+	  int val = predicted[c][y][x] - prediction[c][y][x] ;
 #ifdef _1_
-	  if(val < -128) {
+	  if(val < MIN_TC_VAL) {
 #if defined __WARNING__
-	    warning("%s: clipping (%d -> -128)\n", argv[0], val);
+	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MIN_TC_VAL);
 #endif
-	    val = -128;
+	    val = MIN_TC_VAL;
 	    
 	  }
-	  else if(val > 127) {
+	  else if(val > MAX_TC_VAL) {
 #if defined __WARNING__
-	    warning("%s: clipping (%d -> 127)\n", argv[0], val);
+	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL);
 #endif
-	    val = 127;
+	    val = MAX_TC_VAL;
 	  }
 #endif
+	  if(val < -128) val = -128;
+	  else if(val > 127) val = 127;
 	  residue[c][y][x] = val;
 	}
       }
@@ -1007,8 +1023,8 @@ int main(int argc, char *argv[]) {
 	
 	for(int y=0; y<pixels_in_y[0]; y++) {
 	  for(int x=0; x<pixels_in_x[0]; x++) {
-	    predicted_count[ (predicted[0][y][x]      ) % 256 ]++;
-	    residue_count  [ (residue  [0][y][x] + 128) % 256 ]++; // Usar puntero
+	    predicted_count[ predicted[0][y][x]       ]++;
+	    residue_count  [ residue  [0][y][x] + 128 ]++; // Usar puntero
 	  }
 	}
 	
@@ -1073,59 +1089,10 @@ int main(int argc, char *argv[]) {
       //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
       motion.write_field(zeroes, blocks_in_y, blocks_in_x, motion_out_fn, i
 #if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
-	, argv[0]
+			 , argv[0]
 #endif /* __INFO__ */
-	);
-#ifdef _1_
-      // {{{ zeroes[0][0] -> motion_out
-      motion.write_component(zeroes[0][0],
-			     blocks_in_y, blocks_in_x,
-			     motion_out_fn,
-			     i,
-			     0
-#if defined __INFO__
-			     ,
-			     argv[0]
-#endif /* __INFO__ */
-			     );
-      // }}}
-      // {{{ zeroes[0][1] -> motion_out
-      motion.write_component(zeroes[0][1],
-			     blocks_in_y, blocks_in_x,
-			     motion_out_fn,
-			     i,
-			     1
-#if defined __INFO__
-			     ,
-			     argv[0]
-#endif /* __INFO__ */
-			     );
-      // }}}
-      // {{{ zeroes[1][0] -> motion_out
-      motion.write_component(zeroes[1][0],
-			     blocks_in_y, blocks_in_x,
-			     motion_out_fn,
-			     i,
-			     2
-#if defined __INFO__
-			     ,
-			     argv[0]
-#endif /* __INFO__ */
-			     );
-      // }}}
-      // {{{ zeroes[1][1] -> motion_out
-      motion.write_component(zeroes[1][1],
-			     blocks_in_y, blocks_in_x,
-			     motion_out_fn,
-			     i,
-			     3
-#if defined __INFO__
-			     ,
-			     argv[0]
-#endif /* __INFO__ */
-			     );
-      // }}}
-#endif /* _1_ */
+			 );
+      
     } else {
 
       /* Indicated in the code-stream which is an picture B. */
@@ -1139,11 +1106,19 @@ int main(int argc, char *argv[]) {
 	   [0,255]. */
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    int val = residue[c][y][x] + 128; // OJO
-#ifdef _1_
-	    if(val < 0) val = 0;
-	    else if(val > 255) val = 255;
+	    int val = residue[c][y][x] + INTENSITY_OFFSET; // OJO
+	    if(val < MIN_TC_VAL) {
+#if defined (__WARNING__)
+	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MIN_TC_VAL);
 #endif
+	      val = MIN_TC_VAL;
+	    }
+	    else if(val > MAX_TC_VAL) {
+#if defined (__WARNING__)
+	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL);
+#endif
+	      val = MAX_TC_VAL;
+	    }
 	    residue[c][y][x] = val;
 	  }
 	}
@@ -1170,55 +1145,6 @@ int main(int argc, char *argv[]) {
 			 , argv[0]
 #endif /* __INFO__ */
 			 );
-#ifdef _1_
-      // {{{ mv[0][0] -> motion_out
-      motion.write_component(mv[0][0],
-			     blocks_in_y, blocks_in_x,
-			     motion_out_fn,
-			     i,
-			     0
-#if defined __INFO__
-			     ,
-			     argv[0]
-#endif /* __INFO__ */
-			     );
-      // }}} {{{ mv[0][1] -> motion_out
-      motion.write_component(mv[0][1],
-			     blocks_in_y, blocks_in_x,
-			     motion_out_fn,
-			     i,
-			     1
-#if defined __INFO__
-			     ,
-			     argv[0]
-#endif /* __INFO__ */
-			     );
-      // }}}
-      // {{{ mv[1][0] -> motion_out
-      motion.write_component(mv[1][0],
-			     blocks_in_y, blocks_in_x,
-			     motion_out_fn,
-			     i,
-			     2
-#if defined __INFO__
-			     ,
-			     argv[0]
-#endif /* __INFO__ */
-			     );
-      // }}}
-      // {{{ mv[1][1] -> motion_out
-      motion.write_component(mv[1][1],
-			     blocks_in_y, blocks_in_x,
-			     motion_out_fn,
-			     i,
-			     3
-#if defined __INFO__
-			     ,
-			     argv[0]
-#endif /* __INFO__ */
-			     );
-      // }}}
-#endif /* _1_ */
     }
     
 #else /* __ANALYZE__ */
@@ -1233,7 +1159,7 @@ int main(int argc, char *argv[]) {
       for(int c=0; c<COMPONENTS; c++) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    predicted[c][y][x] = residue[c][y][x] + 128; // OJO
+	    predicted[c][y][x] = residue[c][y][x] + INTENSITY_OFFSET; // OJO
 	    /*	    if (predicted[c][y][x] < 0 ) predicted[c][y][x] = 0;
 		    else if(predicted[c][y][x] > 255 ) predicted[c][y][x] = 255;*/
 	  }
@@ -1244,10 +1170,18 @@ int main(int argc, char *argv[]) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
 	    int val = residue[c][y][x] + prediction[c][y][x];
-#ifdef _1_
-	    if(val<0) val=0;
-	    else if(val>255) val=255;
+	    if(val<MIN_TC_VAL) {
+#if defined (__WARNING__)
+	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MIN_TC_VAL);
 #endif
+	      val=MIN_TC_VAL;
+	    }
+	    else if(val>MAX_TC_VAL) {
+#if defined (__WARNING__)
+	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL);
+#endif
+	      val=MAX_TC_VAL;
+	    }
 	    predicted[c][y][x] = val;
 	  }
 	}

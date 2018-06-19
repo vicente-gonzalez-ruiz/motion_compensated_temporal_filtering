@@ -69,11 +69,11 @@ while p < pictures:
 
     shell.run(command)
 
-    shell.run("trace convert -endian LSB " + fn + "_0.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
-    shell.run("trace convert -endian LSB " + fn + "_1.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
-    shell.run("trace convert -endian LSB " + fn + "_2.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
+    #shell.run("trace convert -endian LSB " + fn + "_0.pgm /tmp/1")
+    #shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
+    #shell.run("trace convert -endian LSB " + fn + "_1.pgm /tmp/1")
+    #shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
+    #shell.run("trace convert -endian LSB " + fn + "_2.pgm /tmp/1")
+    #shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
 
     p += 1

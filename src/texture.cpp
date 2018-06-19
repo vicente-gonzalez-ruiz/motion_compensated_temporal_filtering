@@ -3,17 +3,29 @@
 /* Limits */
 #define PIXELS_IN_X_MAX 16384
 
-//#define TC_IO_TYPE unsigned char /* TC = Texture Component; IO = Input Output. */
-#define TC_IO_TYPE short
-#define TC_CPU_TYPE short /* TC = Texture Component; CPU = Central Processing Unit. */
+#define BPP 8
+
+#if (BPP==8)
+/* TC = Texture Component; IO = Input Output. */
+#define TC_IO_TYPE unsigned char
+#define INTENSITY_OFFSET 128
+#define MIN_TC_VAL 0
+#define MAX_TC_VAL 255
+#else
+#define TC_IO_TYPE unsigned short
+#define INTENSITY_OFFSET 32768
+#define MIN_TC_VAL 0
+#define MAX_TC_VAL 65535
+#endif
+
+/* TC = Texture Component; CPU = Central Processing Unit. */
+#define TC_CPU_TYPE short
 
 template <typename IO_TYPE, typename CPU_TYPE>
 class texture {
 
-#if (IO_TYPE!=CPU_TYPE)
 private:
   IO_TYPE line[PIXELS_IN_X_MAX];
-#endif
 
 public:
   
@@ -104,14 +116,10 @@ public:
     fgets(x, 80, fd); /* rows and cols */
     fgets(x, 80, fd); /* Max value */
     for(int y=0; y<y_dim; y++) {
-#if (IO_TYPE==CPU_TYPE)
-      int read = fread(img[y], sizeof(IO_TYPE), x_dim, fd);
-#else
       int read = fread(line, sizeof(IO_TYPE), x_dim, fd);
       for(int x=0; x<x_dim; x++) {
 	img[y][x] = line[x];
       }
-#endif
     }
   }
 
@@ -123,17 +131,12 @@ public:
 	     ) {
     fprintf(fd, "P5\n");
     fprintf(fd, "%d %d\n", x_dim, y_dim);
-    //fprintf(fd, "255\n");
-    fprintf(fd, "65535\n");
+    fprintf(fd, "%d\n", MAX_TC_VAL);
     for(int y=0; y<y_dim; y++) {
-#if (CPU_TYPE==IO_TYPE)
-      fwrite(img[y], sizeof(IO_TYPE), x_dim, fd);
-#else
       for(int x=0; x<x_dim; x++) {
 	line[x] = img[y][x];
       }
       fwrite(line, sizeof(IO_TYPE), x_dim, fd);
-#endif
     }
   }
 
