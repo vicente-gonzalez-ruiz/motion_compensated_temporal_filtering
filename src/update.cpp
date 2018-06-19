@@ -79,20 +79,20 @@ void update
 		[bx*block_size+x]
 		* update_factor;
 
-	      //aux /= update_factor;
-	      if(aux > MAX_TC_VAL) {
+	      if(aux < 0) {
 #if defined __WARNING__
-		warning("%s: MAX_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MAX_TC_VAL);
+		warning("%s: %f -> %d\n", name, aux, 0);
 #endif
-		aux = MAX_TC_VAL;
+		aux = 0;
+		
 	      }
-	      else if(aux < MIN_TC_VAL) {
+	      else if(aux > 255) {
 #if defined __WARNING__
-		warning("%s: MIN_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MIN_TC_VAL);
+		warning("%s: %f -> %d\n", name, aux, 255);
 #endif
-		aux = MIN_TC_VAL;
+		aux = 255;
 	      }
-
+	      
 	      reference_picture[PREV][c]
 		[clip(by*block_size + y + mv[PREV][Y_FIELD][by][bx],
 		      pixels_in_y[c])]
@@ -118,20 +118,20 @@ void update
 #endif /* __ANALYZE__ */
 		residue_picture[c][by*block_size+y][bx*block_size+x] * update_factor;
 
-	      //aux /= update_factor;
-	      if(aux > MAX_TC_VAL) {
+	      if(aux < 0) {
 #if defined __WARNING__
-		warning("%s: MAX_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MAX_TC_VAL);
+		warning("%s: %f -> %d\n", name, aux, 0);
 #endif
-		aux = MAX_TC_VAL;
+		aux = 0;
+		
 	      }
-	      else if(aux < MIN_TC_VAL) {
+	      else if(aux > 255) {
 #if defined __WARNING__
-		warning("%s: MIN_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MIN_TC_VAL);
+		warning("%s: %f -> %d\n", name, aux, 255);
 #endif
-		aux = MIN_TC_VAL;
+		aux = 255;
 	      }
-	      //fprintf(stderr,"(after) aux=%f\n", aux);
+
 	      reference_picture[NEXT][c]
 		[clip(by*block_size+y+mv[NEXT][Y_FIELD][by][bx],pixels_in_y[c])]
 		[clip(bx*block_size+x+mv[NEXT][X_FIELD][by][bx],pixels_in_x[c])]
@@ -575,52 +575,6 @@ int main(int argc, char *argv[]) {
 		      , argv[0]
 #endif /* __INFO__ */
 		      );
-#ifdef _1_
-    motion.read_component(mv[0][0],
-			  blocks_in_y, blocks_in_x,
-			  motion_fn,
-			  i,
-			  0
-#if defined __INFO__
-			  ,
-			  argv[0]
-#endif /* __INFO__ */
-			  );
-    w
-    motion.read_component(mv[0][1],
-			  blocks_in_y, blocks_in_x,
-			  motion_fn,
-			  i,
-			  1
-#if defined __INFO__
-			  ,
-			  argv[0]
-#endif /* __INFO__ */
-			  );
-    
-    motion.read_component(mv[1][0],
-			  blocks_in_y, blocks_in_x,
-			  motion_fn,
-			  i,
-			  2
-#if defined __INFO__
-			  ,
-			  argv[0]
-#endif /* __INFO__ */
-			  );
-
-    motion.read_component(mv[1][1],
-			  blocks_in_y, blocks_in_x,
-			  motion_fn,
-			  i,
-			  3
-#if defined __INFO__
-			  ,
-			  argv[0]
-#endif /* __INFO__ */
-			  );
-#endif /* _1_ */
-    
     // }}}
 					    
     // {{{ Update

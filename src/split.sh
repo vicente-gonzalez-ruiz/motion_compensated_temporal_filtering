@@ -7,7 +7,7 @@ pictures=33
 pixels_in_x=352
 pixels_in_y=288
 
-__debug__=1
+__debug__=0
 
 usage() {
     echo $0

@@ -65,17 +65,17 @@ while picture < number_of_pictures:
 
     fn = file + "/" + str('%04d' % picture)
 
-    shell.run("trace convert -endian LSB " + fn + "_0.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
-    shell.run("trace convert -endian LSB " + fn + "_1.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
-    shell.run("trace convert -endian LSB " + fn + "_2.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_0.pgm /tmp/0.pgm")
+    #shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_1.pgm /tmp/1.pgm")
+    #shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_2.pgm /tmp/2.pgm")
+    #shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
     command = "trace kdu_compress" \
               + " -i " \
-              + fn + "_0.pgm," \
-              + fn + "_1.pgm," \
-              + fn + "_2.pgm" \
+              + "/tmp/0.pgm," \
+              + "/tmp/1.pgm," \
+              + "/tmp/2.pgm" \
               + " -o " + fn + "." + IMG_EXT \
               + " -jpx_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}" \
               + " -no_weights" \

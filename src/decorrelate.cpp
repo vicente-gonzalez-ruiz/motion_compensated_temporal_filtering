@@ -144,19 +144,6 @@ void predict
     /* The prediction picture is generated.*/
     overlap_dwt->synthesize(prediction_picture[c], pixels_in_y, pixels_in_x, levels);
    
-#ifdef _1_ 
-    if(levels) {
-      /** And clipping of the prediction if _1_ is defined. */
-      for(int y=0; y<pixels_in_y; y++) {
-	for(int x=0; x<pixels_in_x; x++) {
-	  TC_CPU_TYPE aux = prediction_picture[c][y][x];
-	  if(aux<MIN_TC_VAL) aux=MIN_TC_VAL;
-	  else if(aux>MAX_TC_VAL) aux=MAX_TC_VAL;
-	  prediction_picture[c][y][x] = aux;
-	}
-      }
-    }
-#endif
   } /* for(components) */
 
 } /* predict() */
@@ -361,32 +348,6 @@ int main(int argc, char *argv[]) {
       error("%s: Unrecognized argument\n", argv[0]);
     }
   }
-
-#ifdef _1_
-  {
-    int err = mkdir(even_fn, 0700);
-#ifdef __DEBUG__
-    if(err) {
-      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], even_fn);
-      abort();
-    }
-#endif /* __DEBUG__ */
-  }
-#endif
-
-#ifdef _1_
-  {
-#if defined __ANALYZE__
-    int err = mkdir(motion_out_fn, 0700);
-#ifdef __DEBUG__
-    if(err) {
-      error("%s: \"%s\" cannot be created ... aborting!\n", argv[0], motion_out_fn);
-      abort();
-    }
-#endif /* __DEBUG__ */
-#endif /* __ANALYZE__ */
-  }
-#endif /* _1_ */
   
   {
 #if not defined __ANALYZE__
@@ -637,6 +598,7 @@ int main(int argc, char *argv[]) {
 	       0,
 	       ( pixels_in_x[0] << s ) *sizeof(TC_CPU_TYPE) );
       }
+
       picture_dwt->synthesize(reference[0][c],
 			    pixels_in_y[0] << s,
 			    pixels_in_x[0] << s,
@@ -773,6 +735,7 @@ int main(int argc, char *argv[]) {
 		 0,
 		 ( pixels_in_x[0] << s ) *sizeof(TC_CPU_TYPE) );
 	}
+
 	picture_dwt->synthesize(reference[1][c],
 			      pixels_in_y[0] << s,
 			      pixels_in_x[0] << s,
@@ -797,56 +760,6 @@ int main(int argc, char *argv[]) {
 		      argv[0]
 #endif /* __INFO__ */
 		      );
-#ifdef _1_
-    // {{{ mv[0][0] <- motion_in
-    motion.read_component(mv[0][0],
-			  blocks_in_y, blocks_in_x,
-			  motion_in_fn,
-			  i,
-			  0
-#if defined __INFO__
-			  ,
-			  argv[0]
-#endif /* __INFO__ */
-			  );
-    // }}}
-    // {{{ mv[0][1] <- motion_in
-    motion.read_component(mv[0][1],
-			  blocks_in_y, blocks_in_x,
-			  motion_in_fn,
-			  i,
-			  1
-#if defined __INFO__
-			  ,
-			  argv[0]
-#endif /* __INFO__ */
-			  );
-    // }}}
-    // {{{ mv[1][0] <- motion_in
-    motion.read_component(mv[1][0],
-			  blocks_in_y, blocks_in_x,
-			  motion_in_fn,
-			  i,
-			  2
-#if defined __INFO__
-			  ,
-			  argv[0]
-#endif /* __INFO__ */
-			  );
-    // }}}
-    // {{{ mv[1][1] <- motion_in
-    motion.read_component(mv[1][1],
-			  blocks_in_y, blocks_in_x,
-			  motion_in_fn,
-			  i,
-			  3
-#if defined __INFO__
-			  ,
-			  argv[0]
-#endif /* __INFO__ */
-			  );
-    // }}}
-#endif /* _1_ */
 #if defined __ANALYZE__
     float motion_entropy = 0.0; {
       static int count[256];
@@ -900,6 +813,7 @@ int main(int argc, char *argv[]) {
       }
     }
 #endif
+
     /* Subsample the three components because the motion compensation
        is made to the original video resolution. */
     for(int c=0; c<COMPONENTS; c++) {
@@ -974,40 +888,12 @@ int main(int argc, char *argv[]) {
     
     
     /* Compensation is applied (with clipping). The compensation is
-       done over-pixel resolution. */
+       done at over-pixel resolution. */
     for(int c=0; c<COMPONENTS; c++) {
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  //int val = predicted[c][y][x] - prediction[c][y][x] + INTENSITY_OFFSET;
-	  int val = predicted[c][y][x] - prediction[c][y][x] ;
-#ifdef _1_
-	  if(val < MIN_TC_VAL) {
-#if defined __WARNING__
-	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MIN_TC_VAL);
-#endif
-	    val = MIN_TC_VAL;
-	    
-	  }
-	  else if(val > MAX_TC_VAL) {
-#if defined __WARNING__
-	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL);
-#endif
-	    val = MAX_TC_VAL;
-	  }
-#endif
-	  if(val < -(MAX_TC_VAL/2)) {
-#if defined __WARNING__
-	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, -(MAX_TC_VAL/2));
-#endif
-	    val = -(MAX_TC_VAL/2);
-	  }
-	  else if(val > (MAX_TC_VAL/2 - 1)) {
-#if defined __WARNING__
-	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL/2 - 1);
-#endif
-	    val = MAX_TC_VAL/2 - 1;
-	  }
-	  residue[c][y][x] = val;
+	  residue[c][y][x] = predicted[c][y][x] - prediction[c][y][x];
 	}
       }
     }
@@ -1033,8 +919,8 @@ int main(int argc, char *argv[]) {
 	
 	for(int y=0; y<pixels_in_y[0]; y++) {
 	  for(int x=0; x<pixels_in_x[0]; x++) {
-	    predicted_count[ predicted[0][y][x]       ]++;
-	    residue_count  [ (residue  [0][y][x] + (MAX_TC_VAL/2)) % 256 ]++;
+	    predicted_count[ predicted[0][y][x]                          ]++;
+	    residue_count  [ (residue  [0][y][x] + (TC_MAX_VAL/2)) % 256 ]++;
 	  }
 	}
 	
@@ -1062,19 +948,17 @@ int main(int argc, char *argv[]) {
     info("predicted_size=%d residue_size=%d motion_size=%d\n",
 	 predicted_size, residue_size, motion_size);
 
-    //if(predicted_entropy <= (residue_entropy + motion_entropy)) /* Picture of type I. */ {
     if(predicted_size <= (residue_size + motion_size)) {
 
-      /* Indicated in the code-stream which is an picture I. */
+      /* Picture of type I. */
       putc('I', frame_types_fd);
 
       /* Copy predicted to residue. */
       
       for(int c=0; c<COMPONENTS; c++) {
-	for(int y=0; y<pixels_in_y[c] /* c */; y++) {
-	  for(int x=0; x<pixels_in_x[c] /* c */; x++) {
+	for(int y=0; y<pixels_in_y[c]; y++) {
+	  for(int x=0; x<pixels_in_x[c]; x++) {
 	    residue[c][y][x] = predicted[c][y][x];
-	    //printf("%d ",residue[c][y][x]);
 	  }
 	}
       }
@@ -1116,23 +1000,9 @@ int main(int argc, char *argv[]) {
 	   [0,255]. */
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    int val = residue[c][y][x] + INTENSITY_OFFSET; // OJO
-	    if(val < MIN_TC_VAL) {
-#if defined (__WARNING__)
-	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MIN_TC_VAL);
-#endif
-	      val = MIN_TC_VAL;
-	    }
-	    else if(val > MAX_TC_VAL) {
-#if defined (__WARNING__)
-	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL);
-#endif
-	      val = MAX_TC_VAL;
-	    }
-	    residue[c][y][x] = val;
+	    residue[c][y][x] = residue[c][y][x] + INTENSITY_OFFSET;
 	  }
 	}
-	//picture.write(H_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
 	// {{{ residue -> H
 	texture.write_picture(residue[c],
 			    pixels_in_y[c], pixels_in_x[c],
@@ -1169,9 +1039,7 @@ int main(int argc, char *argv[]) {
       for(int c=0; c<COMPONENTS; c++) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    predicted[c][y][x] = residue[c][y][x] + INTENSITY_OFFSET; // OJO
-	    /*	    if (predicted[c][y][x] < 0 ) predicted[c][y][x] = 0;
-		    else if(predicted[c][y][x] > 255 ) predicted[c][y][x] = 255;*/
+	    predicted[c][y][x] = residue[c][y][x];
 	  }
 	}
       }
@@ -1179,22 +1047,7 @@ int main(int argc, char *argv[]) {
       for(int c=0; c<COMPONENTS; c++) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    int val = residue[c][y][x] + prediction[c][y][x];
-	    if(val<MIN_TC_VAL) {
-#if defined (__WARNING__)
-	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MIN_TC_VAL);
-	      warning("residue=%d prediction=%d\n", residue[c][y][x], prediction[c][y][x]);
-#endif
-	      val=MIN_TC_VAL;
-	    }
-	    else if(val>MAX_TC_VAL) {
-#if defined (__WARNING__)
-	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL);
-	      warning("residue=%d prediction=%d\n", residue[c][y][x], prediction[c][y][x]);
-#endif
-	      val=MAX_TC_VAL;
-	    }
-	    predicted[c][y][x] = val;
+	    predicted[c][y][x] = residue[c][y][x] + prediction[c][y][x];
 	  }
 	}
       }

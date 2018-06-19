@@ -9,13 +9,13 @@
 /* TC = Texture Component; IO = Input Output. */
 #define TC_IO_TYPE unsigned char
 #define INTENSITY_OFFSET 128
-#define MIN_TC_VAL 0
-#define MAX_TC_VAL 255
+#define TC_MIN_VAL 0
+#define TC_MAX_VAL 255
 #else
 #define TC_IO_TYPE unsigned short
 #define INTENSITY_OFFSET 32768
-#define MIN_TC_VAL 0
-#define MAX_TC_VAL 65535
+#define TC_MIN_VAL 0
+#define TC_MAX_VAL 65535
 #endif
 
 /* TC = Texture Component; CPU = Central Processing Unit. */
@@ -118,7 +118,17 @@ public:
     for(int y=0; y<y_dim; y++) {
       int read = fread(line, sizeof(IO_TYPE), x_dim, fd);
       for(int x=0; x<x_dim; x++) {
+	img[y][x] = line[x];
+#ifdef _1_
 	img[y][x] = line[x] - INTENSITY_OFFSET;
+#if defined (__WARNING__)
+	if(img[y][x] < TC_MIN_VAL) {
+	  warning("%s (%d): %d -> %d\n",
+		  __FILE__, __LINE__, img[y][x], TC_MIN_VAL);
+	  img[y][x] = TC_MIN_VAL;
+	}
+#endif
+#endif
       }
     }
   }
@@ -131,10 +141,20 @@ public:
 	     ) {
     fprintf(fd, "P5\n");
     fprintf(fd, "%d %d\n", x_dim, y_dim);
-    fprintf(fd, "%d\n", MAX_TC_VAL);
+    fprintf(fd, "%d\n", TC_MAX_VAL);
     for(int y=0; y<y_dim; y++) {
       for(int x=0; x<x_dim; x++) {
+	line[x] = img[y][x];
+#ifdef _1_
 	line[x] = img[y][x] + INTENSITY_OFFSET;
+#if defined (__WARNING__)
+	if(img[y][x] > TC_MAX_VAL) {
+	  warning("%s (%d): %d -> %d\n",
+		  __FILE__, __LINE__, img[y][x], TC_MAX_VAL);
+	  img[y][x] = TC_MAX_VAL;
+	}
+#endif
+#endif
       }
       fwrite(line, sizeof(IO_TYPE), x_dim, fd);
     }

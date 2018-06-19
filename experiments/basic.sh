@@ -15,7 +15,7 @@ slope=0
 slope=39000
 #slope=40000
 
-__debug__=0
+__debug__=1
 BPP=16
 MCTF_QUANTIZER=automatic
 
@@ -92,13 +92,15 @@ if [ $BPP -eq 16 ]; then
 	local y_dim=$3
 	local output_image=$4
 	(uchar2ushort < $input_image > /tmp/1) 2> /dev/null
+	#(add Short 32768 < /tmp/1 > /tmp/2) 2> /dev/null
 	rawtopgm -bpp 2 $x_dim $y_dim < /tmp/1 > $output_image
     }
 
     PGMTORAW () {
 	local input_image=$1
 	local output_image=$2
-	convert -endian MSB $input /tmp/1.gray
+	convert -endian MSB $input_image /tmp/1.gray
+	#(add Short -32768 < /tmp/1.gray > /tmp/2) 2> /dev/null
 	(ushort2uchar < /tmp/1.gray > $output_image) 2> /dev/null
     }
     

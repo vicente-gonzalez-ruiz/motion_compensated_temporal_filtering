@@ -60,20 +60,20 @@ while p < pictures:
     command = "trace kdu_expand" \
               + " -i " + fn + "." + IMG_EXT \
               + " -o " \
-              + fn + "_0.pgm," \
-              + fn + "_1.pgm," \
-              + fn + "_2.pgm"
+              + "/tmp/0.pgm," \
+              + "/tmp/1.pgm," \
+              + "/tmp/2.pgm"
 
     if not __debug__:
         command += " > /dev/null"
 
     shell.run(command)
 
-    shell.run("trace convert -endian LSB " + fn + "_0.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
-    shell.run("trace convert -endian LSB " + fn + "_1.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
-    shell.run("trace convert -endian LSB " + fn + "_2.pgm /tmp/1")
-    shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
+    shell.run("trace convert -endian LSB /tmp/0.pgm " + fn + "_0.pgm")
+    #shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
+    shell.run("trace convert -endian LSB /tmp/1.pgm " + fn + "_1.pgm")
+    #shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
+    shell.run("trace convert -endian LSB /tmp/2.pgm " + fn + "_2.pgm")
+    #shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
 
     p += 1
