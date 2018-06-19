@@ -10,8 +10,10 @@
 template <typename IO_TYPE, typename CPU_TYPE>
 class texture {
 
+#if (IO_TYPE!=CPU_TYPE)
 private:
   IO_TYPE line[PIXELS_IN_X_MAX];
+#endif
 
 public:
   

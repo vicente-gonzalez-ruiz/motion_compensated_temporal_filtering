@@ -2,16 +2,16 @@
 
 #video=~/Videos/mobile_352x288x30x420x300.avi
 video=~/Videos/container_352x288x30x420x300.avi
-#GOPs=9
-GOPs=2
-TRLs=6
-#TRLs=3
+GOPs=9
+#GOPs=2
+#TRLs=6
+TRLs=2
 y_dim=288
 x_dim=352
 FPS=30
 keep_layers=8
 slope=0
-#slope=44000
+slope=44000
 
 usage() {
     echo $0
@@ -76,8 +76,6 @@ done
 
 MCTF_QUANTIZER=automatic
 
-set -x
-
 rm -rf L_0
 mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
@@ -89,11 +87,11 @@ while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
     let img_1=img-1
     _img_1=$(printf "%04d" $img_1)
-    uchar2short < L_0/$_img.Y > /tmp/1
+    (uchar2short < L_0/$_img.Y > /tmp/1) 2> /dev/null
     rawtopgm -bpp 2   $x_dim   $y_dim < /tmp/1 > L_0/${_img_1}_0.pgm
-    uchar2short < L_0/$_img.U > /tmp/1
+    (uchar2short < L_0/$_img.U > /tmp/1) 2> /dev/null
     rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_1.pgm
-    uchar2short < L_0/$_img.V > /tmp/1
+    (uchar2short < L_0/$_img.V > /tmp/1) 2> /dev/null
     rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_2.pgm
     let img=img+1 
 done
@@ -112,11 +110,11 @@ while [ $img -le $number_of_images ]; do
     let img_1=img-1
     _img_1=$(printf "%04d" $img_1)
     convert -endian MSB L_0/${_img_1}_0.pgm /tmp/1.gray
-    short2uchar < /tmp/1.gray > L_0/$_img.Y
+    (short2uchar < /tmp/1.gray > L_0/$_img.Y) 2> /dev/null
     convert -endian MSB L_0/${_img_1}_1.pgm /tmp/1.gray
-    short2uchar < /tmp/1.gray > L_0/$_img.U
+    (short2uchar < /tmp/1.gray > L_0/$_img.U) 2> /dev/null
     convert -endian MSB L_0/${_img_1}_2.pgm /tmp/1.gray
-    short2uchar < /tmp/1.gray > L_0/$_img.V
+    (short2uchar < /tmp/1.gray > L_0/$_img.V) 2> /dev/null
     let img=img+1 
 done
 ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv
