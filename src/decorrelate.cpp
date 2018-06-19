@@ -21,8 +21,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#define __INFO__
-#define __DEBUG__
+//#define __INFO__
+//#define __DEBUG__
 #define __WARNING__
 
 #include "display.cpp"
@@ -995,8 +995,18 @@ int main(int argc, char *argv[]) {
 	    val = MAX_TC_VAL;
 	  }
 #endif
-	  if(val < -(MAX_TC_VAL/2)) val = -(MAX_TC_VAL/2);
-	  else if(val > (MAX_TC_VAL/2 - 1)) val = MAX_TC_VAL/2 - 1;
+	  if(val < -(MAX_TC_VAL/2)) {
+#if defined __WARNING__
+	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, -(MAX_TC_VAL/2));
+#endif
+	    val = -(MAX_TC_VAL/2);
+	  }
+	  else if(val > (MAX_TC_VAL/2 - 1)) {
+#if defined __WARNING__
+	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL/2 - 1);
+#endif
+	    val = MAX_TC_VAL/2 - 1;
+	  }
 	  residue[c][y][x] = val;
 	}
       }
@@ -1173,12 +1183,14 @@ int main(int argc, char *argv[]) {
 	    if(val<MIN_TC_VAL) {
 #if defined (__WARNING__)
 	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MIN_TC_VAL);
+	      warning("residue=%d prediction=%d\n", residue[c][y][x], prediction[c][y][x]);
 #endif
 	      val=MIN_TC_VAL;
 	    }
 	    else if(val>MAX_TC_VAL) {
 #if defined (__WARNING__)
 	      warning("%s (%d): %d -> %d\n", argv[0], __LINE__, val, MAX_TC_VAL);
+	      warning("residue=%d prediction=%d\n", residue[c][y][x], prediction[c][y][x]);
 #endif
 	      val=MAX_TC_VAL;
 	    }

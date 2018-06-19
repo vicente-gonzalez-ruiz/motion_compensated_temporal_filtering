@@ -11,12 +11,12 @@ x_dim=352
 FPS=30
 keep_layers=8
 slope=0
-slope=44200
-#slope=39000
+#slope=42000
+slope=39000
 #slope=40000
 
-__debug__=1
-BPP=8
+__debug__=0
+BPP=16
 MCTF_QUANTIZER=automatic
 
 usage() {
@@ -28,7 +28,7 @@ usage() {
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
     echo "  [-k keep layers ($keep_layers)]"
-    echo "  [-? xf(help)]"
+    echo "  [-? (help)]"
 }
 
 (echo $0 $@ 1>&2)
@@ -62,6 +62,10 @@ while getopts "v:p:x:y:f:t:g:k:?" opt; do
 	k)
 	    keep_layers="${OPTARG}"
 	    echo keep_layers=$keep_layers
+	    ;;
+	s)
+	    slope="${OPTARG}"
+	    echo slope=$slope
 	    ;;
 	?)
             usage
