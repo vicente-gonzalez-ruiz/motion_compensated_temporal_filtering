@@ -995,8 +995,8 @@ int main(int argc, char *argv[]) {
 	    val = MAX_TC_VAL;
 	  }
 #endif
-	  if(val < -128) val = -128;
-	  else if(val > 127) val = 127;
+	  if(val < -(MAX_TC_VAL/2)) val = -(MAX_TC_VAL/2);
+	  else if(val > (MAX_TC_VAL/2 - 1)) val = MAX_TC_VAL/2 - 1;
 	  residue[c][y][x] = val;
 	}
       }
@@ -1024,7 +1024,7 @@ int main(int argc, char *argv[]) {
 	for(int y=0; y<pixels_in_y[0]; y++) {
 	  for(int x=0; x<pixels_in_x[0]; x++) {
 	    predicted_count[ predicted[0][y][x]       ]++;
-	    residue_count  [ residue  [0][y][x] + 128 ]++; // Usar puntero
+	    residue_count  [ (residue  [0][y][x] + (MAX_TC_VAL/2)) % 256 ]++;
 	  }
 	}
 	

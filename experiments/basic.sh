@@ -11,10 +11,13 @@ x_dim=352
 FPS=30
 keep_layers=8
 slope=0
-#slope=40000
+slope=44200
 #slope=39000
+#slope=40000
 
 __debug__=1
+BPP=8
+MCTF_QUANTIZER=automatic
 
 usage() {
     echo $0
@@ -77,26 +80,41 @@ while getopts "v:p:x:y:f:t:g:k:?" opt; do
     esac
 done
 
-MCTF_QUANTIZER=automatic
-BPP=8
-
 if [ $BPP -eq 16 ]; then
+
     RAWTOPGM () {
 	local input_image=$1
 	local x_dim=$2
 	local y_dim=$3
 	local output_image=$4
-	(uchar2short < $input_image > /tmp/1) 2> /dev/null
-	rawtopgm -bpp 2 $x_dim $y_dim < /tmp/1 > $output_image.pgm
+	(uchar2ushort < $input_image > /tmp/1) 2> /dev/null
+	rawtopgm -bpp 2 $x_dim $y_dim < /tmp/1 > $output_image
     }
+
+    PGMTORAW () {
+	local input_image=$1
+	local output_image=$2
+	convert -endian MSB $input /tmp/1.gray
+	(ushort2uchar < /tmp/1.gray > $output_image) 2> /dev/null
+    }
+    
 else
+
     RAWTOPGM () {
 	local input_image=$1
 	local x_dim=$2
 	local y_dim=$3
 	local output_image=$4
-	rawtopgm $x_dim $y_dim < $input_image > $output_image.pgm
+	rawtopgm $x_dim $y_dim < $input_image > $output_image
     }
+
+    PGMTORAW () {
+	local input_image=$1
+	local output_image=$2
+	convert $input_image /tmp/1.gray
+	mv /tmp/1.gray $output_image
+    }
+    
 fi
 
 if [ $__debug__ -eq 1 ]; then
@@ -116,21 +134,23 @@ while [ $img -le $number_of_images ]; do
     #(uchar2short < L_0/$_img.Y > /tmp/1) 2> /dev/null
     #rawtopgm -bpp 2   $x_dim   $y_dim < /tmp/1 > L_0/${_img_1}_0.pgm
     input=L_0/$_img.Y
-    output=L_0/${_img_1}_0
+    output=L_0/${_img_1}_0.pgm
     #rawtopgm   $x_dim   $y_dim < $input > $output.pgm
     RAWTOPGM $input $x_dim $y_dim $output
 
     #(uchar2short < L_0/$_img.U > /tmp/1) 2> /dev/null
     #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_1.pgm
     input=L_0/$_img.U
-    output=L_0/${_img_1}_1
+    output=L_0/${_img_1}_1.pgm
     #rawtopgm $x_dim_2 $y_dim_2 < $input > $output.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
     
     #(uchar2short < L_0/$_img.V > /tmp/1) 2> /dev/null
     #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_2.pgm
-    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
-    #RAWTOPGM L_0/$_img.V $x_dim_2 $y_dim_2 L_0/${_img_1}_2
+    #rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
+    input=L_0/$_img.V
+    output=L_0/${_img_1}_2.pgm
+    RAWTOPGM $input $x_dim_2 $y_dim_2 $output
     let img=img+1 
 done
 
@@ -149,16 +169,28 @@ while [ $img -le $number_of_images ]; do
     _img_1=$(printf "%04d" $img_1)
     #convert -endian MSB L_0/${_img_1}_0.pgm /tmp/1.gray
     #(short2uchar < /tmp/1.gray > L_0/$_img.Y) 2> /dev/null
-    convert L_0/${_img_1}_0.pgm /tmp/1.gray
-    mv /tmp/1.gray L_0/$_img.Y
+    #convert L_0/${_img_1}_0.pgm /tmp/1.gray
+    #mv /tmp/1.gray L_0/$_img.Y
+    input=L_0/${_img_1}_0.pgm
+    output=L_0/$_img.Y
+    PGMTORAW $input $output
+    
     #convert -endian MSB L_0/${_img_1}_1.pgm /tmp/1.gray
     #(short2uchar < /tmp/1.gray > L_0/$_img.U) 2> /dev/null
-    convert L_0/${_img_1}_1.pgm /tmp/1.gray
-    mv /tmp/1.gray L_0/$_img.U
+    #convert L_0/${_img_1}_1.pgm /tmp/1.gray
+    #mv /tmp/1.gray L_0/$_img.U
+    input=L_0/${_img_1}_1.pgm
+    output=L_0/$_img.U
+    PGMTORAW $input $output
+    
     #convert -endian MSB L_0/${_img_1}_2.pgm /tmp/1.gray
     #(short2uchar < /tmp/1.gray > L_0/$_img.V) 2> /dev/null
-    convert L_0/${_img_1}_2.pgm /tmp/1.gray
-    mv /tmp/1.gray L_0/$_img.V
+    #convert L_0/${_img_1}_2.pgm /tmp/1.gray
+    #mv /tmp/1.gray L_0/$_img.V
+    input=L_0/${_img_1}_2.pgm
+    output=L_0/$_img.V
+    PGMTORAW $input $output
+
     let img=img+1 
 done
 ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv
