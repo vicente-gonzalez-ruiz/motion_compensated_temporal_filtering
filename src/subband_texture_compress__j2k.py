@@ -58,13 +58,19 @@ IMG_EXT = os.environ["MCTF_IMG_EXT"]
 
 Clevels = SRLs - 1
 if Clevels < 0:
-    Clevels = 0
+   Clevels = 0
 
 picture = 0
 while picture < number_of_pictures:
 
     fn = file + "/" + str('%04d' % picture)
 
+    shell.run("trace convert -endian LSB " + fn + "_0.pgm /tmp/1")
+    shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_1.pgm /tmp/1")
+    shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_2.pgm /tmp/1")
+    shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
     command = "trace kdu_compress" \
               + " -i " \
               + fn + "_0.pgm," \

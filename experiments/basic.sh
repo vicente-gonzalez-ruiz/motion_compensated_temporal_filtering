@@ -2,16 +2,16 @@
 
 #video=~/Videos/mobile_352x288x30x420x300.avi
 video=~/Videos/container_352x288x30x420x300.avi
-GOPs=9
-#GOPs=2
-#TRLs=6
-TRLs=2
+#GOPs=9
+#TRLs=2
+GOPs=2
+TRLs=6
 y_dim=288
 x_dim=352
 FPS=30
 keep_layers=8
-slope=0
-slope=44000
+#slope=0
+slope=40000
 
 usage() {
     echo $0

@@ -55,18 +55,25 @@ IMG_EXT = os.environ["MCTF_IMG_EXT"]
 p = 0
 while p < pictures:
 
-    pic_number = str('%04d' % p)
+    fn = file + "/" + str('%04d' % p)
 
     command = "trace kdu_expand" \
-              + " -i " + file + "/" + pic_number + "." + IMG_EXT \
+              + " -i " + fn + "." + IMG_EXT \
               + " -o " \
-              + file + "/" + pic_number + "_0.pgm," \
-              + file + "/" + pic_number + "_1.pgm," \
-              + file + "/" + pic_number + "_2.pgm"
+              + fn + "_0.pgm," \
+              + fn + "_1.pgm," \
+              + fn + "_2.pgm"
 
     if not __debug__:
         command += " > /dev/null"
 
     shell.run(command)
+
+    shell.run("trace convert -endian LSB " + fn + "_0.pgm /tmp/1")
+    shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_1.pgm /tmp/1")
+    shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_2.pgm /tmp/1")
+    shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
 
     p += 1

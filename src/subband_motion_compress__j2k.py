@@ -66,13 +66,15 @@ log.info("file={}".format(file))
 
 # }}}
 
+extension = ".rawl"
+
 field = 0
 while field < fields:
 
     fn = file + "/" + str('%04d' % field)
 
     command = "trace kdu_compress" \
-        + " -i " + fn + ".rawl" \
+        + " -i " + fn + extension \
         + "*" + str(COMPONENTS) + "@" + str(bytes_per_field) \
         + " -o " + fn + ".j2c" \
         + " -no_weights" \

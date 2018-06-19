@@ -62,20 +62,23 @@ log.info("file={}".format(file))
 
 # }}}
 
+extension = ".rawl"
+
 field = 0
 while field < fields:
 
     fn = file + "/" + str('%04d' % field)
-    shell.run("trace rm -f " + fn + ".rawl")
+    shell.run("trace rm -f " + fn + extension)
     
     for c in range(COMPONENTS):
         command = "trace kdu_expand" \
                   + " -i " + fn + ".j2c" \
-                  + " -o /tmp/" + str(c) + ".rawl" \
+                  + " -o /tmp/" + str(c) + extension \
                   + " -skip_components " + str(c)
         if not __debug__:
             command += " > /dev/null"
         shell.run(command)
-        shell.run("trace cat /tmp/" + str(c) + ".rawl >> " + fn + ".rawl")
+        shell.run("trace cat /tmp/" + str(c) + extension
+		  + " >> " + fn + extension)
 
     field += 1
