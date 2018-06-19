@@ -118,7 +118,7 @@ public:
     for(int y=0; y<y_dim; y++) {
       int read = fread(line, sizeof(IO_TYPE), x_dim, fd);
       for(int x=0; x<x_dim; x++) {
-	img[y][x] = line[x];
+	img[y][x] = line[x] - INTENSITY_OFFSET;
       }
     }
   }
@@ -134,7 +134,7 @@ public:
     fprintf(fd, "%d\n", MAX_TC_VAL);
     for(int y=0; y<y_dim; y++) {
       for(int x=0; x<x_dim; x++) {
-	line[x] = img[y][x];
+	line[x] = img[y][x] + INTENSITY_OFFSET;
       }
       fwrite(line, sizeof(IO_TYPE), x_dim, fd);
     }
