@@ -11,8 +11,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#define __INFO__
-#define __DEBUG__
+//#define __INFO__
+//#define __DEBUG__
 #define __WARNING__
 
 #include "display.cpp"
@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
     info("%s: reading field %d\n", argv[0], i);
     //motion.read(input_fd, field, blocks_in_y, blocks_in_x);
     motion.read_field(field, blocks_in_y, blocks_in_x, input_fn, i
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		      , argv[0]
 #endif /* __INFO__ */
 		      );
@@ -190,7 +190,7 @@ int main(int argc, char *argv[]) {
 			  input_fn,
 			  i,
 			  0
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			  ,
 			  argv[0]
 #endif /* __INFO__ */
@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
     info("%s: writing field %d\n", argv[0], i);
     //motion.write(output_fd, field, blocks_in_y, blocks_in_x);
     motion.write_field(field, blocks_in_y, blocks_in_x, output_fn, i
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			   , argv[0]
 #endif /* __INFO__ */
 			   );

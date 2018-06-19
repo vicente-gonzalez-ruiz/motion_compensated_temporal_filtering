@@ -161,11 +161,12 @@ void predict
 
 } /* predict() */
 
-
 #include <getopt.h>
 
 int main(int argc, char *argv[]) {
 
+  test_display(argv[0]);
+  
 #if defined __INFO__
   info("%s ", argv[0]);
   for(int i=1; i<argc; i++) {
@@ -535,7 +536,7 @@ int main(int argc, char *argv[]) {
 		       even_fn,
 		       0,
 		       c
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 		       ,
 		       argv[0]
 #endif /* __INFO__ */
@@ -660,7 +661,7 @@ int main(int argc, char *argv[]) {
 			 odd_fn,
 			 i,
 			 c
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 			 ,
 			 argv[0]
 #endif /* __INFO__ */
@@ -681,7 +682,7 @@ int main(int argc, char *argv[]) {
 			 high_fn,
 			 i,
 			 c
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 			 ,
 			 argv[0]
 #endif /* __INFO__ */
@@ -689,10 +690,16 @@ int main(int argc, char *argv[]) {
       // }}}
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
-	  residue[c][y][x] -= 128;
+	  residue[c][y][x] -= 128; // OJO
 	}
       }
     }
+
+    printf("%s\n", high_fn);
+    for(int x=0; x<10; x++) {
+      printf("%d ", residue[0][0][x]);
+    }
+
 
 #endif /* __ANALYZE__ */
     
@@ -707,7 +714,7 @@ int main(int argc, char *argv[]) {
 			 even_fn,
 			 i+1,
 			 c
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 			 ,
 			 argv[0]
 #endif /* __INFO__ */
@@ -772,7 +779,7 @@ int main(int argc, char *argv[]) {
     info("%s: reading motion vector field %d in \"%s\"\n", argv[0], i, motion_in_fn);
     //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
     motion.read_field(mv, blocks_in_y, blocks_in_x, motion_in_fn, i
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 		      ,
 		      argv[0]
 #endif /* __INFO__ */
@@ -869,7 +876,8 @@ int main(int argc, char *argv[]) {
 	    prediction_block,
 	    prediction,
 	    reference);
-    
+
+#ifdef _1_
     for(int c=0; c<COMPONENTS; c++) {
       for(int y=0; y<pixels_in_y[0] << subpixel_accuracy; y++) {
 	for(int x=0; x<pixels_in_x[0] << subpixel_accuracy; x++) {
@@ -878,7 +886,7 @@ int main(int argc, char *argv[]) {
 	}
       }
     }
-    
+#endif
     /* Subsample the three components because the motion compensation
        is made to the original video resolution. */
     for(int c=0; c<COMPONENTS; c++) {
@@ -901,7 +909,7 @@ int main(int argc, char *argv[]) {
 			  prediction_fn,
 			  i,
 			  c
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 			  ,
 			  argv[0]
 #endif /* __INFO__ */
@@ -958,22 +966,29 @@ int main(int argc, char *argv[]) {
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  int val = predicted[c][y][x] - prediction[c][y][x];
+#ifdef _1_
 	  if(val < -128) {
 #if defined __WARNING__
-	    info("%s: clipping (%d -> -128)\n", argv[0], val);
+	    warning("%s: clipping (%d -> -128)\n", argv[0], val);
 #endif
 	    val = -128;
 	    
 	  }
 	  else if(val > 127) {
 #if defined __WARNING__
-	    info("%s: clipping (%d -> 127)\n", argv[0], val);
+	    warning("%s: clipping (%d -> 127)\n", argv[0], val);
 #endif
 	    val = 127;
 	  }
+#endif
 	  residue[c][y][x] = val;
 	}
       }
+    }
+
+    printf("%s\n", high_fn);	
+    for(int x=0; x<10; x++) {
+      printf("%d ", residue[0][0][x]);
     }
     
     /* The entropy of the residual picture and the predicted picture is
@@ -992,8 +1007,8 @@ int main(int argc, char *argv[]) {
 	
 	for(int y=0; y<pixels_in_y[0]; y++) {
 	  for(int x=0; x<pixels_in_x[0]; x++) {
-	    predicted_count[ predicted[0][y][x]       ]++;
-	    residue_count  [ residue  [0][y][x] + 128 ]++; // Usar puntero
+	    predicted_count[ (predicted[0][y][x]      ) % 256 ]++;
+	    residue_count  [ (residue  [0][y][x] + 128) % 256 ]++; // Usar puntero
 	  }
 	}
 	
@@ -1046,7 +1061,7 @@ int main(int argc, char *argv[]) {
 			    high_fn,
 			    i,
 			    c
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
@@ -1057,7 +1072,7 @@ int main(int argc, char *argv[]) {
       /* No motion field (other than 0) associated with an picture I. */
       //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
       motion.write_field(zeroes, blocks_in_y, blocks_in_x, motion_out_fn, i
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 	, argv[0]
 #endif /* __INFO__ */
 	);
@@ -1124,9 +1139,11 @@ int main(int argc, char *argv[]) {
 	   [0,255]. */
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    int val = residue[c][y][x] + 128;
+	    int val = residue[c][y][x] + 128; // OJO
+#ifdef _1_
 	    if(val < 0) val = 0;
 	    else if(val > 255) val = 255;
+#endif
 	    residue[c][y][x] = val;
 	  }
 	}
@@ -1216,7 +1233,7 @@ int main(int argc, char *argv[]) {
       for(int c=0; c<COMPONENTS; c++) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    predicted[c][y][x] = residue[c][y][x] + 128;
+	    predicted[c][y][x] = residue[c][y][x] + 128; // OJO
 	    /*	    if (predicted[c][y][x] < 0 ) predicted[c][y][x] = 0;
 		    else if(predicted[c][y][x] > 255 ) predicted[c][y][x] = 255;*/
 	  }
@@ -1227,8 +1244,10 @@ int main(int argc, char *argv[]) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
 	    int val = residue[c][y][x] + prediction[c][y][x];
+#ifdef _1_
 	    if(val<0) val=0;
 	    else if(val>255) val=255;
+#endif
 	    predicted[c][y][x] = val;
 	  }
 	}

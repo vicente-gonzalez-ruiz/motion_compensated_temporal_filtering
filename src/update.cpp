@@ -8,7 +8,7 @@
 
 //#define __INFO__
 //#define __DEBUG__
-//#define __WARNING__
+#define __WARNING__
 
 #include "display.cpp"
 //#include "Haar.cpp"
@@ -80,20 +80,20 @@ void update
 		* update_factor;
 
 	      //aux /= update_factor;
-
+#ifdef _1_
 	      if(aux > MAX_TC_VAL) {
 #if defined __WARNING__
-		info("%s: MAX_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MAX_TC_VAL);
+		warning("%s: MAX_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MAX_TC_VAL);
 #endif
 		aux = MAX_TC_VAL;
 	      }
 	      else if(aux < MIN_TC_VAL) {
 #if defined __WARNING__
-		info("%s: MIN_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MIN_TC_VAL);
+		warning("%s: MIN_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MIN_TC_VAL);
 #endif
 		aux = MIN_TC_VAL;
 	      }
-
+#endif
 	      reference_picture[PREV][c]
 		[clip(by*block_size + y + mv[PREV][Y_FIELD][by][bx],
 		      pixels_in_y[c])]
@@ -120,11 +120,21 @@ void update
 		residue_picture[c][by*block_size+y][bx*block_size+x] * update_factor;
 
 	      //aux /= update_factor;
-	      
-	      if(aux > MAX_TC_VAL) aux = MAX_TC_VAL;
-	      else if(aux < MIN_TC_VAL) aux = MIN_TC_VAL;
+#ifdef _1_	      
+	      if(aux > MAX_TC_VAL) {
+#if defined __WARNING__
+		warning("%s: MAX_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MAX_TC_VAL);
+#endif
+		aux = MAX_TC_VAL;
+	      }
+	      else if(aux < MIN_TC_VAL) {
+#if defined __WARNING__
+		warning("%s: MIN_TC_VAL reached (clipping %f -> %d)!\n", name, aux, MIN_TC_VAL);
+#endif
+		aux = MIN_TC_VAL;
+	      }
 	      //fprintf(stderr,"(after) aux=%f\n", aux);
-
+#endif
 	      reference_picture[NEXT][c]
 		[clip(by*block_size+y+mv[NEXT][Y_FIELD][by][bx],pixels_in_y[c])]
 		[clip(bx*block_size+x+mv[NEXT][X_FIELD][by][bx],pixels_in_x[c])]
@@ -430,7 +440,7 @@ int main(int argc, char *argv[]) {
 		       low_fn,
 #endif /* __ANALYZE__ */
 		       0, c
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		       ,
 		       argv[0]
 #endif /* __INFO__ */
@@ -475,7 +485,7 @@ int main(int argc, char *argv[]) {
 			   high_fn,
 			   i,
 			   c
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			   ,
 			   argv[0]
 #endif /* __INFO__ */
@@ -528,7 +538,7 @@ int main(int argc, char *argv[]) {
 			   low_fn,
 #endif /* __ANALYZE__ */
 			   i+1, c
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			   ,
 			   argv[0]
 #endif /* __INFO__ */
@@ -564,7 +574,7 @@ int main(int argc, char *argv[]) {
 
     //motion.read(motion_fd, mv, blocks_in_y, blocks_in_x);
     motion.read_field(mv, blocks_in_y, blocks_in_x, motion_fn, i
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		      , argv[0]
 #endif /* __INFO__ */
 		      );
@@ -632,7 +642,7 @@ int main(int argc, char *argv[]) {
 	     reference,
 	     residue,
 	     update_factor
-#if defined __WARNING__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 	     ,
 	     argv[0]
 #endif
@@ -665,7 +675,7 @@ int main(int argc, char *argv[]) {
 #endif /* __ANALYZE__ */
 			    i,
 			    c
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			    ,
 			    argv[0]
 #endif /* __INFO__ */
@@ -707,7 +717,7 @@ int main(int argc, char *argv[]) {
 #endif /* __ANALYZE__ */
 			  i,
 			  c
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			  ,
 			  argv[0]
 #endif /* __INFO__ */

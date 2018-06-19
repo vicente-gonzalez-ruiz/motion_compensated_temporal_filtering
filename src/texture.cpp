@@ -3,7 +3,8 @@
 /* Limits */
 #define PIXELS_IN_X_MAX 16384
 
-#define TC_IO_TYPE unsigned char /* TC = Texture Component; IO = Input Output. */
+//#define TC_IO_TYPE unsigned char /* TC = Texture Component; IO = Input Output. */
+#define TC_IO_TYPE short
 #define TC_CPU_TYPE short /* TC = Texture Component; CPU = Central Processing Unit. */
 
 template <typename IO_TYPE, typename CPU_TYPE>
@@ -101,10 +102,14 @@ public:
     fgets(x, 80, fd); /* rows and cols */
     fgets(x, 80, fd); /* Max value */
     for(int y=0; y<y_dim; y++) {
+#if (IO_TYPE==CPU_TYPE)
+      int read = fread(img[y], sizeof(IO_TYPE), x_dim, fd);
+#else
       int read = fread(line, sizeof(IO_TYPE), x_dim, fd);
       for(int x=0; x<x_dim; x++) {
 	img[y][x] = line[x];
       }
+#endif
     }
   }
 
@@ -116,12 +121,17 @@ public:
 	     ) {
     fprintf(fd, "P5\n");
     fprintf(fd, "%d %d\n", x_dim, y_dim);
-    fprintf(fd, "255\n");
+    //fprintf(fd, "255\n");
+    fprintf(fd, "65535\n");
     for(int y=0; y<y_dim; y++) {
+#if (CPU_TYPE==IO_TYPE)
+      fwrite(img[y], sizeof(IO_TYPE), x_dim, fd);
+#else
       for(int x=0; x<x_dim; x++) {
 	line[x] = img[y][x];
       }
       fwrite(line, sizeof(IO_TYPE), x_dim, fd);
+#endif
     }
   }
 
@@ -131,7 +141,7 @@ public:
 		  char *fn,
 		  int picture_number,
 		  int component
-#if defined __INFO__ || defined __WARNING__
+#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 		  ,
 		  char *msg
 #endif /* __INFO__ */
@@ -140,18 +150,18 @@ public:
     sprintf(fn_, "%s/%04d_%d.pgm", fn, picture_number, component); 
     FILE *fd = fopen(fn_, "r");
     if(!fd) {
-#if defined __WARNING__
+#if defined (__WARNING__)
       warning("%s: using \"empty.pgm\" instead of \"%s\"\n", msg, fn_);
 #endif /* __INFO__ */
       fd = fopen("empty.pgm", "r");
-#if defined __DEBUG__
+#if defined (__DEBUG__)
       if(!fd) {
 	error("%s: \"empty.pgm\" is missing. Aborting ...\n", msg);
       }
 #endif /* __DEBUG__ */
     }
     texture::read(fd, picture, pixels_in_y, pixels_in_x);
-#if defined __INFO__
+#if defined (__INFO__)
     info("%s: read %dx%d from \"%s\"\n", msg, pixels_in_y, pixels_in_x, fn_);
 #endif /* __INFO__ */
     fclose(fd);
@@ -163,7 +173,7 @@ public:
 		   char *fn,
 		   int picture_number,
 		   int component
-#if defined __INFO__  || defined __WARNING__
+#if defined (__INFO__)  || defined (__WARNING__) || defined (__DEBUG__)
 		   ,
 		   char *msg
 #endif /* __INFO__ */
@@ -171,14 +181,14 @@ public:
     char fn_[80];
     sprintf(fn_, "%s/%04d_%d.pgm", fn, picture_number, component); 
     FILE *fd = fopen(fn_, "w");
-#if defined __DEBUG__
+#if defined (__DEBUG__)
     if(!fd) {
       error("%s: \"%s\" cannot be created ... aborting!\n", msg, fn_);
       abort();
     }
 #endif /* __DEBUG__ */
     texture::write(fd, picture, pixels_in_y, pixels_in_x);
-#if defined __INFO__
+#if defined (__INFO__)
     info("%s: written %dx%d to \"%s\"\n", msg, pixels_in_y, pixels_in_x, fn_);
 #endif /* __INFO__ */
     fclose(fd);

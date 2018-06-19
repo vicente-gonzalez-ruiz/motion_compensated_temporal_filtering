@@ -76,6 +76,8 @@ done
 
 MCTF_QUANTIZER=automatic
 
+set -x
+
 rm -rf L_0
 mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
@@ -87,9 +89,12 @@ while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
     let img_1=img-1
     _img_1=$(printf "%04d" $img_1)
-    rawtopgm   $x_dim   $y_dim < L_0/$_img.Y > L_0/${_img_1}_0.pgm
-    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.U > L_0/${_img_1}_1.pgm
-    rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
+    uchar2short < L_0/$_img.Y > /tmp/1
+    rawtopgm -bpp 2   $x_dim   $y_dim < /tmp/1 > L_0/${_img_1}_0.pgm
+    uchar2short < L_0/$_img.U > /tmp/1
+    rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_1.pgm
+    uchar2short < L_0/$_img.V > /tmp/1
+    rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_2.pgm
     let img=img+1 
 done
 
@@ -106,9 +111,12 @@ while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
     let img_1=img-1
     _img_1=$(printf "%04d" $img_1)
-    convert L_0/${_img_1}_0.pgm /tmp/1.gray; mv /tmp/1.gray L_0/$_img.Y
-    convert L_0/${_img_1}_1.pgm /tmp/1.gray; mv /tmp/1.gray L_0/$_img.U
-    convert L_0/${_img_1}_2.pgm /tmp/1.gray; mv /tmp/1.gray L_0/$_img.V
+    convert -endian MSB L_0/${_img_1}_0.pgm /tmp/1.gray
+    short2uchar < /tmp/1.gray > L_0/$_img.Y
+    convert -endian MSB L_0/${_img_1}_1.pgm /tmp/1.gray
+    short2uchar < /tmp/1.gray > L_0/$_img.U
+    convert -endian MSB L_0/${_img_1}_2.pgm /tmp/1.gray
+    short2uchar < /tmp/1.gray > L_0/$_img.V
     let img=img+1 
 done
 ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv

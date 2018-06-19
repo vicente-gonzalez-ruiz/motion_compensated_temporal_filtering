@@ -74,7 +74,7 @@ while picture < number_of_pictures:
               + " -jpx_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}" \
               + " -no_weights" \
               + " -slope " + str(slope) \
-              + " Creversible=" + "no" \
+              + " Creversible=" + "yes" \
               + " Clayers=" + str(layers) \
               + " Clevels=" + str(Clevels) \
               + " Cuse_sop=" + "no"

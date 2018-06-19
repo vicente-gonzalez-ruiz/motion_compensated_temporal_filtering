@@ -34,7 +34,7 @@
 
 //#define __INFO__
 //#define __DEBUG__
-//#define __WARNING__
+#define __WARNING__
 
 #include "display.cpp"
 #include "Haar.cpp"
@@ -247,7 +247,7 @@ int main(int argc, char *argv[]) {
 
     //motion.read(reference_fd, reference, blocks_in_y, blocks_in_x);
     motion.read_field(reference, blocks_in_y, blocks_in_x, reference_fn, i
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		      ,	argv[0]
 #endif /* __INFO__ */
 		      );
@@ -312,7 +312,7 @@ int main(int argc, char *argv[]) {
       // {{{ Read predicted
       //motion.read(predicted_fd, predicted, blocks_in_y, blocks_in_x);
       motion.read_field(predicted, blocks_in_y, blocks_in_x, predicted_fn, 2*i+p
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			, argv[0]
 #endif /* __INFO__ */
 			);
@@ -374,7 +374,7 @@ int main(int argc, char *argv[]) {
       // {{{ Read residue
       //motion.read(residue_fd, residue, blocks_in_y, blocks_in_x);
       motion.read_field(residue, blocks_in_y, blocks_in_x, residue_fn, i*2+p
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		       , argv[0]
 #endif /* __INFO__ */
 		       );
@@ -444,7 +444,7 @@ int main(int argc, char *argv[]) {
       // {{{ Write residue 
       //motion.write(residue_fd, residue, blocks_in_y, blocks_in_x);
       motion.write_field(residue, blocks_in_y, blocks_in_x, residue_fn, 2*i+p
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			 , argv[0]
 #endif /* __INFO__ */
 			 );
@@ -505,7 +505,7 @@ int main(int argc, char *argv[]) {
       // {{{ Write predicted
       //motion.write(predicted_fd, predicted, blocks_in_y, blocks_in_x);
       motion.write_field(predicted, blocks_in_y, blocks_in_x, predicted_fn, 2*i+p
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 			 , argv[0]
 #endif /* __INFO__ */
 			 );
