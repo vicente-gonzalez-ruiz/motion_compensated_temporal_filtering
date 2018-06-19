@@ -10,8 +10,9 @@ y_dim=288
 x_dim=352
 FPS=30
 keep_layers=8
-#slope=0
-slope=40000
+slope=0
+#slope=40000
+slope=39000
 
 usage() {
     echo $0
