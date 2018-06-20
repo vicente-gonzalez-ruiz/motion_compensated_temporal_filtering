@@ -8,13 +8,11 @@ import sys
 import os
 from GOP import GOP
 from arguments_parser import arguments_parser
-from shell import Shell as shell
-from colorlog import ColorLog
+import traceback
 import logging
 
 log = logging.getLogger("psnr")
-log.setLevel('ERROR')
-shell.setLogger(log)
+log.setLevel('INFO')
 
 parser = arguments_parser(description="PSNR computation between 2 sequences")
 parser.add_argument("--file_A",
@@ -38,7 +36,7 @@ TRLs = int(args.TRLs)
 
 bytes_per_picture = 3*[None]
 bytes_per_picture[0] = pixels_in_x * pixels_in_y
-bytes_per_picture[1] = (pixels_in_x/2 * pixels_in_y/2)
+bytes_per_picture[1] = int(pixels_in_x/2 * pixels_in_y/2)
 bytes_per_picture[2] = bytes_per_picture[1]
 
 extension = 3*[None]
@@ -56,22 +54,31 @@ avg[0] = 0.0
 avg[1] = 0.0
 avg[2] = 0.0
 
+#import ipdb; ipdb.set_trace()
+
 for p in range(pictures):
 
     for c in range(COMPONENTS):
 
         fn_a = file_A + "/" + str('%04d' % (p+1)) + "." + extension[c]
         fn_b = file_B + "/" + str('%04d' % (p+1)) + "." + extension[c]
-
-        command = "trace snr --type=uchar --peak=255" \
+        
+        command = "snr --type=uchar --peak=255" \
                   + " --file_A=" + fn_a \
                   + " --file_B=" + fn_b \
                   + " --block_size=" + str(bytes_per_picture[c]) \
-                  + " | grep PSNR | grep dB "
+                  + " | grep PSNR | grep dB"
 
         log.info(command)
         out = os.popen(command).read()
-        psnr = float(out.split("\t")[2])
+        log.debug("output = {}".format(out))
+            
+        try:
+            psnr = float(out.split("\t")[2])
+        except:
+            log.error("Exception {}".format(traceback.format_exc()))
+            sys.exit(-1)
+            
         avg[c] += psnr
 
 avg[0] /= pictures
