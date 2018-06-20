@@ -29,6 +29,12 @@ void warning(const char *args, ...) {
 #endif /* __WARNING__ */
 }
 
+void warning_flush() {
+#if defined __WARNING__
+  fflush(stderr);
+#endif /* __WARNING__ */
+}
+
 void info_flush() {
 #if defined __INFO__
   fflush(stdout);
@@ -44,12 +50,14 @@ void test_display(char *msg) {
   fprintf(stderr, "%s: debugging enabled\n", msg);
 #endif
 #if defined (__WARNING__)
-  warning("%s: warning enabled\n", msg);
+  warning("%s: warnings are in yellow\n", msg);
+  warning_flush();
 #endif
 #if defined (__INFO__)
-  info("%s: info enabled\n", msg);
+  info("%s: infos are in green\n", msg);
+  info_flush();
 #endif
-  error("%s: errors are red\n", msg);
+  error("%s: errors are in red\n", msg);
   error_flush();
 }
 

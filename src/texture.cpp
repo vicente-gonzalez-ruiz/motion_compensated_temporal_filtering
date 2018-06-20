@@ -3,7 +3,7 @@
 /* Limits */
 #define PIXELS_IN_X_MAX 16384
 
-#define BPP 16
+#define BPP 8
 
 #if (BPP==8)
 /* TC = Texture Component; IO = Input Output. */

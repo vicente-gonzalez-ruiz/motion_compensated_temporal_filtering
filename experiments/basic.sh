@@ -11,12 +11,12 @@ x_dim=352
 FPS=30
 keep_layers=8
 slope=0
-#slope=42000
-slope=39000
+slope=44000
+#slope=39000
 #slope=40000
 
 __debug__=0
-BPP=16
+BPP=8
 MCTF_QUANTIZER=automatic
 
 usage() {

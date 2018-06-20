@@ -23,7 +23,7 @@
 
 //#define __INFO__
 //#define __DEBUG__
-#define __WARNING__
+//#define __WARNING__
 
 #include "display.cpp"
 //#include "Haar.cpp"
@@ -670,11 +670,12 @@ int main(int argc, char *argv[]) {
       }
     }
 
+#if defined (__DEBUG__)
     printf("%s\n", high_fn);
     for(int x=0; x<10; x++) {
       printf("%d ", residue[0][0][x]);
     }
-
+#endif
 
 #endif /* __ANALYZE__ */
     
@@ -893,15 +894,31 @@ int main(int argc, char *argv[]) {
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  //int val = predicted[c][y][x] - prediction[c][y][x] + INTENSITY_OFFSET;
-	  residue[c][y][x] = predicted[c][y][x] - prediction[c][y][x];
+	  int tmp = predicted[c][y][x] - prediction[c][y][x];
+#if (BPP==8)
+	  if (tmp < -128) {
+#if defined (__WARNING__)
+	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, tmp, -128);
+#endif
+	    tmp = -128;
+	  } else if (tmp > 127) {
+#if defined (__WARNING__)
+	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, tmp, 127);
+#endif
+	    tmp = 127;
+	  }
+#endif
+	  residue[c][y][x] = tmp;
 	}
       }
     }
 
+#if defined (__DEBUG__)
     printf("%s\n", high_fn);	
     for(int x=0; x<10; x++) {
       printf("%d ", residue[0][0][x]);
     }
+#endif
     
     /* The entropy of the residual picture and the predicted picture is
        calculated. We only use the luma. */

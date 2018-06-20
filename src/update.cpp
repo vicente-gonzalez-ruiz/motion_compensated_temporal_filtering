@@ -8,7 +8,7 @@
 
 //#define __INFO__
 //#define __DEBUG__
-#define __WARNING__
+//#define __WARNING__
 
 #include "display.cpp"
 //#include "Haar.cpp"
@@ -154,6 +154,8 @@ void update
 
 int main(int argc, char *argv[]) {
   // {{{
+
+  test_display(argv[0]);
 
   // {{{ Command line support
 
