@@ -135,10 +135,10 @@ keep_layers = int(args.keep_layers)
 TRLs = int(args.TRLs)
 layers = int(args.layers)
 
-log.info("GOPs = {}".format(GOPs))
-log.info("keep_layers = {}".format(keep_layers))
-log.info("TRLs = {}".format(TRLs))
-log.info("layers = {}".format(layers))
+log.info("GOPs={}".format(GOPs))
+log.info("keep_layers={}".format(keep_layers))
+log.info("TRLs={}".format(TRLs))
+log.info("layers={}".format(layers))
 
 # }}}
 
@@ -207,6 +207,7 @@ for gop in range(0, GOPs-1):
     with io.open(fname, 'r') as file:
         slopes = file.read().replace(' ', '').replace('\n', '').split(',')
     log.info("{}: {}".format(fname, slopes))
+    
     with io.open("L_{}.txt".format(TRLs-1), 'a') as file:
         for i in range(len(slopes)-1):
             file.write("{} ".format(slopes[i]))
@@ -217,18 +218,23 @@ for gop in range(0, GOPs-1):
 
     # H's
     for subband in range(TRLs - 1, 0, -1):
+        
         pics_per_GOP = 1 << (TRLs - subband - 1)
         first_pic = pics_per_GOP * gop
         average = [0]*layers
+        
         for pic in range(first_pic, first_pic + pics_per_GOP):
             fname = "H_{}/{:04d}.txt".format(subband, pic)
             with io.open(fname, 'r') as file:
                 slopes = file.read().replace(' ', '').replace('\n', '').split(',')
             log.info("{}: {}".format(fname, slopes))
+            
             for i in range(layers):
                 average[i] += int(slopes[i])
+                
         for l in range(layers):
             average[l] //= pics_per_GOP
+            
         with io.open("H_{}.txt".format(subband), 'a') as file:
             for i in range(len(slopes)-1):
                 #file.write("{} ".format(slopes[i]))

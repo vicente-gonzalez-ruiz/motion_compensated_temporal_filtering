@@ -6,11 +6,15 @@
 
 import sys
 import os
+from GOP import GOP
 from arguments_parser import arguments_parser
+from shell import Shell as shell
+from colorlog import ColorLog
 import logging
 
-logging.basicConfig()
 log = logging.getLogger("psnr")
+log.setLevel('ERROR')
+shell.setLogger(log)
 
 parser = arguments_parser(description="PSNR computation between 2 sequences")
 parser.add_argument("--file_A",
@@ -21,22 +25,56 @@ parser.add_argument("--file_B",
                     default="L_0")
 parser.pixels_in_x()
 parser.pixels_in_y()
+parser.GOPs()
+parser.TRLs()
 
 args = parser.parse_known_args()[0]
 file_A = args.file_A
 file_B = args.file_B
 pixels_in_x = int(args.pixels_in_x)
 pixels_in_y = int(args.pixels_in_y)
+GOPs = int(args.GOPs)
+TRLs = int(args.TRLs)
 
-bytes_per_picture = pixels_in_x * pixels_in_y + (pixels_in_x/2 * pixels_in_y/2) * 2
+bytes_per_picture = 3*[None]
+bytes_per_picture[0] = pixels_in_x * pixels_in_y
+bytes_per_picture[1] = (pixels_in_x/2 * pixels_in_y/2)
+bytes_per_picture[2] = bytes_per_picture[1]
 
-command = "snr --type=uchar --peak=255" + \
-        " --file_A=" + file_A + \
-        " --file_B=" + file_B + \
-        " --block_size=" + str(bytes_per_picture) + \
-        " | grep PSNR | grep dB "
-sys.stderr.write(command + "\n")
-out = os.popen(command).read()
-sys.stderr.write(out + "\n")
-psnr = float(out.split("\t")[2])
-print(psnr)
+extension = 3*[None]
+extension[0] = 'Y'
+extension[1] = 'U'
+extension[2] = 'V'
+
+gop=GOP()
+GOP_size = gop.get_size(TRLs)
+pictures = (GOPs - 1) * GOP_size + 1
+COMPONENTS = 3
+
+avg = 3*[None]
+avg[0] = 0.0
+avg[1] = 0.0
+avg[2] = 0.0
+
+for p in range(pictures):
+
+    for c in range(COMPONENTS):
+
+        fn_a = file_A + "/" + str('%04d' % (p+1)) + "." + extension[c]
+        fn_b = file_B + "/" + str('%04d' % (p+1)) + "." + extension[c]
+
+        command = "trace snr --type=uchar --peak=255" \
+                  + " --file_A=" + fn_a \
+                  + " --file_B=" + fn_b \
+                  + " --block_size=" + str(bytes_per_picture[c]) \
+                  + " | grep PSNR | grep dB "
+
+        log.info(command)
+        out = os.popen(command).read()
+        psnr = float(out.split("\t")[2])
+        avg[c] += psnr
+
+avg[0] /= pictures
+avg[1] /= pictures
+avg[2] /= pictures
+print((4*avg[0]+avg[1]+avg[2])/6.0)
