@@ -1047,7 +1047,21 @@ int main(int argc, char *argv[]) {
       for(int c=0; c<COMPONENTS; c++) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    predicted[c][y][x] = residue[c][y][x] + prediction[c][y][x];
+	    int aux = residue[c][y][x] + prediction[c][y][x];
+	    if(aux < 0) {
+#if defined __WARNING__
+	      warning("%s: %d -> %d\n", argv[0], aux, 0);
+#endif
+	      aux = 0;
+	      
+	    }
+	    else if(aux > 255) {
+#if defined __WARNING__
+	      warning("%s: %d -> %d\n", argv[0], aux, 255);
+#endif
+	      aux = 255;
+	    }
+	    predicted[c][y][x] = aux;
 	  }
 	}
       }

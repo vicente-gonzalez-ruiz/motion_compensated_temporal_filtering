@@ -15,7 +15,7 @@ slope=0
 slope=39000
 #slope=40000
 
-__debug__=1
+__debug__=0
 BPP=16
 MCTF_QUANTIZER=automatic
 

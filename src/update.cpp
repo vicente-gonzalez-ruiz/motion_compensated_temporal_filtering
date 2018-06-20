@@ -79,6 +79,7 @@ void update
 		[bx*block_size+x]
 		* update_factor;
 
+#ifdef _1_
 	      if(aux < 0) {
 #if defined __WARNING__
 		warning("%s: %f -> %d\n", name, aux, 0);
@@ -92,6 +93,7 @@ void update
 #endif
 		aux = 255;
 	      }
+#endif
 	      
 	      reference_picture[PREV][c]
 		[clip(by*block_size + y + mv[PREV][Y_FIELD][by][bx],
@@ -118,6 +120,7 @@ void update
 #endif /* __ANALYZE__ */
 		residue_picture[c][by*block_size+y][bx*block_size+x] * update_factor;
 
+#ifdef _1_
 	      if(aux < 0) {
 #if defined __WARNING__
 		warning("%s: %f -> %d\n", name, aux, 0);
@@ -131,7 +134,8 @@ void update
 #endif
 		aux = 255;
 	      }
-
+#endif
+	      
 	      reference_picture[NEXT][c]
 		[clip(by*block_size+y+mv[NEXT][Y_FIELD][by][bx],pixels_in_y[c])]
 		[clip(bx*block_size+x+mv[NEXT][X_FIELD][by][bx],pixels_in_x[c])]
@@ -615,7 +619,29 @@ int main(int argc, char *argv[]) {
     
     picture_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
     picture_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
-    
+
+    for(int c=0; c<COMPONENTS; c++) {
+      for(int y=0; y<pixels_in_y[c]; y++) {
+	for(int x=0; x<pixels_in_x[c]; x++) {
+	  int aux = reference[0][c][y][x];
+	  if(aux < 0) {
+#if defined __WARNING__
+	    warning("%s: %d -> %d\n", argv[0], aux, 0);
+#endif
+	    aux = 0;
+	    
+	  }
+	  else if(aux > 255) {
+#if defined __WARNING__
+	    warning("%s: %d -> %d\n", argv[0], aux, 255);
+#endif
+	    aux = 255;
+	  }
+	  reference[0][c][y][x] = aux;
+	}
+      }
+    }
+
     for(int c=0; c<COMPONENTS; c++) {
       texture.write_picture(reference[0][c],
 			    pixels_in_y[c], pixels_in_x[c],
@@ -657,7 +683,29 @@ int main(int argc, char *argv[]) {
   
   picture_dwt->analyze(reference[0][1], pixels_in_y[0], pixels_in_x[0], 1);
   picture_dwt->analyze(reference[0][2], pixels_in_y[0], pixels_in_x[0], 1);
-  
+
+  for(int c=0; c<COMPONENTS; c++) {
+    for(int y=0; y<pixels_in_y[c]; y++) {
+      for(int x=0; x<pixels_in_x[c]; x++) {
+	int aux = reference[0][c][y][x];
+	if(aux < 0) {
+#if defined __WARNING__
+	  warning("%s: %d -> %d\n", argv[0], aux, 0);
+#endif
+	  aux = 0;
+	  
+	}
+	else if(aux > 255) {
+#if defined __WARNING__
+	  warning("%s: %d -> %d\n", argv[0], aux, 255);
+#endif
+	  aux = 255;
+	}
+	reference[0][c][y][x] = aux;
+      }
+    }
+  }
+
   for(int c=0; c<COMPONENTS; c++) {
     texture.write_picture(reference[0][c],
 			  pixels_in_y[c], pixels_in_x[c],
