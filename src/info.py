@@ -139,8 +139,9 @@ for GOP_number in range(1, GOPs):
             file.seek(0, 2)
             length += file.tell()
     except:
-        log.error("Exception {}".format(traceback.format_exc()))
-        sys.exit(-1)
+        log.warning("{} is missing".format(filename))
+        #log.error("Exception {}".format(traceback.format_exc()))
+        #sys.exit(-1)
 
     Kbps = float(length) * 8.0 / GOP_time / 1000.0
     sys.stdout.write("%8d " % int(round(Kbps)))
@@ -172,8 +173,9 @@ for GOP_number in range(1, GOPs):
                     file.seek(0, 2)
                     length += file.tell()
             except:
-                log.error("Exception {}".format(traceback.format_exc()))
-                sys.exit(-1)
+                log.warning("{} is missing".format(filename))
+                #log.error("Exception {}".format(traceback.format_exc()))
+                #sys.exit(-1)
 
         Kbps = float(length) * 8.0 / GOP_time / 1000.0
         sys.stdout.write("%7d " % int(round(Kbps)))
@@ -188,8 +190,9 @@ for GOP_number in range(1, GOPs):
                     file.seek(0, 2)
                     length += file.tell()
             except:
-                log.error("Exception {}".format(traceback.format_exc()))
-                sys.exit(-1)
+                log.warning("{} is missing".format(filename))
+                #log.error("Exception {}".format(traceback.format_exc()))
+                #sys.exit(-1)
                 
         Kbps = float(length) * 8.0 / GOP_time / 1000.0
         sys.stdout.write("%6d " % int(round(Kbps)))

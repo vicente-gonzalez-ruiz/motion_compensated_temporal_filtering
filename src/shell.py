@@ -24,5 +24,5 @@ class Shell:
         try:
             check_call(command, shell=True)
         except CalledProcessError:
-            logger.error("Exception {}".format(traceback.format_exc()))
-            exit(-1)
+            logger.warning("Exception {}".format(traceback.format_exc()))
+            #exit(-1)

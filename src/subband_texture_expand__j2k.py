@@ -58,7 +58,7 @@ while p < pictures:
     fn = file + "/" + str('%04d' % p)
 
     command = "trace kdu_expand" \
-              + " -i " + fn + "." + IMG_EXT \
+              + " -i " + fn + '.' + IMG_EXT \
               + " -o " \
               + "/tmp/0.pgm," \
               + "/tmp/1.pgm," \
@@ -67,13 +67,23 @@ while p < pictures:
     if not __debug__:
         command += " > /dev/null"
 
-    shell.run(command)
+    try:
+        shell.run(command)
+        shell.run("trace convert -endian LSB /tmp/0.pgm " + fn + "_0.pgm")
+        #shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
+        shell.run("trace convert -endian LSB /tmp/1.pgm " + fn + "_1.pgm")
+        #shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
+        shell.run("trace convert -endian LSB /tmp/2.pgm " + fn + "_2.pgm")
+        #shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
+    except:
+        log.warning("{} is missing".format(fn + '.' + IMG_EXT))
 
-    shell.run("trace convert -endian LSB /tmp/0.pgm " + fn + "_0.pgm")
-    #shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
-    shell.run("trace convert -endian LSB /tmp/1.pgm " + fn + "_1.pgm")
-    #shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
-    shell.run("trace convert -endian LSB /tmp/2.pgm " + fn + "_2.pgm")
-    #shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
+#        shell.run(command)
+#        shell.run("trace convert -endian LSB /tmp/0.pgm " + fn + "_0.pgm")
+#        #shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
+#        shell.run("trace convert -endian LSB /tmp/1.pgm " + fn + "_1.pgm")
+#        #shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
+#        shell.run("trace convert -endian LSB /tmp/2.pgm " + fn + "_2.pgm")
+#        #shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
 
     p += 1
