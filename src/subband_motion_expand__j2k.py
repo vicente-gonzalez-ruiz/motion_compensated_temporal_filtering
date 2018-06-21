@@ -69,16 +69,23 @@ while field < fields:
 
     fn = file + "/" + str('%04d' % field)
     shell.run("trace rm -f " + fn + extension)
-    
+
     for c in range(COMPONENTS):
+ 
         command = "trace kdu_expand" \
                   + " -i " + fn + ".j2c" \
                   + " -o /tmp/" + str(c) + extension \
                   + " -skip_components " + str(c)
+        
         if not __debug__:
             command += " > /dev/null"
-        shell.run(command)
+
+        try:
+            shell.run(command)
+        except:
+            log.warning("{} is missing".format(fn + extension))
+            continue
+
         shell.run("trace cat /tmp/" + str(c) + extension
 		  + " >> " + fn + extension)
-
     field += 1

@@ -25,7 +25,7 @@ if [ -z "$*" ]; then
     end
 fi
 
-echo `pwd` - "$MCTF/bin/$@"
+echo [`pwd`] "$MCTF/bin/$@"
 echo "$MCTF/bin/$@" >> trace
 #set -x
 "$MCTF/bin/$@"

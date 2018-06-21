@@ -5,13 +5,13 @@ video=~/Videos/container_352x288x30x420x300.avi
 #GOPs=9
 #TRLs=2
 GOPs=2
-TRLs=3
+TRLs=6
 y_dim=288
 x_dim=352
 FPS=30
 keep_layers=8
 slope=0
-slope=44000
+slope=42000
 #slope=39000
 #slope=40000
 
@@ -160,7 +160,7 @@ while [ $img -le $number_of_images ]; do
     let img=img+1 
 done
 
-mctf create_zero_texture
+#mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mkdir tmp
@@ -208,6 +208,7 @@ mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
 mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality"
 cd transcode_quality
+mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
 img=1

@@ -155,7 +155,7 @@ log.info("destination={}".format(destination))
 def transcode_picture(filename, layers):
     # {{{ 
 
-    print(filename, layers)
+    log.debug(filename, layers)
     if layers > 0:
         shell.run("trace kdu_transcode"
                   + " -i " + filename
@@ -300,14 +300,12 @@ for gop in range(0, GOPs-1):
     # {{{ Include motion layers in subband_layers
 
     for t in range(TRLs-1, 1, -1):
-        print("t={}".format(t))
         c = 0
         l = len(subband_layers)
         for s in range(l):
             if subband_layers[s][0] == 'H':
                 if subband_layers[s][1] == t:
                     subband_layers.insert(c, ('R', t, 0, 0))
-                    print(c)
                     break
             c += 1
 
@@ -356,6 +354,7 @@ for gop in range(0, GOPs-1):
 
     # {{{ Transcode the images
 
+    log.debug(slayers_per_subband)
     for key, value in slayers_per_subband.items():
         pics_per_subband = (1 << (TRLs-key[1]-1))
         for p in range(pics_per_subband * gop,
@@ -368,10 +367,11 @@ for gop in range(0, GOPs-1):
                 fname = key[0] + '_' + str(key[1]) + '/' \
                 + str('%04d' % p) + ".jpx"
                 transcode_picture(fname, value)
-            else:
-                fname = "R_" + str(key[1]) + '/' \
-                + str('%04d' % p) + ".j2c"
-                shell.run("trace cp " + fname + ' ' + destination + '/' + fname)
+            elif key[0] == 'R':
+                if value > 0:
+                    fname = "R_" + str(key[1]) + '/' \
+                        + str('%04d' % p) + ".j2c"
+                    shell.run("trace cp " + fname + ' ' + destination + '/' + fname)
     # }}}
 
 # }}}
