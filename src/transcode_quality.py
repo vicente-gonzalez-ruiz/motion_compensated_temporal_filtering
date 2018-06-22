@@ -118,7 +118,7 @@ import logging
 from defaults import Defaults
 
 log = ColorLog(logging.getLogger("transcode_quality"))
-log.setLevel('INFO')
+log.setLevel('DEBUG')
 shell.setLogger(log)
 
 # }}}
@@ -155,7 +155,7 @@ log.info("destination={}".format(destination))
 def transcode_picture(filename, layers):
     # {{{ 
 
-    log.debug(filename, layers)
+    log.debug("transcode_picture: {} {}".format(filename, layers))
     if layers > 0:
         shell.run("trace kdu_transcode"
                   + " -i " + filename
@@ -286,10 +286,10 @@ for gop in range(0, GOPs-1):
                                        / attenuation[TRLs - subband])])
         log.info("H_{}: {}".format(subband, average))
 
+    log.debug("(original) subband layers={}".format(subband_layers))
+    
     # }}}
 
-    log.debug(subband_layers)
-    
     # {{{ Sort the subband-layers by their relative slope
 
     subband_layers.sort(key=operator.itemgetter(3), reverse=True)
@@ -299,7 +299,7 @@ for gop in range(0, GOPs-1):
 
     # {{{ Include motion layers in subband_layers
 
-    for t in range(TRLs-1, 1, -1):
+    for t in range(TRLs-1, 0, -1):
         c = 0
         l = len(subband_layers)
         for s in range(l):
@@ -309,6 +309,9 @@ for gop in range(0, GOPs-1):
                     break
             c += 1
 
+    log.debug("(after including motion layers) subband_layers={}".
+              format(subband_layers))
+    
     # }}}
 
     # {{{ Truncate the list of subband_layers
@@ -371,7 +374,8 @@ for gop in range(0, GOPs-1):
                 if value > 0:
                     fname = "R_" + str(key[1]) + '/' \
                         + str('%04d' % p) + ".j2c"
-                    shell.run("trace cp " + fname + ' ' + destination + '/' + fname)
+                    shell.run("trace cp " + fname + ' '
+                              + destination + '/' + fname)
     # }}}
 
 # }}}
