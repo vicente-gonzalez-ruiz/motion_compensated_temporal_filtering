@@ -9,9 +9,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-//#define __INFO__
-//#define __DEBUG__
-//#define __WARNING__
+#define __INFO__
+#define __DEBUG__
+#define __WARNING__
 
 #include "display.cpp"
 #include "Haar.cpp"
@@ -324,19 +324,19 @@ void me_for_picture
 
 #else /* !defined FAST_SEARCH */
 
-  pic_dwt->synthesize(reference_pic[0], Y<<subpixel_accuracy, X<<subpixel_accuracy, subpixel_accuracy);
-  pic_dwt->synthesize(reference_pic[1], Y<<subpixel_accuracy, X<<subpixel_accuracy, subpixel_accuracy);
-  pic_dwt->synthesize(predicted_pic, Y<<subpixel_accuracy, X<<subpixel_accuracy, subpixel_accuracy);
+  pic_dwt->synthesize(ref[0], pixels_in_y<<subpixel_accuracy, pixels_in_x<<subpixel_accuracy, subpixel_accuracy);
+  pic_dwt->synthesize(ref[1], pixels_in_y<<subpixel_accuracy, pixels_in_x<<subpixel_accuracy, subpixel_accuracy);
+  pic_dwt->synthesize(pred, pixels_in_y<<subpixel_accuracy, pixels_in_x<<subpixel_accuracy, subpixel_accuracy);
   
   block_size <<= subpixel_accuracy;
   search_range <<= subpixel_accuracy;
   border_size <<= subpixel_accuracy;
   
-  int blocks_in_y = (Y<<subpixel_accuracy)/block_size;
-  int blocks_in_x = (X<<subpixel_accuracy)/block_size;
+  //int blocks_in_y = (Y<<subpixel_accuracy)/block_size;
+  //int blocks_in_x = (X<<subpixel_accuracy)/block_size;
   
   for(int by=0; by<blocks_in_y; by++) {
-    print("%d/%d ",by,blocks_in_y); fflush(stderr);
+    printf("%d/%d ",by, blocks_in_y); fflush(stderr);
     for(int bx=0; bx<blocks_in_x; bx++) {
       int min_error = 999999999;
       int vy, vx;
@@ -348,16 +348,16 @@ void me_for_picture
 	  int error = 0;
 	  for(int y=-border_size; y<block_size+border_size; y++) {
 	    for(int x=-border_size; x<block_size+border_size; x++) {
-	      error += abs(predicted_pic[by*block_size+y][bx*block_size+x] -
-			   reference_pic
+	      error += abs(pred[by*block_size+y][bx*block_size+x] -
+			   ref
 			   [0]
-			   [ry + mv[NEXT][Y][by][bx] + y]
-			   [rx + mv[NEXT][X][by][bx] + x]);
-	      error += abs(predicted_pic[by*block_size+y][bx*block_size+x] -
-			   reference_pic
+			   [ry + mv[NEXT][Y_FIELD][by][bx] + y]
+			   [rx + mv[NEXT][X_FIELD][by][bx] + x]);
+	      error += abs(pred[by*block_size+y][bx*block_size+x] -
+			   ref
 			   [1]
-			   [by*block_size*2 - ry + mv[PREV][Y][by][bx] + y]
-			   [bx*block_size*2 - rx + mv[PREV][X][by][bx] + x]);
+			   [by*block_size*2 - ry + mv[PREV][Y_FIELD][by][bx] + y]
+			   [bx*block_size*2 - rx + mv[PREV][X_FIELD][by][bx] + x]);
 	    }
 	  }
 	  if(error < min_error) {
@@ -375,10 +375,10 @@ void me_for_picture
 	}
       }
       
-      mv[NEXT][Y][by][bx] += vy;
-      mv[NEXT][X][by][bx] += vx;
-      mv[PREV][Y][by][bx] += -vy;
-      mv[PREV][X][by][bx] += -vx;
+      mv[NEXT][Y_FIELD][by][bx] += vy;
+      mv[NEXT][X_FIELD][by][bx] += vx;
+      mv[PREV][Y_FIELD][by][bx] += -vy;
+      mv[PREV][X_FIELD][by][bx] += -vx;
       
       //print("\nvector = %d,%d,%d,%d",mv[NEXT][Y][by][bx],mv[NEXT][X][by][bx],mv[PREV][Y][by][bx],mv[PREV][X][by][bx]);
     }

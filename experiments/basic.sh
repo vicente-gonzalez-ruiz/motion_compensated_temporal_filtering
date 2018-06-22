@@ -1,16 +1,16 @@
 #!/bin/bash
 
 #video=~/Videos/mobile_352x288x30x420x300.avi
-#video=~/Videos/container_352x288x30x420x300.avi
-video=~/Videos/moving_circle.avi
+video=~/Videos/container_352x288x30x420x300.avi
+#video=~/Videos/moving_circle.avi
 #GOPs=9
 #TRLs=2
-GOPs=2
+GOPs=3
 TRLs=6
 y_dim=288
 x_dim=352
 FPS=30
-keep_layers=10
+keep_layers=8
 slope=0
 slope=42000
 #slope=39000
@@ -164,6 +164,7 @@ done
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope
 mctf info --GOPs=$GOPs --TRLs=$TRLs
+#exit
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
