@@ -386,13 +386,6 @@ transcode_picture("L_" + str(TRLs-1) + "/0000.jpx",
                   slayers_per_subband[("L", TRLs-1)]) # GOP0
 # }}}
 
-# {{{ Copy frame types
-
-for i in range(1, TRLs):
-    shell.run("trace cp frame_types_" + str(i) + " " + destination)
-
-# }}}
-    
 sys.exit()
     
 # -<<< Transcode

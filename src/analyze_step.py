@@ -76,7 +76,6 @@ shell.run("mctf decorrelate"
           + " --block_overlaping=" + str(block_overlaping)
           + " --block_size=" + str(block_size)
           + " --even_fn=" + "E_" + str(subband)
-          + " --frame_types_fn=" + "frame_types_" + str(subband)
           + " --high_fn=" + "H_" + str(subband)
           + " --motion_in_fn=" + "M_" + str(subband)
           + " --motion_out_fn=" + "M_" + str(subband) # filtered
@@ -93,7 +92,6 @@ shell.run("mctf decorrelate"
 shell.run("mctf update"
           + " --block_size=" + str(block_size)
           + " --even_fn=" + "E_" + str(subband)
-          + " --frame_types_fn=" + "frame_types_" + str(subband)
           + " --high_fn=" + "H_" + str(subband)
           + " --low_fn=" + "L_" + str(subband)
           + " --motion_fn=" + "M_" + str(subband) # filtered

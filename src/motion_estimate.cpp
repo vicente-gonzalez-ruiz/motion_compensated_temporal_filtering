@@ -375,6 +375,40 @@ void me_for_picture
 	}
       }
       
+      /* For the displacement (0,0) (again). */
+      for(int ry=by*block_size; ry<=by*block_size; ry++) {
+	for(int rx=bx*block_size; rx<=bx*block_size; rx++) {
+	  /* For each point of the block to search. */
+	  int error = 0;
+	  for(int y=-border_size; y<block_size+border_size; y++) {
+	     for(int x=-border_size; x<block_size+border_size; x++) {
+	      error += abs(pred[by*block_size+y][bx*block_size+x] -
+			   ref
+			   [0]
+			   [ry + mv[NEXT][Y_FIELD][by][bx] + y]
+			   [rx + mv[NEXT][X_FIELD][by][bx] + x]);
+	      error += abs(pred[by*block_size+y][bx*block_size+x] -
+			   ref
+			   [1]
+			   [by*block_size*2 - ry + mv[PREV][Y_FIELD][by][bx] + y]
+			   [bx*block_size*2 - rx + mv[PREV][X_FIELD][by][bx] + x]);
+	    }
+	  }
+	  if(error <= min_error) {
+	    min_error = error;
+	    vy = ry-by*block_size;
+	    vx = rx-bx*block_size;
+	  }
+	  /*print("\n%d,%d  %d,%d %d %d",
+	    ry + mv[NEXT][Y][by][bx],
+	    rx + mv[NEXT][X][by][bx],
+	    by*block_size*2 - ry + mv[PREV][Y][by][bx],
+	    bx*block_size*2 - rx + mv[PREV][X][by][bx],
+	    error, min_error
+	    );*/
+	}
+      }
+
       mv[NEXT][Y_FIELD][by][bx] += vy;
       mv[NEXT][X_FIELD][by][bx] += vx;
       mv[PREV][Y_FIELD][by][bx] += -vy;

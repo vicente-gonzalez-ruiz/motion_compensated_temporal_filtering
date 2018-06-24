@@ -169,7 +169,6 @@ int main(int argc, char *argv[]) {
   int block_size = 16;
   int components = COMPONENTS;
   char *even_fn = (char *)"E";
-  char *frame_types_fn = (char *)"frame_types";
   char *high_fn = (char *)"H";
   char *low_fn = (char *)"L";
   char *motion_fn = (char *)"motion";
@@ -190,7 +189,6 @@ int main(int argc, char *argv[]) {
     static struct option long_options[] = {
       {"block_size", required_argument, 0, 'b'},
       {"even_fn", required_argument, 0, 'e'},
-      {"frame_types_fn", required_argument, 0, 'f'},
       {"high_fn", required_argument, 0, 'h'},
       {"low_fn", required_argument, 0, 'l'},
       {"motion_fn", required_argument, 0, 'm'},
@@ -205,7 +203,7 @@ int main(int argc, char *argv[]) {
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "b:e:f:h:l:m:x:y:a:u:?", long_options, &option_index);
+    c = getopt_long(argc, argv, "b:e:h:l:m:x:y:a:u:?", long_options, &option_index);
 
     if(c==-1) {
       /* There are no more options. */
@@ -231,11 +229,6 @@ int main(int argc, char *argv[]) {
     case 'e':
       even_fn = optarg;
       info("%s: even_fn=%s\n", argv[0], even_fn);
-      break;
-
-    case 'f':
-      frame_types_fn = optarg;
-      info("%s: frame_types_fn=%s\n", argv[0], frame_types_fn);
       break;
 
     case 'h':
@@ -301,7 +294,6 @@ int main(int argc, char *argv[]) {
       printf("\n");
       printf("   -[-b]lock_size = size of the blocks in the motion estimation process (%d)\n", block_size);
       printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", even_fn);
-      printf("   -[-f]rame_types_fn = output file with the frame types (\"%s\")\n", frame_types_fn);
       printf("   -[-h]igh_fn = input file with H-subband pictures (\"%s\")\n", high_fn);
       printf("   -[-l]ow_fn = output file with L-subband pictures (\"%s\")\n", low_fn);
       printf("   -[-m]otion_fn = input file with the motion fields (\"%s\")\n", motion_fn);
@@ -348,19 +340,6 @@ int main(int argc, char *argv[]) {
 #endif /* __ANALYZE__ */
 
   // }}}
-
-  FILE *frame_types_fd; {
-    // {{{
-
-    frame_types_fd = fopen(frame_types_fn, "r");
-    if(!frame_types_fd) {
-      error("%s: unable to read \"%s\" ... aborting!\n",
-	    argv[0], frame_types_fn);    
-      abort();
-    }
-
-    // }}}
-  }
 
   class dwt2d <
     TC_CPU_TYPE,
@@ -584,30 +563,22 @@ int main(int argc, char *argv[]) {
     // }}}
 					    
     // {{{ Update
-    
-    if(fgetc(frame_types_fd) == 'B') {
-      
-      //fprintf(stderr, "(before) reference[0][0][0][0]=%d reference[1][0][0][0]=%d\n", reference[0][0][0][0], reference[1][0][0][0]);
-      
-      update(block_size,
-	     blocks_in_y,
-	     blocks_in_x,
-	     COMPONENTS,
-	     mv,
-	     piy,
-	     pix,
-	     reference,
-	     residue,
-	     update_factor
+
+    update(block_size,
+	   blocks_in_y,
+	   blocks_in_x,
+	   COMPONENTS,
+	   mv,
+	   piy,
+	   pix,
+	   reference,
+	   residue,
+	   update_factor
 #if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
-	     ,
-	     argv[0]
+	   ,
+	   argv[0]
 #endif
-	     );
-      
-      //fprintf(stderr,"(after) reference[0][0][0][0]=%d reference[1][0][0][0]=%d\n", reference[0][0][0][0], reference[1][0][0][0]);
-      
-    }
+	   );
     
     // }}}
     

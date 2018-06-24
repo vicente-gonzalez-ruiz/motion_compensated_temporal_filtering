@@ -33,7 +33,6 @@
 #include "dwt2d.cpp"
 #include "texture.cpp"
 #include "motion.cpp"
-#include "entropy.h"
 #include "common.h"
 
 #define TEXTURE_INTERPOLATION_FILTER _5_3
@@ -166,7 +165,6 @@ int main(int argc, char *argv[]) {
   int block_size = 16;
   int components = COMPONENTS;
   char *even_fn = (char *)"E";
-  char *frame_types_fn = (char *)"frame_types";
   char *high_fn = (char *)"H";
   char *motion_in_fn = (char *)"motion_in";
 #if defined __ANALYZE__
@@ -188,7 +186,6 @@ int main(int argc, char *argv[]) {
       {"block_overlaping", required_argument, 0, 'v'},
       {"block_size", required_argument, 0, 'b'},
       {"even_fn", required_argument, 0, 'e'},
-      {"frame_types_fn", required_argument, 0, 'f'},
       {"high_fn", required_argument, 0, 'h'},
       {"motion_in_fn", required_argument, 0, 'i'},
 #if defined __ANALYZE__
@@ -209,9 +206,9 @@ int main(int argc, char *argv[]) {
 
     c = getopt_long(argc, argv,
 #if defined __ANALYZE__
-		    "v:b:e:f:h:i:t:o:p:x:y:s:a:B:?",
+		    "v:b:e:h:i:t:o:p:x:y:s:a:B:?",
 #else /* __ANALYZE__ */
-		    "v:b:e:f:h:i:o:p:x:y:s:a:B:?",
+		    "v:b:e:h:i:o:p:x:y:s:a:B:?",
 #endif /* __ANALYZE__ */
 		    long_options, &option_index);
     
@@ -244,11 +241,6 @@ int main(int argc, char *argv[]) {
     case 'e':
       even_fn = optarg;
       info("%s: even_fn=%s\n", argv[0], even_fn);
-      break;
-
-    case 'f':
-      frame_types_fn = optarg;
-      info("%s: frame_types_fn=%s\n", argv[0], frame_types_fn);
       break;
 
     case 'h':
@@ -327,7 +319,6 @@ int main(int argc, char *argv[]) {
       printf("   -[-]block_o[v]erlaping = number of overlaped pixels between the blocks in the motion compensation (%d)\n", block_overlaping);
       printf("   -[-b]lock_size = size of the blocks in the motion estimation process (%d)\n", block_size);
       printf("   -[-e]ven_fn = input file with the even pictures (\"%s\")\n", even_fn);
-      printf("   -[-f]rame_types_fn = output file with the frame types (\"%s\")\n", frame_types_fn);
       printf("   -[-h]igh_fn = input file with high-subband pictures (\"%s\")\n", high_fn);
       printf("   -[-]motion_[i]n_fn = input file with the motion fields (\"%s\")\n", motion_in_fn);
 #if defined __ANALYZE__
@@ -387,24 +378,6 @@ int main(int argc, char *argv[]) {
   }
 #endif /* __GET_PREDICTION__ */
   
-  FILE *frame_types_fd; {
-    frame_types_fd = fopen(frame_types_fn,
-#if defined __ANALYZE__
-			   "w"
-#else /* __ANALYZE__ */
-			   "r"
-#endif /* __ANALYZE__ */
-			   );
-    if(!frame_types_fd) {
-#if defined __ANALYZE__
-      error("%s: unable to write \"%s\" ... aborting!\n", argv[0], frame_types_fn);
-#else /* __ANALYZE__ */
-      error("%s: unable to read \"%s\" ... aborting!\n", argv[0], frame_types_fn);    
-#endif /* __ANALYZE__ */
-      abort();
-    }
-  }
-
   class dwt2d <
     TC_CPU_TYPE,
     TEXTURE_INTERPOLATION_FILTER <
@@ -490,7 +463,6 @@ int main(int argc, char *argv[]) {
   /* Read reference [0] (the first picture). */
   info("%s: reading picture %d (first) from \"%s\"\n", argv[0], 0, even_fn);
   for(int c=0; c<COMPONENTS; c++) {
-    // picture.read(E_fd, reference[0][c], pixels_in_y[c], pixels_in_x[c]);
     // {{{ reference[0] <- E
     texture.read_picture(reference[0][c],
 		       pixels_in_y[c], pixels_in_x[c],
@@ -505,6 +477,8 @@ int main(int argc, char *argv[]) {
     // }}}
   }
 #if defined (__DEBUG__)
+  // {{{
+
   for(int y=0; y<pixels_in_y[c]; y++) {
     for (int x=0; x<pixels_in_x[c]; x++) {
       if (reference[0][c][y][x] < 0) {
@@ -518,15 +492,8 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-#endif
 
-#ifdef _1_
-#if defined (__DEBUG__)
-    printf("%s\n", even_fn);
-    for(int i=0; i<10; i++) {
-      printf("%d ", reference[0][0][0][i]);
-    }
-#endif
+  // }}}
 #endif
     
   /* Interpolate the chroma of reference [0], to have the same size as
@@ -653,6 +620,8 @@ int main(int argc, char *argv[]) {
 			 );
       // }}}
 #if defined (__DEBUG__)
+      // {{{
+
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for (int x=0; x<pixels_in_x[c]; x++) {
 	  if (predicted[c][y][x] < 0) {
@@ -666,25 +635,17 @@ int main(int argc, char *argv[]) {
 	  }
 	}
       }
+
+      // }}}
 #endif
     }
 
-#ifdef _1_
-#if defined (__DEBUG__)
-    printf("%s\n", odd_fn);
-    for(int i=0; i<10; i++) {
-      printf("%d ", predicted[0][0][i]);
-    }
-#endif
-#endif
-    
 #else /* __ANALYZE__ */
 
     info("%s: reading picture %d from \"%s\"\n", argv[0], i, high_fn);
     
     /* Read residue picture */
     for(int c=0; c<COMPONENTS; c++) {
-      //picture.read(H_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
       // {{{ residue -> H
       texture.read_picture(residue[c],
 			 pixels_in_y[c], pixels_in_x[c],
@@ -697,14 +658,9 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			 );
       // }}}
-#ifdef _1_
-      for(int y=0; y<pixels_in_y[c]; y++) {
-	for(int x=0; x<pixels_in_x[c]; x++) {
-	  residue[c][y][x] -= INTENSITY_OFFSET; // OJO
-	}
-      }
-#endif
 #if defined (__DEBUG__)
+      // {{{
+
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for (int x=0; x<pixels_in_x[c]; x++) {
 	  if (residue[c][y][x] < 0) {
@@ -718,17 +674,10 @@ int main(int argc, char *argv[]) {
 	  }
 	}
       }
-#endif
-    }
 
-#ifdef _1_
-#if defined (__DEBUG__)
-    printf("%s\n", high_fn);
-    for(int x=0; x<10; x++) {
-      printf("%d ", residue[0][0][x]);
+      // }}}
+#endif
     }
-#endif
-#endif
 
 #endif /* __ANALYZE__ */
     
@@ -736,7 +685,6 @@ int main(int argc, char *argv[]) {
     
     /* Read reference [1], interpolating the chroma. */
     for(int c=0; c<COMPONENTS; c++) {
-      //picture.read(E_fd, reference[1][c], pixels_in_y[c], pixels_in_x[c]);
       // {{{ reference[1] <- E
       texture.read_picture(reference[1][c],
 			 pixels_in_y[c], pixels_in_x[c],
@@ -750,6 +698,8 @@ int main(int argc, char *argv[]) {
 			 );
       // }}}
 #if defined (__DEBUG__)
+      // {{{
+
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for (int x=0; x<pixels_in_x[c]; x++) {
 	  if (reference[1][c][y][x] < 0) {
@@ -763,6 +713,8 @@ int main(int argc, char *argv[]) {
 	  }
 	}
       }
+
+      // }}}
 #endif
     }
 
@@ -822,43 +774,13 @@ int main(int argc, char *argv[]) {
 
     /* Motion fields are read. */
     info("%s: reading motion vector field %d in \"%s\"\n", argv[0], i, motion_in_fn);
-    //motion.read(motion_in_fd, mv, blocks_in_y, blocks_in_x);
     motion.read_field(mv, blocks_in_y, blocks_in_x, motion_in_fn, i
 #if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
 		      ,
 		      argv[0]
 #endif /* __INFO__ */
 		      );
-#if defined __ANALYZE__
-    float motion_entropy = 0.0; {
-      static int count[256];
-      
-      if(!always_B) {
-	
-	for(int i=0; i<256; i++) {
-	  count[i] = 0;
-	}
-	
-	for(int y=0; y<blocks_in_y; y++) {
-	  for(int x=0; x<blocks_in_x; x++) {
-	    count[ mv[PREV][Y_FIELD][y][x] + 128 ]++;
-	    count[ mv[PREV][X_FIELD][y][x] + 128 ]++;
-	    count[ mv[NEXT][Y_FIELD][y][x] + 128 ]++;
-	    count[ mv[NEXT][X_FIELD][y][x] + 128 ]++;
-	  }
-	}
-	
-	motion_entropy = entropy(count, 256);
 
-      }
-    }
-#endif /* __ANALYZE__ */
-
-    /** If the entropy of the predicted picture is less than or equal to
-	the entropy of the "wrong picture" then the predicted picture
-	replaces the "wrong picture". */
-
-    /* Write the residue picture, the chroma is subsampled. */
     predict(block_overlaping << subpixel_accuracy,
 	    block_size << subpixel_accuracy,
 	    blocks_in_y,
@@ -871,17 +793,6 @@ int main(int argc, char *argv[]) {
 	    prediction_block,
 	    prediction,
 	    reference);
-
-#ifdef _1_
-    for(int c=0; c<COMPONENTS; c++) {
-      for(int y=0; y<pixels_in_y[0] << subpixel_accuracy; y++) {
-	for(int x=0; x<pixels_in_x[0] << subpixel_accuracy; x++) {
-	  if (prediction[c][y][x] < 0) prediction[c][y][x] = 0;
-	  else if (prediction[c][y][x] > 255) prediction[c][y][x] = 255;
-	}
-      }
-    }
-#endif
 
     /* Subsample the three components because the motion compensation
        is made to the original video resolution. */
@@ -963,17 +874,6 @@ int main(int argc, char *argv[]) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  //int val = predicted[c][y][x] - prediction[c][y][x] + INTENSITY_OFFSET;
 	  int tmp = predicted[c][y][x] - prediction[c][y][x] + 128;
-#ifdef _1_
-#if defined (__DEBUG__)
-	  {
-	    static int i=0;
-	    if (i<10) {
-	      printf("(%d) predicted=%d prediction=%d residue=%d\n", __LINE__, predicted[c][y][x], prediction[c][y][x], tmp);
-	      i++;
-	    }
-	  }
-#endif
-#endif
 #if (BPP==8)
 	  if (tmp < 0) {
 #if defined (__WARNING__)
@@ -992,155 +892,9 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /* The entropy of the residual picture and the predicted picture is
-       calculated. We only use the luma. */
-
-    float residue_entropy = 0.0, predicted_entropy = 1.0; {
-      static int predicted_count[256];
-      static int residue_count[256];
-      
-      if (!always_B) {
-	
-	for(int i=0; i<256; i++) {
-	  predicted_count[i] = 0;
-	  residue_count[i] = 0;
-	}
-	
-	for(int y=0; y<pixels_in_y[0]; y++) {
-	  for(int x=0; x<pixels_in_x[0]; x++) {
-	    predicted_count[ predicted[0][y][x]                          ]++;
-	    residue_count  [ (residue  [0][y][x] /*+ (TC_MAX_VAL/2)*/) % 256 ]++;
-	  }
-	}
-	
-	predicted_entropy = entropy(predicted_count, 256);
-	residue_entropy = entropy(residue_count, 256);
-	
-      }
-    }
-
-    /* If the entropy of the predicted picture is less than or equal to
-       the entropy of the "wrong picture" then the predicted picture
-       replaces the "wrong picture". */
-
-      /* Write the residue picture, the chroma subsampling. */
-
-    int predicted_size
-      = (int)(predicted_entropy * (float)pixels_in_y[0] * (float)pixels_in_x[0]);
-    int residue_size
-      = (int)(residue_entropy * (float)pixels_in_y[0] * (float)pixels_in_x[0]);
-    int motion_size
-      = (int)(motion_entropy * (float)blocks_in_y * (float)blocks_in_x);
-
-    info("predicted_entropy=%f residue_entropy=%f motion_entropy=%f\n",
-	 predicted_entropy, residue_entropy, motion_entropy);
-    info("predicted_size=%d residue_size=%d motion_size=%d\n",
-	 predicted_size, residue_size, motion_size);
-
-    if(predicted_size <= (residue_size + motion_size)) {
-
-      /* Picture of type I. */
-      putc('I', frame_types_fd);
-
-      /* Copy predicted to residue. */
-      
-      for(int c=0; c<COMPONENTS; c++) {
-	for(int y=0; y<pixels_in_y[c]; y++) {
-	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    residue[c][y][x] = predicted[c][y][x];
-#if defined (__DEBUG__)
-	    if (residue[c][y][x] < 0) {
-	      error("%s (%d): residue[%d][%d][%d]=%d < 0 ... aborting\n",
-		    argv[0], __LINE__, c, y, x, residue[c][y][x]);
-	      abort();
-	    } else if (residue[c][y][x] > 255) {
-	      error("%s (%d): residue[%d][%d][%d]=%d > 255 ... aborting\n",
-		    argv[0], __LINE__, c, y, x, residue[c][y][x]);
-	      abort();
-	    }
-#endif
-#ifdef _1_
-#if defined (__DEBUG__)
-	    {
-	      static int i=0;
-	      if (i<10) {
-		printf("(%d) residue=%d\n", __LINE__, residue);
-		i++;
-	      }
-	    }
-#endif
-#endif
-	  }
-	}
-      }
-      
-      for(int c=0; c<COMPONENTS; c++) {
-	//picture.write(H_fd, residue[c], pixels_in_y[c], pixels_in_x[c]);
-	// {{{ residue -> H
-	texture.write_picture(residue[c],
-			    pixels_in_y[c], pixels_in_x[c],
-			    high_fn,
-			    i,
-			    c
-#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
-			    ,
-			    argv[0]
-#endif /* __INFO__ */
-			    );
-	// }}}
-      }
-
-#ifdef _1_
-#if defined (__DEBUG__)
-      {
-	static int i=0;
-	if (i<10) {
-	  printf("(%d) residue=%d\n", __LINE__, residue);
-	  i++;
-	}
-      }
-#endif
-#endif
-      
-      /* No motion field (other than 0) associated with an picture I. */
-      //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
-      motion.write_field(zeroes, blocks_in_y, blocks_in_x, motion_out_fn, i
-#if defined (__INFO__) || defined (__WARNING__) || defined (__DEBUG__)
-			 , argv[0]
-#endif /* __INFO__ */
-			 );
-      
-    } else {
-
-      /* Indicated in the code-stream which is an picture B. */
-      putc('B', frame_types_fd);
-
-      /* We turn to the range [0,255] possibly with clipping and write to disk. */
-
-      for(int c=0; c<COMPONENTS; c++) {
-#ifdef _1_
-	/* The following loop is only necessary if the dynamic range
-	   of the residue picture must be stored in the range
-	   [0,255]. */
-	for(int y=0; y<pixels_in_y[c]; y++) {
-	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    residue[c][y][x] = residue[c][y][x] + INTENSITY_OFFSET;
-#if defined (__DEBUG__)
-	    if (residue[c][y][x] < 0) {
-	      error("%s (%d): residue[%d][%d][%d]=%d < 0 ... aborting\n",
-		    argv[0], __LINE__, c, y, x, residue[c][y][x]);
-	      abort();
-	    } else if (residue[c][y][x] > 255) {
-	      error("%s (%d): residue[%d][%d][%d]=%d > 255 ... aborting\n",
-		    argv[0], __LINE__, c, y, x, residue[c][y][x]);
-	      abort();
-	    }
-#endif
-	  }
-	}
-#endif
-	// {{{ residue -> H
-	texture.write_picture(residue[c],
+    for(int c=0; c<COMPONENTS; c++) {
+      // {{{ residue -> H
+      texture.write_picture(residue[c],
 			    pixels_in_y[c], pixels_in_x[c],
 			    high_fn,
 			    i,
@@ -1150,17 +904,8 @@ int main(int argc, char *argv[]) {
 			    argv[0]
 #endif /* __INFO__ */
 			    );
-
-	// }}}
-      }
-
-      /* The pictures I have associated motion field. */
-      //motion.write(motion_out_fd, mv, blocks_in_y, blocks_in_x);
-      motion.write_field(mv, blocks_in_y, blocks_in_x, motion_out_fn, i
-#if defined __INFO__ || defined __WARNING__ || defined __DEBUG__
-			 , argv[0]
-#endif /* __INFO__ */
-			 );
+      
+      // }}}
     }
     
 #else /* __ANALYZE__ */
@@ -1169,55 +914,11 @@ int main(int argc, char *argv[]) {
 
     /** Decorrelation. */
 
-    if(fgetc(frame_types_fd) == 'I') {
-
-      /* If the picture is of type I, copy residue to predicted. */
+    {
       for(int c=0; c<COMPONENTS; c++) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    predicted[c][y][x] = residue[c][y][x];
-#if defined (__DEBUG__)
-	    if (predicted[c][y][x] < 0) {
-	      error("%s (%d): predicted[%d][%d][%d]=%d < 0 ... aborting\n",
-		    argv[0], __LINE__, c, y, x, predicted[c][y][x]);
-	      abort();
-	    } else if (predicted[c][y][x] > 255) {
-	      error("%s (%d): predicted[%d][%d][%d]=%d > 255 ... aborting\n",
-		    argv[0], __LINE__, c, y, x, predicted[c][y][x]);
-	      abort();
-	    }
-#endif
-#ifdef _1_
-#if defined (__DEBUG__)
-	    {
-	      static int i=0;
-	      if (i<10) {
-		printf("(%d) predicted=%d\n", __LINE__, predicted[c][y][x]);
-		i++;
-	      }
-	    }
-#endif
-#endif
-	  }
-	}
-      }
-    } else {
-      for(int c=0; c<COMPONENTS; c++) {
-	for(int y=0; y<pixels_in_y[c]; y++) {
-	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    int tmp = residue[c][y][x] + prediction[c][y][x] - 128;
-#ifdef _1_
-#if defined (__DEBUG__)
-	    {
-	      static int i=0;
-	      if (i<10) {
-		printf("(%d) predicted=%d residue=%d prediction=%d\n", __LINE__, predicted[c][y][x], residue[c][y][x], prediction[c][y][x]);
-		i++;
-	      }
-	    }
-#endif
-#endif
-	    
+	    int tmp = residue[c][y][x] + prediction[c][y][x] - 128;	    
 #if (BPP==8)
 	    if (tmp < 0) {
 #if defined (__WARNING__)
@@ -1243,7 +944,6 @@ int main(int argc, char *argv[]) {
 
     /* Write predicted picture. */
     for(int c=0; c<COMPONENTS; c++) {
-      //picture.write(O_fd, predicted[c], pixels_in_y[c], pixels_in_x[c]);
       // {{{ predicted -> O
       texture.write_picture(predicted[c],
 			  pixels_in_y[c], pixels_in_x[c],
