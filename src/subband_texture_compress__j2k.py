@@ -80,10 +80,12 @@ while picture < number_of_pictures:
               + " -jpx_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}" \
               + " -no_weights" \
               + " -slope " + str(slope) \
-              + " Creversible=" + "yes" \
+              + " Creversible=" + "no" \
               + " Clayers=" + str(layers) \
               + " Clevels=" + str(Clevels) \
               + " Cuse_sop=" + "no"
+
+    # OJO, que con 16 bpp Creversible podría estar a yes
     
     if __debug__:
         command += " | tee /dev/tty | awk '/thresholds/{getline; print}' > "

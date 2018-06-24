@@ -58,7 +58,7 @@ pictures = (GOPs - 1) * GOP_size + 1
 #import ipdb; ipdb.set_trace()
 
 ## Initializes the value of search factor.
-search_factor = 2
+search_factor = 1
 
 ## Initializes the variable, temporal subband to '1'. Which refers to
 #  the first high-frequency subband. The goal is to apply the

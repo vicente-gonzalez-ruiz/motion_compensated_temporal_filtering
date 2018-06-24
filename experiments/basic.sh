@@ -1,17 +1,17 @@
 #!/bin/bash
 
 #video=~/Videos/mobile_352x288x30x420x300.avi
-video=~/Videos/container_352x288x30x420x300.avi
-#video=~/Videos/moving_circle.avi
+#video=~/Videos/container_352x288x30x420x300.avi
+video=~/Videos/moving_circle.avi
 #GOPs=9
 #TRLs=2
-GOPs=3
-TRLs=6
+GOPs=2
+TRLs=5
 y_dim=288
 x_dim=352
 FPS=30
 keep_layers=8
-slope=0
+#slope=0
 slope=42000
 #slope=39000
 #slope=40000

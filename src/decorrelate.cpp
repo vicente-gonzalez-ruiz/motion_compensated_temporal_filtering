@@ -21,9 +21,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-//#define __INFO__
-//#define __DEBUG__
-//#define __WARNING__
+#define __INFO__
+#define __DEBUG__
+#define __WARNING__
 
 #include "display.cpp"
 //#include "Haar.cpp"
@@ -446,7 +446,7 @@ int main(int argc, char *argv[]) {
 		  << subpixel_accuracy,
 		  0);
 
-  int picture_border_size = 4*search_range + block_overlaping;
+  int picture_border_size = 4*search_range + block_overlaping + 256;
   info("%s: picture_border = %d\n", argv[0], picture_border_size);
 
   TC_CPU_TYPE ***reference[2];
@@ -504,12 +504,29 @@ int main(int argc, char *argv[]) {
 		       );
     // }}}
   }
+#if defined (__DEBUG__)
+  for(int y=0; y<pixels_in_y[c]; y++) {
+    for (int x=0; x<pixels_in_x[c]; x++) {
+      if (reference[0][c][y][x] < 0) {
+	error("%s (%d): reference[0][%d][%d][%d]=%d < 0 ... aborting\n",
+	      argv[0], __LINE__, c, y, x, reference[0][c][y][x]);
+	abort();
+      } else if (reference[0][c][y][x] > 255) {
+	error("%s (%d): reference[0][%d][%d][%d]=%d > 255 ... aborting\n",
+	      argv[0], __LINE__, c, y, x, reference[0][c][y][x]);
+	abort();
+      }
+    }
+  }
+#endif
 
+#ifdef _1_
 #if defined (__DEBUG__)
     printf("%s\n", even_fn);
     for(int i=0; i<10; i++) {
       printf("%d ", reference[0][0][0][i]);
     }
+#endif
 #endif
     
   /* Interpolate the chroma of reference [0], to have the same size as
@@ -635,13 +652,30 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			 );
       // }}}
+#if defined (__DEBUG__)
+      for(int y=0; y<pixels_in_y[c]; y++) {
+	for (int x=0; x<pixels_in_x[c]; x++) {
+	  if (predicted[c][y][x] < 0) {
+	    error("%s (%d): predicted[%d][%d][%d]=%d < 0 ... aborting\n",
+		  argv[0], __LINE__, c, y, x, predicted[c][y][x]);
+	    abort();
+	  } else if (predicted[c][y][x] > 255) {
+	    error("%s (%d): predicted[%d][%d][%d]=%d > 255 ... aborting\n",
+		  argv[0], __LINE__, c, y, x, predicted[c][y][x]);
+	    abort();
+	  }
+	}
+      }
+#endif
     }
 
+#ifdef _1_
 #if defined (__DEBUG__)
     printf("%s\n", odd_fn);
     for(int i=0; i<10; i++) {
       printf("%d ", predicted[0][0][i]);
     }
+#endif
 #endif
     
 #else /* __ANALYZE__ */
@@ -663,18 +697,37 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			 );
       // }}}
+#ifdef _1_
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  residue[c][y][x] -= INTENSITY_OFFSET; // OJO
 	}
       }
+#endif
+#if defined (__DEBUG__)
+      for(int y=0; y<pixels_in_y[c]; y++) {
+	for (int x=0; x<pixels_in_x[c]; x++) {
+	  if (residue[c][y][x] < 0) {
+	    error("%s (%d): residue[%d][%d][%d]=%d < 0 ... aborting\n",
+		  argv[0], __LINE__, c, y, x, residue[c][y][x]);
+	    abort();
+	  } else if (residue[c][y][x] > 255) {
+	    error("%s (%d): residue[%d][%d][%d]=%d > 255 ... aborting\n",
+		  argv[0], __LINE__, c, y, x, residue[c][y][x]);
+	    abort();
+	  }
+	}
+      }
+#endif
     }
 
+#ifdef _1_
 #if defined (__DEBUG__)
     printf("%s\n", high_fn);
     for(int x=0; x<10; x++) {
       printf("%d ", residue[0][0][x]);
     }
+#endif
 #endif
 
 #endif /* __ANALYZE__ */
@@ -696,6 +749,21 @@ int main(int argc, char *argv[]) {
 #endif /* __INFO__ */
 			 );
       // }}}
+#if defined (__DEBUG__)
+      for(int y=0; y<pixels_in_y[c]; y++) {
+	for (int x=0; x<pixels_in_x[c]; x++) {
+	  if (reference[1][c][y][x] < 0) {
+	    error("%s (%d): reference[1][%d][%d][%d]=%d < 0 ... aborting\n",
+		  argv[0], __LINE__, c, y, x, reference[x][c][y][x]);
+	    abort();
+	  } else if (reference[1][c][y][x] > 255) {
+	    error("%s (%d): reference[1][%d][%d][%d]=%d > 255 ... aborting\n",
+		  argv[0], __LINE__, c, y, x, reference[1][c][y][x]);
+	    abort();
+	  }
+	}
+      }
+#endif
     }
 
     /* Croma Cb. */
@@ -894,18 +962,29 @@ int main(int argc, char *argv[]) {
       for(int y=0; y<pixels_in_y[c]; y++) {
 	for(int x=0; x<pixels_in_x[c]; x++) {
 	  //int val = predicted[c][y][x] - prediction[c][y][x] + INTENSITY_OFFSET;
-	  int tmp = predicted[c][y][x] - prediction[c][y][x];
+	  int tmp = predicted[c][y][x] - prediction[c][y][x] + 128;
+#ifdef _1_
+#if defined (__DEBUG__)
+	  {
+	    static int i=0;
+	    if (i<10) {
+	      printf("(%d) predicted=%d prediction=%d residue=%d\n", __LINE__, predicted[c][y][x], prediction[c][y][x], tmp);
+	      i++;
+	    }
+	  }
+#endif
+#endif
 #if (BPP==8)
-	  if (tmp < -128) {
+	  if (tmp < 0) {
 #if defined (__WARNING__)
-	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, tmp, -128);
+	    warning("%s (%d): [%d,%d,%d] predicted=%d prediction=%d residue=%d -> %d\n", argv[0], __LINE__, c, y, x, predicted[c][y][x], prediction[c][y][x], tmp, 0);
 #endif
-	    tmp = -128;
-	  } else if (tmp > 127) {
+	    tmp = 0;
+	  } else if (tmp > 255) {
 #if defined (__WARNING__)
-	    warning("%s (%d): %d -> %d\n", argv[0], __LINE__, tmp, 127);
+	    warning("%s (%d): [%d,%d,%d] predicted=%d prediction=%d residue=%d -> %d\n", argv[0], __LINE__, c, y, x, predicted[c][y][x], prediction[c][y][x], tmp, 255);
 #endif
-	    tmp = 127;
+	    tmp = 255;
 	  }
 #endif
 	  residue[c][y][x] = tmp;
@@ -913,13 +992,6 @@ int main(int argc, char *argv[]) {
       }
     }
 
-#if defined (__DEBUG__)
-    printf("%s\n", high_fn);	
-    for(int x=0; x<10; x++) {
-      printf("%d ", residue[0][0][x]);
-    }
-#endif
-    
     /* The entropy of the residual picture and the predicted picture is
        calculated. We only use the luma. */
 
@@ -937,7 +1009,7 @@ int main(int argc, char *argv[]) {
 	for(int y=0; y<pixels_in_y[0]; y++) {
 	  for(int x=0; x<pixels_in_x[0]; x++) {
 	    predicted_count[ predicted[0][y][x]                          ]++;
-	    residue_count  [ (residue  [0][y][x] + (TC_MAX_VAL/2)) % 256 ]++;
+	    residue_count  [ (residue  [0][y][x] /*+ (TC_MAX_VAL/2)*/) % 256 ]++;
 	  }
 	}
 	
@@ -976,6 +1048,28 @@ int main(int argc, char *argv[]) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
 	    residue[c][y][x] = predicted[c][y][x];
+#if defined (__DEBUG__)
+	    if (residue[c][y][x] < 0) {
+	      error("%s (%d): residue[%d][%d][%d]=%d < 0 ... aborting\n",
+		    argv[0], __LINE__, c, y, x, residue[c][y][x]);
+	      abort();
+	    } else if (residue[c][y][x] > 255) {
+	      error("%s (%d): residue[%d][%d][%d]=%d > 255 ... aborting\n",
+		    argv[0], __LINE__, c, y, x, residue[c][y][x]);
+	      abort();
+	    }
+#endif
+#ifdef _1_
+#if defined (__DEBUG__)
+	    {
+	      static int i=0;
+	      if (i<10) {
+		printf("(%d) residue=%d\n", __LINE__, residue);
+		i++;
+	      }
+	    }
+#endif
+#endif
 	  }
 	}
       }
@@ -996,6 +1090,18 @@ int main(int argc, char *argv[]) {
 	// }}}
       }
 
+#ifdef _1_
+#if defined (__DEBUG__)
+      {
+	static int i=0;
+	if (i<10) {
+	  printf("(%d) residue=%d\n", __LINE__, residue);
+	  i++;
+	}
+      }
+#endif
+#endif
+      
       /* No motion field (other than 0) associated with an picture I. */
       //motion.write(motion_out_fd, zeroes, blocks_in_y, blocks_in_x);
       motion.write_field(zeroes, blocks_in_y, blocks_in_x, motion_out_fn, i
@@ -1012,14 +1118,27 @@ int main(int argc, char *argv[]) {
       /* We turn to the range [0,255] possibly with clipping and write to disk. */
 
       for(int c=0; c<COMPONENTS; c++) {
+#ifdef _1_
 	/* The following loop is only necessary if the dynamic range
 	   of the residue picture must be stored in the range
 	   [0,255]. */
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
 	    residue[c][y][x] = residue[c][y][x] + INTENSITY_OFFSET;
+#if defined (__DEBUG__)
+	    if (residue[c][y][x] < 0) {
+	      error("%s (%d): residue[%d][%d][%d]=%d < 0 ... aborting\n",
+		    argv[0], __LINE__, c, y, x, residue[c][y][x]);
+	      abort();
+	    } else if (residue[c][y][x] > 255) {
+	      error("%s (%d): residue[%d][%d][%d]=%d > 255 ... aborting\n",
+		    argv[0], __LINE__, c, y, x, residue[c][y][x]);
+	      abort();
+	    }
+#endif
 	  }
 	}
+#endif
 	// {{{ residue -> H
 	texture.write_picture(residue[c],
 			    pixels_in_y[c], pixels_in_x[c],
@@ -1057,6 +1176,28 @@ int main(int argc, char *argv[]) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
 	    predicted[c][y][x] = residue[c][y][x];
+#if defined (__DEBUG__)
+	    if (predicted[c][y][x] < 0) {
+	      error("%s (%d): predicted[%d][%d][%d]=%d < 0 ... aborting\n",
+		    argv[0], __LINE__, c, y, x, predicted[c][y][x]);
+	      abort();
+	    } else if (predicted[c][y][x] > 255) {
+	      error("%s (%d): predicted[%d][%d][%d]=%d > 255 ... aborting\n",
+		    argv[0], __LINE__, c, y, x, predicted[c][y][x]);
+	      abort();
+	    }
+#endif
+#ifdef _1_
+#if defined (__DEBUG__)
+	    {
+	      static int i=0;
+	      if (i<10) {
+		printf("(%d) predicted=%d\n", __LINE__, predicted[c][y][x]);
+		i++;
+	      }
+	    }
+#endif
+#endif
 	  }
 	}
       }
@@ -1064,21 +1205,37 @@ int main(int argc, char *argv[]) {
       for(int c=0; c<COMPONENTS; c++) {
 	for(int y=0; y<pixels_in_y[c]; y++) {
 	  for(int x=0; x<pixels_in_x[c]; x++) {
-	    int aux = residue[c][y][x] + prediction[c][y][x];
-	    if(aux < 0) {
-#if defined __WARNING__
-	      warning("%s: %d -> %d\n", argv[0], aux, 0);
-#endif
-	      aux = 0;
-	      
+	    int tmp = residue[c][y][x] + prediction[c][y][x] - 128;
+#ifdef _1_
+#if defined (__DEBUG__)
+	    {
+	      static int i=0;
+	      if (i<10) {
+		printf("(%d) predicted=%d residue=%d prediction=%d\n", __LINE__, predicted[c][y][x], residue[c][y][x], prediction[c][y][x]);
+		i++;
+	      }
 	    }
-	    else if(aux > 255) {
-#if defined __WARNING__
-	      warning("%s: %d -> %d\n", argv[0], aux, 255);
 #endif
-	      aux = 255;
+#endif
+	    
+#if (BPP==8)
+	    if (tmp < 0) {
+#if defined (__WARNING__)
+	      warning("%s (%d): [%d,%d,%d] residue=%d prediction=%d predicted=%d -> %d\n",
+		      argv[0], __LINE__, c, y, x, residue[c][y][x],
+		      prediction[c][y][x], tmp, 0);
+#endif
+	      tmp = 0;
+	    } else if (tmp > 255) {
+#if defined (__WARNING__)
+	      warning("%s (%d): [%d,%d,%d] residue=%d prediction=%d predicted=%d -> %d\n",
+		      argv[0], __LINE__, c, y, x, residue[c][y][x],
+		      prediction[c][y][x], tmp, 255);
+#endif
+	      tmp = 255;
 	    }
-	    predicted[c][y][x] = aux;
+#endif
+	    predicted[c][y][x] = tmp;
 	  }
 	}
       }

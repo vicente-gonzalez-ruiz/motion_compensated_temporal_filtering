@@ -61,7 +61,7 @@ shell.run("mctf motion_estimate"
           + " --block_size=" + str(block_size)
           + " --border_size=" + str(border_size)
           + " --even_fn=" + "E_" + str(subband)
-          + " --imotion_fn=" + "iM_" + str(subband)
+          + " --imotion_fn=" + "M_" + str(subband-1)
           + " --motion_fn=" + "M_" + str(subband)
           + " --odd_fn=" + "O_" + str(subband)
           + " --pictures=" + str(pictures)

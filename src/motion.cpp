@@ -53,17 +53,20 @@ public:
       for(int f=0; f<2; f++) {
 	for(int y=0; y<y_dim; y++) {
 	  int read = fread(data[i][f][y], x_dim, sizeof(TYPE), fd);
+#ifdef _1_
 #if defined (__INFO__) /** Sign and magnitude */
 	  for(int x=0; x<x_dim; x++) {
 	    info("%2d ", data[i][f][y][x]);
 	  }
 	  info("\n");
 #endif /* __INFO__ */
+#endif
 	}
       }
     }
   }
-  
+
+#ifdef _1_
   void read(FILE *fd, TYPE **data, int y_dim, int x_dim) {
     char x[80];
     fgets(x, 80, fd); /* Magic number */
@@ -71,12 +74,14 @@ public:
     fgets(x, 80, fd); /* Max value */
     for(int y=0; y<y_dim; y++) {
       int read = fread(data[y], x_dim, sizeof(TYPE), fd);
+#ifdef _1_
 #if defined (__INFO__) /** Sign and magnitude */
       for(int x=0; x<x_dim; x++) {
 	info("%2d ", data[y][x]);
       }
       info("\n");
 #endif /* __INFO__ */
+#endif
     }
   }
 
@@ -86,15 +91,18 @@ public:
     fprintf(fd, "65535\n");
     for(int y=0; y<y_dim; y++) {
       fwrite(data[y], x_dim, sizeof(TYPE), fd);
+#ifdef _1_
 #if defined (__INFO__) /** Sign and magnitude */
       for(int x=0; x<x_dim; x++) {
 	info("%2d ", data[y][x]);
       }
       info("\n");
 #endif /* __INFO__ */
+#endif
     }
   }
-  
+#endif
+
   /* Writes to disk a BMVF */
   void write_(FILE *fd, TYPE ****data, int y_dim, int x_dim) {
     //fprintf(fd, "P5\n");
@@ -104,17 +112,19 @@ public:
       for(int f=0; f<2; f++) {
 	for(int y=0; y<y_dim; y++) {
 	  fwrite(data[i][f][y], x_dim, sizeof(TYPE), fd);
+#ifdef _1_
 #if defined (__INFO__) /** Sign and magnitude */
 	  for(int x=0; x<x_dim; x++) {
 	    info("%2d ", data[i][f][y][x]);
 	  }
       info("\n");
 #endif /* __INFO__ */
+#endif
 	}
       }
     }
   }
-
+#ifdef _1_
   void read_component(TYPE **data,
 		      int blocks_in_y,
 		      int blocks_in_x,
@@ -169,7 +179,7 @@ public:
 #endif /* __INFO__ */
     fclose(fd);
   }
-
+#endif
   void read_field(TYPE ****data,
 		  int blocks_in_y,
 		  int blocks_in_x,

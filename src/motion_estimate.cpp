@@ -23,7 +23,7 @@
 #include "motion.cpp"
 #include "common.h"
 
-#define FAST_SEARCH
+//#define FAST_SEARCH
 #define TEXTURE_INTERPOLATION_FILTER _5_3
 #define MOTION_INTERPOLATION_FILTER Haar
 
@@ -190,7 +190,7 @@ void me_for_picture
 
 #if defined FAST_SEARCH
   
-  int dwt_levels = (int)rint(log((double)search_range)/log(2.0)) - 1;
+  int dwt_levels = (int)rint(log((double)search_range/log(2.0)) - 1);
   info("motion_estimate: dwt_levels = %d\n", dwt_levels);
 
   /* DWT applied to pictures. */
@@ -403,7 +403,7 @@ int main(int argc, char *argv[]) {
   int block_size = 32;
   int border_size = 0;
   char *even_fn = (char *)"E";
-  char *imotion_fn = (char *)"imotion";
+  char *imotion_fn = (char *)"/dev/zero";
   char *motion_fn = (char *)"motion";
   char *odd_fn = (char *)"O";
   int pictures = 9;
@@ -547,7 +547,7 @@ int main(int argc, char *argv[]) {
 #endif /* __DEBUG__ */
   }
  
-  int picture_border_size = search_range + border_size;
+  int picture_border_size = (search_range + border_size)+256;
 
   texture < TC_IO_TYPE, TC_CPU_TYPE > texture;
 
@@ -684,13 +684,28 @@ int main(int argc, char *argv[]) {
 			picture_border_size);
 
     info("%s: reading initial motion vectors\n", argv[0]);
+    motion.read_field(mv, blocks_in_y, blocks_in_x, imotion_fn, i
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
+		      , argv[0]
+#endif /* __INFO__ */
+		      );
+    for(int by=0; by<blocks_in_y; by++) {
+      for(int bx=0; bx<blocks_in_x; bx++) {
+	mv[PREV][Y_FIELD][by][bx] *= 2;
+	mv[PREV][X_FIELD][by][bx] *= 2;
+	mv[NEXT][Y_FIELD][by][bx] *= 2;
+	mv[NEXT][X_FIELD][by][bx] *= 2;
+      }
+    }
     //motion.read(imotion_fd, mv, blocks_in_y, blocks_in_x);
+#ifdef _1_
     //This does nothing (leave the above).
     for(int by=0; by<blocks_in_y; by++) {
       for(int bx=0; bx<blocks_in_x; bx++) {
 	mv[PREV][Y_FIELD][by][bx] = mv[PREV][X_FIELD][by][bx] = mv[NEXT][Y_FIELD][by][bx] = mv[NEXT][X_FIELD][by][bx] = 0;
       }
     }
+#endif
 
     me_for_picture(mv,
 		 reference,
