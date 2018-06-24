@@ -689,6 +689,19 @@ int main(int argc, char *argv[]) {
 		      , argv[0]
 #endif /* __INFO__ */
 		      );
+#if defined (__DEBUG__)
+    printf("%s content:\n", imotion_fn);
+    for(int by=0; by<blocks_in_y; by++) {
+      for(int bx=0; bx<blocks_in_x; bx++) {
+	printf("%d,%d %d,%d - ",
+	       mv[PREV][Y_FIELD][by][bx],
+	       mv[PREV][X_FIELD][by][bx],
+	       mv[NEXT][Y_FIELD][by][bx],
+	       mv[NEXT][X_FIELD][by][bx]);
+      }
+      printf("\n");
+    }
+#endif
     for(int by=0; by<blocks_in_y; by++) {
       for(int bx=0; bx<blocks_in_x; bx++) {
 	mv[PREV][Y_FIELD][by][bx] *= 2;
@@ -772,63 +785,26 @@ int main(int argc, char *argv[]) {
 
     info("%s: writing motion vector field %d in \"%s\"\n", argv[0], i, motion_fn);
 
+#if defined (__DEBUG__)
+    printf("%s content:\n", motion_fn);
+    for(int by=0; by<blocks_in_y; by++) {
+      for(int bx=0; bx<blocks_in_x; bx++) {
+	printf("%d,%d %d,%d - ",
+	       mv[PREV][Y_FIELD][by][bx],
+	       mv[PREV][X_FIELD][by][bx],
+	       mv[NEXT][Y_FIELD][by][bx],
+	       mv[NEXT][X_FIELD][by][bx]);
+      }
+      printf("\n");
+    }
+#endif
+
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
     motion.write_field(mv, blocks_in_y, blocks_in_x, motion_fn, i
 #if defined __INFO__
 		       , argv[0]
 #endif /* __INFO__ */
 		       );
-		       
-#ifdef _1_
-    // {{{ mv[0][0] -> motion
-    motion.write_component(mv[0][0],
-			   blocks_in_y, blocks_in_x,
-			   motion_fn,
-			   i,
-			   0
-#if defined __INFO__
-			   ,
-			   argv[0]
-#endif /* __INFO__ */
-			   );
-    // }}}
-    // {{{ mv[0][1] -> motion
-    motion.write_component(mv[0][1],
-			   blocks_in_y, blocks_in_x,
-			   motion_fn,
-			   i,
-			   1
-#if defined __INFO__
-			   ,
-			   argv[0]
-#endif /* __INFO__ */
-			   );
-    // }}}
-    // {{{ mv[1][0] -> motion
-    motion.write_component(mv[1][0],
-			   blocks_in_y, blocks_in_x,
-			   motion_fn,
-			   i,
-			   2
-#if defined __INFO__
-			   ,
-			   argv[0]
-#endif /* __INFO__ */
-			   );
-    // }}}
-    // {{{ mv[1][1] -> motion
-    motion.write_component(mv[1][1],
-			   blocks_in_y, blocks_in_x,
-			   motion_fn,
-			   i,
-			   3
-#if defined __INFO__
-			   ,
-			   argv[0]
-#endif /* __INFO__ */
-			   );
-    // }}}
-#endif /* _1_ */
     /* SWAP(&reference_pic[0], &reference_pic[1]). */ {
       TC_CPU_TYPE **tmp = reference[0];
       reference[0] = reference[1];
