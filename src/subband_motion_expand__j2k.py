@@ -78,7 +78,7 @@ while field < fields:
                   + " -skip_components " + str(c)
         
         if not __debug__:
-            command += " > /dev/null"
+            command += " > /dev/null 2> /dev/null"
 
         try:
             shell.run(command)

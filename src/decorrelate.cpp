@@ -21,9 +21,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#define __INFO__
-#define __DEBUG__
-#define __WARNING__
+//#define __INFO__
+//#define __DEBUG__
+//#define __WARNING__
 
 #include "display.cpp"
 //#include "Haar.cpp"

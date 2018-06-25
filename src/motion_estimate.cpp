@@ -9,9 +9,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#define __INFO__
-#define __DEBUG__
-#define __WARNING__
+//#define __INFO__
+//#define __DEBUG__
+//#define __WARNING__
 
 #include "display.cpp"
 #include "Haar.cpp"
@@ -336,7 +336,9 @@ void me_for_picture
   //int blocks_in_x = (X<<subpixel_accuracy)/block_size;
   
   for(int by=0; by<blocks_in_y; by++) {
+#if defined __INFO__
     printf("%d/%d ",by, blocks_in_y); fflush(stderr);
+#endif
     for(int bx=0; bx<blocks_in_x; bx++) {
       int min_error = 999999999;
       int vy, vx;

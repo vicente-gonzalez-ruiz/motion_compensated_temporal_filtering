@@ -1,3 +1,5 @@
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
@@ -127,7 +129,10 @@ for GOP_number in range(1, GOPs):
             file.seek(0, 2)
             length += file.tell()
     except:
-        log.warning("{} is missing".format(filename))
+        if __debug__:
+            log.warning("{} is missing".format(filename))
+        else:
+            pass
 
     kbps = float(length) * 8.0 / GOP_time / 1000.0
     sys.stdout.write(" %5d" % int(round(kbps)))
@@ -152,7 +157,10 @@ for GOP_number in range(1, GOPs):
                     file.seek(0, 2)
                     length += file.tell()
             except:
-                log.warning("{} is missing".format(filename))
+                if __debug__:
+                    log.warning("{} is missing".format(filename))
+                else:
+                    pass
 
         kbps = float(length) * 8.0 / GOP_time / 1000.0
         sys.stdout.write(" %5d" % int(round(kbps)))
@@ -168,7 +176,10 @@ for GOP_number in range(1, GOPs):
                     file.seek(0, 2)
                     length += file.tell()
             except:
-                log.warning("{} is missing".format(filename))
+                if __debug__:
+                    log.warning("{} is missing".format(filename))
+                else:
+                    pass
 
         kbps = float(length) * 8.0 / GOP_time / 1000.0
         sys.stdout.write(" %5d" % int(round(kbps)))

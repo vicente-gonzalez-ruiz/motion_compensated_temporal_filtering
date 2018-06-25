@@ -56,8 +56,8 @@ void test_display(char *msg) {
 #if defined (__INFO__)
   info("%s: infos are in green\n", msg);
   info_flush();
-#endif
   error("%s: errors are in red\n", msg);
   error_flush();
+#endif
 }
 

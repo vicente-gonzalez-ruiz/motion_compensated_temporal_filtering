@@ -65,7 +65,7 @@ while p < pictures:
               + "/tmp/2.pgm"
 
     if not __debug__:
-        command += " > /dev/null"
+        command += " > /dev/null 2> /dev/null"
 
     try:
         shell.run(command)

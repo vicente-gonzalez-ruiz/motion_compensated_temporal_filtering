@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#video=~/Videos/mobile_352x288x30x420x300.avi
-video=~/Videos/container_352x288x30x420x300.avi
+video=~/Videos/mobile_352x288x30x420x300.avi
+#video=~/Videos/container_352x288x30x420x300.avi
 #video=~/Videos/moving_circle.avi
 #GOPs=9
 #TRLs=2
