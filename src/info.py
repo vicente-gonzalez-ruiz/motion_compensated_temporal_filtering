@@ -62,29 +62,23 @@ sys.stdout.write(" TRL" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
     sys.stdout.write("        ")
-    #for j in range(0, 2**(TRLs-1-i)):
-    #    sys.stdout.write(" ")
     sys.stdout.write("TRL" + str(i-1))
-sys.stdout.write("\n")
+sys.stdout.write("    Total    Total\n");
 
 # Second line. (GOP L_4 R_4+H_4 R_3+H_3 R_2+H_2 R_1+H_1 Total Average).
 sys.stdout.write("GOP#")
 sys.stdout.write("   L_" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
-    #for j in range(0, 2**(TRLs-1-i)):
-    #    sys.stdout.write(" ")
     sys.stdout.write("   R_" + str(i) + "   H_" + str(i))
-sys.stdout.write("    Total Average\n")
+sys.stdout.write("      GOP    Video Average\n")
 
 # Third line. (--------------------------------------)
 sys.stdout.write("---- ")
 sys.stdout.write("----- ")
 for i in range(TRLs-1, 0, -1):
-    #for j in range(0, 2**(TRLs-1-i)):
-    #    sys.stdout.write("-")
     sys.stdout.write("----------- ")
-sys.stdout.write("-------- -------\n")
+sys.stdout.write("-------- -------- -------\n")
 
 # Computations
 
@@ -105,14 +99,14 @@ Kbps_total_pro = 0
 Kbps = float(length) * 8.0 / GOP0_time / 1000.0
 sys.stdout.write("0000 %5d" % Kbps)
 Kbps_total += Kbps
+Kbps_total_GOP = Kbps_total
 Kbps_L0 = Kbps_total
 
 for subband in range(TRLs-1, 0, -1):
-    #for j in range(0, 2**(TRLs-1-subband)) :
-    #    sys.stdout.write("-")
     sys.stdout.write(" %5d" % 0)
     sys.stdout.write(" %5d" % 0)
 
+sys.stdout.write("%9d" % Kbps_total_GOP)
 sys.stdout.write("%9d" % Kbps_total)
 sys.stdout.write("%8d\n" % Kbps_L0)
 
@@ -123,6 +117,7 @@ sys.stdout.write("%8d\n" % Kbps_L0)
 Kbps_total = 0
 for GOP_number in range(1, GOPs):
 
+    Kbps_total_GOP = 0
     sys.stdout.write("%3s" % '%04d' % (GOP_number))
 
     # {{{ L
@@ -135,12 +130,10 @@ for GOP_number in range(1, GOPs):
             length += file.tell()
     except:
         log.warning("{} is missing".format(filename))
-        #log.error("Exception {}".format(traceback.format_exc()))
-        #sys.exit(-1)
 
     Kbps = float(length) * 8.0 / GOP_time / 1000.0
     sys.stdout.write(" %5d" % int(round(Kbps)))
-    Kbps_total += Kbps
+    Kbps_total_GOP += Kbps
 
     # }}}
     
@@ -162,12 +155,10 @@ for GOP_number in range(1, GOPs):
                     length += file.tell()
             except:
                 log.warning("{} is missing".format(filename))
-                #log.error("Exception {}".format(traceback.format_exc()))
-                #sys.exit(-1)
 
         Kbps = float(length) * 8.0 / GOP_time / 1000.0
         sys.stdout.write(" %5d" % int(round(Kbps)))
-        Kbps_total += Kbps
+        Kbps_total_GOP += Kbps
 
         # Texture
         for i in range(pics_in_subband):
@@ -179,19 +170,19 @@ for GOP_number in range(1, GOPs):
                     length += file.tell()
             except:
                 log.warning("{} is missing".format(filename))
-                #log.error("Exception {}".format(traceback.format_exc()))
-                #sys.exit(-1)
-                
+
         Kbps = float(length) * 8.0 / GOP_time / 1000.0
         sys.stdout.write(" %5d" % int(round(Kbps)))
-        Kbps_total += Kbps
+        Kbps_total_GOP += Kbps
 
         pics_in_subband *= 2
 
+    Kbps_total += Kbps_total_GOP
     Kbps_total_pro += Kbps_total
-    Kbps_average = Kbps_total_pro/(GOP_number) + \
+    Kbps_average = Kbps_total/(GOP_number) + \
         (Kbps_L0/(GOP_size*(GOP_number+1)))
-    
+
+    sys.stdout.write("%9d" % Kbps_total_GOP)
     sys.stdout.write("%9d" % Kbps_total)
     sys.stdout.write("%8d" % Kbps_average)
     sys.stdout.write("\n")
