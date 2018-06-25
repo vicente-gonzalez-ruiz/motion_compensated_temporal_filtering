@@ -1,7 +1,7 @@
 #!/bin/bash
 
-video=~/Videos/mobile_352x288x30x420x300.avi
-#video=~/Videos/container_352x288x30x420x300.avi
+#video=~/Videos/mobile_352x288x30x420x300.avi
+video=~/Videos/container_352x288x30x420x300.avi
 #video=~/Videos/moving_circle.avi
 #GOPs=9
 #TRLs=2
@@ -10,9 +10,10 @@ TRLs=4
 y_dim=288
 x_dim=352
 FPS=30
+layers=10 # Be careful, unable to handle more than 10 quality layers
 keep_layers=8
 #slope=0
-slope=42000
+slope=43000
 #slope=39000
 #slope=40000
 
@@ -28,13 +29,14 @@ usage() {
     echo "  [-y Y dimension ($y_dim)]"
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
+    echo "  [-l layers ($layers)]"
     echo "  [-k keep layers ($keep_layers)]"
     echo "  [-? (help)]"
 }
 
 (echo $0 $@ 1>&2)
 
-while getopts "v:p:x:y:f:t:g:k:?" opt; do
+while getopts "v:p:x:y:f:t:g:l:k:?" opt; do
     case ${opt} in
 	v)
 	    video="${OPTARG}"
@@ -59,6 +61,10 @@ while getopts "v:p:x:y:f:t:g:k:?" opt; do
 	g)
 	    GOPs="${OPTARG}"
 	    echo GOPs=$GOPs
+	    ;;
+	l)
+	    layers="${OPTARG}"
+	    echo layers=$layers
 	    ;;
 	k)
 	    keep_layers="${OPTARG}"
@@ -162,7 +168,7 @@ while [ $img -le $number_of_images ]; do
 done
 
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 #exit
 mkdir tmp
@@ -208,7 +214,7 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
-mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality"
+mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
 cd transcode_quality
 mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs

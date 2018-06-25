@@ -136,6 +136,7 @@ parser.layers()
 parser.add_argument("--destination",
                     help="destination directory (must exist)",
                     default="/tmp")
+parser.slope()
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
@@ -143,12 +144,14 @@ keep_layers = int(args.keep_layers)
 TRLs = int(args.TRLs)
 layers = int(args.layers)
 destination = args.destination
+slope = int(args.slope)
 
 log.info("GOPs={}".format(GOPs))
 log.info("keep_layers={}".format(keep_layers))
 log.info("TRLs={}".format(TRLs))
 log.info("layers={}".format(layers))
 log.info("destination={}".format(destination))
+log.info("slope={}".format(slope))
 
 # }}}
 
@@ -213,6 +216,8 @@ for subband in range(TRLs-1, 0, -1):
 
 # }}}
 
+#import ipdb; ipdb.set_trace()
+
 # {{{ Transcode each GOP, except GOP0
 
 subband_layers = []
@@ -238,10 +243,11 @@ for gop in range(0, GOPs-1):
         for i in range(len(slopes)-1):
             file.write("{} ".format(slopes[i]))
             subband_layers.append(['L', TRLs-1, layers-i-1,
-                                   int(slopes[i]) - 42000])
+                                   int(slopes[i]) - slope])
         file.write("{}\n".format(slopes[len(slopes)-1]))
+        #print("--------->", slopes[len(slopes)-1])
         subband_layers.append(['L', TRLs-1, 0,
-                               int(slopes[len(slopes)-1]) - 42000])
+                               int(slopes[len(slopes)-1]) - slope])
     log.info("L_{}: {}".format(TRLs-1, slopes))
 
     # }}}
@@ -446,7 +452,7 @@ with io.open("L_{}.txt".format(TRLs-1), 'r') as file:
     slopes = file.read().split()
 range_of_slopes = int(slopes[0]) - int(slopes[layers-1])
 for index, slope in enumerate(slopes):
-    subband_layers.append(('L', TRLs-1, layers-index-1, int(slope)-42000))
+    subband_layers.append(('L', TRLs-1, layers-index-1, int(slope)-slope))
 
 # ->>>
 
@@ -529,7 +535,7 @@ with io.open("L_{}.txt".format(TRLs-1), 'r') as file:
     slopes = file.read().split()
 range_of_slopes = int(slopes[0]) - int(slopes[layers-1])
 for index, slope in enumerate(slopes):
-    subband_layers.append(('L', TRLs-1, layers-index-1, int(slope)-42000))
+    subband_layers.append(('L', TRLs-1, layers-index-1, int(slope)-slope))
 
 # H's
 for subband in range(1,TRLs):
@@ -539,7 +545,7 @@ for subband in range(1,TRLs):
         #subband_layers.append(('H', TRLs-subband, layers-index-1, int(float(slope)//gain[subband])))
         #subband_layers.append(('H', TRLs-subband, layers-index-1, int(slope)))
         #subband_layers.append(('H', TRLs-subband, layers-index-1, int(float(slope)-range_of_slopes*gain[subband])))
-        subband_layers.append(('H', TRLs-subband, layers-index-1, (int(slope)-42000)//gain[subband]))
+        subband_layers.append(('H', TRLs-subband, layers-index-1, (int(slope)-slope)//gain[subband]))
 
 log.info("subband_layers={}".format(subband_layers))
         
