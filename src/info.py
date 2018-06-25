@@ -58,32 +58,32 @@ sys.stdout.write("\nAll the values are given in thousands (1000) of bits per sec
 
 # First line. (TRL4 TRL3 TRL2 TRL1 TRL0).
 sys.stdout.write("\n     ")
-sys.stdout.write("    TRL" + str(TRLs-1))
+sys.stdout.write(" TRL" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
-    sys.stdout.write("           ")
-    for j in range(0, 2**(TRLs-1-i)):
-        sys.stdout.write(" ")
+    sys.stdout.write("        ")
+    #for j in range(0, 2**(TRLs-1-i)):
+    #    sys.stdout.write(" ")
     sys.stdout.write("TRL" + str(i-1))
 sys.stdout.write("\n")
 
 # Second line. (GOP L_4 R_4+H_4 R_3+H_3 R_2+H_2 R_1+H_1 Total Average).
 sys.stdout.write("GOP#")
-sys.stdout.write("      L_" + str(TRLs-1))
+sys.stdout.write("   L_" + str(TRLs-1))
 
 for i in range(TRLs-1, 0, -1):
-    for j in range(0, 2**(TRLs-1-i)):
-        sys.stdout.write(" ")
-    sys.stdout.write("R_" + str(i) + "     H_" + str(i))
+    #for j in range(0, 2**(TRLs-1-i)):
+    #    sys.stdout.write(" ")
+    sys.stdout.write("   R_" + str(i) + "   H_" + str(i))
 sys.stdout.write("    Total Average\n")
 
 # Third line. (--------------------------------------)
 sys.stdout.write("---- ")
-sys.stdout.write("-------- ")
+sys.stdout.write("----- ")
 for i in range(TRLs-1, 0, -1):
-    for j in range(0, 2**(TRLs-1-i)):
-        sys.stdout.write("-")
-    sys.stdout.write("-------------- ")
+    #for j in range(0, 2**(TRLs-1-i)):
+    #    sys.stdout.write("-")
+    sys.stdout.write("----------- ")
 sys.stdout.write("-------- -------\n")
 
 # Computations
@@ -103,17 +103,17 @@ Kbps_total = 0
 Kbps_total_pro = 0
 
 Kbps = float(length) * 8.0 / GOP0_time / 1000.0
-sys.stdout.write("0000 %8d " % Kbps)
+sys.stdout.write("0000 %5d" % Kbps)
 Kbps_total += Kbps
 Kbps_L0 = Kbps_total
 
 for subband in range(TRLs-1, 0, -1):
-    for j in range(0, 2**(TRLs-1-subband)) :
-        sys.stdout.write("-")
-    sys.stdout.write("%7d " % 0)
-    sys.stdout.write("%6d " % 0)
+    #for j in range(0, 2**(TRLs-1-subband)) :
+    #    sys.stdout.write("-")
+    sys.stdout.write(" %5d" % 0)
+    sys.stdout.write(" %5d" % 0)
 
-sys.stdout.write("%8d" % Kbps_total)
+sys.stdout.write("%9d" % Kbps_total)
 sys.stdout.write("%8d\n" % Kbps_L0)
 
 # }}}
@@ -123,7 +123,7 @@ sys.stdout.write("%8d\n" % Kbps_L0)
 Kbps_total = 0
 for GOP_number in range(1, GOPs):
 
-    sys.stdout.write("%3s " % '%04d' % (GOP_number))
+    sys.stdout.write("%3s" % '%04d' % (GOP_number))
 
     # {{{ L
     
@@ -139,7 +139,7 @@ for GOP_number in range(1, GOPs):
         #sys.exit(-1)
 
     Kbps = float(length) * 8.0 / GOP_time / 1000.0
-    sys.stdout.write("%8d " % int(round(Kbps)))
+    sys.stdout.write(" %5d" % int(round(Kbps)))
     Kbps_total += Kbps
 
     # }}}
@@ -166,7 +166,7 @@ for GOP_number in range(1, GOPs):
                 #sys.exit(-1)
 
         Kbps = float(length) * 8.0 / GOP_time / 1000.0
-        sys.stdout.write("%7d " % int(round(Kbps)))
+        sys.stdout.write(" %5d" % int(round(Kbps)))
         Kbps_total += Kbps
 
         # Texture
@@ -183,7 +183,7 @@ for GOP_number in range(1, GOPs):
                 #sys.exit(-1)
                 
         Kbps = float(length) * 8.0 / GOP_time / 1000.0
-        sys.stdout.write("%6d " % int(round(Kbps)))
+        sys.stdout.write(" %5d" % int(round(Kbps)))
         Kbps_total += Kbps
 
         pics_in_subband *= 2
@@ -192,7 +192,7 @@ for GOP_number in range(1, GOPs):
     Kbps_average = Kbps_total_pro/(GOP_number) + \
         (Kbps_L0/(GOP_size*(GOP_number+1)))
     
-    sys.stdout.write("%8d" % Kbps_total)
+    sys.stdout.write("%9d" % Kbps_total)
     sys.stdout.write("%8d" % Kbps_average)
     sys.stdout.write("\n")
 
