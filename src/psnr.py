@@ -1,3 +1,5 @@
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
 #!/usr/bin/env python3
 # -*- coding: iso-8859-15 -*-
 
@@ -63,11 +65,14 @@ for p in range(pictures):
         fn_a = file_A + "/" + str('%04d' % (p+1)) + "." + extension[c]
         fn_b = file_B + "/" + str('%04d' % (p+1)) + "." + extension[c]
         
-        command = "snr --type=uchar --peak=255" \
+        command = "(snr --type=uchar --peak=255" \
                   + " --file_A=" + fn_a \
                   + " --file_B=" + fn_b \
-                  + " --block_size=" + str(bytes_per_picture[c]) \
-                  + " | grep PSNR | grep dB"
+                  + " --block_size=" + str(bytes_per_picture[c]) + ')'
+        if not __debug__:
+            command += " 2> /dev/null"
+    
+        command += " | grep PSNR | grep dB"
 
         log.info(command)
         out = os.popen(command).read()
