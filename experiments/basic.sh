@@ -10,7 +10,8 @@ TRLs=4
 y_dim=288
 x_dim=352
 FPS=30
-layers=8 # Be careful, unable to handle more than 10 quality layers
+layers=8  # Be careful, unable to handle more than 10 quality layers
+	  # (reason: kdu_compress's output format)
 keep_layers=8
 #slope=0
 slope=43000
