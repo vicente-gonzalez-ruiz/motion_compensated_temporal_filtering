@@ -1,6 +1,8 @@
 #!/bin/bash
 
 video=~/Videos/container_352x288x30x420x300.avi
+# ffmpeg -t 10 -s 352x288 -f rawvideo -pix_fmt rgb24 -r 30 -i /dev/zero ~/Videos/zero_352x288x30x420x300.avi
+video=~/Videos/zero_352x288x30x420x300.avi
 GOPs=2
 TRLs=2
 y_dim=288
@@ -184,10 +186,9 @@ for i in `seq 1 $subband_layers`; do
 	let img=img+1 
     done
 
-    RMSE=`mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs 2> /dev/null | grep RMSE | cut -f 3`
+    RMSE=`mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs`
     echo -n $RMSE >> ../DRcurve.dat
-    echo -ne '\t' >> ../DRcurve.dat
-    cat ../layers.txt >> ../DRcurve.dat
+    echo -ne '\n' >> ../DRcurve.dat
     cd ..
     rm -rf transcode_quality
 done
