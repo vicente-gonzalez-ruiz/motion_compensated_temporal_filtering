@@ -2,15 +2,14 @@
 
 video=~/Videos/container_352x288x30x420x300.avi
 # ffmpeg -t 10 -s 352x288 -f rawvideo -pix_fmt rgb24 -r 30 -i /dev/zero ~/Videos/zero_352x288x30x420x300.avi
-video=~/Videos/zero_352x288x30x420x300.avi
-GOPs=2
-TRLs=2
+#video=~/Videos/zero_352x288x30x420x300.avi
+GOPs=6
+TRLs=5
 y_dim=288
 x_dim=352
 FPS=30
 layers=8  # Be careful, unable to handle more than 10 quality layers
 	  # (reason: kdu_compress's output format)
-keep_layers=8
 slope=43000
 
 __debug__=0
@@ -26,12 +25,11 @@ usage() {
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
     echo "  [-l layers ($layers)"
-    echo "  [-k keep layers ($keep_layers)]"
     echo "  [-s slope ($slope)]"
     echo "  [-? (help)]"
 }
 
-while getopts "v:p:x:y:f:t:g:l:k:s:?" opt; do
+while getopts "v:p:x:y:f:t:g:l:s:?" opt; do
     case ${opt} in
         v)
             video="${OPTARG}"
@@ -152,7 +150,20 @@ done
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 
-rm -f DRcurve.dat
+name=${video}_${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
+echo $name
+rm -f $name
+echo \# $video >> $name
+echo \# $GOPs >> $name
+echo \# $TRLs >> $name
+echo \# $y_dim >> $name
+echo \# $x_dim >> $name
+echo \# $FPS >> $name
+echo \# $layers >> $name
+echo \# $slope >> $name
+echo \# $BPP >> $name
+echo \# $MCTF_QUANTIZER >> $name
+
 subband_layers=`echo $layers*$TRLs | bc`
 for i in `seq 1 $subband_layers`; do
     echo Running for $i quality layers
@@ -162,8 +173,8 @@ for i in `seq 1 $subband_layers`; do
     cd transcode_quality
     mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
     rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
-    echo -n $rate >> ../DRcurve.dat
-    echo -ne '\t' >> ../DRcurve.dat
+    echo -n $rate >> $name
+    echo -ne '\t' >> $name
     mctf expand --GOPs=$GOPs --TRLs=$TRLs
     img=1
     while [ $img -le $number_of_images ]; do
@@ -187,8 +198,16 @@ for i in `seq 1 $subband_layers`; do
     done
 
     RMSE=`mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs`
-    echo -n $RMSE >> ../DRcurve.dat
-    echo -ne '\n' >> ../DRcurve.dat
+    echo -n $RMSE >> $name
+    echo -ne '\n' >> $name
+
+    if [ $__debug__ -eq 1 ]; then
+	
+	(ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null
+	(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
+	
+    fi
+    
     cd ..
     rm -rf transcode_quality
 done
