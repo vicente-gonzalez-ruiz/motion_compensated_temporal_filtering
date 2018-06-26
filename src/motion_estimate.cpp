@@ -23,7 +23,7 @@
 #include "motion.cpp"
 #include "common.h"
 
-#define FAST_SEARCH
+//#define FAST_SEARCH
 #define TEXTURE_INTERPOLATION_FILTER _5_3
 #define MOTION_INTERPOLATION_FILTER Haar
 
