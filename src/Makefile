@@ -10,10 +10,10 @@ default:	all
 
 M4 := $(shell which m4)
 
-ifeq ($(M4),)
-$(warning No m4 found!)
-false
-endif
+#ifeq ($(M4),)
+#$(warning No m4 found!)
+#false
+#endif
 
 ifeq ($(shell which g++),)
 $(warning No c++ found :-/)
