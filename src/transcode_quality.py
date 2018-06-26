@@ -115,7 +115,6 @@ import operator
 from shell import Shell as shell
 from colorlog import ColorLog
 import logging
-from defaults import Defaults
 
 log = ColorLog(logging.getLogger("transcode_quality"))
 log.setLevel('DEBUG')
@@ -282,13 +281,13 @@ for gop in range(0, GOPs-1):
                 file.write("{}".format(average[i]))
                 #subband_layers.append(('H', subband, layers-i-1, slopes[i]))
                 subband_layers.append(['H', subband, layers-i-1,
-                                       int((average[i] - Defaults.slope)
+                                       int((average[i] - slope)
                                            / attenuation[TRLs - subband])])
             #file.write("{}\n".format(slopes[len(slopes)-1]))
             file.write("{}\n".format(average[len(slopes)-1]))
             #subband_layers.append(('H', subband, 0, slopes[len(slopes)-1]))
             subband_layers.append(['H', subband, 0,
-                                   int((average[len(slopes)-1] - Defaults.slope)
+                                   int((average[len(slopes)-1] - slope)
                                        / attenuation[TRLs - subband])])
         log.info("H_{}: {}".format(subband, average))
 
