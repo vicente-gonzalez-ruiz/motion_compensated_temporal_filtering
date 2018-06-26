@@ -32,12 +32,13 @@ usage() {
     echo "  [-t TRLs ($TRLs)]"
     echo "  [-l layers ($layers)]"
     echo "  [-k keep layers ($keep_layers)]"
+    echo "  [-s slope ($slope)]"
     echo "  [-? (help)]"
 }
 
 (echo $0 $@ 1>&2)
 
-while getopts "v:p:x:y:f:t:g:l:k:?" opt; do
+while getopts "v:p:x:y:f:t:g:l:k:s:?" opt; do
     case ${opt} in
 	v)
 	    video="${OPTARG}"
@@ -134,6 +135,7 @@ fi
 if [ $__debug__ -eq 1 ]; then
     set -x
 fi
+
 rm -rf L_0
 mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
@@ -171,7 +173,7 @@ done
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
 mctf info --GOPs=$GOPs --TRLs=$TRLs
-#exit
+
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
@@ -218,7 +220,7 @@ mkdir transcode_quality
 mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
 cd transcode_quality
 mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf info --GOPs=$GOPs --TRLs=$TRLs
+mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
 mctf expand --GOPs=$GOPs --TRLs=$TRLs
 img=1
 while [ $img -le $number_of_images ]; do

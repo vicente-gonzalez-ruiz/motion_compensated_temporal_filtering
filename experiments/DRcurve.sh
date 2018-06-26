@@ -1,12 +1,19 @@
 #!/bin/bash
 
-video=~/Videos/mobile_352x288x30x420x300.yuv
-GOPs=9
-TRLs=6
+video=~/Videos/container_352x288x30x420x300.avi
+GOPs=2
+TRLs=2
 y_dim=288
 x_dim=352
 FPS=30
-layers=8
+layers=8  # Be careful, unable to handle more than 10 quality layers
+	  # (reason: kdu_compress's output format)
+keep_layers=8
+slope=43000
+
+__debug__=0
+BPP=8
+MCTF_QUANTIZER=automatic
 
 usage() {
     echo $0
@@ -17,10 +24,12 @@ usage() {
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
     echo "  [-l layers ($layers)"
+    echo "  [-k keep layers ($keep_layers)]"
+    echo "  [-s slope ($slope)]"
     echo "  [-? (help)]"
 }
 
-while getopts "v:p:x:y:f:t:g:l:?" opt; do
+while getopts "v:p:x:y:f:t:g:l:k:s:?" opt; do
     case ${opt} in
         v)
             video="${OPTARG}"
@@ -50,6 +59,10 @@ while getopts "v:p:x:y:f:t:g:l:?" opt; do
             layers="${OPTARG}"
 	    echo layers=$layers
             ;;
+	s)
+	    slope="${OPTARG}"
+	    echo slope=$slope
+	    ;;
         ?)
             usage
             exit 0
@@ -67,32 +80,119 @@ while getopts "v:p:x:y:f:t:g:l:?" opt; do
     esac
 done
 
-set -x
+if [ $BPP -eq 16 ]; then
 
-rm -f low_0
-ln -s $video low_0
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --layers=$layers
+    RAWTOPGM () {
+	local input_image=$1
+	local x_dim=$2
+	local y_dim=$3
+	local output_image=$4
+	(uchar2ushort < $input_image > /tmp/1) 2> /dev/null
+	rawtopgm -bpp 2 $x_dim $y_dim < /tmp/1 > $output_image
+    }
+
+    PGMTORAW () {
+	local input_image=$1
+	local output_image=$2
+	convert -endian MSB $input_image /tmp/1.gray
+	(ushort2uchar < /tmp/1.gray > $output_image) 2> /dev/null
+    }
+    
+else
+
+    RAWTOPGM () {
+	local input_image=$1
+	local x_dim=$2
+	local y_dim=$3
+	local output_image=$4
+	rawtopgm $x_dim $y_dim < $input_image > $output_image
+    }
+
+    PGMTORAW () {
+	local input_image=$1
+	local output_image=$2
+	convert $input_image /tmp/1.gray
+	mv /tmp/1.gray $output_image
+    }
+    
+fi
+
+if [ $__debug__ -eq 1 ]; then
+    set -x
+fi
+
+rm -rf L_0
+mkdir L_0
+number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
+(ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+x_dim_2=`echo $x_dim/2 | bc`
+y_dim_2=`echo $y_dim/2 | bc`
+img=1
+while [ $img -le $number_of_images ]; do
+    _img=$(printf "%04d" $img)
+    let img_1=img-1
+    _img_1=$(printf "%04d" $img_1)
+
+    input=L_0/$_img.Y
+    output=L_0/${_img_1}_0.pgm
+    RAWTOPGM $input $x_dim $y_dim $output
+
+    input=L_0/$_img.U
+    output=L_0/${_img_1}_1.pgm
+    RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
+    
+    input=L_0/$_img.V
+    output=L_0/${_img_1}_2.pgm
+    RAWTOPGM $input $x_dim_2 $y_dim_2 $output
+    let img=img+1 
+done
+
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
 mctf info --GOPs=$GOPs --TRLs=$TRLs
-subband_layers=`echo $LAYERS*$TRLs | bc`
-rm -f DRcurve.dat
 
-for i in `seq 1 $subband_layers`;
-do
-    echo Running for layers=$i
+rm -f DRcurve.dat
+subband_layers=`echo $layers*$TRLs | bc`
+for i in `seq 1 $subband_layers`; do
+    echo Running for $i quality layers
     mkdir transcode_quality
-#    cp motion*.j2c transcode_quality
-    cp *type* transcode_quality
-    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i
+    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i \
+	 --destination="transcode_quality" --layers=$layers --slope=$slope
     cd transcode_quality
+    mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
     rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
     echo -n $rate >> ../DRcurve.dat
     echo -ne '\t' >> ../DRcurve.dat
     mctf expand --GOPs=$GOPs --TRLs=$TRLs
-    RMSE=`snr --file_A=../low_0 --file_B=low_0 2> /dev/null | grep RMSE | cut -f 3`
+    img=1
+    while [ $img -le $number_of_images ]; do
+	_img=$(printf "%04d" $img)
+	let img_1=img-1
+	_img_1=$(printf "%04d" $img_1)
+    
+	input=L_0/${_img_1}_0.pgm
+	output=L_0/$_img.Y
+	PGMTORAW $input $output
+    
+	input=L_0/${_img_1}_1.pgm
+	output=L_0/$_img.U
+	PGMTORAW $input $output
+    
+	input=L_0/${_img_1}_2.pgm
+	output=L_0/$_img.V
+	PGMTORAW $input $output
+
+	let img=img+1 
+    done
+
+    RMSE=`mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs 2> /dev/null | grep RMSE | cut -f 3`
     echo -n $RMSE >> ../DRcurve.dat
     echo -ne '\t' >> ../DRcurve.dat
     cat ../layers.txt >> ../DRcurve.dat
     cd ..
     rm -rf transcode_quality
 done
-set +x
+
+if [ $__debug__ -eq 1 ]; then
+    set +x
+fi
+
