@@ -3,7 +3,7 @@
 video=~/Videos/container_352x288x30x420x300.avi
 # ffmpeg -t 10 -s 352x288 -f rawvideo -pix_fmt rgb24 -r 30 -i /dev/zero ~/Videos/zero_352x288x30x420x300.avi
 #video=~/Videos/zero_352x288x30x420x300.avi
-GOPs=6
+GOPs=8
 TRLs=5
 y_dim=288
 x_dim=352
@@ -153,16 +153,16 @@ mctf info --GOPs=$GOPs --TRLs=$TRLs
 name=${video}_${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
 echo $name
 rm -f $name
-echo \# $video >> $name
-echo \# $GOPs >> $name
-echo \# $TRLs >> $name
-echo \# $y_dim >> $name
-echo \# $x_dim >> $name
-echo \# $FPS >> $name
-echo \# $layers >> $name
-echo \# $slope >> $name
-echo \# $BPP >> $name
-echo \# $MCTF_QUANTIZER >> $name
+echo \# video=$video >> $name
+echo \# GOPs=$GOPs >> $name
+echo \# TRLs=$TRLs >> $name
+echo \# y_dim=$y_dim >> $name
+echo \# x_dim=$x_dim >> $name
+echo \# FPS=$FPS >> $name
+echo \# layers=$layers >> $name
+echo \# slope=$slope >> $name
+echo \# BPP=$BPP >> $name
+echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name
 
 subband_layers=`echo $layers*$TRLs | bc`
 for i in `seq 1 $subband_layers`; do
