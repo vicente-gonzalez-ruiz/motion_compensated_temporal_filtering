@@ -74,7 +74,7 @@ while field < fields:
  
         command = "trace kdu_expand" \
                   + " -i " + fn + ".j2c" \
-                  + " -o /tmp/" + str(c) + extension \
+                  + " -o tmp_" + str(c) + extension \
                   + " -skip_components " + str(c)
         
         if not __debug__:
@@ -86,6 +86,7 @@ while field < fields:
             log.warning("{} is missing".format(fn + extension))
             continue
 
-        shell.run("trace cat /tmp/" + str(c) + extension
-		  + " >> " + fn + extension)
+        shell.run("trace cat tmp_" + str(c) + extension + " >> " + fn + extension)
+        shell.run("trace rm tmp_" + str(c) + extension)
+  
     field += 1

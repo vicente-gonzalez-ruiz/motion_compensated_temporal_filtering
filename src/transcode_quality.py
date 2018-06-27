@@ -60,7 +60,7 @@ parser.TRLs()
 parser.layers()
 parser.add_argument("--destination",
                     help="destination directory (must exist)",
-                    default="/tmp")
+                    default="/transcode_quality")
 parser.slope()
 
 args = parser.parse_known_args()[0]

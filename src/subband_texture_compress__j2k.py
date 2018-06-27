@@ -65,17 +65,17 @@ while picture < number_of_pictures:
 
     fn = file + "/" + str('%04d' % picture)
 
-    shell.run("trace convert -endian LSB " + fn + "_0.pgm /tmp/0.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_0.pgm tmp_0.pgm")
     #shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
-    shell.run("trace convert -endian LSB " + fn + "_1.pgm /tmp/1.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_1.pgm tmp_1.pgm")
     #shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
-    shell.run("trace convert -endian LSB " + fn + "_2.pgm /tmp/2.pgm")
+    shell.run("trace convert -endian LSB " + fn + "_2.pgm tmp_2.pgm")
     #shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
     command = "trace kdu_compress" \
               + " -i " \
-              + "/tmp/0.pgm," \
-              + "/tmp/1.pgm," \
-              + "/tmp/2.pgm" \
+              + "tmp_0.pgm," \
+              + "tmp_1.pgm," \
+              + "tmp_2.pgm" \
               + " -o " + fn + "." + IMG_EXT \
               + " -jpx_space sYCC CRGoffset=\{0,0\},\{0.25,0.25\},\{0.25,0.25\}" \
               + " -no_weights" \
@@ -86,14 +86,15 @@ while picture < number_of_pictures:
               + " Cuse_sop=" + "no"
 
     # OJO, que con 16 bpp Creversible podría estar a yes
-    
+
     if __debug__:
         command += " | tee /dev/tty | awk '/thresholds/{getline; print}' > "
     else:
         command += " | awk '/thresholds/{getline; print}' > "
 
     command += (fn + ".txt")
-    
+
     shell.run(command)
+    shell.run("trace rm tmp_0.pgm tmp_1.pgm tmp_2.pgm")
 
     picture += 1
