@@ -152,6 +152,7 @@ mctf info --GOPs=$GOPs --TRLs=$TRLs
 
 name=${video}_${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
 echo Generating $name
+rm -f $name
 
 subband_layers=`echo $layers*$TRLs | bc`
 for i in `seq 1 $subband_layers`; do
@@ -201,7 +202,6 @@ for i in `seq 1 $subband_layers`; do
     rm -rf transcode_quality
 done
 
-rm -f $name
 echo \# video=$video >> $name
 echo \# GOPs=$GOPs >> $name
 echo \# TRLs=$TRLs >> $name
