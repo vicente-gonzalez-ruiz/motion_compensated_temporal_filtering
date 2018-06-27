@@ -204,7 +204,7 @@ for gop in range(0, GOPs-1):
         with io.open("H_{}.txt".format(subband), 'a') as file:
             for i in range(len(slopes)-1):
                 #file.write("{} ".format(slopes[i]))
-                file.write("{}".format(average[i]))
+                file.write("{} ".format(average[i]))
                 #subband_layers.append(('H', subband, layers-i-1, slopes[i]))
                 subband_layers.append(['H', subband, layers-i-1,
                                        int((average[i] - slope)
