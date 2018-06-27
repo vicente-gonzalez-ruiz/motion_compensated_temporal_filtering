@@ -66,11 +66,8 @@ while picture < number_of_pictures:
     fn = file + "/" + str('%04d' % picture)
 
     shell.run("trace convert -endian LSB " + fn + "_0.pgm tmp_0.pgm")
-    #shell.run("trace mv /tmp/1 " + fn + "_0.pgm")
     shell.run("trace convert -endian LSB " + fn + "_1.pgm tmp_1.pgm")
-    #shell.run("trace mv /tmp/1 " + fn + "_1.pgm")
     shell.run("trace convert -endian LSB " + fn + "_2.pgm tmp_2.pgm")
-    #shell.run("trace mv /tmp/1 " + fn + "_2.pgm")
     command = "trace kdu_compress" \
               + " -i " \
               + "tmp_0.pgm," \
