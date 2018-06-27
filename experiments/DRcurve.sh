@@ -87,15 +87,17 @@ if [ $BPP -eq 16 ]; then
 	local x_dim=$2
 	local y_dim=$3
 	local output_image=$4
-	(uchar2ushort < $input_image > /tmp/1) 2> /dev/null
-	rawtopgm -bpp 2 $x_dim $y_dim < /tmp/1 > $output_image
+	(uchar2ushort < $input_image > tmp_1) 2> /dev/null
+	rawtopgm -bpp 2 $x_dim $y_dim < tmp_1 > $output_image
+	rm tmp_1
     }
 
     PGMTORAW () {
 	local input_image=$1
 	local output_image=$2
-	convert -endian MSB $input_image /tmp/1.gray
-	(ushort2uchar < /tmp/1.gray > $output_image) 2> /dev/null
+	convert -endian MSB $input_image tmp_1.gray
+	(ushort2uchar < tmp_1.gray > $output_image) 2> /dev/null
+	rm tmp_1.gray
     }
     
 else
@@ -111,8 +113,8 @@ else
     PGMTORAW () {
 	local input_image=$1
 	local output_image=$2
-	convert $input_image /tmp/1.gray
-	mv /tmp/1.gray $output_image
+	convert $input_image tmp_1.gray
+	mv tmp_1.gray $output_image
     }
     
 fi
@@ -193,8 +195,8 @@ for i in `seq 1 $subband_layers`; do
 
     if [ $__debug__ -eq 1 ]; then
 	
-	(ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null
-	(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
+	(ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y tmp_out.yuv) > /dev/null 2> /dev/null
+	(mplayer tmp_out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
 	
     fi
     
