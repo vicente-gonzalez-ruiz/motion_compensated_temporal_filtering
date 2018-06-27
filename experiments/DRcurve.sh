@@ -151,18 +151,7 @@ mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 
 name=${video}_${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
-echo $name
-rm -f $name
-echo \# video=$video >> $name
-echo \# GOPs=$GOPs >> $name
-echo \# TRLs=$TRLs >> $name
-echo \# y_dim=$y_dim >> $name
-echo \# x_dim=$x_dim >> $name
-echo \# FPS=$FPS >> $name
-echo \# layers=$layers >> $name
-echo \# slope=$slope >> $name
-echo \# BPP=$BPP >> $name
-echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name
+echo Generating $name
 
 subband_layers=`echo $layers*$TRLs | bc`
 for i in `seq 1 $subband_layers`; do
@@ -211,6 +200,18 @@ for i in `seq 1 $subband_layers`; do
     cd ..
     rm -rf transcode_quality
 done
+
+rm -f $name
+echo \# video=$video >> $name
+echo \# GOPs=$GOPs >> $name
+echo \# TRLs=$TRLs >> $name
+echo \# y_dim=$y_dim >> $name
+echo \# x_dim=$x_dim >> $name
+echo \# FPS=$FPS >> $name
+echo \# layers=$layers >> $name
+echo \# slope=$slope >> $name
+echo \# BPP=$BPP >> $name
+echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name
 
 if [ $__debug__ -eq 1 ]; then
     set +x
