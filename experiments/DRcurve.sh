@@ -3,7 +3,7 @@
 video=~/Videos/container_352x288x30x420x300.avi
 # ffmpeg -t 10 -s 352x288 -f rawvideo -pix_fmt rgb24 -r 30 -i /dev/zero ~/Videos/zero_352x288x30x420x300.avi
 #video=~/Videos/zero_352x288x30x420x300.avi
-GOPs=8
+GOPs=2
 TRLs=5
 y_dim=288
 x_dim=352
