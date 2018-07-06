@@ -80,9 +80,9 @@ log.info("slope={}".format(slope))
 
 # }}}
 
+# --------------------------------------------------------------------
 def transcode_picture(filename, layers):
     # {{{ 
-
     log.debug("transcode_picture: {} {}".format(filename, layers))
     if layers > 0:
         shell.run("trace kdu_transcode"
@@ -90,143 +90,89 @@ def transcode_picture(filename, layers):
                   + " -jpx_layers sYCC,0,1,2"
                   + " -o " + "transcode_quality/" + filename
                   + " Clayers=" + str(layers))
-
     # }}}
 
-# {{{ Set attenuations among temporal subbands
 
-if TRLs == 1:
-    pass
-elif TRLs == 2:
-    attenuation = [1.0, 1.2460784922]  # [L1/H1]
-elif TRLs == 3:
-    attenuation = [1.0, 1.2500103877, 1.8652117304]  # [L2/H2, L2/H1]
-elif TRLs == 4:
-    attenuation = [1.0, 1.1598810146, 2.1224082769, 3.1669663339]
-elif TRLs == 5:
-    attenuation = [1.0, 1.0877939347, 2.1250255455, 3.8884779989, 5.8022196044]
-elif TRLs == 6:
-    attenuation = [1.0, 1.0456562538, 2.0788785438, 4.0611276369, 7.4312544148,
-            11.0885981772]
-elif TRLs == 7:
-    attenuation = [1.0, 1.0232370223, 2.0434169985, 4.0625355976, 7.9362383342,
-            14.5221257323, 21.6692913386]
-elif TRLs == 8:
-    attenuation = [1.0, 1.0117165706, 2.0226778348, 4.0393126714, 8.0305936232,
-            15.6879129862, 28.7065276104, 42.8346456693]
-else:
-    sys.stderr.write("Attenuations are not available for " + str(TRLs) +
-                     " TRLs. Enter them in transcode_quality.py")
-    sys.exit(0)
 
-# }}}
+# --------------------------------------------------------------------
+shell.run("mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
+cd transcode_quality
+mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
+mctf expand --GOPs=$GOPs --TRLs=$TRLs
+img=1
+while [ $img -le $number_of_images ]; do
+    _img=$(printf "%04d" $img)
+    let img_1=img-1
+    _img_1=$(printf "%04d" $img_1)
+    
+    input=L_0/${_img_1}_0.pgm
+    output=L_0/$_img.Y
+    PGMTORAW $input $output
+    
+    input=L_0/${_img_1}_1.pgm
+    output=L_0/$_img.U
+    PGMTORAW $input $output
+    
+    input=L_0/${_img_1}_2.pgm
+    output=L_0/$_img.V
+    PGMTORAW $input $output
 
+    let img=img+1 
+done
+mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs")
+
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
+
+
+wait = input("PRESS ENTER TO CONTINUE.")
+sys.exit(0)
+    
+# --------------------------------------------------------------------
 # {{{ Compute GOPs and pictures
-
 gop = GOP()
 GOP_size = gop.get_size(TRLs)
 log.info("GOP_size={}".format(GOP_size))
 
 pictures = (GOPs - 1) * GOP_size + 1
 log.info("pictures={}".format(pictures))
-
 # }}}
 
+# --------------------------------------------------------------------
 # {{{ Create directories
-
 shell.run("mkdir " + destination + "/L_" + str(TRLs - 1))
 for subband in range(TRLs-1, 0, -1):
     shell.run("mkdir " + destination + "/R_" + str(subband))
     shell.run("mkdir " + destination + "/H_" + str(subband))
-
 # }}}
 
 #import ipdb; ipdb.set_trace()
 
-# {{{ Transcode each GOP, except GOP0
 
+log.debug("FSO")
+# --------------------------------------------------------------------
+# {{{ FSO
 subband_layers = []
 
 for gop in range(0, GOPs-1):
     log.info("GOP={}/{}".format(gop, GOPs))
-    subband_layers = []
+    subband_layers = [0] * TRLs
 
-    # {{{ Compute slopes of each subband-layer of L<TRLs-1>
 
-    fname = "L_{}/{:04d}.txt".format(TRLs-1, gop+1)  # GOP_0 is not considered
+    log.info("subband layers={}".format(subband_layers))
 
-    # Copy slopes to destination
-    shell.run("cp " + fname + ' ' + destination + '/' + fname)
-
-    # Read slopes
-    with io.open(fname, 'r') as file:
-        slopes = file.read().replace(' ', '').replace('\n', '').split(',')
-    log.info("{}: {}".format(fname, slopes))
-
-    # Add slopes to the info file of the subband
-    with io.open("L_{}.txt".format(TRLs-1), 'a') as file:
-        for i in range(len(slopes)-1):
-            file.write("{} ".format(slopes[i]))
-            subband_layers.append(['L', TRLs-1, layers-i-1,
-                                   int(slopes[i]) - slope])
-        file.write("{}\n".format(slopes[len(slopes)-1]))
-        #print("--------->", slopes[len(slopes)-1])
-        subband_layers.append(['L', TRLs-1, 0,
-                               int(slopes[len(slopes)-1]) - slope])
-    log.info("L_{}: {}".format(TRLs-1, slopes))
-
-    # }}}
-
-    # {{{ Compute slopes of each subband-layer of each H subband
-
-    for subband in range(TRLs - 1, 0, -1):    
-        pics_per_GOP = 1 << (TRLs - subband - 1)
-        first_pic = pics_per_GOP * gop
-        average = [0]*layers
-        
-        for pic in range(first_pic, first_pic + pics_per_GOP):
-            fname = "H_{}/{:04d}.txt".format(subband, pic)
-            
-            # Copy slopes to destination
-            shell.run("cp " + fname + ' ' + destination + '/' + fname)
-
-            # Get slopes
-            with io.open(fname, 'r') as file:
-                slopes = file.read().replace(' ', '').replace('\n', '').split(',')
-            log.info("{}: {}".format(fname, slopes))
-            
-            for i in range(layers):
-                average[i] += int(slopes[i])
-                
-        for l in range(layers):
-            average[l] //= pics_per_GOP
-            
-        with io.open("H_{}.txt".format(subband), 'a') as file:
-            for i in range(len(slopes)-1):
-                #file.write("{} ".format(slopes[i]))
-                file.write("{} ".format(average[i]))
-                #subband_layers.append(('H', subband, layers-i-1, slopes[i]))
-                subband_layers.append(['H', subband, layers-i-1,
-                                       int((average[i] - slope)
-                                           / attenuation[TRLs - subband])])
-            #file.write("{}\n".format(slopes[len(slopes)-1]))
-            file.write("{}\n".format(average[len(slopes)-1]))
-            #subband_layers.append(('H', subband, 0, slopes[len(slopes)-1]))
-            subband_layers.append(['H', subband, 0,
-                                   int((average[len(slopes)-1] - slope)
-                                       / attenuation[TRLs - subband])])
-        log.info("H_{}: {}".format(subband, average))
-
-    log.debug("(original) subband layers={}".format(subband_layers))
+    wait = input("PRESS ENTER TO CONTINUE.")
+    sys.exit(0)
     
-    # }}}
-
-    # {{{ Sort the subband-layers by their relative slope
-
-    subband_layers.sort(key=operator.itemgetter(3), reverse=True)
-    log.debug("(after sorting) subband_layers={}".format(subband_layers))
 
     # }}}
+
+
 
     # {{{ Include motion layers in subband_layers
 

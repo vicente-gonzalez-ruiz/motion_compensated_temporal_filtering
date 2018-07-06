@@ -17,6 +17,10 @@ export MCTF_MOTION_CODEC="j2k"
 ## \brief Slopes sample.
 export SLOPES="44500,44250,44000,43700,43400"
 
+## \brief Transcode algorithm.
+export TRANSCODE_QUALITY="transcode_quality_FSO"
+#export TRANSCODE_QUALITY="transcode_quality_PLT"
+
 
 if [[ "$1" != "info" ]] ; then
     mctf $@

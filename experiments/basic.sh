@@ -18,7 +18,7 @@ slope=43000
 #slope=39000
 #slope=40000
 
-__debug__=0
+__debug__=1
 BPP=8
 MCTF_QUANTIZER=automatic
 
@@ -213,11 +213,11 @@ done
 mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
 
 (ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null
-(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
+#(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
 
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
-mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
+mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
 cd transcode_quality
 mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
@@ -245,7 +245,7 @@ done
 mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
 
 (ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null
-(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
+#(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
 
 if [ $__debug__ -eq 1 ]; then
     set +x
