@@ -353,7 +353,7 @@ EXE	+= $(BIN)/vix2raw
 $(BIN)/psnr_vs_br:	psnr_vs_br.py
 EXE	+= $(BIN)/psnr_vs_br
 
-$(MCTF_BIN)/transcode_quality_PTL:	transcode_quality_PLT.py
+$(MCTF_BIN)/transcode_quality_PLT:	transcode_quality_PLT.py
 EXE	+= $(MCTF_BIN)/transcode_quality_PLT
 
 $(MCTF_BIN)/transcode_quality_FSO:	transcode_quality_FSO.py

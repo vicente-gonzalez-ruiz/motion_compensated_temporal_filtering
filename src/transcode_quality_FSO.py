@@ -93,9 +93,12 @@ def transcode_picture(filename, layers):
     # }}}
 
 
-
+log.info("ooooooooooooooooooooooooooooo")
 # --------------------------------------------------------------------
-shell.run("mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
+
+'''
+shell.run("
+####mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
 cd transcode_quality
 mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
@@ -120,7 +123,13 @@ while [ $img -le $number_of_images ]; do
 
     let img=img+1 
 done
-mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs")
+mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
+")
+'''
+# --------------------------------------------------------------------
+
+ # psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=352 --pixels_in_y=288 --GOPs=2 --TRLs=4
+ # mctf transcode_quality_FSO --GOPs=2 --TRLs=4 --keep_layers=8 --destination=transcode_quality --layers=8 --slope=43000
 
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
@@ -130,8 +139,6 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 # --------------------------------------------------------------------
 
 
-wait = input("PRESS ENTER TO CONTINUE.")
-sys.exit(0)
     
 # --------------------------------------------------------------------
 # {{{ Compute GOPs and pictures
@@ -154,7 +161,6 @@ for subband in range(TRLs-1, 0, -1):
 #import ipdb; ipdb.set_trace()
 
 
-log.debug("FSO")
 # --------------------------------------------------------------------
 # {{{ FSO
 subband_layers = []
@@ -163,16 +169,22 @@ for gop in range(0, GOPs-1):
     log.info("GOP={}/{}".format(gop, GOPs))
     subband_layers = [0] * TRLs
 
+    # 
+    slayers_per_subband = {}
+    slayers_per_subband[('L', TRLs-1)] = 0
+    for i in range(TRLs-1,0,-1):
+        slayers_per_subband[('H', i)] = 0
+        slayers_per_subband[('R', i)] = 0
 
-    log.info("subband layers={}".format(subband_layers))
+  
+    log.info("slayers_per_subband={}".format(slayers_per_subband))
 
     wait = input("PRESS ENTER TO CONTINUE.")
-    sys.exit(0)
+    # sys.exit(0)
     
+# }}}
 
-    # }}}
-
-
+# --------------------------------------------------------------------
 
     # {{{ Include motion layers in subband_layers
 
