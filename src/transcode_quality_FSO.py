@@ -32,7 +32,6 @@
 # }}}
 
 # {{{ Importing
-
 import sys
 from GOP import GOP
 from arguments_parser import arguments_parser
@@ -41,6 +40,11 @@ import operator
 from shell import Shell as shell
 from colorlog import ColorLog
 import logging
+
+import os
+import subprocess as sub
+from subprocess   import check_call
+from subprocess   import CalledProcessError
 
 log = ColorLog(logging.getLogger("transcode_quality"))
 log.setLevel('DEBUG')
@@ -62,6 +66,9 @@ parser.add_argument("--destination",
                     help="destination directory (must exist)",
                     default="/transcode_quality")
 parser.slope()
+parser.add_argument("--FPS",
+                    help="Number of frames per second",
+                    default=30)
 
 args = parser.parse_known_args()[0]
 GOPs = int(args.GOPs)
@@ -70,6 +77,7 @@ TRLs = int(args.TRLs)
 layers = int(args.layers)
 destination = args.destination
 slope = int(args.slope)
+FPS = int(args.FPS)
 
 log.info("GOPs={}".format(GOPs))
 log.info("keep_layers={}".format(keep_layers))
@@ -77,14 +85,14 @@ log.info("TRLs={}".format(TRLs))
 log.info("layers={}".format(layers))
 log.info("destination={}".format(destination))
 log.info("slope={}".format(slope))
-
+log.info("FPS={}".format(FPS))
 # }}}
 
 # --------------------------------------------------------------------
 def transcode_picture(filename, layers):
     # {{{ 
     log.debug("transcode_picture: {} {}".format(filename, layers))
-    if layers > 0:
+    if layers > 0 :
         shell.run("trace kdu_transcode"
                   + " -i " + filename
                   + " -jpx_layers sYCC,0,1,2"
@@ -93,43 +101,50 @@ def transcode_picture(filename, layers):
     # }}}
 
 
-log.info("ooooooooooooooooooooooooooooo")
 # --------------------------------------------------------------------
+def transcode_images(layersub):
+    # {{{ Clean the previus transcode and create directories
+    shell.run("rm -rf transcode_quality; mkdir transcode_quality")
+    shell.run("mkdir " + destination + "/L_" + str(TRLs - 1))
+    for subband in range(TRLs-1, 0, -1):
+        shell.run("mkdir " + destination + "/R_" + str(subband))
+        shell.run("mkdir " + destination + "/H_" + str(subband))
 
+    # }}}
+
+    # {{{
+    log.debug("transcode_images={}".format(layersub))
+    for key, value in layersub.items():
+        pics_per_subband = (1 << (TRLs-key[1]-1))
+        for p in range(pics_per_subband * gop,
+                       pics_per_subband * gop + pics_per_subband):
+            if key[0] == 'L':
+                fname = key[0] + '_' + str(key[1]) + '/' + str('%04d' % (p+1)) + ".jpx"
+                transcode_picture(fname, value)
+            elif key[0] == 'H':
+                fname = key[0] + '_' + str(key[1]) + '/' + str('%04d' % p) + ".jpx"
+                transcode_picture(fname, value)
+            elif key[0] == 'R':
+                if value > 0:
+                    fname = "R_" + str(key[1]) + '/' + str('%04d' % p) + ".j2c"
+                    shell.run("trace cp " + fname + ' ' + destination + '/' + fname)
+
+    # {{{ Transcode GOP0, using the same number of subband layers than the last GOP
+    
+    if gop == GOPs-1 :
+        wait = input("Gop: " + str(gop) + " de " + str(GOPs)) #############################################################
+        transcode_picture("L_" + str(TRLs-1) + "/0000.jpx", layersub[("L", TRLs-1)]) # GOP0
+    # }}}
+    # }}}
+    
+# --------------------------------------------------------------------
+    
+# --------------------------------------------------------------------
+# psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=352 --pixels_in_y=288 --GOPs=2 --TRLs=4
+''' EJECUCION::::::::::::::::::::::::::::::::::::::::::::::::::
+mkdir tanscode_quality
+mctf transcode_quality_FSO --GOPs=2 --TRLs=4 --keep_layers=8 --destination=transcode_quality --layers=8 --slope=43000
 '''
-shell.run("
-####mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
-cd transcode_quality
-mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
-mctf expand --GOPs=$GOPs --TRLs=$TRLs
-img=1
-while [ $img -le $number_of_images ]; do
-    _img=$(printf "%04d" $img)
-    let img_1=img-1
-    _img_1=$(printf "%04d" $img_1)
-    
-    input=L_0/${_img_1}_0.pgm
-    output=L_0/$_img.Y
-    PGMTORAW $input $output
-    
-    input=L_0/${_img_1}_1.pgm
-    output=L_0/$_img.U
-    PGMTORAW $input $output
-    
-    input=L_0/${_img_1}_2.pgm
-    output=L_0/$_img.V
-    PGMTORAW $input $output
-
-    let img=img+1 
-done
-mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
-")
-'''
-# --------------------------------------------------------------------
-
- # psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=352 --pixels_in_y=288 --GOPs=2 --TRLs=4
- # mctf transcode_quality_FSO --GOPs=2 --TRLs=4 --keep_layers=8 --destination=transcode_quality --layers=8 --slope=43000
 
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
@@ -137,9 +152,7 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
-
-
-    
+# --------------------------------------------------------------------
 # --------------------------------------------------------------------
 # {{{ Compute GOPs and pictures
 gop = GOP()
@@ -151,126 +164,127 @@ log.info("pictures={}".format(pictures))
 # }}}
 
 # --------------------------------------------------------------------
-# {{{ Create directories
-shell.run("mkdir " + destination + "/L_" + str(TRLs - 1))
-for subband in range(TRLs-1, 0, -1):
-    shell.run("mkdir " + destination + "/R_" + str(subband))
-    shell.run("mkdir " + destination + "/H_" + str(subband))
-# }}}
-
+#wait = input("carpetas. PRESS ENTER TO CONTINUE.") ####################################
 #import ipdb; ipdb.set_trace()
 
 
 # --------------------------------------------------------------------
+# ~/tmp			/'tmp'				/transcode_quality        
+# ~/compresión	/extracción_total	/extracción_parcial
+
 # {{{ FSO
-subband_layers = []
-
-for gop in range(0, GOPs-1):
+for gop in range(0, GOPs-1) :
     log.info("GOP={}/{}".format(gop, GOPs))
-    subband_layers = [0] * TRLs
 
-    # 
-    slayers_per_subband = {}
-    slayers_per_subband[('L', TRLs-1)] = 0
-    for i in range(TRLs-1,0,-1):
-        slayers_per_subband[('H', i)] = 0
-        slayers_per_subband[('R', i)] = 0
+    # Reset per gop
+    layersub = {}
+    layersub[('L', TRLs-1)] = 0
+    for i in range(TRLs-1,0,-1) :
+        layersub[('H', i)] = 0
+        layersub[('R', i)] = 0
 
-  
-    log.info("slayers_per_subband={}".format(slayers_per_subband))
+    # Add one layer
+    while layersub[('H',1)] < layers :
+        try_layersub = layersub
 
-    wait = input("PRESS ENTER TO CONTINUE.")
-    # sys.exit(0)
-    
-# }}}
+        for key, value in try_layersub.items() : 
+            if try_layersub[key] < layers :
+                try_layersub[key] += 1 # Increase one layer in a subband
 
-# --------------------------------------------------------------------
+                '''
+                try_layersub[('L', TRLs-1)] = 8
+                for i in range(TRLs-1,0,-1) :
+                    try_layersub[('H', i)] = 8
+                    try_layersub[('R', i)] = 8
+                ''' 
+                    
+                # Get angle                
+                transcode_images(try_layersub)
 
-    # {{{ Include motion layers in subband_layers
+                # kbps
+                os.chdir     ("/home/cmaturana/scratch/tmp/tmp/transcode_quality")
+                shell.run    ("mctf create_zero_texture --pixels_in_y=" + str(288) + " --pixels_in_x=" + str(352)) # !
+                log.debug    ("mctf info --GOPs=" + str(GOPs) + " --TRLs=" + str(TRLs) + " --FPS=" + str(FPS) + " 2> /dev/null | grep \"Average\" | cut -d \" \" -f 5")
+                p = sub.Popen("mctf info --GOPs=" + str(GOPs) + " --TRLs=" + str(TRLs) + " --FPS=" + str(FPS) + " 2> /dev/null | grep \"Average\" | cut -d \" \" -f 5", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+                out, err = p.communicate()
+                kbps = float(out)
 
-    for t in range(TRLs-1, 0, -1):
-        c = 0
-        l = len(subband_layers)
-        for s in range(l):
-            if subband_layers[s][0] == 'H':
-                if subband_layers[s][1] == t:
-                    subband_layers.insert(c, ('R', t, 0, 0))
-                    break
-            c += 1
+                # Expand
+                shell.run("mctf expand --GOPs=" + str(GOPs) + " --TRLs=" + str(TRLs))
+                # Video to Images
+                shell.run("../../../raw_pgm.sh")
+                sys.exit(0)
+                
+                
+                # Psnr        
+                shell.run("mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=352 --pixels_in_y=288 --GOPs=2 --TRLs=4")
+                wait = input("fin psnr. PRESS ENTER TO CONTINUE.")
 
-    log.debug("(after including motion layers) subband_layers={}".
-              format(subband_layers))
-    
-    # }}}
+                p = sub.Popen("snr --file_A=" + str(snr_fileA) + " --file_B=" + str(snr_fileB) + " 2> /dev/null | grep RMSE | cut -f 3", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+                out, err = p.communicate()
+                print("INFO"+out)
+                wait = input("fin info. PRESS ENTER TO CONTINUE.")
 
-    # {{{ Truncate the list of subband_layers
-
-    del subband_layers[keep_layers:]
-    log.info("(after truncating) subband_layers={}".format(subband_layers))
-
-    # }}}
-
-    # {{{ Count the number of subband-layers per subband
-
-    # Reset
-    slayers_per_subband = {}
-    slayers_per_subband[('L', TRLs-1)] = 0
-    for i in range(TRLs-1,0,-1):
-        slayers_per_subband[('H', i)] = 0
-        slayers_per_subband[('R', i)] = 0
+                # Angle = rate 
+                # radian = math.atan ( (psnr_antes - psnr) / (kbps_TM[1] - kbps_antes) )
+sys.exit(0)
         
-    # Count
-    for i in subband_layers:
-        slayers_per_subband[(i[0], i[1])] += 1
+#log.info("try_layersub:{}".format(try_layersub)) #     
+wait = input("PRESS ENTER TO CONTINUE.")
+log.info("key: " + str(key))
+log.info("value: " + str(value))
+log.info("try_layersub[key]: " + str(try_layersub[key]))
+#log.info("kbps: " + str(kbps)) # wait = input("fin info. PRESS ENTER TO CONTINUE.")
+#shell.run("mctf create_zero_texture --pixels_in_y=288 --pixels_in_x=352")
 
-    # Write
-    with io.open("layers.txt", 'a') as file:
-        log.info("{}:{}".format(('L', TRLs-1),
-                                slayers_per_subband[('L', TRLs-1)]))
-        file.write("{}:{} ".format(('L', TRLs-1),
-                                   slayers_per_subband[('L', TRLs-1)]))
-        for i in range(TRLs-1, 0, -1):
-            log.info("{}:{}".format(('R', i),
-                                    slayers_per_subband[('R', i)]))
-            file.write("{}:{} ".format(('R', i),
-                                       slayers_per_subband[('R', i)]))
-        for i in range(TRLs-1, 0, -1):
-            log.info("{}:{}".format(('H', i),
-                                    slayers_per_subband[('H', i)]))
-            file.write("{}:{} ".format(('H', i),
-                                       slayers_per_subband[('H', i)]))
-        file.write("\n")
+os.chdir("/home/cmaturana/scratch/tmp")
+shell.run("echo $PWD")
+shell.run("mctf copy --GOPs=2 --TRLs=4 --destination=tmp/transcode_quality")
 
-    # }}}
 
-    # {{{ Transcode the images
+'''
+p = sub.Popen("snr --file_A=" + str(snr_fileA) + " --file_B=" + str(snr_fileB) + " 2> /dev/null | grep RMSE | cut -f 3", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+out, err = p.communicate()
+#errcode = p.returncode
+if out == "" : #if err in locals() :
+    check_call("echo SNR sin salida.", shell=True)
+    exit (0)
+'''
 
-    log.debug(slayers_per_subband)
-    for key, value in slayers_per_subband.items():
-        pics_per_subband = (1 << (TRLs-key[1]-1))
-        for p in range(pics_per_subband * gop,
-                       pics_per_subband * gop + pics_per_subband):
-            if key[0] == 'L':
-                fname = key[0] + '_' + str(key[1]) + '/' \
-                + str('%04d' % (p+1)) + ".jpx"
-                transcode_picture(fname, value)
-            elif key[0] == 'H':
-                fname = key[0] + '_' + str(key[1]) + '/' \
-                + str('%04d' % p) + ".jpx"
-                transcode_picture(fname, value)
-            elif key[0] == 'R':
-                if value > 0:
-                    fname = "R_" + str(key[1]) + '/' \
-                        + str('%04d' % p) + ".j2c"
-                    shell.run("trace cp " + fname + ' '
-                              + destination + '/' + fname)
-    # }}}
 
+
+#log.info("layersub={}".format(layersub))
+#log.info(layersub)
+wait = input("fin. PRESS ENTER TO CONTINUE.")
+# sys.exit(0)
+shell.run("rm -rf *")    
 # }}}
+# --------------------------------------------------------------------
+''' 
+LLAMADA A SISTEMA Y DEVUELVE VALOR
 
-# {{{ Transcode GOP0, using the same number of subband layers than the last GOP
+    p = sub.Popen("snr --file_A=" + str(snr_fileA) + " --file_B=" + str(snr_fileB) + " 2> /dev/null | grep RMSE | cut -f 3", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+    out, err = p.communicate()
+    #errcode = p.returncode
+    if out == "" : #if err in locals() :
+        check_call("echo SNR sin salida.", shell=True)
+        exit (0)
+        
+        
+        
+RADIAN        
+        if kbps_TM[1] == kbps_antes : # EmptyLayer  # - Improve the quality of the reconstruction without increasing kbps, seems impossible but can occur in this research environment. A codestream is formed by a set of GOPS, besides the GOP0, which is formed by an image of the L subband. # - The GOP0 taken into account in the info.py function for the complete codestream. It may be the case in a sorting algorithm, evaluating quality pillowtop, the codestream: GOP0 grow in, but does not grow in the GOP1, so both have the same codestream kbps, since only look at the GOP1, but have different rmse.
+            emptyLayer += 1
+            radian      = math.atan ( (rmse1D_antes - rmse1D) / 0.001 ) # A little value.
+        else :                        # No EmptyLayer
+            emptyLayer  = 0
+            radian      = math.atan ( (rmse1D_antes - rmse1D) / (kbps_TM[1] - kbps_antes) )
+            
+            
 
-transcode_picture("L_" + str(TRLs-1) + "/0000.jpx",
-                  slayers_per_subband[("L", TRLs-1)]) # GOP0
-# }}}
-
+'''
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
+# --------------------------------------------------------------------
