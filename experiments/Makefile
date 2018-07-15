@@ -46,3 +46,4 @@
 ~/Videos/zero_352x288x30x420x300_2_8_288_352_30_8_43000_8_automatic_DRcurve.dat:
     nohup ~/MCTF-video-coding/experiments/DRcurve.sh -v ~/Videos/zero_352x288x30x420x300.avi -g 2 -t 8 &
 
+container_352x288x30x420x300.pdf:	~/Videos/container_352x288x30x420x300*.dat ~/Videos/zero_352x288x30x420x300*.dat
