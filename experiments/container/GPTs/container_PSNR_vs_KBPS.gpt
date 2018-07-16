@@ -1,0 +1,6 @@
+set title "Container"
+set xlabel "KBPS"
+set ylabel "PSNR[dB]"
+
+plot "< paste ~/Videos/container_352x288x30x420x300.avi_3_7_288_352_30_8_43000_8_automatic_DRcurve.dat ~/Videos/zero_352x288x30x420x300.avi_3_7_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=64\$"
+
