@@ -42,6 +42,7 @@ from colorlog import ColorLog
 import logging
 
 import os
+import math
 import subprocess as sub
 from subprocess   import check_call
 from subprocess   import CalledProcessError
@@ -131,7 +132,7 @@ def transcode_images(layersub):
 
     # {{{ Transcode GOP0, using the same number of subband layers than the last GOP
     
-    if gop == GOPs-1 :
+    if gop == GOPs-2 :
         wait = input("Gop: " + str(gop) + " de " + str(GOPs)) #############################################################
         transcode_picture("L_" + str(TRLs-1) + "/0000.jpx", layersub[("L", TRLs-1)]) # GOP0
     # }}}
@@ -186,6 +187,8 @@ for gop in range(0, GOPs-1) :
     # Add one layer
     while layersub[('H',1)] < layers :
         try_layersub = layersub
+        biggest_angle = 0
+        FSO[0] = 
 
         for key, value in try_layersub.items() : 
             if try_layersub[key] < layers :
@@ -197,7 +200,7 @@ for gop in range(0, GOPs-1) :
                     try_layersub[('H', i)] = 8
                     try_layersub[('R', i)] = 8
                 ''' 
-                    
+
                 # Get angle                
                 transcode_images(try_layersub)
 
@@ -213,43 +216,38 @@ for gop in range(0, GOPs-1) :
                 shell.run("mctf expand --GOPs=" + str(GOPs) + " --TRLs=" + str(TRLs))
                 # Video to Images
                 shell.run("../../../raw_pgm.sh")
-                sys.exit(0)
-                
-                
-                # Psnr        
-                shell.run("mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=352 --pixels_in_y=288 --GOPs=2 --TRLs=4")
-                wait = input("fin psnr. PRESS ENTER TO CONTINUE.")
 
-                p = sub.Popen("snr --file_A=" + str(snr_fileA) + " --file_B=" + str(snr_fileB) + " 2> /dev/null | grep RMSE | cut -f 3", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+                # Psnr
+                p = sub.Popen("mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=" + str(352) + " --pixels_in_y=" + str(288) + " --GOPs=" + str(GOPs) + " --TRLs=" + str(TRLs), shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
                 out, err = p.communicate()
-                print("INFO"+out)
-                wait = input("fin info. PRESS ENTER TO CONTINUE.")
+                psnr=float(out)
+                log.info("psnr: " + str(psnr))
 
-                # Angle = rate 
-                # radian = math.atan ( (psnr_antes - psnr) / (kbps_TM[1] - kbps_antes) )
+                # Angle = Tan (difference psnr / difference kbps)
+                angle = math.atan ( (psnr - old_psnr) / (kbps - old_kbps) )
+
+                if biggest_angle < angle :
+                    biggest_angle = angle
+                    best_layersub = try_layersub
+                    old_psnr      = psnr
+                    old_kbps      = kbps
+
+
+# Images to Video & play                
+shell.run("(ffmpeg -y -s " + str(352) + "x" + str(288) + " -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null")
+shell.run("(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=" + str(352) + ":h=" + str(288) + " -loop 0 -fps " + str(FPS) + ") > /dev/null 2> /dev/null")
+
 sys.exit(0)
-        
+
 #log.info("try_layersub:{}".format(try_layersub)) #     
 wait = input("PRESS ENTER TO CONTINUE.")
 log.info("key: " + str(key))
-log.info("value: " + str(value))
-log.info("try_layersub[key]: " + str(try_layersub[key]))
-#log.info("kbps: " + str(kbps)) # wait = input("fin info. PRESS ENTER TO CONTINUE.")
+log.info("value: " + str(try_layersub[key]))
 #shell.run("mctf create_zero_texture --pixels_in_y=288 --pixels_in_x=352")
 
 os.chdir("/home/cmaturana/scratch/tmp")
 shell.run("echo $PWD")
 shell.run("mctf copy --GOPs=2 --TRLs=4 --destination=tmp/transcode_quality")
-
-
-'''
-p = sub.Popen("snr --file_A=" + str(snr_fileA) + " --file_B=" + str(snr_fileB) + " 2> /dev/null | grep RMSE | cut -f 3", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
-out, err = p.communicate()
-#errcode = p.returncode
-if out == "" : #if err in locals() :
-    check_call("echo SNR sin salida.", shell=True)
-    exit (0)
-'''
 
 
 
@@ -260,28 +258,14 @@ wait = input("fin. PRESS ENTER TO CONTINUE.")
 shell.run("rm -rf *")    
 # }}}
 # --------------------------------------------------------------------
-''' 
-LLAMADA A SISTEMA Y DEVUELVE VALOR
-
-    p = sub.Popen("snr --file_A=" + str(snr_fileA) + " --file_B=" + str(snr_fileB) + " 2> /dev/null | grep RMSE | cut -f 3", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
-    out, err = p.communicate()
-    #errcode = p.returncode
-    if out == "" : #if err in locals() :
-        check_call("echo SNR sin salida.", shell=True)
-        exit (0)
-        
-        
-        
-RADIAN        
-        if kbps_TM[1] == kbps_antes : # EmptyLayer  # - Improve the quality of the reconstruction without increasing kbps, seems impossible but can occur in this research environment. A codestream is formed by a set of GOPS, besides the GOP0, which is formed by an image of the L subband. # - The GOP0 taken into account in the info.py function for the complete codestream. It may be the case in a sorting algorithm, evaluating quality pillowtop, the codestream: GOP0 grow in, but does not grow in the GOP1, so both have the same codestream kbps, since only look at the GOP1, but have different rmse.
-            emptyLayer += 1
-            radian      = math.atan ( (rmse1D_antes - rmse1D) / 0.001 ) # A little value.
-        else :                        # No EmptyLayer
-            emptyLayer  = 0
-            radian      = math.atan ( (rmse1D_antes - rmse1D) / (kbps_TM[1] - kbps_antes) )
-            
-            
-
+'''
+RADIAN
+    if kbps_TM[1] == kbps_antes : # EmptyLayer  # - Improve the quality of the reconstruction without increasing kbps, seems impossible but can occur in this research environment. A codestream is formed by a set of GOPS, besides the GOP0, which is formed by an image of the L subband. # - The GOP0 taken into account in the info.py function for the complete codestream. It may be the case in a sorting algorithm, evaluating quality pillowtop, the codestream: GOP0 grow in, but does not grow in the GOP1, so both have the same codestream kbps, since only look at the GOP1, but have different rmse.
+        emptyLayer += 1
+        radian      = math.atan ( (rmse1D_antes - rmse1D) / 0.001 ) # A little value.
+    else :                        # No EmptyLayer
+        emptyLayer  = 0
+        radian      = math.atan ( (rmse1D_antes - rmse1D) / (kbps_TM[1] - kbps_antes) )
 '''
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
