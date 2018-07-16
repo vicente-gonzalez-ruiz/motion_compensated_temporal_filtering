@@ -1,7 +1,7 @@
 #!/bin/bash
 
 video_dir=~/Videos
-video=$video_dir/container_352x288x30x420x300.avi
+video=container_352x288x30x420x300.avi
 # ffmpeg -t 10 -s 352x288 -f rawvideo -pix_fmt rgb24 -r 30 -i /dev/zero ~/Videos/zero_352x288x30x420x300.avi
 #video=~/Videos/zero_352x288x30x420x300.avi
 GOPs=2
@@ -127,7 +127,7 @@ fi
 rm -rf L_0
 mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
-(ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+(ffmpeg -i $video_dir/$video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 x_dim_2=`echo $x_dim/2 | bc`
 y_dim_2=`echo $y_dim/2 | bc`
 img=1
@@ -153,9 +153,9 @@ done
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 
-name=${video}_${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
+name=$video/${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
+rm -rf $video
 echo Generating $name
-rm -f $name
 
 echo \# video=$video >> $name
 echo \# GOPs=$GOPs >> $name
