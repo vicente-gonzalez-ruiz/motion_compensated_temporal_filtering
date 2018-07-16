@@ -1,6 +1,7 @@
 #!/bin/bash
 
-video=~/Videos/container_352x288x30x420x300.avi
+video_dir=~/Videos
+video=$video_dir/container_352x288x30x420x300.avi
 # ffmpeg -t 10 -s 352x288 -f rawvideo -pix_fmt rgb24 -r 30 -i /dev/zero ~/Videos/zero_352x288x30x420x300.avi
 #video=~/Videos/zero_352x288x30x420x300.avi
 GOPs=2
@@ -156,6 +157,17 @@ name=${video}_${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}
 echo Generating $name
 rm -f $name
 
+echo \# video=$video >> $name
+echo \# GOPs=$GOPs >> $name
+echo \# TRLs=$TRLs >> $name
+echo \# y_dim=$y_dim >> $name
+echo \# x_dim=$x_dim >> $name
+echo \# FPS=$FPS >> $name
+echo \# layers=$layers >> $name
+echo \# slope=$slope >> $name
+echo \# BPP=$BPP >> $name
+echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name
+
 subband_layers=`echo $layers*$TRLs | bc`
 for i in `seq 1 $subband_layers`; do
     echo Running for $i quality layers
@@ -203,17 +215,6 @@ for i in `seq 1 $subband_layers`; do
     cd ..
     rm -rf transcode_quality
 done
-
-echo \# video=$video >> $name
-echo \# GOPs=$GOPs >> $name
-echo \# TRLs=$TRLs >> $name
-echo \# y_dim=$y_dim >> $name
-echo \# x_dim=$x_dim >> $name
-echo \# FPS=$FPS >> $name
-echo \# layers=$layers >> $name
-echo \# slope=$slope >> $name
-echo \# BPP=$BPP >> $name
-echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name
 
 if [ $__debug__ -eq 1 ]; then
     set +x
