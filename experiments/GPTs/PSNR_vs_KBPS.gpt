@@ -1,15 +1,6 @@
-#set yrange [2:33] # [4:17]
-set xrange [25:200000] # [200:10000]
-#set xrange [100:10000]
-#set grid
-set logscale x
 set title "Crowdrun"
-#set xlabel "Kbps" offset 0,4,0
-set xlabel "Kbps"
-#set ylabel "RMSE" offset 8,0,0
-set ylabel "RMSE"
-#set key left bottom #set key center top
-#set key reverse top right
+set xlabel "KBPS"
+set ylabel "PSNR[dB]"
 
 set nokey
 
