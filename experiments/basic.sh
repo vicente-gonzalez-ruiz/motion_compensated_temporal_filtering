@@ -6,6 +6,7 @@ video=~/Videos/container_352x288x30x420x300.avi
 #GOPs=9
 #TRLs=2
 GOPs=2
+GOPs=3 # Jse
 TRLs=4
 y_dim=288
 x_dim=352
@@ -23,7 +24,7 @@ export TRANSCODE_QUALITY="transcode_quality_FSO"
 #export TRANSCODE_QUALITY="transcode_quality_PLT"
 
 
-__debug__=1
+__debug__=0
 BPP=8
 MCTF_QUANTIZER=automatic
 
@@ -222,7 +223,7 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
-mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS
+mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 
 
 exit 0 # Jse

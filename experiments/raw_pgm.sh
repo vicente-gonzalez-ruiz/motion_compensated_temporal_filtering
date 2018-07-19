@@ -6,7 +6,7 @@ y_dim=288
 x_dim=352
 
 
-__debug__=1
+__debug__=0
 BPP=8
 MCTF_QUANTIZER=automatic
 
