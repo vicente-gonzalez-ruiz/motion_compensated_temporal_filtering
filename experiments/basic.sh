@@ -11,9 +11,10 @@ TRLs=4
 y_dim=288
 x_dim=352
 FPS=30
-layers=8  # Be careful, unable to handle more than 10 quality layers
-	  # (reason: kdu_compress's output format)
+layers=8    # Be careful, unable to handle more than 10 quality layers
+	        # (reason: kdu_compress's output format)
 keep_layers=8
+
 #slope=0
 slope=43000
 #slope=39000
@@ -223,7 +224,7 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
-mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video
 
 
 exit 0 # Jse
