@@ -1,6 +1,7 @@
-set title "Container"
-set xlabel "KBPS"
+set title "Container 352x288x129 4:2:0 30Hz"
+set xlabel "Bit-rate (KBPS)"
 set ylabel "PSNR[dB]"
+set key bottom
 
-plot "< paste ../3_7_288_352_30_8_43000_8_automatic_DRcurve.dat ../../zero_352x288x30x420x300.avi/3_7_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=64\$"
+plot "< paste ../3_7_288_352_30_8_43000_8_automatic_DRcurve.dat ../../zero_352x288x30x420x300.avi/3_7_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=64\$", "< paste ../5_6_288_352_30_8_43000_8_automatic_DRcurve.dat ../../zero_352x288x30x420x300.avi/5_6_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=32\$", "< paste ../9_5_288_352_30_8_43000_8_automatic_DRcurve.dat ../../zero_352x288x30x420x300.avi/9_5_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=16\$", "< paste ../17_4_288_352_30_8_43000_8_automatic_DRcurve.dat ../../zero_352x288x30x420x300.avi/17_4_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=8\$", "< paste ../33_3_288_352_30_8_43000_8_automatic_DRcurve.dat ../../zero_352x288x30x420x300.avi/33_3_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=4\$", "< paste ../65_2_288_352_30_8_43000_8_automatic_DRcurve.dat ../../zero_352x288x30x420x300.avi/65_2_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=2\$", "< paste ../129_1_288_352_30_8_43000_8_automatic_DRcurve.dat ../../zero_352x288x30x420x300.avi/129_1_288_352_30_8_43000_8_automatic_DRcurve.dat" using ($1-$3):2 with lines title "\$G=1\$"
 
