@@ -15,6 +15,11 @@ layers=8    # Be careful, unable to handle more than 10 quality layers
 	        # (reason: kdu_compress's output format)
 keep_layers=8
 
+layers=1    # Be careful, unable to handle more than 10 quality layers
+	        # (reason: kdu_compress's output format)
+keep_layers=1
+
+
 #slope=0
 slope=43000
 #slope=39000
