@@ -18,7 +18,7 @@ slope=43000
 #slope=39000
 #slope=40000
 
-__debug__=0
+__debug__=1
 BPP=8
 MCTF_QUANTIZER=automatic
 
@@ -134,11 +134,16 @@ fi
 
 if [ $__debug__ -eq 1 ]; then
     set -x
+    set -e
+    set -o errexit
 fi
 
 rm -rf L_0
 mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
+if [ $__debug__ -eq 1 ]; then
+   ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y 
+fi
 (ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 x_dim_2=`echo $x_dim/2 | bc`
 y_dim_2=`echo $y_dim/2 | bc`
