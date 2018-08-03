@@ -150,7 +150,8 @@ y_dim_2=`echo $y_dim/2 | bc`
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    let img_1=img-1
+    #let img_1=img-1
+    img_1=$((img-1))
     _img_1=$(printf "%04d" $img_1)
     #(uchar2short < L_0/$_img.Y > /tmp/1) 2> /dev/null
     #rawtopgm -bpp 2   $x_dim   $y_dim < /tmp/1 > L_0/${_img_1}_0.pgm
@@ -172,7 +173,8 @@ while [ $img -le $number_of_images ]; do
     input=L_0/$_img.V
     output=L_0/${_img_1}_2.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output
-    let img=img+1 
+    #let img=img+1
+    img=$((img+1))
 done
 
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
@@ -187,7 +189,8 @@ mctf expand --GOPs=$GOPs --TRLs=$TRLs
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    let img_1=img-1
+    #let img_1=img-1
+    img_1=$((img-1))
     _img_1=$(printf "%04d" $img_1)
     #convert -endian MSB L_0/${_img_1}_0.pgm /tmp/1.gray
     #(short2uchar < /tmp/1.gray > L_0/$_img.Y) 2> /dev/null
@@ -213,7 +216,8 @@ while [ $img -le $number_of_images ]; do
     output=L_0/$_img.V
     PGMTORAW $input $output
 
-    let img=img+1 
+    #let img=img+1
+    img=$((img+1))
 done
 mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
 
@@ -230,7 +234,8 @@ mctf expand --GOPs=$GOPs --TRLs=$TRLs
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    let img_1=img-1
+    #let img_1=img-1
+    img_1=$((img-1))
     _img_1=$(printf "%04d" $img_1)
     
     input=L_0/${_img_1}_0.pgm
@@ -245,7 +250,8 @@ while [ $img -le $number_of_images ]; do
     output=L_0/$_img.V
     PGMTORAW $input $output
 
-    let img=img+1 
+    #let img=img+1
+    img=$((img+1))
 done
 mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
 
