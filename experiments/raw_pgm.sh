@@ -103,6 +103,11 @@ fi
 
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
 
+echo $number_of_images
+exit 0
+
+
+
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)

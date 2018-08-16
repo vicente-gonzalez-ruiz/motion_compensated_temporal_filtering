@@ -1,12 +1,7 @@
 #!/bin/bash
 
-#video=~/Videos/mobile_352x288x30x420x300.avi
-video=~/Videos/container_352x288x30x420x300.avi
-#video=~/Videos/moving_circle.avi
-#GOPs=9
-#TRLs=2
+video="mobile_352x288x30x420x300"
 GOPs=2
-GOPs=3 # Jse
 TRLs=4
 y_dim=288
 x_dim=352
@@ -14,23 +9,17 @@ FPS=30
 layers=8    # Be careful, unable to handle more than 10 quality layers
 	        # (reason: kdu_compress's output format)
 keep_layers=8
+slope=43000 # 0
+block_size=16
+search_range=4
 
-layers=1    # Be careful, unable to handle more than 10 quality layers
-	        # (reason: kdu_compress's output format)
-keep_layers=1
-
-
-#slope=0
-slope=43000
-#slope=39000
-#slope=40000
 
 # Transcode algorithm.
 export TRANSCODE_QUALITY="transcode_quality_FSO"
 #export TRANSCODE_QUALITY="transcode_quality_PLT"
 
 
-__debug__=0
+__debug__=1
 BPP=8
 MCTF_QUANTIZER=automatic
 
@@ -45,12 +34,14 @@ usage() {
     echo "  [-l layers ($layers)]"
     echo "  [-k keep layers ($keep_layers)]"
     echo "  [-s slope ($slope)]"
+    echo "  [-b block_size ($block_size)]"
+    echo "  [-r search_range ($search_range)]"
     echo "  [-? (help)]"
 }
 
 (echo $0 $@ 1>&2)
 
-while getopts "v:p:x:y:f:t:g:l:k:s:?" opt; do
+while getopts "v:p:x:y:f:t:g:l:k:s:b:r:?" opt; do
     case ${opt} in
 	v)
 	    video="${OPTARG}"
@@ -88,6 +79,14 @@ while getopts "v:p:x:y:f:t:g:l:k:s:?" opt; do
 	    slope="${OPTARG}"
 	    echo slope=$slope
 	    ;;
+	b)
+	    block_size="${OPTARG}"
+	    echo block_size=$block_size
+	    ;;
+	r)
+	    search_range="${OPTARG}"
+	    echo search_range=$search_range
+	    ;;
 	?)
             usage
             exit 0
@@ -104,6 +103,15 @@ while getopts "v:p:x:y:f:t:g:l:k:s:?" opt; do
             ;;
     esac
 done
+
+dir="L"$layers"_T"$TRLs"_BS"$block_size"_SR"$search_range"_G"$GOPs"_"$video
+rm -rf $dir; mkdir $dir; cd $dir
+video="/nfs/cmaturana/Videos/"$video
+#IFS=';' read -ra ADDR <<< "$IN"
+#for i in "${ADDR[@]}"; do
+    # process "$i"
+#done
+
 
 if [ $BPP -eq 16 ]; then
 
@@ -171,7 +179,7 @@ while [ $img -le $number_of_images ]; do
     input=L_0/$_img.U
     output=L_0/${_img_1}_1.pgm
     #rawtopgm $x_dim_2 $y_dim_2 < $input > $output.pgm
-    RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
+    RAWTOPGM $input $x_dim_2 $y_dim_2 $output
     
     #(uchar2short < L_0/$_img.V > /tmp/1) 2> /dev/null
     #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_2.pgm
@@ -179,18 +187,18 @@ while [ $img -le $number_of_images ]; do
     input=L_0/$_img.V
     output=L_0/${_img_1}_2.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output
-    let img=img+1 
+    let img=img+1
 done
 
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
 mctf info --GOPs=$GOPs --TRLs=$TRLs
-mctf expand --GOPs=$GOPs --TRLs=$TRLs
+mctf expand --GOPs=$GOPs --TRLs=$TRLs --block_size=$block_size --search_range=$search_range
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
@@ -229,7 +237,7 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
-mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video
+mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video --block_size=$block_size --search_range=$search_range
 
 
 exit 0 # Jse
@@ -238,7 +246,7 @@ exit 0 # Jse
 cd transcode_quality
 mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
-mctf expand --GOPs=$GOPs --TRLs=$TRLs
+mctf expand --GOPs=$GOPs --TRLs=$TRLs --block_size=$block_size --search_range=$search_range
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)

@@ -75,6 +75,8 @@ parser.add_argument("--FPS",
                     default=30)
 parser.pixels_in_x()
 parser.pixels_in_y()
+parser.block_size()
+parser.search_range()
 parser.add_argument("--video",
                     help="Original video path and name",
                     default="/home/cmaturana/Videos/container_352x288x30x420x300.avi")
@@ -82,16 +84,18 @@ parser.add_argument("--video",
 
 args = parser.parse_known_args()[0]
 
-GOPs        = int(args.GOPs)
-keep_layers = int(args.keep_layers)
-TRLs        = int(args.TRLs)
-layers      = int(args.layers)
-destination = args.destination
-slope       = int(args.slope)
-FPS         = int(args.FPS)
-x_dim       = int(args.pixels_in_x)
-y_dim       = int(args.pixels_in_y)
-video       = args.video
+GOPs         = int(args.GOPs)
+keep_layers  = int(args.keep_layers)
+TRLs         = int(args.TRLs)
+layers       = int(args.layers)
+destination  = args.destination
+slope        = int(args.slope)
+FPS          = int(args.FPS)
+x_dim        = int(args.pixels_in_x)
+y_dim        = int(args.pixels_in_y)
+block_size   = int(args.block_size)
+search_range = int(args.search_range)
+video        = args.video
 
 log.info("GOPs={}".format(GOPs))
 log.info("keep_layers={}".format(keep_layers))
@@ -102,6 +106,8 @@ log.info("slope={}".format(slope))
 log.info("FPS={}".format(FPS))
 log.info("pixels_in_x={}".format(x_dim))
 log.info("pixels_in_y={}".format(y_dim))
+log.info("block_size={}".format(block_size))
+log.info("search_range={}".format(search_range))
 log.info("video={}".format(video))
 # }}}
 
@@ -209,7 +215,7 @@ def codestream_point(GOPs_to_extract, original, reconstruction): # A single gop
 
     # Expand
     # ------------------------
-    shell.run("mctf expand --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs))
+    shell.run("mctf expand --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs) + " --block_size=" + str(block_size) + " --search_range=" + str(search_range))
     # Separate to images
     raw_pgm(GOPs_to_extract)
 
@@ -221,7 +227,7 @@ def codestream_point(GOPs_to_extract, original, reconstruction): # A single gop
     p = sub.Popen("(snr --type=uchar --peak=255"
                 + " --file_A=" + str(original) + ".yuv"
                 + " --file_B=" + str(reconstruction) + ".yuv"
-                + " --block_size=" + str(block_size) + ") 2> /dev/null"
+                + " --block_size=" + str(bs) + ") 2> /dev/null"
                 + " | grep PSNR | grep dB | cut -d \"=\" -f 2"
                 , shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     out, err = p.communicate()
@@ -254,7 +260,7 @@ def trace_selection(mode):
     elif mode == 3:
         shell.run("echo \"" + str(FSO[gop][point]) + "\" >> " + str(pwd) + "/selection_curveFSO.dat")
     elif mode == 4:
-        shell.run("echo \"" + str("%.6f"%float(kbps)) + "\t" + str("%.6f"%float(psnr)) + "\" >> " + str(pwd) + "/" + str(GOPs) + "_" + str(TRLs) + "_" + str(y_dim) + "_" + str(x_dim) + "_" + str(FPS) + "_" + str(layers) + "_" + str(slope) + "_curveFSO.dat")
+        shell.run("echo \"" + str("%.6f"%float(kbps)) + "\t" + str("%.6f"%float(psnr)) + "\" >> " + str(pwd) + "/" + "L" + str(layers) + "_T" + str(TRLs) + "_BS" + str(block_size) + "_SR" + str(search_range) +"_G" + str(GOPs) + "_" + str(slope) + "_curveFSO.dat")
     elif mode == 5:
         shell.run("echo \"\" >> " + str(pwd) + "/selection_curveFSO.dat")
 
@@ -314,7 +320,7 @@ def gop_video():
             + " if="    + video + ".yuv"
             + " of="    + str(original_gop) + ".yuv"
             + " skip="  + str(GOP_size * gop)   # Jump to the current GOP.
-            + " bs="    + str(block_size)       # Image size.
+            + " bs="    + str(bs)               # Image size.
             + " count=" + str(GOP_size + 1))    # images gop + image gop_0
             
     return original_gop
@@ -355,14 +361,14 @@ log.info("GOP_size={}".format(GOP_size))
 pictures = (GOPs - 1) * GOP_size + 1
 log.info("pictures={}".format(pictures))
 
-block_size = int(x_dim * y_dim * 1.5)
+bs = int(x_dim * y_dim * 1.5)
 # }}}
 
 
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------------------------
 #               ¡HERE!
-# ~/tmp			/tmp				/transcode_quality        
+# ~/tmp			/tmp				/transcode_quality
 # ~/compresión	/extracción_total	/extracción_parcial
 p = sub.Popen("echo $PWD", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
 out, err = p.communicate()
@@ -370,8 +376,8 @@ pwd = out.decode('ascii')
 pwd = pwd[:len(pwd)-1]
 
 # Original .avi to .yuv for cut a gop of the original video
-if False == os.path.isfile(str(video)):
-    shell.run("ffmpeg -i " + str(video) + " -y -c:v rawvideo -pix_fmt yuv420p " + str(video) + ".yuv")
+if False == os.path.isfile(str(video) + ".yuv"):
+    shell.run("ffmpeg -i " + str(video) + " -y " + str(video) + ".yuv")
 
 # --------------------------------------------------------------------
 # {{{ FSO
@@ -382,14 +388,14 @@ total   = TRLs*2-1
 trace_selection(-2)
 for gop in range(0, GOPs-1):
     log.info("GOP={}/{}".format(gop, GOPs))
-    
+
     # The gop of the original video
     original_gop = gop_video()
-    
+
     # Reset per gop
     layersub = init_layersub("empty") # Jse: empty
     trace_selection(0)
-    
+
     # 0 layers for old values.
     clean_transcode()
     transcode_images_singleGOP(layersub)
@@ -463,11 +469,12 @@ sys.exit(0)
 
 
 # NOTAS ........................................................................
+# shell.run("(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=" + str(x_dim) + ":h=" + str(y_dim) + " -loop 0 -fps " + str(FPS) + ") > /dev/null 2> /dev/null")
+# (mplayer container_352x288x30x420x300.avi.yuv -demuxer rawvideo -rawvideo w=352:h=288 -loop 0 -fps 30) > /dev/null 2> /dev/null
+# wait = input("PRESS ENTER TO CONTINUE.")
+# shell.run("mctf copy --GOPs=2 --TRLs=4 --destination=tmp/transcode_quality")
 
-# Images to Video & play
-shell.run("(ffmpeg -y -s " + str(x_dim) + "x" + str(y_dim) + " -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null")
-shell.run("(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=" + str(x_dim) + ":h=" + str(y_dim) + " -loop 0 -fps " + str(FPS) + ") > /dev/null 2> /dev/null")
-#(mplayer container_352x288x30x420x300.avi.yuv -demuxer rawvideo -rawvideo w=352:h=288 -loop 0 -fps 30) > /dev/null 2> /dev/null
-wait = input("PRESS ENTER TO CONTINUE.")
-shell.run("mctf copy --GOPs=2 --TRLs=4 --destination=tmp/transcode_quality")
+# yuv to avi:   x264 --input-res 352x288 --qp 0 -o video.yuv.avi video.yuv
+# avi to yuv:   ffmpeg -i video.yuv.avi video.yuv
 
+# -vcodec rawvideo -pix_fmt yuv420p 

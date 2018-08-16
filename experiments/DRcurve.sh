@@ -2,6 +2,7 @@
 
 video_dir=~/Videos
 video=container_352x288x30x420x300.avi
+
 # ffmpeg -t 10 -s 352x288 -f rawvideo -pix_fmt rgb24 -r 30 -i /dev/zero ~/Videos/zero_352x288x30x420x300.avi
 #video=~/Videos/zero_352x288x30x420x300.avi
 GOPs=2
@@ -16,6 +17,7 @@ slope=43000
 __debug__=0
 BPP=8
 MCTF_QUANTIZER=automatic
+TRANSCODE_QUALITY=transcode_quality_FSO
 
 usage() {
     echo $0
@@ -172,8 +174,7 @@ subband_layers=`echo $layers*$TRLs | bc`
 for i in `seq 1 $subband_layers`; do
     echo Running for $i quality layers
     mkdir transcode_quality
-    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i \
-	 --destination="transcode_quality" --layers=$layers --slope=$slope
+    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video_dir"/"$video
     cd transcode_quality
     mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
     rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
