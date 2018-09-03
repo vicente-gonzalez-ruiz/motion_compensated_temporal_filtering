@@ -9,9 +9,7 @@ TRLs=5
 y_dim=288
 x_dim=352
 FPS=30
-layers=8  # Be careful, unable to handle more than 10 quality layers
-	  # (reason: kdu_compress's output format)
-slope=43000
+
 
 __debug__=0
 BPP=8
@@ -30,7 +28,7 @@ usage() {
     echo "  [-? (help)]"
 }
 
-while getopts "v:p:x:y:f:t:g:l:s:?" opt; do
+while getopts "v:p:x:y:f:t:g:?" opt; do
     case ${opt} in
         v)
             video="${OPTARG}"
@@ -52,18 +50,10 @@ while getopts "v:p:x:y:f:t:g:l:s:?" opt; do
             TRLs="${OPTARG}"
 	    echo TRLs=$TRLs
             ;;
-	g)
+    	g)
             GOPs="${OPTARG}"
 	    echo GOPs=$GOPs
             ;;
-	l)
-            layers="${OPTARG}"
-	    echo layers=$layers
-            ;;
-	s)
-	    slope="${OPTARG}"
-	    echo slope=$slope
-	    ;;
         ?)
             usage
             exit 0
@@ -124,8 +114,8 @@ if [ $__debug__ -eq 1 ]; then
     set -x
 fi
 
-rm -rf L_0
-mkdir L_0
+# ----------------------------------------------
+
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
 (ffmpeg -i $video_dir/$video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 x_dim_2=`echo $x_dim/2 | bc`
@@ -148,76 +138,6 @@ while [ $img -le $number_of_images ]; do
     output=L_0/${_img_1}_2.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output
     let img=img+1 
-done
-
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
-mctf info --GOPs=$GOPs --TRLs=$TRLs
-
-mkdir $video
-name2=$PWD/$video/${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
-#rm -rf $video
-echo Generating $name2
-
-echo \# video=$video >> $name2
-echo \# GOPs=$GOPs >> $name2
-echo \# TRLs=$TRLs >> $name2
-echo \# y_dim=$y_dim >> $name2
-echo \# x_dim=$x_dim >> $name2
-echo \# FPS=$FPS >> $name2
-echo \# layers=$layers >> $name2
-echo \# slope=$slope >> $name2
-echo \# BPP=$BPP >> $name2
-echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name2
-
-subband_layers=`echo $layers*$TRLs | bc`
-for i in `seq 1 $subband_layers`; do
-    echo Running for $i quality layers
-    mkdir transcode_quality
-    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i \
-	 --destination="transcode_quality" --layers=$layers --slope=$slope
-    echo -----------------------------------------------
-    cat $name2
-    echo -----------------------------------------------
-    cd transcode_quality
-    mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-    rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
-    echo -n $rate >> $name2
-    echo -ne '\t' >> $name2
-    mctf expand --GOPs=$GOPs --TRLs=$TRLs
-    img=1
-    while [ $img -le $number_of_images ]; do
-	_img=$(printf "%04d" $img)
-	let img_1=img-1
-	_img_1=$(printf "%04d" $img_1)
-    
-	input=L_0/${_img_1}_0.pgm
-	output=L_0/$_img.Y
-	PGMTORAW $input $output
-    
-	input=L_0/${_img_1}_1.pgm
-	output=L_0/$_img.U
-	PGMTORAW $input $output
-    
-	input=L_0/${_img_1}_2.pgm
-	output=L_0/$_img.V
-	PGMTORAW $input $output
-
-	let img=img+1 
-    done
-
-    RMSE=`mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs`
-    echo -n $RMSE >> $name2
-    echo -ne '\n' >> $name2
-
-    if [ $__debug__ -eq 1 ]; then
-	
-	(ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y tmp_out.yuv) > /dev/null 2> /dev/null
-	(mplayer tmp_out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
-	
-    fi
-    
-    cd ..
-    rm -rf transcode_quality
 done
 
 if [ $__debug__ -eq 1 ]; then

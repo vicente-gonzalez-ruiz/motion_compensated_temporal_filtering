@@ -75,7 +75,7 @@ if [ $BPP -eq 16 ]; then
 	#(add Short -32768 < /tmp/1.gray > /tmp/2) 2> /dev/null
 	(ushort2uchar < /tmp/1.gray > $output_image) 2> /dev/null
     }
-    
+
 else
 
     RAWTOPGM () {

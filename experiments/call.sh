@@ -14,8 +14,8 @@
 
 #srun -N 1 -n 1 -p ibmulticore ./basic.sh -v mobile_352x288x30x420x300.avi -g 3 -t 4 -y 288 -x 352 -f 30 -l 8 -k 8
 
-#                                                                             layers          block_size  Search_range    Nº_gops     TRLs    Y       X       Frames
-                                ./basic.sh -v mobile_352x288x30x420x300.avi   -l 1  -k 1     -b 16       -r 4            -g 2        -t 1    -y 288  -x 352  -f 30
+#                                                                             layers         block_size  Search_range    Nº_gops     TRLs    Y       X       Frames
+                                ./basic.sh -v mobile_352x288x30x420x300.avi   -l 3  -k 3     -b 16       -r 4            -g 2        -t 2    -y 288  -x 352  -f 30
 exit 0
 srun -N 1 -n 1 -p ibmulticore2  ./basic.sh -v mobile_352x288x30x420x300.avi   -l 1  -k 1     -b 16       -r 4            -g 2        -t 1    -y 288  -x 352  -f 30
 exit 0

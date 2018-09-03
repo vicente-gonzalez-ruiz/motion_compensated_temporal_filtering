@@ -275,3 +275,5 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 if [ $__debug__ -eq 1 ]; then
     set +x
 fi
+
+##read -n1 -r -p "Press any key to continue..." key
