@@ -225,6 +225,7 @@ def codestream_point(GOPs_to_extract, original, reconstruction): # A single gop
 
     # PSNR
     # ------------------------
+    # mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
     p = sub.Popen("(snr --type=uchar --peak=255"
                 + " --file_A=" + str(original) + ".yuv"
                 + " --file_B=" + str(reconstruction) + ".yuv"
@@ -442,7 +443,6 @@ for gop in range(0, GOPs-1):
             old_kbps = point["kbps"]
             FSO[gop].append(point.copy())
             FSO[gop].append(best_layersub.copy())
-            wait = input("PRESS ENTER TO CONTINUE.") #############################################################################
             
     toFile()  # Save FSO selections to files
 
