@@ -115,12 +115,12 @@ log.info("video={}".format(video))
 # --------------------------------------------------------------------
 def transcode_picture(filename_in, filename_out, layers):
     # {{{ 
-    log.debug("transcode_picture: {} to {} with {} layers, from gop {}".format(filename_in, filename_out, layers, gop))
+    log.debug("transcode_picture: {} to {}/{} with {} layers, from gop {}".format(filename_in, destination, filename_out, layers, gop+1))
     if layers > 0:
         shell.run("trace kdu_transcode"
                   + " -i " + filename_in
                   + " -jpx_layers sYCC,0,1,2"
-                  + " -o " + "transcode_quality/" + filename_out
+                  + " -o " + destination + "/" + filename_out
                   + " Clayers=" + str(layers))
     # }}}
 
@@ -129,9 +129,6 @@ def transcode_images(layersub):
     # {{{
     log.debug("transcode_images={}".format(layersub))
 
-    #print("gop: " + str(gop))
-    #wait = input("PRESS ENTER TO CONTINUE.") # Jse
-    
     for key, value in layersub.items():
         pics_per_subband = (1 << (TRLs-key[1]-1))
         for p in range(pics_per_subband * gop, pics_per_subband * gop + pics_per_subband):
@@ -163,6 +160,10 @@ def transcode_images_singleGOP(layersub):
 
     for key, value in layersub.items():
         pics_per_subband = (1 << (TRLs-key[1]-1))
+
+        log.info("key={}".format(key))
+        log.info("pics_per_subband={}".format(pics_per_subband))
+
         for p in range(pics_per_subband * gop, pics_per_subband * gop + pics_per_subband):
             if key[0] == 'L':
                 fname_in  = "L_" + str(key[1]) + '/' + str('%04d' % (p+1)) + ".jpx"
@@ -197,7 +198,7 @@ def raw_pgm(GOPs_to_extract):
     if True == os.path.isfile(raw_pgm):
         shell.run(raw_pgm + param)
     else:
-        shell.run("../" + str(raw_pgm) + str(param))
+        shell.run("../" + raw_pgm + param)
 
 # --------------------------------------------------------------------
 def codestream_point(GOPs_to_extract, original, reconstruction): # A single gop
@@ -321,7 +322,7 @@ def gop_video():
             + " of="    + str(original_gop) + ".yuv"
             + " skip="  + str(GOP_size * gop)   # Jump to the current GOP.
             + " bs="    + str(bs)               # Image size.
-            + " count=" + str(GOP_size + 1))    # images gop + image gop_0
+            + " count=" + str(GOP_size + 1))    # images gop + image gop_0.
             
     return original_gop
     # }}}
@@ -393,7 +394,7 @@ for gop in range(0, GOPs-1):
     original_gop = gop_video()
 
     # Reset per gop
-    layersub = init_layersub("empty") # Jse: empty
+    layersub = init_layersub("empty") # Jse: empty/full
     trace_selection(0)
 
     # 0 layers for old values.
@@ -419,8 +420,8 @@ for gop in range(0, GOPs-1):
             clean_transcode()
             transcode_images_singleGOP(try_layersub)
             # Kbps & Psnr
-            kbps, psnr = codestream_point(2, original_gop, "gop" + str(gop+1))   # Real kbps & psnr calculation from a single gop
-            #kbps, psnr = random_kbps_psnr()                       # Only for fast debug
+            kbps, psnr = codestream_point(2, original_gop, "gop" + str(gop+1))  # Real kbps & psnr calculation from a single gop
+            #kbps, psnr = random_kbps_psnr()                                    # Only for fast debug
             # Easy solution for posible empty layer
             kbps = if_empty_layer(kbps)
             # Angle = Tan (difference psnr / difference kbps)
@@ -441,7 +442,8 @@ for gop in range(0, GOPs-1):
             old_kbps = point["kbps"]
             FSO[gop].append(point.copy())
             FSO[gop].append(best_layersub.copy())
-
+            wait = input("PRESS ENTER TO CONTINUE.") #############################################################################
+            
     toFile()  # Save FSO selections to files
 
 # END FSO.
@@ -478,3 +480,7 @@ sys.exit(0)
 # avi to yuv:   ffmpeg -i video.yuv.avi video.yuv
 
 # -vcodec rawvideo -pix_fmt yuv420p 
+
+#    log.info("layersub={}".format(layersub)) #########
+#    wait = input("PRESS ENTER TO CONTINUE.")                   ##############################################
+
