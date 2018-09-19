@@ -3,10 +3,10 @@
 #video=~/Videos/mobile_352x288x30x420x300.avi
 video=~/Videos/container_352x288x30x420x300.avi
 #video=~/Videos/moving_circle.avi
-#GOPs=9
-#TRLs=2
-GOPs=2
-TRLs=4
+GOPs=9
+TRLs=2
+#GOPs=1
+#TRLs=4
 y_dim=288
 x_dim=352
 FPS=30
