@@ -153,20 +153,21 @@ done
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 
-name=$video/${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
-rm -rf $video
-echo Generating $name
+mkdir $video
+name2=$PWD/$video/${GOPs}_${TRLs}_${y_dim}_${x_dim}_${FPS}_${layers}_${slope}_${BPP}_${MCTF_QUANTIZER}_DRcurve.dat
+#rm -rf $video
+echo Generating $name2
 
-echo \# video=$video >> $name
-echo \# GOPs=$GOPs >> $name
-echo \# TRLs=$TRLs >> $name
-echo \# y_dim=$y_dim >> $name
-echo \# x_dim=$x_dim >> $name
-echo \# FPS=$FPS >> $name
-echo \# layers=$layers >> $name
-echo \# slope=$slope >> $name
-echo \# BPP=$BPP >> $name
-echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name
+echo \# video=$video >> $name2
+echo \# GOPs=$GOPs >> $name2
+echo \# TRLs=$TRLs >> $name2
+echo \# y_dim=$y_dim >> $name2
+echo \# x_dim=$x_dim >> $name2
+echo \# FPS=$FPS >> $name2
+echo \# layers=$layers >> $name2
+echo \# slope=$slope >> $name2
+echo \# BPP=$BPP >> $name2
+echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name2
 
 subband_layers=`echo $layers*$TRLs | bc`
 for i in `seq 1 $subband_layers`; do
@@ -174,11 +175,14 @@ for i in `seq 1 $subband_layers`; do
     mkdir transcode_quality
     mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i \
 	 --destination="transcode_quality" --layers=$layers --slope=$slope
+    echo -----------------------------------------------
+    cat $name2
+    echo -----------------------------------------------
     cd transcode_quality
     mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
     rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
-    echo -n $rate >> $name
-    echo -ne '\t' >> $name
+    echo -n $rate >> $name2
+    echo -ne '\t' >> $name2
     mctf expand --GOPs=$GOPs --TRLs=$TRLs
     img=1
     while [ $img -le $number_of_images ]; do
@@ -202,8 +206,8 @@ for i in `seq 1 $subband_layers`; do
     done
 
     RMSE=`mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs`
-    echo -n $RMSE >> $name
-    echo -ne '\n' >> $name
+    echo -n $RMSE >> $name2
+    echo -ne '\n' >> $name2
 
     if [ $__debug__ -eq 1 ]; then
 	
