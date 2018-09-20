@@ -233,6 +233,7 @@ def codestream_point(GOPs_to_extract, original, reconstruction): # A single gop
                 + " | grep PSNR | grep dB | cut -d \"=\" -f 2"
                 , shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     out, err = p.communicate()
+    log.info("psnr: " + str(out)) ########################################################################
     psnr = float(out.decode('ascii'))
 
     return kbps, psnr
@@ -316,7 +317,8 @@ def init_layersub(mode):
 # --------------------------------------------------------------------
 def gop_video():
     # {{{ Take original frames from a gop to compute distortion gop by gop.
-    original_gop = str(pwd) + "/original_gop" + str(gop+1)
+    original_gop_anterior = str(pwd) + "/original_gop" + str(gop)
+    original_gop          = str(pwd) + "/original_gop" + str(gop+1)
 
     shell.run("dd"
             + " if="    + video + ".yuv"
@@ -324,7 +326,8 @@ def gop_video():
             + " skip="  + str(GOP_size * gop)   # Jump to the current GOP.
             + " bs="    + str(bs)               # Image size.
             + " count=" + str(GOP_size + 1))    # images gop + image gop_0.
-            
+
+    shell.run("rm -f " + original_gop_anterior + ".yuv")
     return original_gop
     # }}}
 
@@ -360,7 +363,7 @@ gop = GOP()
 GOP_size = gop.get_size(TRLs)
 log.info("GOP_size={}".format(GOP_size))
 
-pictures = (GOPs - 1) * GOP_size + 1
+pictures = GOPs * GOP_size + 1 #  = (GOPs-1) * GOP_size + 1
 log.info("pictures={}".format(pictures))
 
 bs = int(x_dim * y_dim * 1.5)
@@ -369,6 +372,10 @@ bs = int(x_dim * y_dim * 1.5)
 
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------------------------
+if TRLs == 1:
+    log.info("No sense TRL = 1 in FSO.")
+    sys.exit(0)
+
 #               ¡HERE!
 # ~/tmp			/tmp				/transcode_quality
 # ~/compresión	/extracción_total	/extracción_parcial
@@ -384,25 +391,26 @@ if False == os.path.isfile(str(video) + ".yuv"):
 # --------------------------------------------------------------------
 # {{{ FSO
 point   = {}
-FSO     = [ [] for i in range(GOPs-1) ]
+FSO     = [ [] for i in range(GOPs-1) ] # Jse -1
 total   = TRLs*2-1
 
 trace_selection(-2)
-for gop in range(0, GOPs-1):
+for gop in range(0, GOPs-1): # Jse -1
     log.info("GOP={}/{}".format(gop, GOPs))
 
     # The gop of the original video
     original_gop = gop_video()
 
     # Reset per gop
-    layersub = init_layersub("empty") # Jse: empty/full
+    layersub = init_layersub("full") # Jse: empty/full
     trace_selection(0)
 
     # 0 layers for old values.
     clean_transcode()
     transcode_images_singleGOP(layersub)
     old_kbps, old_psnr = codestream_point(2, original_gop, "gop" + str(gop+1))
-
+    headers = old_kbps
+    
     full = 0
     while full < total:
 
@@ -422,7 +430,9 @@ for gop in range(0, GOPs-1):
             transcode_images_singleGOP(try_layersub)
             # Kbps & Psnr
             kbps, psnr = codestream_point(2, original_gop, "gop" + str(gop+1))  # Real kbps & psnr calculation from a single gop
-            #kbps, psnr = random_kbps_psnr()                                    # Only for fast debug
+            kbps = kbps - headers
+
+            # kbps, psnr = random_kbps_psnr()                                   # Only for fast debug
             # Easy solution for posible empty layer
             kbps = if_empty_layer(kbps)
             # Angle = Tan (difference psnr / difference kbps)
@@ -452,7 +462,7 @@ for gop in range(0, GOPs-1):
 # Transcode, Kbps & Psnr per WHOLE video (no per gop) for FSO short
 for point in range(1, len(FSO[0]), 2):
     clean_transcode()
-    for gop in range(0, GOPs-1):
+    for gop in range(0, GOPs-1): # Jse -1
         # Transcode
         transcode_images(FSO[gop][point])
         trace_selection(3)
@@ -481,6 +491,6 @@ sys.exit(0)
 
 # -vcodec rawvideo -pix_fmt yuv420p 
 
-#    log.info("layersub={}".format(layersub)) #########
-#    wait = input("PRESS ENTER TO CONTINUE.")                   ##############################################
+#    log.info("layersub={}".format(layersub))                   #########
+#    wait = input("PRESS ENTER TO CONTINUE.")                   #########
 

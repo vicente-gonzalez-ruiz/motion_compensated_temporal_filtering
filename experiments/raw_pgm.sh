@@ -112,7 +112,6 @@ if [ $__debug__ -eq 1 ]; then
 fi
 
 # ----------------------------------------------
-
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
 img=1
 while [ $img -le $number_of_images ]; do

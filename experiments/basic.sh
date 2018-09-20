@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# log.info("output = {}".format(out))
+
 video="mobile_352x288x30x420x300"
 GOPs=2
 TRLs=4
@@ -9,7 +11,7 @@ FPS=30
 layers=8    # Be careful, unable to handle more than 10 quality layers
 	        # (reason: kdu_compress's output format)
 keep_layers=8
-slope=43000 # 0
+slope=43000
 block_size=16
 search_range=4
 
@@ -233,7 +235,9 @@ done
 mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
 
 (ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null
-#(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null #Jse
+(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null #Jse
+
+exit 0 # Jse
 
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"

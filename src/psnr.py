@@ -73,7 +73,7 @@ for p in range(pictures):
             command += " 2> /dev/null"
     
         command += " | grep PSNR | grep dB"
-
+        
         log.info(command)
         out = os.popen(command).read()
         log.debug("output = {}".format(out))
