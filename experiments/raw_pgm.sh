@@ -116,22 +116,24 @@ number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    let img_1=img-1
+    #let img_1=img-1
+    img_1=$((img-1))
     _img_1=$(printf "%04d" $img_1)
-
+    
     input=L_0/${_img_1}_0.pgm
     output=L_0/$_img.Y
     PGMTORAW $input $output
-
+    
     input=L_0/${_img_1}_1.pgm
     output=L_0/$_img.U
     PGMTORAW $input $output
-
+    
     input=L_0/${_img_1}_2.pgm
     output=L_0/$_img.V
     PGMTORAW $input $output
 
-let img=img+1 
+    #let img=img+1
+    img=$((img+1))
 done
 
 if [ $__debug__ -eq 1 ]; then

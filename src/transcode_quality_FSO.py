@@ -327,7 +327,7 @@ def gop_video():
             + " bs="    + str(bs)               # Image size.
             + " count=" + str(GOP_size + 1))    # images gop + image gop_0.
 
-    shell.run("rm -f " + original_gop_anterior + ".yuv")
+    #shell.run("rm -f " + original_gop_anterior + ".yuv")
     return original_gop
     # }}}
 
