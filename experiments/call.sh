@@ -4,19 +4,22 @@
 #       srun -N 1 -n 1 -p ibmulticore2 .sh
 # nohup srun -N 1 -n 1 -p ibcl srun -N 1 -n 1 -p ibmulticore2 .sh &
 
-
-
 # -----------------------------
 # Q= 1,2,4,8,16,32.
 # T= "1",2,3,4,5,6,7.
 # Search Area= 4 (alls excepts readysetgo 32)
 # Blocksize= 16 (Mobile, Container), 32 (Crew), 64 (Crowdrun), 128 (ReadySetGo, Sun)
+# -----------------------------
 
 
+# BASIC.SH          -----------------------------
+#rm -rf tmp; mkdir tmp; cd tmp
+#srun -N 1 -n 1 -p ibcl ../basic.sh          -g 5 -t 6 -l 16
+
+# DR_TRANSCODE.SH   -----------------------------
 #srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  16  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30
 #srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  16  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 -s 0
-srun -N 1 -n 1 -p ibcl ./basic.sh          -g 5 -t 6 -l 16
-#srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  16  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30
+srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  16  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30
 
 
 exit 0
