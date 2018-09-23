@@ -14,7 +14,7 @@ import traceback
 import logging
 
 log = logging.getLogger("psnr")
-log.setLevel('DEBUG')
+log.setLevel('CRITICAL')
 
 parser = arguments_parser(description="PSNR computation between 2 sequences")
 parser.add_argument("--file_A",
@@ -73,10 +73,8 @@ for p in range(pictures):
             command += " 2> /dev/null"
     
         command += " | grep PSNR | grep dB"
-        print("command={}".format(command))
         log.info(command)
         out = os.popen(command).read()
-        print("salida={}".format(out))
         log.debug("output = {}".format(out))
             
         try:

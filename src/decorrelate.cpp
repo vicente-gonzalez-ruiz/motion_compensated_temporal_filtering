@@ -394,8 +394,8 @@ int main(int argc, char *argv[]) {
 
   int blocks_in_y = pixels_in_y[0]/block_size;
   int blocks_in_x = pixels_in_x[0]/block_size;
-  info("%s: blocks_in_y = %d\n", argv[0], blocks_in_y);
-  info("%s: blocks_in_x = %d\n", argv[0], blocks_in_x);
+  info("%s: blocks_in_y=%d\n", argv[0], blocks_in_y);
+  info("%s: blocks_in_x=%d\n", argv[0], blocks_in_x);
 
   motion < MVC_TYPE > motion;
   texture < TC_IO_TYPE, TC_CPU_TYPE > texture;
@@ -420,7 +420,7 @@ int main(int argc, char *argv[]) {
 		  0);
 
   int picture_border_size = 4*search_range + block_overlaping + 256;
-  info("%s: picture_border = %d\n", argv[0], picture_border_size);
+  info("%s: picture_border=%d\n", argv[0], picture_border_size);
 
   TC_CPU_TYPE ***reference[2];
   for(int i=0; i<2; i++) {
