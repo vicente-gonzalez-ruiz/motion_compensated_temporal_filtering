@@ -31,9 +31,12 @@ pixels_in_y = int(args.pixels_in_y)
 log.info("pixels_in_y={}".format(pixels_in_y))
 
 f = open(file, "wb")
-f.write(b"P5\n")
-f.write(bytes(str.encode("{} {}\n".format(pixels_in_x, pixels_in_y))))
-f.write(b"255\n")
+
+if file[4:] != ".yuv": # For .yuv argument
+    f.write(b"P5\n")
+    f.write(bytes(str.encode("{} {}\n".format(pixels_in_x, pixels_in_y))))
+    f.write(b"255\n")
+
 for a in range(pixels_in_x * pixels_in_y) :
     f.write(struct.pack('B', 128))
 f.close()

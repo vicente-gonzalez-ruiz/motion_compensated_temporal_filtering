@@ -111,6 +111,7 @@ log.info("search_range={}".format(search_range))
 log.info("video={}".format(video))
 # }}}
 
+destination_zero = "/zero_texture"
 
 # --------------------------------------------------------------------
 def transcode_picture(filename_in, filename_out, layers):
@@ -187,8 +188,8 @@ def transcode_images_singleGOP(layersub):
                     fname_in  = "R_" + str(key[1]) + '/' + str('%04d' % p) + ".j2c"
                     fname_out = "R_" + str(key[1]) + '/' + str('%04d' % (p-(pics_per_subband * gop))) + ".j2c"
                     shell.run("trace cp " + fname_in + ' ' + destination + '/' + fname_out)
-
     # }}}
+
 # --------------------------------------------------------------------
 def raw_pgm(GOPs_to_extract):
 
@@ -201,10 +202,10 @@ def raw_pgm(GOPs_to_extract):
         shell.run("../" + raw_pgm + param)
 
 # --------------------------------------------------------------------
-def codestream_point(GOPs_to_extract, original, reconstruction): # A single gop
+def codestream_point(path, GOPs_to_extract, original, reconstruction): # A single gop
 
-    os.chdir(pwd + "/transcode_quality")
-
+    os.chdir(path)
+    
     # Create zero texture
     shell.run("mctf create_zero_texture --pixels_in_y=" + str(y_dim) + " --pixels_in_x=" + str(x_dim))
 
@@ -233,7 +234,7 @@ def codestream_point(GOPs_to_extract, original, reconstruction): # A single gop
                 + " | grep PSNR | grep dB | cut -d \"=\" -f 2"
                 , shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     out, err = p.communicate()
-    log.info("psnr: " + str(out)) ########################################################################
+    log.debug("psnr: " + str(out))
     psnr = float(out.decode('ascii'))
 
     return kbps, psnr
@@ -339,9 +340,9 @@ def if_empty_layer(kbps):
     return kbps
 
 # --------------------------------------------------------------------
-def clean_transcode():
+def clean_transcode(path, destination):
 
-    os.chdir(pwd)
+    os.chdir(path)
     # {{{ Clean the previus transcode and create directories
     shell.run("rm -rf " + destination + "; mkdir " + destination)
     shell.run("mkdir " + destination + "/L_" + str(TRLs-1))
@@ -357,6 +358,12 @@ def random_kbps_psnr(): # Only for debug
     psnr = random.randint(1,101)
     return kbps, psnr
 
+# -------------------------------------------------------------------- MAIN
+# --------------------------------------------------------------------
+if TRLs == 1:
+    log.info("No sense TRL = 1 in FSO.")
+    sys.exit(0)
+
 # --------------------------------------------------------------------
 # {{{ Compute GOPs and pictures
 gop = GOP()
@@ -370,14 +377,9 @@ bs = int(x_dim * y_dim * 1.5)
 # }}}
 
 
-# ----------------------------------------------------------------------------------------------------------------------------------------
-# ----------------------------------------------------------------------------------------------------------------------------------------
-if TRLs == 1:
-    log.info("No sense TRL = 1 in FSO.")
-    sys.exit(0)
-
+# --------------------------------------------------------------------
 #               ¡HERE!
-# ~/tmp			/tmp				/transcode_quality
+# ~/*.avi		/tmp				/transcode_quality
 # ~/compresión	/extracción_total	/extracción_parcial
 p = sub.Popen("echo $PWD", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
 out, err = p.communicate()
@@ -391,25 +393,24 @@ if False == os.path.isfile(str(video) + ".yuv"):
 # --------------------------------------------------------------------
 # {{{ FSO
 point   = {}
-FSO     = [ [] for i in range(GOPs-1) ] # Jse -1
+FSO     = [ [] for i in range(GOPs-1) ]
 total   = TRLs*2-1
 
 trace_selection(-2)
-for gop in range(0, GOPs-1): # Jse -1
+for gop in range(0, GOPs-1):
     log.info("GOP={}/{}".format(gop, GOPs))
 
     # The gop of the original video
     original_gop = gop_video()
 
     # Reset per gop
-    layersub = init_layersub("full") # Jse: empty/full
+    layersub = init_layersub("empty") # Jse: empty / full
     trace_selection(0)
 
     # 0 layers for old values.
-    clean_transcode()
+    clean_transcode(pwd, destination)
     transcode_images_singleGOP(layersub)
-    old_kbps, old_psnr = codestream_point(2, original_gop, "gop" + str(gop+1))
-    headers = old_kbps
+    old_kbps, old_psnr = codestream_point(pwd + "/transcode_quality", 2, original_gop, "gop" + str(gop+1))
     
     full = 0
     while full < total:
@@ -426,12 +427,10 @@ for gop in range(0, GOPs-1): # Jse -1
                 continue
 
             # Transcode
-            clean_transcode()
+            clean_transcode(pwd, destination)
             transcode_images_singleGOP(try_layersub)
             # Kbps & Psnr
-            kbps, psnr = codestream_point(2, original_gop, "gop" + str(gop+1))  # Real kbps & psnr calculation from a single gop
-            kbps = kbps - headers
-
+            kbps, psnr = codestream_point(pwd + "/transcode_quality", 2, original_gop, "gop" + str(gop+1))  # Real kbps & psnr calculation from a single gop
             # kbps, psnr = random_kbps_psnr()                                   # Only for fast debug
             # Easy solution for posible empty layer
             kbps = if_empty_layer(kbps)
@@ -453,21 +452,31 @@ for gop in range(0, GOPs-1): # Jse -1
             old_kbps = point["kbps"]
             FSO[gop].append(point.copy())
             FSO[gop].append(best_layersub.copy())
-            
+
     toFile()  # Save FSO selections to files
 
 # END FSO.
 
+
 # --------------------------------------------------------------------
 # Transcode, Kbps & Psnr per WHOLE video (no per gop) for FSO short
 for point in range(1, len(FSO[0]), 2):
-    clean_transcode()
-    for gop in range(0, GOPs-1): # Jse -1
+    clean_transcode(pwd, destination)
+    clean_transcode(pwd, destination_zero)
+    for gop in range(0, GOPs-1):
         # Transcode
+        os.chdir(pwd)                       # codestream from original video.
         transcode_images(FSO[gop][point])
         trace_selection(3)
+        
+        os.chdir(pwd + destination_zero)    # codestream from zero texture video. To kbps headers calculation.
+        transcode_images(FSO[gop][point])
+
     # Kbps & Psnr
-    kbps, psnr = codestream_point(GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
+    kbps     , psnr      = codestream_point(pwd + destination,      GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
+    kbps_zero, psnr_zero = codestream_point(pwd + destination_zero, GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
+    kbps = kbps - kbps_zero
+
     # Save point to file
     trace_selection(4)
     trace_selection(5)

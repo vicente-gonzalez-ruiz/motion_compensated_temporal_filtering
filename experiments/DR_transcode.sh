@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # log.info("output = {}".format(out))
-
+video_zero="zero.yuv"
 video="mobile_352x288x30x420x300"
 GOPs=2
 TRLs=4
@@ -109,6 +109,8 @@ done
 dir="L"$layers"_T"$TRLs"_BS"$block_size"_SR"$search_range"_G"$GOPs"_"$video
 rm -rf $dir; mkdir $dir; cd $dir
 video="/nfs/cmaturana/Videos/"$video
+video_zero="/nfs/cmaturana/$dir/zero_texture/$video_zero"
+
 #IFS=';' read -ra ADDR <<< "$IN"
 #for i in "${ADDR[@]}"; do
     # process "$i"
@@ -160,7 +162,7 @@ if [ $__debug__ -eq 1 ]; then
     set -o errexit
 fi
 
-
+# ============================================================================== COMPRESS PGM RAW original
 rm -rf L_0
 mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
@@ -200,10 +202,12 @@ while [ $img -le $number_of_images ]; do
     img=$((img+1))
 done
 
+
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers #--block_size=$block_size --search_range=$search_range
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 
+# ============================================================================== EXPAND PGM RAW original
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
@@ -247,8 +251,59 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 (ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null || true
 #(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null || true
 
+# ============================================================================== CREATE ZERO TEXTURE TO KBPS HEADERS CALCULATION
+mkdir zero_texture
+cd zero_texture
+x_dim_video=`echo $x_dim*$number_of_images*1.5/1 | bc`
+mctf create_zero_texture --file=$video_zero --pixels_in_y=$y_dim --pixels_in_x=$x_dim_video
+
+
 exit 0 # Jse
 
+rm -rf L_0
+mkdir L_0
+
+if [ $__debug__ -eq 1 ]; then
+   ffmpeg -i $video_zero -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y 
+fi
+(ffmpeg -i $video_zero -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+
+img=1
+while [ $img -le $number_of_images ]; do
+    _img=$(printf "%04d" $img)
+    #let img_1=img-1
+    img_1=$((img-1))
+    _img_1=$(printf "%04d" $img_1)
+    #(uchar2short < L_0/$_img.Y > /tmp/1) 2> /dev/null
+    #rawtopgm -bpp 2   $x_dim   $y_dim < /tmp/1 > L_0/${_img_1}_0.pgm
+    input=L_0/$_img.Y
+    output=L_0/${_img_1}_0.pgm
+    #rawtopgm   $x_dim   $y_dim < $input > $output.pgm
+    RAWTOPGM $input $x_dim $y_dim $output
+
+    #(uchar2short < L_0/$_img.U > /tmp/1) 2> /dev/null
+    #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_1.pgm
+    input=L_0/$_img.U
+    output=L_0/${_img_1}_1.pgm
+    #rawtopgm $x_dim_2 $y_dim_2 < $input > $output.pgm
+    RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
+    
+    #(uchar2short < L_0/$_img.V > /tmp/1) 2> /dev/null
+    #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_2.pgm
+    #rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
+    input=L_0/$_img.V
+    output=L_0/${_img_1}_2.pgm
+    RAWTOPGM $input $x_dim_2 $y_dim_2 $output
+    #let img=img+1
+    img=$((img+1))
+done
+
+#mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range
+cd ..
+
+
+# ============================================================================== TRANSCODE
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
 mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video --block_size=$block_size --search_range=$search_range
