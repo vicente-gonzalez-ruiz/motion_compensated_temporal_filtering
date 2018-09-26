@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # log.info("output = {}".format(out))
-video_zero="zero.yuv"
+
 video="mobile_352x288x30x420x300"
 GOPs=2
 TRLs=4
@@ -109,7 +109,7 @@ done
 dir="L"$layers"_T"$TRLs"_BS"$block_size"_SR"$search_range"_G"$GOPs"_"$video
 rm -rf $dir; mkdir $dir; cd $dir
 video="/nfs/cmaturana/Videos/"$video
-video_zero="/nfs/cmaturana/$dir/zero_texture/$video_zero"
+#dir_video_zero="/nfs/cmaturana/$dir/tmp/zero_texture/zero.yuv"
 
 #IFS=';' read -ra ADDR <<< "$IN"
 #for i in "${ADDR[@]}"; do
@@ -254,19 +254,18 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 # ============================================================================== CREATE ZERO TEXTURE TO KBPS HEADERS CALCULATION
 mkdir zero_texture
 cd zero_texture
+
 x_dim_video=`echo $x_dim*$number_of_images*1.5/1 | bc`
-mctf create_zero_texture --file=$video_zero --pixels_in_y=$y_dim --pixels_in_x=$x_dim_video
-
-
-exit 0 # Jse
+mctf create_zero_texture --file=zero.yuv --pixels_in_y=$y_dim --pixels_in_x=$x_dim_video    # zero.yuv
+x264 --input-res $x_dim"x"$y_dim --qp 0 -o zero.yuv.avi zero.yuv                            # .yuv to .avi
 
 rm -rf L_0
 mkdir L_0
-
 if [ $__debug__ -eq 1 ]; then
-   ffmpeg -i $video_zero -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y 
+   ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y 
 fi
-(ffmpeg -i $video_zero -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+(ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+
 
 img=1
 while [ $img -le $number_of_images ]; do
@@ -287,7 +286,7 @@ while [ $img -le $number_of_images ]; do
     output=L_0/${_img_1}_1.pgm
     #rawtopgm $x_dim_2 $y_dim_2 < $input > $output.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
-    
+
     #(uchar2short < L_0/$_img.V > /tmp/1) 2> /dev/null
     #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_2.pgm
     #rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
@@ -302,6 +301,7 @@ done
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range
 cd ..
 
+exit 0 # Jse
 
 # ============================================================================== TRANSCODE
 mkdir transcode_quality

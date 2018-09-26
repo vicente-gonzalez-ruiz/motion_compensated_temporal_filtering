@@ -19,7 +19,7 @@
 # DR_TRANSCODE.SH   -----------------------------
 #srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  16  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30
 #srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  16  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 -s 0
-srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  16  -r  4  -g  3  -t  4  -y  288  -x  352  -f  30
+./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  16  -r  4  -g  3  -t  4  -y  288  -x  352  -f  30
 
 
 exit 0
