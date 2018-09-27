@@ -68,7 +68,7 @@ parser.TRLs()
 parser.layers()
 parser.add_argument("--destination",
                     help="destination directory (must exist)",
-                    default="/transcode_quality")
+                    default="transcode_quality")
 parser.slope()
 parser.add_argument("--FPS",
                     help="Number of frames per second",
@@ -111,7 +111,7 @@ log.info("search_range={}".format(search_range))
 log.info("video={}".format(video))
 # }}}
 
-destination_zero = "/zero_texture"
+destination_zero = "zero_texture"
 
 # --------------------------------------------------------------------
 def transcode_picture(filename_in, filename_out, layers):
@@ -193,13 +193,13 @@ def transcode_images_singleGOP(layersub):
 # --------------------------------------------------------------------
 def raw_pgm(GOPs_to_extract):
 
-    raw_pgm = "../../raw_pgm.sh"
+    raw_pgm = pwd + "/../../raw_pgm.sh"
     param   = " -g " + str(GOPs_to_extract) + " -t " + str(TRLs) + " -y " + str(y_dim) + " -x " + str(x_dim)
+    shell.run(raw_pgm + param)
 
-    if True == os.path.isfile(raw_pgm):
-        shell.run(raw_pgm + param)
-    else:
-        shell.run("../" + raw_pgm + param)
+    #if True == os.path.isfile(raw_pgm):
+    #    shell.run(raw_pgm + param)
+
 
 # --------------------------------------------------------------------
 def codestream_point(path, GOPs_to_extract, original, reconstruction): # A single gop
@@ -264,7 +264,9 @@ def trace_selection(mode):
     elif mode == 3:
         shell.run("echo \"" + str(FSO[gop][point]) + "\" >> " + str(pwd) + "/selection_curveFSO.dat")
     elif mode == 4:
-        shell.run("echo \"" + str("%.6f"%float(kbps)) + "\t" + str("%.6f"%float(psnr)) + "\" >> " + str(pwd) + "/" + "L" + str(layers) + "_T" + str(TRLs) + "_BS" + str(block_size) + "_SR" + str(search_range) +"_G" + str(GOPs) + "_" + str(slope) + "_curveFSO.dat")
+        if False == os.path.isfile(file_results + "_curveFSO.dat"):
+            shell.run("echo \"" + "#KBPS #PSNR #KBPS_HEADERS" + "\" >> " + file_results + "_curveFSO.dat")
+        shell.run("echo \"" + str("%.6f"%float(kbps)) + "\t" + str("%.6f"%float(psnr)) + "\t" + str("%.3f"%float(kbps_zero)) + "\" >> " + file_results + "_curveFSO.dat")
     elif mode == 5:
         shell.run("echo \"\" >> " + str(pwd) + "/selection_curveFSO.dat")
 
@@ -281,9 +283,9 @@ def toFile():
 # --------------------------------------------------------------------
 def toDirectory():
     # {{{ Save to directory
-    f = str(pwd) + "/FSO_" + str(video.split("/")[len(video.split("/"))-1])
-    shell.run("rm -rf " + str(f) + "; mkdir " + str(f))
-    shell.run("mv " + str(pwd) + "/*.dat " + str(f))
+    f = str(pwd) + "/../../FSO_" + str(video.split("/")[len(video.split("/"))-1]) + "_L" + str(layers) + "_T" + str(TRLs) + "_BS" + str(block_size) + "_SR" + str(search_range) +"_G" + str(GOPs) + "_" + str(slope) + ".dat"
+    shell.run("rm -rf " + f + "; mkdir " + f)
+    shell.run("cp " + str(pwd) + "/*.dat " + f)
     # }}}
 
 # --------------------------------------------------------------------
@@ -328,7 +330,7 @@ def gop_video():
             + " bs="    + str(bs)               # Image size.
             + " count=" + str(GOP_size + 1))    # images gop + image gop_0.
 
-    #shell.run("rm -f " + original_gop_anterior + ".yuv")
+    shell.run("rm -f " + original_gop_anterior + ".yuv")
     return original_gop
     # }}}
 
@@ -386,12 +388,14 @@ out, err = p.communicate()
 pwd = out.decode('ascii')
 pwd = pwd[:len(pwd)-1]
 
+file_results = str(pwd) + "/" + "L" + str(layers) + "_T" + str(TRLs) + "_BS" + str(block_size) + "_SR" + str(search_range) +"_G" + str(GOPs) + "_" + str(slope)
+
 # Original .avi to .yuv for cut a gop of the original video
 if False == os.path.isfile(str(video) + ".yuv"):
     shell.run("ffmpeg -i " + str(video) + " -y " + str(video) + ".yuv")
 
 # --------------------------------------------------------------------
-# {{{ FSO
+# {{{ START FSO
 point   = {}
 FSO     = [ [] for i in range(GOPs-1) ]
 total   = TRLs*2-1
@@ -410,7 +414,7 @@ for gop in range(0, GOPs-1):
     # 0 layers for old values.
     clean_transcode(pwd, destination)
     transcode_images_singleGOP(layersub)
-    old_kbps, old_psnr = codestream_point(pwd + "/transcode_quality", 2, original_gop, "gop" + str(gop+1))
+    old_kbps, old_psnr = codestream_point(pwd + "/" + destination, 2, original_gop, "gop" + str(gop+1))
     
     full = 0
     while full < total:
@@ -430,8 +434,8 @@ for gop in range(0, GOPs-1):
             clean_transcode(pwd, destination)
             transcode_images_singleGOP(try_layersub)
             # Kbps & Psnr
-            kbps, psnr = codestream_point(pwd + "/transcode_quality", 2, original_gop, "gop" + str(gop+1))  # Real kbps & psnr calculation from a single gop
-            # kbps, psnr = random_kbps_psnr()                                   # Only for fast debug
+            kbps, psnr = codestream_point(pwd + "/" + destination, 2, original_gop, "gop" + str(gop+1)) # Real kbps & psnr calculation from a single gop
+            # kbps, psnr = random_kbps_psnr()                                                           # Only for fast debug
             # Easy solution for posible empty layer
             kbps = if_empty_layer(kbps)
             # Angle = Tan (difference psnr / difference kbps)
@@ -462,19 +466,20 @@ for gop in range(0, GOPs-1):
 # Transcode, Kbps & Psnr per WHOLE video (no per gop) for FSO short
 for point in range(1, len(FSO[0]), 2):
     clean_transcode(pwd, destination)
-    clean_transcode(pwd, destination_zero)
+    clean_transcode(pwd + "/" + destination_zero, destination)
     for gop in range(0, GOPs-1):
-        # Transcode
-        os.chdir(pwd)                       # codestream from original video.
+        # Transcode: codestream from original video.
+        os.chdir(pwd)
         transcode_images(FSO[gop][point])
+        # Transcode: codestream from zero texture video. To kbps headers calculation.
+        os.chdir(pwd + "/" + destination_zero)
+        transcode_images(FSO[gop][point])
+        # Trace
         trace_selection(3)
         
-        os.chdir(pwd + destination_zero)    # codestream from zero texture video. To kbps headers calculation.
-        transcode_images(FSO[gop][point])
-
     # Kbps & Psnr
-    kbps     , psnr      = codestream_point(pwd + destination,      GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
-    kbps_zero, psnr_zero = codestream_point(pwd + destination_zero, GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
+    kbps     , psnr      = codestream_point(pwd + "/" + destination                         , GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
+    kbps_zero, psnr_zero = codestream_point(pwd + "/" + destination_zero + "/" + destination, GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
     kbps = kbps - kbps_zero
 
     # Save point to file

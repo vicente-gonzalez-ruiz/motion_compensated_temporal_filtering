@@ -168,8 +168,10 @@ mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
 if [ $__debug__ -eq 1 ]; then
    ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y 
+elif
+    (ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 fi
-(ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+
 x_dim_2=`echo $x_dim/2 | bc`
 y_dim_2=`echo $y_dim/2 | bc`
 img=1
@@ -262,10 +264,10 @@ x264 --input-res $x_dim"x"$y_dim --qp 0 -o zero.yuv.avi zero.yuv                
 rm -rf L_0
 mkdir L_0
 if [ $__debug__ -eq 1 ]; then
-   ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y 
+    ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y
+elif
+    (ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 fi
-(ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
-
 
 img=1
 while [ $img -le $number_of_images ]; do
@@ -301,21 +303,15 @@ done
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range
 cd ..
 
-exit 0 # Jse
-
 # ============================================================================== TRANSCODE
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
 mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video --block_size=$block_size --search_range=$search_range
 
-
-exit 0 # Jse
-
-
-(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
-
+#(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
 if [ $__debug__ -eq 1 ]; then
     set +x
 fi
 
+exit 0 # Jse
 ##read -n1 -r -p "Press any key to continue..." key
