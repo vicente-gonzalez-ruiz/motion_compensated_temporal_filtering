@@ -168,9 +168,9 @@ mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
 if [ $__debug__ -eq 1 ]; then
    ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y 
-elif
-    (ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 fi
+(ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+
 
 x_dim_2=`echo $x_dim/2 | bc`
 y_dim_2=`echo $y_dim/2 | bc`
@@ -265,9 +265,9 @@ rm -rf L_0
 mkdir L_0
 if [ $__debug__ -eq 1 ]; then
     ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y
-elif
-    (ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 fi
+(ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+
 
 img=1
 while [ $img -le $number_of_images ]; do

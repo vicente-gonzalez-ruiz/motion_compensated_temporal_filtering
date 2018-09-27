@@ -289,6 +289,14 @@ def toDirectory():
     # }}}
 
 # --------------------------------------------------------------------
+def cleanYuvs():
+    # {{{ Clean .yuvs
+    shell.run("rm " + str(pwd)                          + "/*.yuv")
+    shell.run("rm " + str(pwd) + "/" + destination      + "/*.yuv")
+    shell.run("rm " + str(pwd) + "/" + destination_zero + "/*.yuv*")
+    # }}}
+    
+# --------------------------------------------------------------------
 def updatePoint():
 
     point["kbps"]    = kbps
@@ -408,7 +416,7 @@ for gop in range(0, GOPs-1):
     original_gop = gop_video()
 
     # Reset per gop
-    layersub = init_layersub("empty") # Jse: empty / full
+    layersub = init_layersub("full") # Jse: empty / full
     trace_selection(0)
 
     # 0 layers for old values.
@@ -486,10 +494,10 @@ for point in range(1, len(FSO[0]), 2):
     trace_selection(4)
     trace_selection(5)
 
-toDirectory() # Save FSO files to directory
+toDirectory()   # Save FSO files to directory
+cleanYuvs()     # Clean .yuvs for save space in disc
+
 sys.exit(0)
-
-
 
 
 
