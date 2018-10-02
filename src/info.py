@@ -30,7 +30,7 @@ parser.GOPs()
 parser.TRLs()
 
 args = parser.parse_known_args()[0]
-FPS = int(args.FPS)
+FPS = float(args.FPS)
 GOPs = int(args.GOPs)
 TRLs = int(args.TRLs)
 

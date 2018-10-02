@@ -90,7 +90,7 @@ TRLs         = int(args.TRLs)
 layers       = int(args.layers)
 destination  = args.destination
 slope        = int(args.slope)
-FPS          = int(args.FPS)
+FPS          = float(args.FPS)
 x_dim        = int(args.pixels_in_x)
 y_dim        = int(args.pixels_in_y)
 block_size   = int(args.block_size)
@@ -217,7 +217,7 @@ def codestream_point(path, GOPs_to_extract, original, reconstruction): # A singl
 
     # Expand
     # ------------------------
-    shell.run("mctf expand --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs) + " --block_size=" + str(block_size) + " --search_range=" + str(search_range))
+    shell.run("mctf expand --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs) + " --block_size=" + str(block_size) + " --search_range=" + str(search_range) + " --pixels_in_y=" + str(y_dim) + " --pixels_in_x=" + str(x_dim))
     # Separate to images
     raw_pgm(GOPs_to_extract)
 
@@ -287,14 +287,6 @@ def toDirectory():
     shell.run("rm -rf " + f + "; mkdir " + f)
     shell.run("cp " + str(pwd) + "/*.dat " + f)
     # }}}
-
-# --------------------------------------------------------------------
-def cleanYuvs():
-    # {{{ Clean .yuvs
-    shell.run("rm " + str(pwd)                          + "/*.yuv")
-    shell.run("rm " + str(pwd) + "/" + destination      + "/*.yuv")
-    shell.run("rm " + str(pwd) + "/" + destination_zero + "/*.yuv*")
-    # }}}
     
 # --------------------------------------------------------------------
 def updatePoint():
@@ -362,6 +354,18 @@ def clean_transcode(path, destination):
     # }}}
 
 # --------------------------------------------------------------------
+def cleanYuvs():
+    # {{{ Clean .yuvs
+    shell.run("rm " + pwd                          + "/*.yuv")
+    shell.run("rm " + pwd + "/" + destination      + "/*.yuv")
+    shell.run("rm " + pwd + "/" + destination_zero + "/*.yuv*")
+    # }}}
+    
+    # {{{ Clean nohup
+    shell.run("rm " + pwd + "/../../nohup.out")
+    # }}}
+
+# --------------------------------------------------------------------
 def random_kbps_psnr(): # Only for debug
     import random
     kbps = random.randint(1,101)
@@ -416,7 +420,7 @@ for gop in range(0, GOPs-1):
     original_gop = gop_video()
 
     # Reset per gop
-    layersub = init_layersub("full") # Jse: empty / full
+    layersub = init_layersub("empty") # Jse: empty / full
     trace_selection(0)
 
     # 0 layers for old values.
@@ -495,7 +499,7 @@ for point in range(1, len(FSO[0]), 2):
     trace_selection(5)
 
 toDirectory()   # Save FSO files to directory
-cleanYuvs()     # Clean .yuvs for save space in disc
+#cleanYuvs()     # Clean .yuvs for save space in disc
 
 sys.exit(0)
 

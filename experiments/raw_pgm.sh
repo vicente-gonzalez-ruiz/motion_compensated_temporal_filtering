@@ -1,6 +1,5 @@
 #!/bin/bash
 
-video_dir=~/Videos
 video=container_352x288x30x420x300.avi
 # ffmpeg -t 10 -s 352x288 -f rawvideo -pix_fmt rgb24 -r 30 -i /dev/zero ~/Videos/zero_352x288x30x420x300.avi
 #video=~/Videos/zero_352x288x30x420x300.avi

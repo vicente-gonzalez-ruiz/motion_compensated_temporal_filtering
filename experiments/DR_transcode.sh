@@ -11,7 +11,7 @@ FPS=30
 layers=8    # Be careful, unable to handle more than 10 quality layers
 	        # (reason: kdu_compress's output format)
 keep_layers=8
-slope=43000
+slope=42000
 block_size=16
 search_range=4
 
@@ -167,7 +167,7 @@ rm -rf L_0
 mkdir L_0
 number_of_images=`echo "2^($TRLs-1)*($GOPs-1)+1" | bc`
 if [ $__debug__ -eq 1 ]; then
-   ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y 
+   ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y
 fi
 (ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 
@@ -177,75 +177,51 @@ y_dim_2=`echo $y_dim/2 | bc`
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    #let img_1=img-1
     img_1=$((img-1))
     _img_1=$(printf "%04d" $img_1)
-    #(uchar2short < L_0/$_img.Y > /tmp/1) 2> /dev/null
-    #rawtopgm -bpp 2   $x_dim   $y_dim < /tmp/1 > L_0/${_img_1}_0.pgm
     input=L_0/$_img.Y
     output=L_0/${_img_1}_0.pgm
-    #rawtopgm   $x_dim   $y_dim < $input > $output.pgm
     RAWTOPGM $input $x_dim $y_dim $output
 
-    #(uchar2short < L_0/$_img.U > /tmp/1) 2> /dev/null
-    #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_1.pgm
     input=L_0/$_img.U
     output=L_0/${_img_1}_1.pgm
-    #rawtopgm $x_dim_2 $y_dim_2 < $input > $output.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
     
-    #(uchar2short < L_0/$_img.V > /tmp/1) 2> /dev/null
-    #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_2.pgm
-    #rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
     input=L_0/$_img.V
     output=L_0/${_img_1}_2.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output
-    #let img=img+1
     img=$((img+1))
 done
 
 
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range
-mctf info --GOPs=$GOPs --TRLs=$TRLs
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
 
 # ============================================================================== EXPAND PGM RAW original
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
-mctf info --GOPs=$GOPs --TRLs=$TRLs
-mctf expand --GOPs=$GOPs --TRLs=$TRLs
+mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
+mctf expand --GOPs=$GOPs --TRLs=$TRLs --block_size=$block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    #let img_1=img-1
     img_1=$((img-1))
     _img_1=$(printf "%04d" $img_1)
-    #convert -endian MSB L_0/${_img_1}_0.pgm /tmp/1.gray
-    #(short2uchar < /tmp/1.gray > L_0/$_img.Y) 2> /dev/null
-    #convert L_0/${_img_1}_0.pgm /tmp/1.gray
-    #mv /tmp/1.gray L_0/$_img.Y
     input=L_0/${_img_1}_0.pgm
     output=L_0/$_img.Y
     PGMTORAW $input $output
     
-    #convert -endian MSB L_0/${_img_1}_1.pgm /tmp/1.gray
-    #(short2uchar < /tmp/1.gray > L_0/$_img.U) 2> /dev/null
-    #convert L_0/${_img_1}_1.pgm /tmp/1.gray
-    #mv /tmp/1.gray L_0/$_img.U
     input=L_0/${_img_1}_1.pgm
     output=L_0/$_img.U
     PGMTORAW $input $output
     
-    #convert -endian MSB L_0/${_img_1}_2.pgm /tmp/1.gray
-    #(short2uchar < /tmp/1.gray > L_0/$_img.V) 2> /dev/null
-    #convert L_0/${_img_1}_2.pgm /tmp/1.gray
-    #mv /tmp/1.gray L_0/$_img.V
     input=L_0/${_img_1}_2.pgm
     output=L_0/$_img.V
     PGMTORAW $input $output
 
-    #let img=img+1
     img=$((img+1))
 done
 mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
@@ -272,35 +248,24 @@ fi
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
-    #let img_1=img-1
     img_1=$((img-1))
     _img_1=$(printf "%04d" $img_1)
-    #(uchar2short < L_0/$_img.Y > /tmp/1) 2> /dev/null
-    #rawtopgm -bpp 2   $x_dim   $y_dim < /tmp/1 > L_0/${_img_1}_0.pgm
     input=L_0/$_img.Y
     output=L_0/${_img_1}_0.pgm
-    #rawtopgm   $x_dim   $y_dim < $input > $output.pgm
     RAWTOPGM $input $x_dim $y_dim $output
 
-    #(uchar2short < L_0/$_img.U > /tmp/1) 2> /dev/null
-    #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_1.pgm
     input=L_0/$_img.U
     output=L_0/${_img_1}_1.pgm
-    #rawtopgm $x_dim_2 $y_dim_2 < $input > $output.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
 
-    #(uchar2short < L_0/$_img.V > /tmp/1) 2> /dev/null
-    #rawtopgm -bpp 2 $x_dim_2 $y_dim_2 < /tmp/1 > L_0/${_img_1}_2.pgm
-    #rawtopgm $x_dim_2 $y_dim_2 < L_0/$_img.V > L_0/${_img_1}_2.pgm
     input=L_0/$_img.V
     output=L_0/${_img_1}_2.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output
-    #let img=img+1
     img=$((img+1))
 done
 
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 cd ..
 
 # ============================================================================== TRANSCODE
