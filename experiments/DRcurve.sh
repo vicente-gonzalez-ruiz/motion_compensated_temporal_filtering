@@ -11,7 +11,7 @@ x_dim=352
 FPS=30
 layers=8  # Be careful, unable to handle more than 10 quality layers
 	  # (reason: kdu_compress's output format)
-slope=43000
+slope=42000
 
 __debug__=0
 BPP=8
@@ -223,3 +223,4 @@ done
 if [ $__debug__ -eq 1 ]; then
     set +x
 fi
+

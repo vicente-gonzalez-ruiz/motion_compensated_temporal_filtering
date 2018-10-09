@@ -17,8 +17,12 @@
 #srun -N 1 -n 1 -p iball ../basic.sh          -g 5 -t 6 -l 16
 
 # DR_TRANSCODE.SH   -----------------------------
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &
+exit 0
 
-
+mkdir tmp; cd tmp
+nohup srun -N 1 -n 1 -p ibcl ../DRcurve.sh   -v  container_352x288x30x420x300.avi  -l  8  -g  9  -t  5  -y  288  -x  352 &
+exit 0
 srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  16  -r  4  -g  2  -t  3  -y  1088  -x  1920  -f  50
 exit 0
 srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  2  -t  3  -y  4096  -x  4096  -f  0.027
