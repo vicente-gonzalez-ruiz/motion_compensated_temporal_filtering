@@ -168,8 +168,10 @@ echo \# layers=$layers >> $name2
 echo \# slope=$slope >> $name2
 echo \# BPP=$BPP >> $name2
 echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name2
+subband_layers=`echo "$layers*($TRLs+1)" | bc`
+echo \# NUMBER_OF_SUBBAND_LAYERS=$subband_layers >> $name2
 
-subband_layers=`echo $layers*$TRLs+1 | bc`
+#subband_layers=1
 for i in `seq 1 $subband_layers`; do
     echo Running for $i quality layers
     rm -rf transcode_quality
