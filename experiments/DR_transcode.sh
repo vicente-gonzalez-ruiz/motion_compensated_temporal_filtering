@@ -11,14 +11,13 @@ FPS=30
 layers=8    # Be careful, unable to handle more than 10 quality layers
 	        # (reason: kdu_compress's output format)
 keep_layers=8
-slope=42000
+slope=43000
 block_size=16
 search_range=4
 
 
 # Transcode algorithm.
-export TRANSCODE_QUALITY="transcode_quality_FSO"
-#export TRANSCODE_QUALITY="transcode_quality_PLT"
+export TRANSCODE_QUALITY="transcode_quality_FSO" # "transcode_quality_PLT"
 
 
 __debug__=1
@@ -109,12 +108,6 @@ done
 dir="L"$layers"_T"$TRLs"_BS"$block_size"_SR"$search_range"_G"$GOPs"_"$video
 rm -rf $dir; mkdir $dir; cd $dir
 video="/nfs/cmaturana/Videos/"$video
-#dir_video_zero="/nfs/cmaturana/$dir/tmp/zero_texture/zero.yuv"
-
-#IFS=';' read -ra ADDR <<< "$IN"
-#for i in "${ADDR[@]}"; do
-    # process "$i"
-#done
 
 
 if [ $BPP -eq 16 ]; then
@@ -125,7 +118,6 @@ if [ $BPP -eq 16 ]; then
 	local y_dim=$3
 	local output_image=$4
 	(uchar2ushort < $input_image > /tmp/1) 2> /dev/null
-	#(add Short 32768 < /tmp/1 > /tmp/2) 2> /dev/null
 	rawtopgm -bpp 2 $x_dim $y_dim < /tmp/1 > $output_image
     }
 
@@ -133,7 +125,6 @@ if [ $BPP -eq 16 ]; then
 	local input_image=$1
 	local output_image=$2
 	convert -endian MSB $input_image /tmp/1.gray
-	#(add Short -32768 < /tmp/1.gray > /tmp/2) 2> /dev/null
 	(ushort2uchar < /tmp/1.gray > $output_image) 2> /dev/null
     }
     
@@ -156,6 +147,31 @@ else
     
 fi
 
+
+# ============================================================================== PGM RAW
+IMG_YUV() {
+    img=1
+    while [ $img -le $number_of_images ]; do
+        _img=$(printf "%04d" $img)
+        img_1=$((img-1))
+        _img_1=$(printf "%04d" $img_1)
+        input=L_0/$_img.Y
+        output=L_0/${_img_1}_0.pgm
+        RAWTOPGM $input $x_dim $y_dim $output
+
+        input=L_0/$_img.U
+        output=L_0/${_img_1}_1.pgm
+        RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
+    
+        input=L_0/$_img.V
+        output=L_0/${_img_1}_2.pgm
+        RAWTOPGM $input $x_dim_2 $y_dim_2 $output
+        img=$((img+1))
+    done
+}
+
+
+
 if [ $__debug__ -eq 1 ]; then
     set -x
     set -e
@@ -171,33 +187,52 @@ if [ $__debug__ -eq 1 ]; then
 fi
 (ffmpeg -i $video -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
 
-
 x_dim_2=`echo $x_dim/2 | bc`
 y_dim_2=`echo $y_dim/2 | bc`
-img=1
-while [ $img -le $number_of_images ]; do
-    _img=$(printf "%04d" $img)
-    img_1=$((img-1))
-    _img_1=$(printf "%04d" $img_1)
-    input=L_0/$_img.Y
-    output=L_0/${_img_1}_0.pgm
-    RAWTOPGM $input $x_dim $y_dim $output
-
-    input=L_0/$_img.U
-    output=L_0/${_img_1}_1.pgm
-    RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
-    
-    input=L_0/$_img.V
-    output=L_0/${_img_1}_2.pgm
-    RAWTOPGM $input $x_dim_2 $y_dim_2 $output
-    img=$((img+1))
-done
+IMG_YUV
 
 
-#mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
 
+# ============================================================================== CREATE ZERO TEXTURE TO KBPS HEADERS CALCULATION
+mkdir zero_texture
+cd zero_texture
+
+x_dim_video=`echo $x_dim*$number_of_images*1.5/1 | bc`
+mctf create_zero_texture --file=zero.yuv --pixels_in_y=$y_dim --pixels_in_x=$x_dim_video    # zero.yuv
+x264 --input-res $x_dim"x"$y_dim --qp 0 -o zero.yuv.avi zero.yuv                            # .yuv to .avi
+
+rm -rf L_0
+mkdir L_0
+if [ $__debug__ -eq 1 ]; then
+    ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y
+fi
+(ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+
+IMG_YUV
+
+#mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+cd ..
+
+# ============================================================================== TRANSCODE
+mkdir transcode_quality
+mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video --block_size=$block_size --search_range=$search_range
+
+if [ $__debug__ -eq 1 ]; then
+    set +x
+fi
+
+exit 0 # Jse
+
+
+
+
+##read -n1 -r -p "Press any key to continue..." key
+
+
+<<comment
 # ============================================================================== EXPAND PGM RAW original
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
@@ -229,20 +264,9 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 (ffmpeg -y -s ${x_dim}x${y_dim} -pix_fmt yuv420p -i L_0/%4d.Y /tmp/out.yuv) > /dev/null 2> /dev/null || true
 #(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null || true
 
-# ============================================================================== CREATE ZERO TEXTURE TO KBPS HEADERS CALCULATION
-mkdir zero_texture
-cd zero_texture
 
-x_dim_video=`echo $x_dim*$number_of_images*1.5/1 | bc`
-mctf create_zero_texture --file=zero.yuv --pixels_in_y=$y_dim --pixels_in_x=$x_dim_video    # zero.yuv
-x264 --input-res $x_dim"x"$y_dim --qp 0 -o zero.yuv.avi zero.yuv                            # .yuv to .avi
 
-rm -rf L_0
-mkdir L_0
-if [ $__debug__ -eq 1 ]; then
-    ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y
-fi
-(ffmpeg -i zero.yuv.avi -c:v rawvideo -pix_fmt yuv420p -vframes $number_of_images L_0/%4d.Y) > /dev/null 2> /dev/null
+
 
 
 img=1
@@ -257,26 +281,13 @@ while [ $img -le $number_of_images ]; do
     input=L_0/$_img.U
     output=L_0/${_img_1}_1.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output    
-
+    
     input=L_0/$_img.V
     output=L_0/${_img_1}_2.pgm
     RAWTOPGM $input $x_dim_2 $y_dim_2 $output
     img=$((img+1))
 done
 
-#mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-cd ..
+comment
 
-# ============================================================================== TRANSCODE
-mkdir transcode_quality
-#mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
-mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video --block_size=$block_size --search_range=$search_range
 
-#(mplayer /tmp/out.yuv -demuxer rawvideo -rawvideo w=$x_dim:h=$y_dim -loop 0 -fps $FPS) > /dev/null 2> /dev/null
-if [ $__debug__ -eq 1 ]; then
-    set +x
-fi
-
-exit 0 # Jse
-##read -n1 -r -p "Press any key to continue..." key

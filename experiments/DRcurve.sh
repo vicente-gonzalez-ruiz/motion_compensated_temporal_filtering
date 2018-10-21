@@ -11,7 +11,7 @@ x_dim=352
 FPS=30
 layers=8  # Be careful, unable to handle more than 10 quality layers
 	  # (reason: kdu_compress's output format)
-slope=42000
+slope=43000
 
 __debug__=0
 BPP=8
@@ -169,11 +169,12 @@ echo \# slope=$slope >> $name2
 echo \# BPP=$BPP >> $name2
 echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name2
 
-subband_layers=`echo $layers*$TRLs | bc`
+subband_layers=`echo $layers*$TRLs+1 | bc`
 for i in `seq 1 $subband_layers`; do
     echo Running for $i quality layers
+    rm -rf transcode_quality
     mkdir transcode_quality
-    mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i \
+    mctf transcode_quality_PLT --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$i \
 	 --destination="transcode_quality" --layers=$layers --slope=$slope
     echo -----------------------------------------------
     cat $name2
@@ -217,10 +218,9 @@ for i in `seq 1 $subband_layers`; do
     fi
     
     cd ..
-    rm -rf transcode_quality
+    #rm -rf transcode_quality
 done
 
 if [ $__debug__ -eq 1 ]; then
     set +x
 fi
-

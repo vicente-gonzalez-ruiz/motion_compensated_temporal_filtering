@@ -193,7 +193,7 @@ def transcode_images_singleGOP(layersub):
 # --------------------------------------------------------------------
 def raw_pgm(GOPs_to_extract):
 
-    raw_pgm = pwd + "/../../raw_pgm.sh"
+    raw_pgm = pwd + "/../raw_pgm.sh"
     param   = " -g " + str(GOPs_to_extract) + " -t " + str(TRLs) + " -y " + str(y_dim) + " -x " + str(x_dim)
     shell.run(raw_pgm + param)
 
@@ -202,7 +202,7 @@ def raw_pgm(GOPs_to_extract):
 
 
 # --------------------------------------------------------------------
-def codestream_point(path, GOPs_to_extract, original, reconstruction): # A single gop
+def codestream_point(path, GOPs_to_extract, original): # A single gop or whole video
 
     os.chdir(path)
     
@@ -211,27 +211,25 @@ def codestream_point(path, GOPs_to_extract, original, reconstruction): # A singl
 
     # KBPS
     # ------------------------
+    if GOPs_to_extract < GOPs and True == os.path.isfile("L_" + str(TRLs-1) + "/0000.jpx"): # <- Info without previous gop
+        shell.run("mkdir previous_gop; mv L_" + str(TRLs-1) + "/0000.jpx previous_gop")
+
     p = sub.Popen("mctf info --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs) + " --FPS=" + str(FPS) + " 2> /dev/null | grep \"Average\" | cut -d \" \" -f 5", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     out, err = p.communicate()
     kbps = float(out)
-
+    
+    if True == os.path.isdir("previous_gop"): # <- Info without previous gop
+        shell.run("mv previous_gop/* " + "L_" + str(TRLs-1) + "; rm -rf previous_gop")
+    
     # Expand
     # ------------------------
     shell.run("mctf expand --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs) + " --block_size=" + str(block_size) + " --search_range=" + str(search_range) + " --pixels_in_y=" + str(y_dim) + " --pixels_in_x=" + str(x_dim))
     # Separate to images
     raw_pgm(GOPs_to_extract)
 
-    # Extraction to .yuv
-    shell.run("(ffmpeg -y -s " + str(x_dim) + "x" + str(y_dim) + " -pix_fmt yuv420p -i L_0/%4d.Y " + str(reconstruction) + ".yuv) > /dev/null 2> /dev/null")
-
     # PSNR
     # ------------------------
-    # mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
-    p = sub.Popen("(snr --type=uchar --peak=255"
-                + " --file_A=" + str(original) + ".yuv"
-                + " --file_B=" + str(reconstruction) + ".yuv"
-                + " --block_size=" + str(bs) + ") 2> /dev/null"
-                + " | grep PSNR | grep dB | cut -d \"=\" -f 2"
+    p = sub.Popen("mctf psnr --file_A L_0 --file_B " + original + " --pixels_in_x=" + str(x_dim) + " --pixels_in_y=" + str(y_dim) + " --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs)
                 , shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     out, err = p.communicate()
     log.debug("psnr: " + str(out))
@@ -258,7 +256,7 @@ def trace_selection(mode):
         shell.run("echo \"\nGOP " + str(gop+1) + " from 0 to " + str(GOPs-1) + " GOPs\n\" >> " + str(pwd) + "/selection.dat")
         shell.run("echo \"Angle = math.atan((psnr - old_psnr) / (kbps - old_kbps))\n\" >> " + str(pwd) + "/selection.dat")
     elif mode == 1:
-        shell.run("echo \"" + str(key) + ": " + str(try_layersub[key]) + "\t\t" + str("%.8f"%angle) + "\t= " + "(" + str("%.6f"%psnr) + " - " + str("%.6f"%old_psnr) + ") / (" + str("%.4f"%kbps) + " - " + str("%.4f"%old_kbps) + ")\" >> " + str(pwd) + "/selection.dat")
+        shell.run("echo \"" + str(key) + ": " + str(try_layersub[key]) + "\t\t" + str("%.8f"%angle) + "\t= " + "(" + str("%.6f"%psnr) + " - " + str("%.6f"%old_psnr) + ") / (" + str("%.4f"%kbps) + " (+" + str("%.1f"%kbps_zero) + ") - " + str("%.4f"%old_kbps) + ")\" >> " + str(pwd) + "/selection.dat")
     elif mode == 2:
         shell.run("echo \"ADDED: " + str(point["subband"]) + ": " + str(point["layer"]) + "  THEN: " + str(best_layersub) + "\n\" >> " + str(pwd) + "/selection.dat")
     elif mode == 3:
@@ -283,7 +281,7 @@ def toFile():
 # --------------------------------------------------------------------
 def toDirectory():
     # {{{ Save to directory
-    f = str(pwd) + "/../../FSO_" + str(video.split("/")[len(video.split("/"))-1]) + "_L" + str(layers) + "_T" + str(TRLs) + "_BS" + str(block_size) + "_SR" + str(search_range) +"_G" + str(GOPs) + "_" + str(slope) + ".dat"
+    f = str(pwd) + "/../FSO_" + str(video.split("/")[len(video.split("/"))-1]) + "_L" + str(layers) + "_T" + str(TRLs) + "_BS" + str(block_size) + "_SR" + str(search_range) +"_G" + str(GOPs) + "_" + str(slope) + ".dat"
     shell.run("rm -rf " + f + "; mkdir " + f)
     shell.run("cp " + str(pwd) + "/*.dat " + f)
     # }}}
@@ -310,7 +308,7 @@ def init_layersub(mode):
             layersub[('R', i)] = 0
 
     elif mode == "full":
-        layersub[('L', TRLs-1)] = layers-1
+        layersub[('L', TRLs-1)] = layers
         for i in range(TRLs-1,0,-1):
             layersub[('H', i)] = layers
             layersub[('R', i)] = 1
@@ -320,17 +318,25 @@ def init_layersub(mode):
 # --------------------------------------------------------------------
 def gop_video():
     # {{{ Take original frames from a gop to compute distortion gop by gop.
-    original_gop_anterior = str(pwd) + "/original_gop" + str(gop)
-    original_gop          = str(pwd) + "/original_gop" + str(gop+1)
 
-    shell.run("dd"
-            + " if="    + video + ".yuv"
-            + " of="    + str(original_gop) + ".yuv"
-            + " skip="  + str(GOP_size * gop)   # Jump to the current GOP.
-            + " bs="    + str(bs)               # Image size.
-            + " count=" + str(GOP_size + 1))    # images gop + image gop_0.
+    # GOP_0 are: 0001
+    # GOP_1 are: 0002 a 0017. Need to expand: 0001 a 00017
+    # GOP_2 are: 0018 a 0033. Need to expand: 0017 a 00033
 
-    shell.run("rm -f " + original_gop_anterior + ".yuv")
+    original_gop_anterior = pwd + "/original_gop" + str(gop)
+    original_gop          = pwd + "/original_gop" + str(gop+1)
+
+    shell.run("mkdir " + original_gop)
+    for p in range(GOP_size * gop, GOP_size * gop + GOP_size + 1):
+
+        fname_in  = pwd + "/L_0/"      + str('%04d' % (p+1))
+        fname_out = original_gop + "/" + str('%04d' % (p-(GOP_size * gop)+1))
+
+        shell.run("cp " + fname_in + ".Y " + fname_out + ".Y")
+        shell.run("cp " + fname_in + ".U " + fname_out + ".U")
+        shell.run("cp " + fname_in + ".V " + fname_out + ".V")
+
+    #shell.run("rm -f " + original_gop_anterior + ".yuv") # Jse
     return original_gop
     # }}}
 
@@ -362,7 +368,7 @@ def cleanYuvs():
     # }}}
     
     # {{{ Clean nohup
-    shell.run("rm " + pwd + "/../../nohup.out")
+    shell.run("rm " + pwd + "/../nohup.out")
     # }}}
 
 # --------------------------------------------------------------------
@@ -402,10 +408,6 @@ pwd = pwd[:len(pwd)-1]
 
 file_results = str(pwd) + "/" + "L" + str(layers) + "_T" + str(TRLs) + "_BS" + str(block_size) + "_SR" + str(search_range) +"_G" + str(GOPs) + "_" + str(slope)
 
-# Original .avi to .yuv for cut a gop of the original video
-if False == os.path.isfile(str(video) + ".yuv"):
-    shell.run("ffmpeg -i " + str(video) + " -y " + str(video) + ".yuv")
-
 # --------------------------------------------------------------------
 # {{{ START FSO
 point   = {}
@@ -426,7 +428,7 @@ for gop in range(0, GOPs-1):
     # 0 layers for old values.
     clean_transcode(pwd, destination)
     transcode_images_singleGOP(layersub)
-    old_kbps, old_psnr = codestream_point(pwd + "/" + destination, 2, original_gop, "gop" + str(gop+1))
+    old_kbps, old_psnr = codestream_point(pwd + "/" + destination, 2, original_gop)
     
     full = 0
     while full < total:
@@ -442,12 +444,22 @@ for gop in range(0, GOPs-1):
                 full += 1
                 continue
 
-            # Transcode
-            clean_transcode(pwd, destination)
+
+            clean_transcode(pwd                         , destination)
+            clean_transcode(pwd + "/" + destination_zero, destination)
+
+            # Transcode: gop from original video
+            os.chdir(pwd)
             transcode_images_singleGOP(try_layersub)
-            # Kbps & Psnr
-            kbps, psnr = codestream_point(pwd + "/" + destination, 2, original_gop, "gop" + str(gop+1)) # Real kbps & psnr calculation from a single gop
-            # kbps, psnr = random_kbps_psnr()                                                           # Only for fast debug
+            # Transcode: gop from zero video. To kbps headers calculation.
+            os.chdir(pwd + "/" + destination_zero)
+            transcode_images_singleGOP(try_layersub)
+
+            # Kbps & Psnr --> # kbps, psnr = random_kbps_psnr() # Only for fast debug
+            kbps, psnr           = codestream_point(pwd + "/" + destination                         , 2, original_gop) # Real kbps & psnr calculation from a single gop
+            kbps_zero, psnr_zero = codestream_point(pwd + "/" + destination_zero + "/" + destination, 2, pwd + "/" + destination_zero + "/L_0")
+            kbps = kbps - kbps_zero
+
             # Easy solution for posible empty layer
             kbps = if_empty_layer(kbps)
             # Angle = Tan (difference psnr / difference kbps)
@@ -488,10 +500,10 @@ for point in range(1, len(FSO[0]), 2):
         transcode_images(FSO[gop][point])
         # Trace
         trace_selection(3)
-        
+
     # Kbps & Psnr
-    kbps     , psnr      = codestream_point(pwd + "/" + destination                         , GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
-    kbps_zero, psnr_zero = codestream_point(pwd + "/" + destination_zero + "/" + destination, GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
+    kbps     , psnr      = codestream_point(pwd + "/" + destination                         , GOPs, pwd + "/L_0")
+    kbps_zero, psnr_zero = codestream_point(pwd + "/" + destination_zero + "/" + destination, GOPs, pwd + "/" + destination_zero + "/L_0")
     kbps = kbps - kbps_zero
 
     # Save point to file
@@ -519,4 +531,53 @@ sys.exit(0)
 
 #    log.info("layersub={}".format(layersub))                   #########
 #    wait = input("PRESS ENTER TO CONTINUE.")                   #########
+
+
+    # Extraction to .yuv
+#    shell.run("(ffmpeg -y -s " + str(x_dim) + "x" + str(y_dim) + " -pix_fmt yuv420p -i L_0/%4d.Y " + str(reconstruction) + ".yuv) > /dev/null 2> /dev/null")
+
+    # PSNR
+    # ------------------------
+    # mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim --GOPs=$GOPs --TRLs=$TRLs
+#    p = sub.Popen("(snr --type=uchar --peak=255"
+#                + " --file_A=" + str(original) + ".yuv"
+#                + " --file_B=" + str(reconstruction) + ".yuv"
+#                + " --block_size=" + str(bs) + ") 2> /dev/null"
+#                + " | grep PSNR | grep dB | cut -d \"=\" -f 2"
+#                , shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+#    out, err = p.communicate()
+#    log.debug("psnr: " + str(out))
+#    psnr = float(out.decode('ascii'))
+
+
+
+# --------------------------------------------------------------------
+#def gop_video():
+    # {{{ Take original frames from a gop to compute distortion gop by gop.
+#    original_gop_anterior = str(pwd) + "/original_gop" + str(gop)
+#    original_gop          = str(pwd) + "/original_gop" + str(gop+1)
+
+#    shell.run("dd"
+#            + " if="    + video + ".yuv"
+#            + " of="    + str(original_gop) + ".yuv"
+#            + " skip="  + str(GOP_size * gop)   # Jump to the current GOP.
+#            + " bs="    + str(bs)               # Image size.
+#            + " count=" + str(GOP_size + 1))    # images gop + image gop_0.
+
+    #shell.run("rm -f " + original_gop_anterior + ".yuv") # Jse
+
+
+#    return original_gop
+    # }}}
+    
+    
+    
+# Kbps & Psnr
+# kbps     , psnr      = codestream_point(pwd + "/" + destination                         , GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
+# kbps_zero, psnr_zero = codestream_point(pwd + "/" + destination_zero + "/" + destination, GOPs, video, "reconstruction_point" + str(int((point+1)/2)))
+
+
+# Original .avi to .yuv for cut a gop of the original video
+#if False == os.path.isfile(str(video) + ".yuv"):
+#    shell.run("ffmpeg -i " + str(video) + " -y " + str(video) + ".yuv")
 
