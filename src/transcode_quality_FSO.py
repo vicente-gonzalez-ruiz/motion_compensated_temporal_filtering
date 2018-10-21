@@ -211,14 +211,18 @@ def codestream_point(path, GOPs_to_extract, original): # A single gop or whole v
 
     # KBPS
     # ------------------------
-    if GOPs_to_extract < GOPs and True == os.path.isfile("L_" + str(TRLs-1) + "/0000.jpx"): # <- Info without previous gop
+    
+    # Info without previous gop
+    if GOPs_to_extract < GOPs and True == os.path.isfile("L_" + str(TRLs-1) + "/0000.jpx"):
         shell.run("mkdir previous_gop; mv L_" + str(TRLs-1) + "/0000.jpx previous_gop")
 
+    # INFO
     p = sub.Popen("mctf info --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs) + " --FPS=" + str(FPS) + " 2> /dev/null | grep \"Average\" | cut -d \" \" -f 5", shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
     out, err = p.communicate()
     kbps = float(out)
     
-    if True == os.path.isdir("previous_gop"): # <- Info without previous gop
+    # Info without previous gop
+    if True == os.path.isdir("previous_gop"):
         shell.run("mv previous_gop/* " + "L_" + str(TRLs-1) + "; rm -rf previous_gop")
     
     # Expand
@@ -336,7 +340,7 @@ def gop_video():
         shell.run("cp " + fname_in + ".U " + fname_out + ".U")
         shell.run("cp " + fname_in + ".V " + fname_out + ".V")
 
-    #shell.run("rm -f " + original_gop_anterior + ".yuv") # Jse
+    #shell.run("rm -f " + original_gop_anterior) # Elimina gops originales.
     return original_gop
     # }}}
 
@@ -357,18 +361,6 @@ def clean_transcode(path, destination):
     for subband in range(TRLs-1, 0, -1):
         shell.run("mkdir " + destination + "/R_" + str(subband))
         shell.run("mkdir " + destination + "/H_" + str(subband))
-    # }}}
-
-# --------------------------------------------------------------------
-def cleanYuvs():
-    # {{{ Clean .yuvs
-    shell.run("rm " + pwd                          + "/*.yuv")
-    shell.run("rm " + pwd + "/" + destination      + "/*.yuv")
-    shell.run("rm " + pwd + "/" + destination_zero + "/*.yuv*")
-    # }}}
-    
-    # {{{ Clean nohup
-    shell.run("rm " + pwd + "/../nohup.out")
     # }}}
 
 # --------------------------------------------------------------------
@@ -422,14 +414,14 @@ for gop in range(0, GOPs-1):
     original_gop = gop_video()
 
     # Reset per gop
-    layersub = init_layersub("empty") # Jse: empty / full
+    layersub = init_layersub("empty") # "empty" / "full"
     trace_selection(0)
 
     # 0 layers for old values.
     clean_transcode(pwd, destination)
     transcode_images_singleGOP(layersub)
     old_kbps, old_psnr = codestream_point(pwd + "/" + destination, 2, original_gop)
-    
+
     full = 0
     while full < total:
 
@@ -443,7 +435,6 @@ for gop in range(0, GOPs-1):
             if out == 1:
                 full += 1
                 continue
-
 
             clean_transcode(pwd                         , destination)
             clean_transcode(pwd + "/" + destination_zero, destination)
@@ -465,7 +456,7 @@ for gop in range(0, GOPs-1):
             # Angle = Tan (difference psnr / difference kbps)
             angle = math.atan ( (psnr - old_psnr) / (kbps - old_kbps) )
             trace_selection(1)
-
+            
             # Save the best codestream during the search
             if point["angle"] < angle:
                 best_layersub = try_layersub.copy()
@@ -511,7 +502,6 @@ for point in range(1, len(FSO[0]), 2):
     trace_selection(5)
 
 toDirectory()   # Save FSO files to directory
-#cleanYuvs()     # Clean .yuvs for save space in disc
 
 sys.exit(0)
 
