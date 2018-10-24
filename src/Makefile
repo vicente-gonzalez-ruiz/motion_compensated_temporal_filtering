@@ -136,6 +136,9 @@ entropy.o:	entropy.cpp entropy.h
 $(MCTF_BIN)/motion_estimate:	motion_estimate.cpp display.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp common.h
 EXE += $(MCTF_BIN)/motion_estimate
 
+$(MCTF_BIN)/zoomin_imotion:	zoomin_imotion.cpp display.cpp Haar.cpp 5_3.cpp dwt2d.cpp texture.cpp motion.cpp common.h
+EXE += $(MCTF_BIN)/zoomin_imotion
+
 $(MCTF_BIN)/decorrelate:	decorrelate.cpp entropy.o
 	$(CC) $(CPP_FLAGS) -D __ANALYZE__ $^ -o $@ -lm
 EXE += $(MCTF_BIN)/decorrelate

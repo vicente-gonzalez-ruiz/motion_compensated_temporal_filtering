@@ -5,6 +5,7 @@ video=~/Videos/container_352x288x30x420x300.avi
 #video=~/Videos/moving_circle.avi
 GOPs=9
 TRLs=2
+SRLs=5
 #GOPs=1
 #TRLs=4
 y_dim=288
@@ -17,6 +18,12 @@ keep_layers=8
 slope=43000
 #slope=39000
 #slope=40000
+block_size=16
+block_overlaping=0
+border_size=0
+min_block_size=16
+search_range=4
+subpixel_accuracy=0
 
 __debug__=1
 BPP=8
@@ -178,14 +185,14 @@ while [ $img -le $number_of_images ]; do
 done
 
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
-mctf info --GOPs=$GOPs --TRLs=$TRLs
+mctf compress --always_B 0 --block_overlaping $block_overlaping --block_size $block_size --border_size $border_size --min_block_size $min_block_size --search_range $search_range --subpixel_accuracy $subpixel_accuracy --SRLs=$SRLs --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
+mctf info --FPS=$FPS --GOPs=$GOPs --TRLs=$TRLs
 
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
-mctf info --GOPs=$GOPs --TRLs=$TRLs
-mctf expand --GOPs=$GOPs --TRLs=$TRLs
+mctf info --FPS=$FPS --GOPs=$GOPs --TRLs=$TRLs
+mctf expand --block_overlaping $block_overlaping --block_size $block_size --border_size $border_size --min_block_size $min_block_size --search_range $search_range --subpixel_accuracy $subpixel_accuracy --SRLs=$SRLs --GOPs=$GOPs --TRLs=$TRLs
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)

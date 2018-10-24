@@ -72,14 +72,14 @@ LOW = "L"
 
 gop = GOP()
 GOP_size = gop.get_size(TRLs)
-log.info("GOP_size = {}".format(GOP_size))
+log.info("GOP_size={}".format(GOP_size))
 
 # }}}
 
 # {{{ pictures
 
 pictures = (GOPs - 1) * GOP_size + 1
-log.info("pictures = {}".format(pictures))
+log.info("pictures={}".format(pictures))
 
 # }}}
 
