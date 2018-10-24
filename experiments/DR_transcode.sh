@@ -36,13 +36,14 @@ usage() {
     echo "  [-k keep layers ($keep_layers)]"
     echo "  [-s slope ($slope)]"
     echo "  [-b block_size ($block_size)]"
+    echo "  [-m min_block_size ($min_block_size)]"
     echo "  [-r search_range ($search_range)]"
     echo "  [-? (help)]"
 }
 
 (echo $0 $@ 1>&2)
 
-while getopts "v:p:x:y:f:t:g:l:k:s:b:r:?" opt; do
+while getopts "v:p:x:y:f:t:g:l:k:s:b:m:r:?" opt; do
     case ${opt} in
 	v)
 	    video="${OPTARG}"
@@ -83,6 +84,10 @@ while getopts "v:p:x:y:f:t:g:l:k:s:b:r:?" opt; do
 	b)
 	    block_size="${OPTARG}"
 	    echo block_size=$block_size
+	    ;;
+	m)
+	    min_block_size="${OPTARG}"
+	    echo min_block_size=$min_block_size
 	    ;;
 	r)
 	    search_range="${OPTARG}"
@@ -192,7 +197,7 @@ y_dim_2=`echo $y_dim/2 | bc`
 IMG_YUV
 
 
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --min_block_size=$min_block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
 
 # ============================================================================== CREATE ZERO TEXTURE TO KBPS HEADERS CALCULATION
