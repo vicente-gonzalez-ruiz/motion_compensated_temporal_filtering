@@ -75,7 +75,7 @@ while temporal_subband < TRLs:
               + " --block_overlaping=" + str(block_overlaping)
               + " --block_size=" + str(block_size)
               + " --border_size=" + str(border_size)
-              + " --pictures="  + str(pictures)
+              + " --pictures=" + str(pictures)
               + " --pixels_in_x=" + str(pixels_in_x)
               + " --pixels_in_y=" + str(pixels_in_y)
               + " --search_range=" + str(search_range)
@@ -90,8 +90,18 @@ while temporal_subband < TRLs:
         log.info("Maximum search range ({}) reached!".format(MAX_SEARCH_RANGE))
         search_range = MAX_SEARCH_RANGE
 
-    block_size = block_size // 2
-    if ( block_size < min_block_size ):
-        block_size = min_block_size
+    if block_size > min_block_size:
+        block_size //= 2
+        shell.run("mctf zoomin_imotion"
+                  + " --block_size=" + str(block_size)
+                  + " --imotion_fn=" + "M_" + str(temporal_subband-1)
+                  + " --motion_fn=" + "M_" + str(temporal_subband)
+                  + " --pictures=" + str(pictures)
+                  + " --pixels_in_x=" + str(pixels_in_x)
+                  + " --pixels_in_y=" + str(pixels_in_y))
+        
+    #block_size = block_size // 2
+    #if ( block_size < min_block_size ):
+    #    block_size = min_block_size
 
     temporal_subband += 1

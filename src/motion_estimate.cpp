@@ -645,7 +645,7 @@ int main(int argc, char *argv[]) {
 		     even_fn,
 		     0,
 		     LUMA
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		     ,
 		     argv[0]
 #endif /* __INFO__ */
@@ -674,7 +674,7 @@ int main(int argc, char *argv[]) {
 		       odd_fn,
 		       i,
 		       LUMA
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		       ,
 		       argv[0]
 #endif /* __INFO__ */
@@ -701,7 +701,7 @@ int main(int argc, char *argv[]) {
 		       even_fn,
 		       i,
 		       LUMA
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		       ,
 		       argv[0]
 #endif /* __INFO__ */
@@ -738,6 +738,9 @@ int main(int argc, char *argv[]) {
       printf("\n");
     }
 #endif
+
+    // Motion vectors from a previous iteration must be multiplied by
+    // 2 because now the distance between images is double.
     for(int by=0; by<blocks_in_y; by++) {
       for(int bx=0; bx<blocks_in_x; bx++) {
 	mv[PREV][Y_FIELD][by][bx] *= 2;
@@ -746,6 +749,7 @@ int main(int argc, char *argv[]) {
 	mv[NEXT][X_FIELD][by][bx] *= 2;
       }
     }
+
     //motion.read(imotion_fd, mv, blocks_in_y, blocks_in_x);
 #ifdef _1_
     //This does nothing (leave the above).
@@ -837,7 +841,7 @@ int main(int argc, char *argv[]) {
 
     //motion.write(motion_fd, mv, blocks_in_y, blocks_in_x);
     motion.write_field(mv, blocks_in_y, blocks_in_x, motion_fn, i
-#if defined __INFO__
+#if defined (__INFO__) || defined (__DEBUG__) || defined (__WARNING__)
 		       , argv[0]
 #endif /* __INFO__ */
 		       );

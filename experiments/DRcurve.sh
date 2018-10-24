@@ -12,6 +12,8 @@ FPS=30
 layers=8  # Be careful, unable to handle more than 10 quality layers
 	  # (reason: kdu_compress's output format)
 slope=43000
+block_size=32
+min_block_size=32
 
 __debug__=0
 BPP=8
@@ -19,6 +21,8 @@ MCTF_QUANTIZER=automatic
 
 usage() {
     echo $0
+    echo "  [-b block_size ($block_size)]"
+    echo "  [-m min_block_size ($min_block_size)]"
     echo "  [-v video file name ($video)]"
     echo "  [-g GOPs ($GOPs)]"
     echo "  [-x X dimension ($x_dim)]"
@@ -30,8 +34,16 @@ usage() {
     echo "  [-? (help)]"
 }
 
-while getopts "v:p:x:y:f:t:g:l:s:?" opt; do
+while getopts "m:b:v:p:x:y:f:t:g:l:s:?" opt; do
     case ${opt} in
+        m)
+            min_block_size="${OPTARG}"
+	    echo min_block_size=$min_block_size
+            ;;
+        b)
+            block_size="${OPTARG}"
+	    echo block_size=$block_size
+            ;;
         v)
             video="${OPTARG}"
 	    echo video=$video
@@ -150,7 +162,7 @@ while [ $img -le $number_of_images ]; do
     let img=img+1 
 done
 
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --pixels_in_x=$x_dim --pixels_in_y=$y_dim --block_size=$block_size --min_block_size=$min_block_size
 mctf info --GOPs=$GOPs --TRLs=$TRLs
 
 mkdir $video
@@ -163,13 +175,15 @@ echo \# GOPs=$GOPs >> $name2
 echo \# TRLs=$TRLs >> $name2
 echo \# y_dim=$y_dim >> $name2
 echo \# x_dim=$x_dim >> $name2
+echo \# block_size=$block_size >> $name2
+echo \# min_block_size=$min_block_size >> $name2
 echo \# FPS=$FPS >> $name2
 echo \# layers=$layers >> $name2
 echo \# slope=$slope >> $name2
 echo \# BPP=$BPP >> $name2
 echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name2
 subband_layers=`echo "$layers*($TRLs+1)" | bc`
-echo \# NUMBER_OF_SUBBAND_LAYERS=$subband_layers >> $name2
+echo \# number_of_subband_layers=$subband_layers >> $name2
 
 #subband_layers=1
 for i in `seq 1 $subband_layers`; do
@@ -186,7 +200,7 @@ for i in `seq 1 $subband_layers`; do
     rate=`mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS | grep "rate" | cut -d " " -f 5`
     echo -n $rate >> $name2
     echo -ne '\t' >> $name2
-    mctf expand --GOPs=$GOPs --TRLs=$TRLs
+    mctf expand --GOPs=$GOPs --TRLs=$TRLs --pixels_in_x=$x_dim --pixels_in_y=$y_dim --block_size=$block_size --min_block_size=$min_block_size
     img=1
     while [ $img -le $number_of_images ]; do
 	_img=$(printf "%04d" $img)
