@@ -233,7 +233,7 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
-mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
+mctf transcode_quality_PLT --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
 cd transcode_quality
 mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS

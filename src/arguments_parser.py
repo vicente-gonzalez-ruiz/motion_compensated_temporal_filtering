@@ -153,6 +153,11 @@ class arguments_parser(argparse.ArgumentParser):
                           help="Minimum slope (all texture subbands)",
                           default=Defaults.slope)
 
+    def video(self):
+        self.add_argument("--video",
+                          help="original video name",
+                          default=Defaults.slope)
+                          
     #def using_gains(self):
     #    self.add_argument("--using_gains",
     #                      help="Weights the temporal subband slopes.",
