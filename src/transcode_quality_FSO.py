@@ -76,6 +76,7 @@ parser.add_argument("--FPS",
 parser.pixels_in_x()
 parser.pixels_in_y()
 parser.block_size()
+parser.min_block_size()
 parser.search_range()
 parser.add_argument("--video",
                     help="Original video path and name",
@@ -84,18 +85,19 @@ parser.add_argument("--video",
 
 args = parser.parse_known_args()[0]
 
-GOPs         = int(args.GOPs)
-keep_layers  = int(args.keep_layers)
-TRLs         = int(args.TRLs)
-layers       = int(args.layers)
-destination  = args.destination
-slope        = int(args.slope)
-FPS          = float(args.FPS)
-x_dim        = int(args.pixels_in_x)
-y_dim        = int(args.pixels_in_y)
-block_size   = int(args.block_size)
-search_range = int(args.search_range)
-video        = args.video
+GOPs            = int(args.GOPs)
+keep_layers     = int(args.keep_layers)
+TRLs            = int(args.TRLs)
+layers          = int(args.layers)
+destination     = args.destination
+slope           = int(args.slope)
+FPS             = float(args.FPS)
+x_dim           = int(args.pixels_in_x)
+y_dim           = int(args.pixels_in_y)
+block_size      = int(args.block_size)
+min_block_size  = int(args.min_block_size)
+search_range    = int(args.search_range)
+video           = args.video
 
 log.info("GOPs={}".format(GOPs))
 log.info("keep_layers={}".format(keep_layers))
@@ -107,6 +109,7 @@ log.info("FPS={}".format(FPS))
 log.info("pixels_in_x={}".format(x_dim))
 log.info("pixels_in_y={}".format(y_dim))
 log.info("block_size={}".format(block_size))
+log.info("min_block_size={}".format(min_block_size))
 log.info("search_range={}".format(search_range))
 log.info("video={}".format(video))
 # }}}
@@ -227,7 +230,7 @@ def codestream_point(path, GOPs_to_extract, original): # A single gop or whole v
     
     # Expand
     # ------------------------
-    shell.run("mctf expand --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs) + " --block_size=" + str(block_size) + " --search_range=" + str(search_range) + " --pixels_in_y=" + str(y_dim) + " --pixels_in_x=" + str(x_dim))
+    shell.run("mctf expand --GOPs=" + str(GOPs_to_extract) + " --TRLs=" + str(TRLs) + " --block_size=" + str(block_size) + " --min_block_size=" + str(min_block_size) + " --search_range=" + str(search_range) + " --pixels_in_y=" + str(y_dim) + " --pixels_in_x=" + str(x_dim))
     # Separate to images
     raw_pgm(GOPs_to_extract)
 
@@ -258,7 +261,7 @@ def trace_selection(mode):
         shell.run("echo \"--- EMPTY LAYER ---\" >> " + str(pwd) + "/selection.dat")
     elif mode == 0:
         shell.run("echo \"\nGOP " + str(gop+1) + " from 0 to " + str(GOPs-1) + " GOPs\n\" >> " + str(pwd) + "/selection.dat")
-        shell.run("echo \"Angle = math.atan((psnr - old_psnr) / (kbps - old_kbps))\n\" >> " + str(pwd) + "/selection.dat")
+        shell.run("echo \"Angle = math.atan((psnr - old_psnr) / (kbps (+header) - old_kbps))\n\" >> " + str(pwd) + "/selection.dat")
     elif mode == 1:
         shell.run("echo \"" + str(key) + ": " + str(try_layersub[key]) + "\t\t" + str("%.8f"%angle) + "\t= " + "(" + str("%.6f"%psnr) + " - " + str("%.6f"%old_psnr) + ") / (" + str("%.4f"%kbps) + " (+" + str("%.1f"%kbps_zero) + ") - " + str("%.4f"%old_kbps) + ")\" >> " + str(pwd) + "/selection.dat")
     elif mode == 2:
@@ -340,7 +343,8 @@ def gop_video():
         shell.run("cp " + fname_in + ".U " + fname_out + ".U")
         shell.run("cp " + fname_in + ".V " + fname_out + ".V")
 
-    #shell.run("rm -f " + original_gop_anterior) # Elimina gops originales.
+    shell.run("rm -rf " + original_gop_anterior) # Elimina gops originales.
+
     return original_gop
     # }}}
 

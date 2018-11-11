@@ -12,7 +12,8 @@ layers=8    # Be careful, unable to handle more than 10 quality layers
 	        # (reason: kdu_compress's output format)
 keep_layers=8
 slope=43000
-block_size=16
+block_size=32
+min_block_size=32
 search_range=4
 
 
@@ -218,12 +219,12 @@ fi
 IMG_YUV
 
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
+mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --min_block_size=$min_block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 cd ..
 
 # ============================================================================== TRANSCODE
 mkdir transcode_quality
-mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video --block_size=$block_size --search_range=$search_range
+mctf $TRANSCODE_QUALITY --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope --FPS=$FPS --pixels_in_y=$y_dim --pixels_in_x=$x_dim --video=$video --block_size=$block_size --min_block_size=$min_block_size --search_range=$search_range
 
 if [ $__debug__ -eq 1 ]; then
     set +x

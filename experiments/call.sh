@@ -1,8 +1,8 @@
 # EXAMPLE CALLS
 # -----------------------------
-##En NODO
-#       srun -N 1 -n 1 -p ibmulticore2 .sh
-# #nohup srun -N 1 -n 1 -p ibmulticore srun -N 1 -n 1 -p ibmulticore2 .sh &> sun.log &
+#En NODO
+#       srun -N 1 -n 1 -p ibcl .sh
+# #nohup srun -N 1 -n 1 -p ibcl srun -N 1 -n 1 -p ibcl .sh &> sun_LT.log &
 
 # -----------------------------
 # Q= 1,2,4,8,16,32.
@@ -16,335 +16,291 @@
 
 # DR_TRANSCODE.SH
 -----------------------------
-nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> sun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> sun_LT.log &
 
 # DR_CURVE.SH
 -----------------------------
 rm -rf tmp; mkdir tmp; cd tmp
-srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  container_352x288x30x420x300.avi  -l  8  -g  9  -t  5  -y  288  -x  352
+srun -N 1 -n 1 -p ibcl ../DRcurve.sh   -v  container_352x288x30x420x300.avi  -l  8  -g  9  -t  5  -y  288  -x  352
 exit 0
 
 rm -rf tmp; mkdir tmp; cd tmp
-nohup srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  zero.yuv.avi  -l  8  -g  9  -t  5  -y  288  -x  352 &> sun.log &
+#nohup srun -N 1 -n 1 -p ibcl ../DRcurve.sh   -v  zero.yuv.avi  -l  8  -g  9  -t  5  -y  288  -x  352 &> sun_LT.log &
 exit 0
 
-COMMENT
+
 
 
 
   #  MOBILE  
 #------------------------------------
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile_L1T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile_L1T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile_L1T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile_L1T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile_L1T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile_L1T7.log &
 
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile_L2T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile_L2T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile_L2T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile_L2T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile_L2T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile_L2T7.log &
 
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile_L4T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile_L4T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile_L4T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile_L4T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile_L4T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile_L4T7.log &
 
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile_L8T2.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile_L8T3.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile_L8T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile_L8T5.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile_L8T6.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile_L8T7.log &
 
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile.log &
-                                                        
-
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile.log &
-                                      
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> mobile_L16T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> mobile_L16T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> mobile_L16T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> mobile_L16T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> mobile_L16T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  mobile_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> mobile_L16T7.log &
+                                                                                              
 
                                                         
   #  CONTAINER  
 #------------------------------------
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container_L1T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container_L1T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container_L1T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container_L1T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container_L1T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  1  -k  1  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container_L1T7.log &
+
+
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container_L2T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container_L2T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container_L2T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container_L2T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container_L2T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container_L2T7.log &
+
+
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container_L4T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container_L4T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container_L4T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container_L4T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container_L4T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container_L4T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  2  -k  2  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container_L8T2.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container_L8T3.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container_L8T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container_L8T5.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container_L8T6.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container_L8T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  4  -k  4  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container_L16T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container_L16T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container_L16T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container_L16T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container_L16T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container_L16T7.log &
                                                         
-
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  8  -k  8  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container.log &
-                                                        
-
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  16  -k  16  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container.log &
-                                                        
-
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  65  -t  2  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  33  -t  3  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  17  -t  4  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  9  -t  5  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  5  -t  6  -y  288  -x  352  -f  30 &> container.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  container_352x288x30x420x300.avi  -l  32  -k  32  -b  32  -r  4  -g  3  -t  7  -y  288  -x  352  -f  30 &> container.log &
 
                                                   
 
   #  CREW  
 #------------------------------------
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew_L1T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew_L1T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew_L1T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew_L1T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew_L1T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  1  -k  1  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew_L1T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew_L2T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew_L2T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew_L2T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew_L2T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew_L2T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  2  -k  2  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew_L2T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew_L4T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew_L4T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew_L4T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew_L4T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew_L4T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  4  -k  4  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew_L4T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew_L8T2.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew_L8T3.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew_L8T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew_L8T5.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew_L8T6.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  8  -k  8  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew_L8T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew_L16T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew_L16T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew_L16T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew_L16T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew_L16T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  16  -k  16  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew_L16T7.log &
                                                         
-
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  32  -k  32  -b  32  -r  4  -g  65  -t  2  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  32  -k  32  -b  32  -r  4  -g  33  -t  3  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  32  -k  32  -b  32  -r  4  -g  17  -t  4  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  32  -k  32  -b  32  -r  4  -g  9  -t  5  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  32  -k  32  -b  32  -r  4  -g  5  -t  6  -y  576  -x  704  -f  60 &> crew.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crew_704x576x60x420x600.avi  -l  32  -k  32  -b  32  -r  4  -g  3  -t  7  -y  576  -x  704  -f  60 &> crew.log &
-          
+COMMENT
 
 
                               
   #  CROWDRUN  
 #------------------------------------
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun_L1T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun_L1T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun_L1T4.log &
+##nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun_L1T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun_L1T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  1  -k  1  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun_L1T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun_L2T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun_L2T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun_L2T4.log &
+##nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun_L2T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun_L2T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  2  -k  2  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun_L2T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun_L4T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun_L4T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun_L4T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun_L4T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun_L4T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  4  -k  4  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun_L4T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -m  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun.log &
+##nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun_L8T2.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun_L8T3.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun_L8T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun_L8T5.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun_L8T6.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  8  -k  8  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun_L8T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun_L16T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun_L16T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun_L16T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun_L16T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun_L16T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  16  -k  16  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun_L16T7.log &
                                                         
-
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  32  -k  32  -b  64  -r  4  -g  65  -t  2  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  32  -k  32  -b  64  -r  4  -g  33  -t  3  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  32  -k  32  -b  64  -r  4  -g  17  -t  4  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  32  -k  32  -b  64  -r  4  -g  9  -t  5  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  32  -k  32  -b  64  -r  4  -g  5  -t  6  -y  1088  -x  1920  -f  50 &> crowdrun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  crowdrun_1920x1088x50x420x500.avi  -l  32  -k  32  -b  64  -r  4  -g  3  -t  7  -y  1088  -x  1920  -f  50 &> crowdrun.log &
 
 
 
   #  READYSETGO  
 #------------------------------------
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo_L1T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo_L1T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo_L1T4.log &
+##nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo_L1T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo_L1T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  1  -k  1  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo_L1T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo_L2T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo_L2T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo_L2T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo_L2T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo_L2T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  2  -k  2  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo_L2T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo_L4T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo_L4T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo_L4T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo_L4T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo_L4T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  4  -k  4  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo_L4T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -m  128    -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo.log &
+##nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo_L8T2.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo_L8T3.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo_L8T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo_L8T5.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo_L8T6.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  8  -k  8  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo_L8T7.log &
                                                         
-  #  layers  block_size  Search_range  Nº_gops  TRLs  Y  X  Frames
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo.log &
+
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo_L16T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo_L16T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo_L16T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo_L16T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo_L16T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  16  -k  16  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo_L16T7.log &
                                                         
-  #  layers  block_size  Search_range  Nº_gops  TRLs  Y  X  Frames
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  32  -k  32  -b  128  -r  4  -g  65  -t  2  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  32  -k  32  -b  128  -r  4  -g  33  -t  3  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  32  -k  32  -b  128  -r  4  -g  17  -t  4  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  32  -k  32  -b  128  -r  4  -g  9  -t  5  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  32  -k  32  -b  128  -r  4  -g  5  -t  6  -y  2176  -x  3840  -f  120 &> readysetgo.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  readysetgo_3840x2176x120x420x600.avi  -l  32  -k  32  -b  128  -r  4  -g  3  -t  7  -y  2176  -x  3840  -f  120 &> readysetgo.log &
 
 
-
+<<COMMENT
                                                         
   #  SUN  
 #------------------------------------
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun_L1T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun_L1T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun_L1T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun_L1T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun_L1T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  1  -k  1  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun_L1T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun_L2T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun_L2T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun_L2T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun_L2T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun_L2T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  2  -k  2  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun_L2T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun_L4T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun_L4T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun_L4T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun_L4T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun_L4T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  4  -k  4  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun_L4T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun.log &
-nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -m  128    -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun_L8T2.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun_L8T3.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun_L8T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun_L8T5.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun_L8T6.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  8  -k  8  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun_L8T7.log &
                                                         
 
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun_L16T2.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun_L16T3.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun_L16T4.log &
+nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun_L16T5.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun_L16T6.log &
+#nohup srun -N 1 -n 1 -p ibcl ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  16  -k  16  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun_L16T7.log &
                                                         
-
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  32  -k  32  -b  128  -r  4  -g  65  -t  2  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  32  -k  32  -b  128  -r  4  -g  33  -t  3  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  32  -k  32  -b  128  -r  4  -g  17  -t  4  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  32  -k  32  -b  128  -r  4  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  32  -k  32  -b  128  -r  4  -g  5  -t  6  -y  4096  -x  4096  -f  0.027 &> sun.log &
-#nohup srun -N 1 -n 1 -p ibmulticore ./DR_transcode.sh  -v  sun_4096x4096x0.027x420x129.avi  -l  32  -k  32  -b  128  -r  4  -g  3  -t  7  -y  4096  -x  4096  -f  0.027 &> sun.log &
-
-
+COMMENT
 
 exit 0
 
