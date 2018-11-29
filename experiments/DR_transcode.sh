@@ -18,7 +18,7 @@ search_range=4
 
 
 # Transcode algorithm.
-export TRANSCODE_QUALITY="transcode_quality_FSO" # "transcode_quality_PLT"
+# export TRANSCODE_QUALITY="transcode_quality_FSO" # "transcode_quality_PLT"
 
 
 __debug__=1
@@ -111,7 +111,7 @@ while getopts "v:p:x:y:f:t:g:l:k:s:b:m:r:?" opt; do
     esac
 done
 
-dir="L"$layers"_T"$TRLs"_BS"$block_size"_SR"$search_range"_G"$GOPs"_"$video
+dir="L"$layers"_T"$TRLs"_BS"$block_size"_minBS"$min_block_size"_SR"$search_range"_G"$GOPs"_"$video
 rm -rf $dir; mkdir $dir; cd $dir
 video="/nfs/cmaturana/Videos/"$video
 
@@ -221,6 +221,7 @@ IMG_YUV
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf compress --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --block_size=$block_size --min_block_size=$min_block_size --search_range=$search_range --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 cd ..
+
 
 # ============================================================================== TRANSCODE
 mkdir transcode_quality

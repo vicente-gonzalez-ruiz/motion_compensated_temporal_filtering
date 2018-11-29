@@ -49,7 +49,6 @@ shell.setLogger(log)
 # }}}
 
 # {{{ Arguments parsing
-
 parser = arguments_parser(
     description="Transcodes in quality a MCJ2K sequence.")
 parser.GOPs()

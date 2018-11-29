@@ -208,7 +208,7 @@ def raw_pgm(GOPs_to_extract):
 def codestream_point(path, GOPs_to_extract, original): # A single gop or whole video
 
     os.chdir(path)
-    
+
     # Create zero texture
     shell.run("mctf create_zero_texture --pixels_in_y=" + str(y_dim) + " --pixels_in_x=" + str(x_dim))
 
