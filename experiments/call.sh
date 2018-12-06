@@ -26,15 +26,50 @@ exit 0
 
 # DR_CURVE.SH
 #-----------------------------
-rm -rf tmp_mobile; mkdir tmp_mobile; cd tmp_mobile
-srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  mobile_352x288x30x420x300.avi     -l  8  -g  9  -t  5  -b  32  -m  32  -y  288  -x  352 -f 30 &> PLT_mobile_L8T5.log &
 
-rm -rf tmp_container; mkdir tmp_container; cd tmp_container
-srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  container_352x288x30x420x300.avi  -l  8  -g  9  -t  5  -b  32  -m  32  -y  288  -x  352 -f 30 &> PLT_container_L8T5.log &
+#--- MOBILE -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+cd /home/cmaturana/scratch; rm -rf tmp_mobile; mkdir tmp_mobile; cd tmp_mobile
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  mobile_352x288x30x420x300.avi         -l  8  -g  9  -t  5  -b  32  -m  32  -y  288  -x  352 -f 30 # &> PLT_mobile_L8T5.log &
 
-rm -rf tmp_crew; mkdir tmp_crew; cd tmp_crew
-srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  crew_704x576x60x420x600.avi       -l  8  -g  9  -t  5  -b  32  -m  32  -y  576  -x  704 -f 60 &> PLT_crew_L8T5.log &
-                                                  
+cd /home/cmaturana/scratch; rm -rf tmp_mobile_zero; mkdir tmp_mobile_zero; cd tmp_mobile_zero
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  zero.yuv.avi                         -l  8  -g  9  -t  5  -b  32  -m  32  -y  288  -x  352 -f 30 # &> PLT_mobile_L8T5.log &
+
+#--- CONTAINER ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+cd /home/cmaturana/scratch; rm -rf tmp_container; mkdir tmp_container; cd tmp_container
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  container_352x288x30x420x300.avi      -l  8  -g  9  -t  5  -b  32  -m  32  -y  288  -x  352 -f 30 # &> PLT_container_L8T5.log &
+
+#--- CREW --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+cd /home/cmaturana/scratch; rm -rf tmp_crew; mkdir tmp_crew; cd tmp_crew
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  crew_704x576x60x420x600.avi           -l  8  -g  9  -t  5  -b  32  -m  32  -y  576  -x  704 -f 60 # &> PLT_crew_L8T5.log &
+
+cd /home/cmaturana/scratch; rm -rf zero_crew; mkdir zero_crew; cd zero_crew
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  zero.yuv.avi                         -l  8  -g  9  -t  5  -b  32  -m  32  -y  576  -x  704 -f 60 # &> PLT_crew_L8T5.log &
+
+#--- CROWDRUN -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+cd /home/cmaturana/scratch; rm -rf tmp_crowdrun; mkdir tmp_crowdrun; cd tmp_crowdrun
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh  -v  crowdrun_1920x1088x50x420x500.avi      -l  8  -b  64  -m  64  -g  9  -t  5  -y  1088  -x  1920  -f  50 # &> crowdrun_L8T5.log # &
+
+cd /home/cmaturana/scratch; rm -rf zero_crowdrun; mkdir zero_crowdrun; cd zero_crowdrun
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  zero.yuv.avi                         -l  8  -b  64  -m  64  -g  9  -t  5  -y  1088  -x  1920  -f  50 # &> crowdrun_L8T5.log # &
+
+#--- READYSETGO ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+cd /home/cmaturana/scratch; rm -rf tmp_readysetgo; mkdir tmp_readysetgo; cd tmp_readysetgo
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh  -v  readysetgo_3840x2176x120x420x600.avi   -l  8  -b  64  -m  64  -g  9  -t  5  -y  2176  -x  3840  -f  120 # &> readysetgo_L8T5.log # &
+
+cd /home/cmaturana/scratch; rm -rf zero_readysetgo; mkdir zero_readysetgo; cd zero_readysetgo
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  zero.yuv.avi                         -l  8  -b  64  -m  64  -g  9  -t  5  -y  2176  -x  3840  -f  120 # &> readysetgo_L8T5.log # &
+
+#--- SUN -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+cd /home/cmaturana/scratch; rm -rf tmp_sun; mkdir tmp_sun; cd tmp_sun
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh  -v  sun_4096x4096x0.027x420x129.avi        -l  8  -b  128  -m  128  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 # &> sun_L8T5.log # &
+
+cd /home/cmaturana/scratch; rm -rf zero_sun; mkdir zero_sun; cd zero_sun
+srun -N 1 -n 1 -p ibmulticore ../DRcurve.sh   -v  zero.yuv.avi                         -l  8  -b  128  -m  128  -g  9  -t  5  -y  4096  -x  4096  -f  0.027 # &> sun_L8T5.log # &
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 exit 0
 
 rm -rf tmp; mkdir tmp; cd tmp
@@ -320,9 +355,9 @@ exit 0
 
 
 # YUV to AVI
-#x264 --input-res 352x288 --qp 0 -o container_352x288x30x420x300.avi         container_352x288x30x420x300.yuv
-#x264 --input-res 352x288 --qp 0 -o mobile_352x288x30x420x300.avi            mobile_352x288x30x420x300.yuv
-#x264 --input-res 704x576 --qp 0 -o crew_704x576x60x420x600.avi              crew_704x576x60x420x600.yuv
-#x264 --input-res 1920x1088 --qp 0 -o crowdrun_1920x1088x50x420x500.avi      crowdrun_1920x1088x50x420x500.yuv
-#x264 --input-res 3840x2176 --qp 0 -o readysetgo_3840x2176x120x420x600.avi   readysetgo_3840x2176x120x420x600.yuv
-#x264 --input-res 4096x4096 --qp 0 -o sun_4096x4096x0.027x420x129.avi        sun_4096x4096x0.027x420x129.yuv
+#x264 --input-res 352x288   --qp 0 -o container_352x288x30x420x300.avi          container_352x288x30x420x300.yuv
+#x264 --input-res 352x288   --qp 0 -o mobile_352x288x30x420x300.avi             mobile_352x288x30x420x300.yuv
+#x264 --input-res 704x576   --qp 0 -o crew_704x576x60x420x600.avi               crew_704x576x60x420x600.yuv
+#x264 --input-res 1920x1088 --qp 0 -o crowdrun_1920x1088x50x420x500.avi         crowdrun_1920x1088x50x420x500.yuv
+#x264 --input-res 3840x2176 --qp 0 -o readysetgo_3840x2176x120x420x600.avi      readysetgo_3840x2176x120x420x600.yuv
+#x264 --input-res 4096x4096 --qp 0 -o sun_4096x4096x0.027x420x129.avi           sun_4096x4096x0.027x420x129.yuv
