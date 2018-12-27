@@ -29,7 +29,7 @@ usage() {
     echo "  [-y Y dimension ($y_dim)]"
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
-    echo "  [-l layers ($layers)"
+    echo "  [-l layers ($layers)]"
     echo "  [-s slope ($slope)]"
     echo "  [-? (help)]"
 }
@@ -182,7 +182,8 @@ echo \# layers=$layers >> $name2
 echo \# slope=$slope >> $name2
 echo \# BPP=$BPP >> $name2
 echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name2
-subband_layers=`echo "$layers*($TRLs+1)" | bc`
+#subband_layers=`echo "$layers*($TRLs+1)" | bc`
+subband_layers=`echo "$layers*$TRLs+$TRLs" | bc`
 echo \# number_of_subband_layers=$subband_layers >> $name2
 
 #subband_layers=1
