@@ -24,8 +24,8 @@
 #  layers. Each quality layer has a slope. This script, GOP by GOP
 #  reads the slopes of each quality layer (computing an average if
 #  more than one image per temporal subband is found), scales them
-#  using the theoretical subband gains which should convert MCTF into
-#  a uniform transform, sorts the subbands-layers by their
+#  using the theoretical subband gains which should convert our MCTF
+#  into a orthogonal transform, sorts the subbands-layers by their
 #  contribution and finally, truncates the Input using this
 #  information, to produce the Output.
 
@@ -98,11 +98,11 @@ def transcode_picture(filename, layers):
 if TRLs == 1:
     pass
 elif TRLs == 2:
-    attenuation = [1.0, 1.2460784922]  # [L1/H1]
+    attenuation = [1.0, 1.2460784922]  # [L1/L1, L1/H1]
 elif TRLs == 3:
-    attenuation = [1.0, 1.2500103877, 1.8652117304]  # [L2/H2, L2/H1]
+    attenuation = [1.0, 1.2500103877, 1.8652117304]  # [L2/L2, L2/H2, L2/H1]
 elif TRLs == 4:
-    attenuation = [1.0, 1.1598810146, 2.1224082769, 3.1669663339]
+    attenuation = [1.0, 1.1598810146, 2.1224082769, 3.1669663339]  # [L3/L3, L3/H3, L3/H2, ... ]
 elif TRLs == 5:
     attenuation = [1.0, 1.0877939347, 2.1250255455, 3.8884779989, 5.8022196044]
 elif TRLs == 6:
