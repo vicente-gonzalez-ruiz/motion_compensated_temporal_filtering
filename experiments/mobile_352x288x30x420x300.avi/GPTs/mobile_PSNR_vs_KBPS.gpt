@@ -1,4 +1,4 @@
-set title "Container 352x288x129 4:2:0 30Hz"
+set title "mobile 352x288x129 4:2:0 30Hz"
 set xlabel "Bit-rate (KBPS)"
 set ylabel "PSNR[dB]"
 set key bottom

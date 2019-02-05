@@ -38,12 +38,24 @@ export MCTF=$PWD
 
 cat <<EOF
 [0;32m
-This script defines the shell variable MCTF as:
+This script defines the following shell variables as:
 
 export MCTF=$MCTF
+export MCTF_QUANTIZER="automatic"
+export MCTF_TEXTURE_CODEC="j2k"
+export MCTF_MOTION_CODEC="j2k"
+export MCTF_IMG_EXT="jpx"
 
 If needed, include this variable in your $HOME/.bashrc file for
 futher references. In addition, add $HOME/bin to PATH variable.
+
+For using Kakadu, you should also declare:
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/bin/
+
+where "~/bin/" is the directory where the Kakadu libraries have
+been installed.
+
 [1;0m
 EOF
 
