@@ -237,7 +237,7 @@ mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --de
 cd transcode_quality
 mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
-mctf expand --GOPs=$GOPs --TRLs=$TRLs
+mctf expand --block_overlaping $block_overlaping --block_size $block_size --border_size $border_size --min_block_size $min_block_size --search_range $search_range --subpixel_accuracy $subpixel_accuracy --SRLs=$SRLs --GOPs=$GOPs --TRLs=$TRLs
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
