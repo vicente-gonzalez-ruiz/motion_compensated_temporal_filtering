@@ -16,7 +16,7 @@ import logging
 log = logging.getLogger("psnr")
 log.setLevel('CRITICAL')
 
-parser = arguments_parser(description="PSNR computation between 2 sequences")
+parser = arguments_parser(description="PSNR computation between 2 sequences (remember that if images are monochromatic, the output must be multiplied by 3/2)")
 parser.add_argument("--file_A",
                     help="First sequence",
                     default="../L_0")
@@ -36,12 +36,14 @@ pixels_in_y = int(args.pixels_in_y)
 GOPs = int(args.GOPs)
 TRLs = int(args.TRLs)
 
-bytes_per_picture = 3*[None]
+COMPONENTS = 3
+   
+bytes_per_picture = COMPONENTS*[None]
 bytes_per_picture[0] = pixels_in_x * pixels_in_y
 bytes_per_picture[1] = int(pixels_in_x/2 * pixels_in_y/2)
 bytes_per_picture[2] = bytes_per_picture[1]
 
-extension = 3*[None]
+extension = COMPONENTS*[None]
 extension[0] = 'Y'
 extension[1] = 'U'
 extension[2] = 'V'
@@ -49,13 +51,12 @@ extension[2] = 'V'
 gop=GOP()
 GOP_size = gop.get_size(TRLs)
 pictures = (GOPs - 1) * GOP_size + 1
-COMPONENTS = 3
 
-avg = 3*[None]
+avg = COMPONENTS*[None]
 avg[0] = 0.0
 avg[1] = 0.0
 avg[2] = 0.0
-
+   
 #import ipdb; ipdb.set_trace()
 
 for p in range(pictures):
@@ -89,3 +90,4 @@ avg[0] /= pictures
 avg[1] /= pictures
 avg[2] /= pictures
 print((4*avg[0]+avg[1]+avg[2])/6.0)
+
