@@ -40,12 +40,15 @@ usage() {
     echo "  [-l layers ($layers)]"
     echo "  [-k keep layers ($keep_layers)]"
     echo "  [-s slope ($slope)]"
+    echo "  [-S search range ($search_range)]"
+    echo "  [-b block size ($block_size)]"
+    echo "  [-B minimum block size ($min_block_size)]"
     echo "  [-? (help)]"
 }
 
 (echo $0 $@ 1>&2)
 
-while getopts "v:p:x:y:f:t:g:l:k:s:?" opt; do
+while getopts "v:p:x:y:f:t:g:l:k:s:S:b:B:?" opt; do
     case ${opt} in
 	v)
 	    video="${OPTARG}"
@@ -82,6 +85,18 @@ while getopts "v:p:x:y:f:t:g:l:k:s:?" opt; do
 	s)
 	    slope="${OPTARG}"
 	    echo slope=$slope
+	    ;;
+	S)
+	    search_range="${OPTARG}"
+	    echo search_range=$search_range
+	    ;;
+	b)
+	    block_size="${OPTARG}"
+	    echo block_size=$block_size
+	    ;;
+	B)
+	    min_block_size="${OPTARG}"
+	    echo min_block_size=$min_block_size
 	    ;;
 	?)
             usage
@@ -185,14 +200,14 @@ while [ $img -le $number_of_images ]; do
 done
 
 #mctf create_zero_texture  --pixels_in_y=$y_dim --pixels_in_x=$x_dim
-mctf compress --always_B 0 --block_overlaping $block_overlaping --block_size $block_size --border_size $border_size --min_block_size $min_block_size --search_range $search_range --subpixel_accuracy $subpixel_accuracy --SRLs=$SRLs --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers
+mctf compress --always_B 0 --block_overlaping $block_overlaping --block_size $block_size --border_size $border_size --min_block_size $min_block_size --search_range $search_range --subpixel_accuracy $subpixel_accuracy --SRLs=$SRLs --GOPs=$GOPs --TRLs=$TRLs --slope=$slope --layers=$layers --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 mctf info --FPS=$FPS --GOPs=$GOPs --TRLs=$TRLs
 
 mkdir tmp
 mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="tmp"
 cd tmp
 mctf info --FPS=$FPS --GOPs=$GOPs --TRLs=$TRLs
-mctf expand --block_overlaping $block_overlaping --block_size $block_size --border_size $border_size --min_block_size $min_block_size --search_range $search_range --subpixel_accuracy $subpixel_accuracy --SRLs=$SRLs --GOPs=$GOPs --TRLs=$TRLs
+mctf expand --block_overlaping $block_overlaping --block_size $block_size --border_size $border_size --min_block_size $min_block_size --search_range $search_range --subpixel_accuracy $subpixel_accuracy --SRLs=$SRLs --GOPs=$GOPs --TRLs=$TRLs --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)
@@ -233,11 +248,11 @@ mctf psnr --file_A L_0 --file_B ../L_0 --pixels_in_x=$x_dim --pixels_in_y=$y_dim
 
 mkdir transcode_quality
 #mctf copy --GOPs=$GOPs --TRLs=$TRLs --destination="transcode_quality"
-mctf transcode_quality_PLT --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
+mctf transcode_quality --GOPs=$GOPs --TRLs=$TRLs --keep_layers=$keep_layers --destination="transcode_quality" --layers=$layers --slope=$slope
 cd transcode_quality
 mctf create_zero_texture --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 mctf info --GOPs=$GOPs --TRLs=$TRLs --FPS=$FPS
-mctf expand --GOPs=$GOPs --TRLs=$TRLs
+mctf expand --block_overlaping $block_overlaping --block_size $block_size --border_size $border_size --min_block_size $min_block_size --search_range $search_range --subpixel_accuracy $subpixel_accuracy --SRLs=$SRLs --GOPs=$GOPs --TRLs=$TRLs --pixels_in_y=$y_dim --pixels_in_x=$x_dim
 img=1
 while [ $img -le $number_of_images ]; do
     _img=$(printf "%04d" $img)

@@ -10,44 +10,6 @@ salta(){
 }
 #/- crowdrun ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-### 1 ##########################################################################
-salta crowdrun_1TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh  -v  crowdrun_1920x1088x50x420x500.avi      -l  8  -b  64  -m  64  -g  129  -t  1  -y  1088  -x  1920  -f  50
-
-salta zero_crowdrun_1TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh   -v  zero.yuv.avi                          -l  8  -b  64  -m  64  -g  129  -t  1  -y  1088  -x  1920  -f  50
-
-exit 0
-
-### 2 ##########################################################################
-salta crowdrun_2TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh  -v  crowdrun_1920x1088x50x420x500.avi      -l  8  -b  64  -m  64  -g  65  -t  2  -y  1088  -x  1920  -f  50
-
-salta zero_crowdrun_2TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh   -v  zero.yuv.avi                          -l  8  -b  64  -m  64  -g  65  -t  2  -y  1088  -x  1920  -f  50
-
-### 3 ##########################################################################
-salta crowdrun_3TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh  -v  crowdrun_1920x1088x50x420x500.avi      -l  8  -b  64  -m  64  -g  33  -t  3  -y  1088  -x  1920  -f  50
-
-salta zero_crowdrun_3TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh   -v  zero.yuv.avi                          -l  8  -b  64  -m  64  -g  33  -t  3  -y  1088  -x  1920  -f  50
-
-### 4 ##########################################################################
-salta crowdrun_4TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh  -v  crowdrun_1920x1088x50x420x500.avi      -l  8  -b  64  -m  64  -g  17  -t  4  -y  1088  -x  1920  -f  50
-
-salta zero_crowdrun_4TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh   -v  zero.yuv.avi                          -l  8  -b  64  -m  64  -g  17  -t  4  -y  1088  -x  1920  -f  50
-
-### 5 ##########################################################################
-salta crowdrun_5TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh  -v  crowdrun_1920x1088x50x420x500.avi     -l  8  -b  64  -m  64  -g  9  -t  5  -y  1088  -x  1920  -f  50
-#
-salta zero_crowdrun_5TRL
-srun -N 1 -n 1 -p iball ../DRcurve.sh   -v  zero.yuv.avi                         -l  8  -b  64  -m  64  -g  9  -t  5  -y  1088  -x  1920  -f  50
-
-<<comment
 
 ### 6 ##########################################################################
 salta crowdrun_6TRL
@@ -83,6 +45,6 @@ srun -N 1 -n 1 -p iball ../DRcurve.sh   -v  crowdrun_1920x1088x50x420x500.avi   
 salta zero_crowdrun_5TRL_4L
 srun -N 1 -n 1 -p iball ../DRcurve.sh   -v  zero.yuv.avi                          -l  4  -b  64  -m  64  -g  9  -t  5  -y  1088  -x  1920  -f  50
 
-comment
+
 
 exit 0
