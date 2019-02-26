@@ -29,7 +29,7 @@ usage() {
     echo "  [-y Y dimension ($y_dim)]"
     echo "  [-f frames/second ($FPS)]"
     echo "  [-t TRLs ($TRLs)]"
-    echo "  [-l layers ($layers)"
+    echo "  [-l layers ($layers)]"
     echo "  [-s slope ($slope)]"
     echo "  [-? (help)]"
 }
@@ -182,12 +182,11 @@ echo \# layers=$layers >> $name2
 echo \# slope=$slope >> $name2
 echo \# BPP=$BPP >> $name2
 echo \# MCTF_QUANTIZER=$MCTF_QUANTIZER >> $name2
-
-subband_layers=`echo "$layers*($TRLs+1)" | bc` # subband_layers=`echo $layers*$TRLs+1 | bc`
+#subband_layers=`echo "$layers*($TRLs+1)" | bc`
+subband_layers=`echo "$layers*$TRLs+$TRLs" | bc`
 echo \# number_of_subband_layers=$subband_layers >> $name2
 
 #subband_layers=1
-
 for i in `seq 1 $subband_layers`; do
     echo Running for $i quality layers
     rm -rf transcode_quality
@@ -203,7 +202,6 @@ for i in `seq 1 $subband_layers`; do
     echo -n $rate >> $name2
     echo -ne '\t' >> $name2
     mctf expand --GOPs=$GOPs --TRLs=$TRLs --pixels_in_x=$x_dim --pixels_in_y=$y_dim --block_size=$block_size --min_block_size=$min_block_size
-
     img=1
     while [ $img -le $number_of_images ]; do
 	_img=$(printf "%04d" $img)
@@ -243,3 +241,4 @@ done
 if [ $__debug__ -eq 1 ]; then
     set +x
 fi
+
