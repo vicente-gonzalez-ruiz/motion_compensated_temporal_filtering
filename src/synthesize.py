@@ -48,7 +48,7 @@ _search_range = search_range
 _pictures = pictures
 
 # Controls the increment of the search area between temporal levels
-search_factor = 2
+search_factor = 1
 
 if TRLs > 1 :
 
