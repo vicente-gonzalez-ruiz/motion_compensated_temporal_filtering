@@ -1,4 +1,8 @@
-/* Log-search bidirectional block-based motion estimation */
+/* Log-search (define FAST_SEARCH) and brute force bidirectional
+   block-based motion estimation.
+
+   
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,8 +52,10 @@ void local_me_for_block
   MVC_TYPE mv_next_x_by_bx = mv[NEXT][X_FIELD][by][bx];
 
 #define COMPUTE_ERRORS(_y,_x)						\
-  MVC_TYPE y[2] = {(MVC_TYPE)(mv_prev_y_by_bx + _y), (MVC_TYPE)(mv_next_y_by_bx - _y)}; \
-  MVC_TYPE x[2] = {(MVC_TYPE)(mv_prev_x_by_bx + _x), (MVC_TYPE)(mv_next_x_by_bx - _x)}; \
+  MVC_TYPE y[2] = {(MVC_TYPE)(mv_prev_y_by_bx + _y),                    \
+		   (MVC_TYPE)(mv_next_y_by_bx - _y)};			\
+  MVC_TYPE x[2] = {(MVC_TYPE)(mv_prev_x_by_bx + _x),                    \
+		   (MVC_TYPE)(mv_next_x_by_bx - _x)};			\
   int error[2] = {0, 0};						\
   									\
   for(int py=luby; py<rbby; py++) {					\
