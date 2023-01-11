@@ -1,4 +1,4 @@
-# Motion Compensated Temporal Filtering (MCTF) video coding
+# Motion Compensated Temporal Filtering (MCTF)
 
 ## Texture processing:
 
