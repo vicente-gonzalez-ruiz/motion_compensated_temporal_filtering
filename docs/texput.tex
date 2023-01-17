@@ -7,19 +7,23 @@
 \section{Idea and notation}
 %{{{
 
-MCTF is a DWT where the input samples are the original video images
-and the output is a sequence of residue images.
-
-Motion Compensated Temporal Filtering (MCTF)~\cite{ohm1994three}
-inputs two or more frames of pixels\footnote{Although the frames can
-  also be in a transform domain, such as the DWT domain.} and outputs
-two or more frames of coefficients. Some of these frame-coeffs contain
-low frequency information (in the temporal domain), and others
-represent high frequency temporal information. We will use
-\emph{average}-frame (or simply \emph{average}) to refer to a
+Motion Compensated Temporal Filtering (MCTF)~\cite{ohm1994three} is
+basically a motion compensated random-access mode in which the last
+P-type frame is a B-type frame (see Fig.~\ref{fig:MCTF}). MCTF can be
+considered a DWT where the input samples are the original video images
+and the output coefficients is a sequence of residue images. Some of
+these frame-coeffs contain low frequency information (in the temporal
+domain), and others represent high frequency temporal information. We
+will use \emph{average}-frame (or simply \emph{average}) to refer to a
 low-frequency frame, and \emph{residue} to refer to a high-frequency
 frame. In general, the number of averages is smaller tha the name of
 residues.
+
+\begin{figure}
+  \svg{graphics/MCTF}{500}
+  \caption{The MCTF scheme.}
+  \label{fig:MCTF}
+\end{figure}
 
 %}}}
 
