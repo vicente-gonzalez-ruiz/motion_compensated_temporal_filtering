@@ -19,48 +19,66 @@
 
 <h2 class='titleHead'><a href='https://github.com/vicente-gonzalez-ruiz/MCTF'>Motion Compensated Temporal Filtering</a></h2>
  <div class='author'><a href='https://cms.ual.es/UAL/personas/persona.htm?id=515256515553484875'><span class='ecrm-1200'>Vicente González Ruiz</span></a> <span class='ecrm-1200'>- </span><a href='https://cms.ual.es/UAL/universidad/departamentos/informatica/index.htm'><span class='ecrm-1200'>Depto Informática</span></a> <span class='ecrm-1200'>- </span><a href='https://www.ual.es'><span class='ecrm-1200'>UAL</span></a></div><br />
-<div class='date'><span class='ecrm-1200'>January 15, 2023</span></div>
+<div class='date'><span class='ecrm-1200'>January 24, 2023</span></div>
    </div>
    <h3 class='sectionHead' id='idea-and-notation'><span class='titlemark'>1   </span> <a id='x1-10001'></a>Idea and notation</h3>
-<!-- l. 10 --><p class='noindent'>MCTF is a DWT where the input samples are the original video images and the
-output is a sequence of residue images.
-</p><!-- l. 13 --><p class='indent'>   Motion Compensated Temporal Filtering (MCTF) <span class='cite'>[<a href='#Xohm1994three'>3</a>]</span> inputs two or more frames of
-pixels<span class='footnote-mark'><a href='#fn1x0' id='fn1x0-bk'><sup class='textsuperscript'>1</sup></a></span><a id='x1-1001f1'></a>
-and outputs two or more frames of coefficients. Some of these frame-coeffs
-contain low frequency information (in the temporal domain), and others
-represent high frequency temporal information. We will use <span class='ecti-1000'>average</span>-frame (or
-simply <span class='ecti-1000'>average</span>) to refer to a low-frequency frame, and <span class='ecti-1000'>residue </span>to refer to a
-high-frequency frame. In general, the number of averages is smaller tha the name of
-residues.
-</p><!-- l. 26 --><p class='noindent'>
+<!-- l. 10 --><p class='noindent'>Motion Compensated Temporal Filtering (MCTF) <span class='cite'>[<a href='#Xohm1994three'>3</a>]</span> is basically a motion
+compensated random-access mode in which the last P-type frame is a B-type frame
+(see Fig. <a href='#x1-1001r1'>1<!-- tex4ht:ref: fig:MCTF  --></a>). MCTF can be considered a DWT where the input samples are the
+original video images and the output coefficients is a sequence of residue images.
+Some of these frame-coeffs contain low frequency information (in the temporal
+domain), and others represent high frequency temporal information. We will use
+<span class='ecti-1000'>average</span>-frame (or simply <span class='ecti-1000'>average</span>) to refer to a low-frequency frame, and <span class='ecti-1000'>residue </span>to
+refer to a high-frequency frame. In general, the number of averages is smaller tha the
+name of residues.
 </p>
+   <figure class='figure'> 
+
+                                                                  
+
+                                                                  
+                                                                  
+
+                                                                  
+<!-- l. 23 --><p class='noindent' id='-the-mctf-scheme-'><div style='text-align:center;'> <img src='graphics/MCTF.svg' /> </div>  <a id='x1-1001r1'></a>
+<a id='x1-1002'></a>
+</p>
+<figcaption class='caption'><span class='id'>Figure 1: </span><span class='content'>The MCTF scheme.
+</span></figcaption><!-- tex4ht:label?: x1-1001r1  -->
+                                                                  
+
+                                                                  
+   </figure>
    <h3 class='sectionHead' id='objectives-of-mctf'><span class='titlemark'>2   </span> <a id='x1-20002'></a>Objectives of MCTF</h3>
-<!-- l. 29 --><p class='noindent'>The main goals of <a href='https://en.wikipedia.org/wiki/Motion_compensation'>motion compensation</a> are:
+<!-- l. 33 --><p class='noindent'>The main goals of <a href='https://en.wikipedia.org/wiki/Motion_compensation'>motion compensation</a> are:
      </p><ol class='enumerate1'>
 <li class='enumerate' id='x1-2002x1'>Reduce the entropy of the residuals, and if
      </li>
 <li class='enumerate' id='x1-2004x2'>Increase                   the                   temporal                   scalability,
      compared to low-delay and random-access modes <span class='cite'>[<a href='#Xvruiz__MC'>1</a>]</span>. MCTF is a dyadic
      temporal multirresolution approach.</li></ol>
-<!-- l. 41 --><p class='noindent'>
+<!-- l. 45 --><p class='noindent'>
 </p>
    <h3 class='sectionHead' id='mctf-uses-me'><span class='titlemark'>3   </span> <a id='x1-30003'></a>MCTF uses ME</h3>
-<!-- l. 44 --><p class='noindent'>In order to exploit the temporal redundancy, the bidirectional predictions used
+<!-- l. 48 --><p class='noindent'>In order to exploit the temporal redundancy, the bidirectional predictions used
 in MCTF are generated using ME (Motion Estimation) <span class='cite'>[<a href='#Xvruiz__ME'>2</a>]</span>. The motion
 information (usually in the form of motion vector fields with a given
-density<span class='footnote-mark'><a href='#fn2x0' id='fn2x0-bk'><sup class='textsuperscript'>2</sup></a></span><a id='x1-3001f2'></a>)
+density<span class='footnote-mark'><a href='#fn1x0' id='fn1x0-bk'><sup class='textsuperscript'>1</sup></a></span><a id='x1-3001f1'></a>)
 must be known by both, the encoder and the decoder, which runs the inverse MCTF.
 Therefore, MCTF can be considered an adaptive transform, and, as many others
 adaptive systems, the side information must be transmitted to or regenerated by the
 decoder.
-</p><!-- l. 56 --><p class='noindent'>
+</p><!-- l. 60 --><p class='noindent'>
 </p>
    <h3 class='sectionHead' id='expected-entropies-and-dynamic-ranges'><span class='titlemark'>4   </span> <a id='x1-40004'></a>(Expected) Entropies and dynamic ranges</h3>
-<!-- l. 59 --><p class='noindent'>Usually, MCTF (as many other transforms), increases the number of bits
+<!-- l. 63 --><p class='noindent'>Usually, MCTF (as many other transforms), increases the number of bits
 necessary to represent the residues (coefficients), but also decreases the entropy,
 because most of the information will be concentrated in a small number of
 residues <span class='cite'>[<a href='#Xvruiz__MC'>1</a>]</span>.
-</p><!-- l. 66 --><p class='noindent'>
+                                                                  
+
+                                                                  
+</p><!-- l. 70 --><p class='noindent'>
 </p>
    <h3 class='sectionHead' id='references'><span class='titlemark'>5   </span> <a id='x1-50005'></a>References</h3>
    <div class='thebibliography'>
@@ -73,13 +91,9 @@ residues <span class='cite'>[<a href='#Xvruiz__MC'>1</a>]</span>.
    <p class='bibitem'><span class='biblabel'>
  [3]<span class='bibsp'>   </span></span><a id='Xohm1994three'></a>J.-R.   Ohm.       Three-dimensional   subband   coding   with   motion
    compensation. <span class='ecti-1000'>IEEE Transactions on Image Processing</span>, 3:559–571, 1994.
-                                                                  
-
-                                                                  
 </p>
    </div>
-   <div class='footnotes'><!-- l. 15 --><p class='indent'>     <span class='footnote-mark'><a href='#fn1x0-bk' id='fn1x0'><sup class='textsuperscript'>1</sup></a></span><span class='ecrm-0800'>Although the frames can also be in a transform domain, such as the DWT domain.</span></p>
-<!-- l. 48 --><p class='indent'>     <span class='footnote-mark'><a href='#fn2x0-bk' id='fn2x0'><sup class='textsuperscript'>2</sup></a></span><span class='ecrm-0800'>Number of motion vectors per pixel.</span></p>                                                               </div>
+   <div class='footnotes'><!-- l. 52 --><p class='indent'>     <span class='footnote-mark'><a href='#fn1x0-bk' id='fn1x0'><sup class='textsuperscript'>1</sup></a></span><span class='ecrm-0800'>Number of motion vectors per pixel.</span></p>                                                               </div>
  
 </body> 
 </html>
